@@ -10,7 +10,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     include: { author: true },
   });
 
-  if (!post) return <div>Post not found</div>;
+  if (!post) return <div>Post not found j</div>;
 
   return (
     <div className="max-w-xl mx-auto py-10">
