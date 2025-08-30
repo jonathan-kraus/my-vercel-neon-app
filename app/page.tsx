@@ -34,7 +34,34 @@ const DATA = {
 };
 
 
+
 import { PrismaClient } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+
+async function createPost(formData: FormData) {
+  'use server';
+  const prisma = new PrismaClient();
+  const title = formData.get('title') as string;
+  const content = formData.get('content') as string;
+  await prisma.post.create({
+    data: {
+      title,
+      content,
+      authorId: 1, // Default author
+      published: true,
+    },
+  });
+  revalidatePath('/');
+  redirect('/');
+}
+
+async function deletePost(id: number) {
+  'use server';
+  const prisma = new PrismaClient();
+  await prisma.post.delete({ where: { id } });
+  revalidatePath('/');
+}
 
 export default async function Home() {
   const prisma = new PrismaClient();
@@ -49,16 +76,27 @@ export default async function Home() {
         {/* Post List Above Main Content */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
+          <form action={createPost} method="post" className="mb-6 flex flex-col gap-2">
+            <input name="title" placeholder="Title" className="border px-2 py-1 rounded" required />
+            <textarea name="content" placeholder="Content" className="border px-2 py-1 rounded" required />
+            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Create Post</button>
+          </form>
           {posts.length === 0 ? (
             <p>No posts found.</p>
           ) : (
             <ul className="space-y-4">
               {posts.map((post: any) => (
                 <li key={post.id} className="border-b pb-2">
-                  <Link href={`/posts/${post.id}`} className="text-lg font-semibold text-blue-600 hover:underline">
-                    {post.title}
-                  </Link>
-                  <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString()}</p>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-lg font-semibold">{post.title}</span>
+                      <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString()}</p>
+                      <p>{post.content}</p>
+                    </div>
+                    <form action={() => deletePost(post.id)} method="post">
+                      <button type="submit" className="text-red-600 ml-4">Delete</button>
+                    </form>
+                  </div>
                 </li>
               ))}
             </ul>
