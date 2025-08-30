@@ -115,7 +115,7 @@ export default async function Home() {
                     </div>
                     <form action={deletePost}>
                       <input type="hidden" name="id" value={post.id} />
-                      <button type="submit" className="text-red-600 ml-4">Delete</button>
+                      <button type="submit" className="text-sky-600 ml-4">Delete</button>
                     </form>
                   </div>
                 </li>
