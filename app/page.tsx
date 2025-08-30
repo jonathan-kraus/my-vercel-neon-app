@@ -41,7 +41,7 @@ type BlogPost = {
   id: number;
   title: string;
   content: string;
-  createdAt: string;
+  createdAt: Date;
   author?: { name?: string };
 };
 import { revalidatePath } from 'next/cache';
