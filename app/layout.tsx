@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { inter } from "./fonts";
+// import { inter } from "./fonts";
 import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} dark`}>
+  <html lang="en" className="dark">
       <body>
         {children}
         <Analytics />
