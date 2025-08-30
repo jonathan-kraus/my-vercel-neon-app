@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const authorId = searchParams.get('authorId');
   const published = searchParams.get('published');
 
-  const where: any = {};
+  const where: Record<string, unknown> = {};
   if (search) {
     where.OR = [
       { title: { contains: search, mode: 'insensitive' } },

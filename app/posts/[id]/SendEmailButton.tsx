@@ -1,7 +1,7 @@
 "use client";
 import { useState } from 'react';
 
-export default function SendEmailButton({ post }: { post: any }) {
+export default function SendEmailButton({ post }: { post: { title: string; content: string } }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 

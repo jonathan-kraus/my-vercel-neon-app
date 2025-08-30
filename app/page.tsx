@@ -36,6 +36,14 @@ const DATA = {
 
 
 import { PrismaClient } from '@prisma/client';
+
+type BlogPost = {
+  id: number;
+  title: string;
+  content: string;
+  createdAt: string;
+  author?: { name?: string };
+};
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
@@ -85,7 +93,7 @@ export default async function Home() {
             <p>No posts found.</p>
           ) : (
             <ul className="space-y-4">
-              {posts.map((post: any) => (
+              {posts.map((post: BlogPost) => (
                 <li key={post.id} className="border-b pb-2">
                   <div className="flex justify-between items-center">
                     <div>
