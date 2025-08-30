@@ -4,7 +4,7 @@ import { inter } from "./fonts";
 import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
-  title: "Vercel + Neon",
+  title: "Vercel + Neon + J",
   description: "Use Neon with Vercel",
 };
 
