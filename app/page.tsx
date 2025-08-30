@@ -90,7 +90,7 @@ export default async function Home() {
             <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Create Post</button>
           </form>
           {posts.length === 0 ? (
-            <p>No posts found.</p>
+            <p>No posts found..</p>
           ) : (
             <ul className="space-y-4">
               {posts.map((post: BlogPost) => (
