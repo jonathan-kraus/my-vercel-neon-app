@@ -78,7 +78,7 @@ export default async function Home() {
   const prisma = new PrismaClient();
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: 'desc' },
-    include: { author: { select: { name: true } } },
+    include: { author: true },
   });
   const users = await prisma.user.findMany({
     orderBy: { name: 'asc' },
