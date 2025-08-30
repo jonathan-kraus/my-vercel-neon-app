@@ -93,7 +93,7 @@ export default async function Home() {
             <textarea name="content" placeholder="Content" className="border px-2 py-1 rounded" required />
             <select name="authorId" className="border px-2 py-1 rounded" required>
               <option value="">Select author</option>
-              {users.map(user => (
+              {users.map((user: { id: number; name: string | null; email: string }) => (
                 <option key={user.id} value={user.id}>{user.name || user.email}</option>
               ))}
             </select>
@@ -111,7 +111,7 @@ export default async function Home() {
                       <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString()}</p>
                       <p>{post.content}</p>
                     </div>
-                    <form action={() => deletePost(post.id)} method="post">
+                    <form action={async () => { await deletePost(post.id); }} method="post">
                       <button type="submit" className="text-red-600 ml-4">Delete</button>
                     </form>
                   </div>
