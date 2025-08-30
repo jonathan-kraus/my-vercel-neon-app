@@ -14,7 +14,7 @@ export default function SendEmailButton({ post }: { post: { title: string; conte
       body: JSON.stringify({
         title: post.title,
         content: post.content,
-        to: 'your@email.com', // Change to your recipient
+        to: 'jonathanckraus@email.com', // Change to your recipient
       }),
     });
     setLoading(false);
