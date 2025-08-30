@@ -94,7 +94,7 @@ export default async function Home() {
             <input name="title" placeholder="Title" className="border px-2 py-1 rounded" required />
             <textarea name="content" placeholder="Content" className="border px-2 py-1 rounded" required />
             <select name="authorId" className="border px-2 py-1 rounded" required>
-              <option selected="selected" value="Jonathan">Select author</option>
+              <option selected={true} value="Jonathan">Select author</option>
               {users.map((user: { id: number; name: string | null; email: string }) => (
                 <option key={user.id} value={user.id}>{user.name || user.email}</option>
               ))}
