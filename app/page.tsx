@@ -42,7 +42,7 @@ type BlogPost = {
   title: string;
   content: string;
   createdAt: Date;
-  author?: { name?: string };
+  author?: { name?: string | null };
 };
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
