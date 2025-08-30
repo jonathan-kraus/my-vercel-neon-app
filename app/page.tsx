@@ -33,11 +33,38 @@ const DATA = {
   ],
 };
 
+
+import { PrismaClient } from '@prisma/client';
+
 export default async function Home() {
+  const prisma = new PrismaClient();
+  const posts = await prisma.post.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: { author: true },
+  });
   const result = await checkDbConnection();
   return (
     <div className="flex min-h-screen flex-col">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 md:max-w-lg md:px-0 lg:max-w-xl">
+        {/* Post List Above Main Content */}
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
+          {posts.length === 0 ? (
+            <p>No posts found.</p>
+          ) : (
+            <ul className="space-y-4">
+              {posts.map((post: any) => (
+                <li key={post.id} className="border-b pb-2">
+                  <Link href={`/posts/${post.id}`} className="text-lg font-semibold text-blue-600 hover:underline">
+                    {post.title}
+                  </Link>
+                  <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString()}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+        {/* ...existing code... */}
         <main className="flex flex-1 flex-col justify-center">
           <div className="mb-6 md:mb-7">
             <Image
