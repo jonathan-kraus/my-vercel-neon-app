@@ -52,11 +52,12 @@ async function createPost(formData: FormData) {
   const prisma = new PrismaClient();
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
+  const authorId = Number(formData.get('authorId'));
   await prisma.post.create({
     data: {
       title,
       content,
-      authorId: 1, // Default author
+      authorId,
       published: true,
     },
   });
@@ -77,6 +78,9 @@ export default async function Home() {
     orderBy: { createdAt: 'desc' },
     include: { author: true },
   });
+  const users = await prisma.user.findMany({
+    orderBy: { name: 'asc' },
+  });
   const result = await checkDbConnection();
   return (
     <div className="flex min-h-screen flex-col">
@@ -87,6 +91,12 @@ export default async function Home() {
           <form action={createPost} method="post" className="mb-6 flex flex-col gap-2">
             <input name="title" placeholder="Title" className="border px-2 py-1 rounded" required />
             <textarea name="content" placeholder="Content" className="border px-2 py-1 rounded" required />
+            <select name="authorId" className="border px-2 py-1 rounded" required>
+              <option value="">Select author</option>
+              {users.map(user => (
+                <option key={user.id} value={user.id}>{user.name || user.email}</option>
+              ))}
+            </select>
             <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Create Post</button>
           </form>
           {posts.length === 0 ? (
