@@ -89,7 +89,7 @@ export default async function Home() {
         {/* Post List Above Main Content */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
-          <form action={createPost} method="post" className="mb-6 flex flex-col gap-2">
+          <form action={createPost} className="mb-6 flex flex-col gap-2">
             <input name="title" placeholder="Title" className="border px-2 py-1 rounded" required />
             <textarea name="content" placeholder="Content" className="border px-2 py-1 rounded" required />
             <select name="authorId" className="border px-2 py-1 rounded" required>
@@ -112,7 +112,7 @@ export default async function Home() {
                       <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString()}</p>
                       <p>{post.content}</p>
                     </div>
-                    <form action={async () => { await deletePost(post.id); }} method="post">
+                    <form action={async () => { await deletePost(post.id); }}>
                       <button type="submit" className="text-red-600 ml-4">Delete</button>
                     </form>
                   </div>
