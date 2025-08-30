@@ -2,7 +2,7 @@
 import { PrismaClient } from '@prisma/client';
 import SendEmailButton from './SendEmailButton';
 
-export default async function PostPage({ params }: { params: { id: string } }) {
+export default async function Page({ params }: { params: { id: string } }) {
   const prisma = new PrismaClient();
   const post = await prisma.post.findUnique({
     where: { id: Number(params.id) },
