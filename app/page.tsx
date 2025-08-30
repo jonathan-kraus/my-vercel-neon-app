@@ -66,9 +66,10 @@ async function createPost(formData: FormData) {
   redirect('/');
 }
 
-async function deletePost(id: number) {
+async function deletePost(formData: FormData) {
   'use server';
   const prisma = new PrismaClient();
+  const id = Number(formData.get('id'));
   await prisma.post.delete({ where: { id } });
   revalidatePath('/');
 }
@@ -112,7 +113,8 @@ export default async function Home() {
                       <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString()}</p>
                       <p>{post.content}</p>
                     </div>
-                    <form action={async () => { await deletePost(post.id); }}>
+                    <form action={deletePost}>
+                      <input type="hidden" name="id" value={post.id} />
                       <button type="submit" className="text-red-600 ml-4">Delete</button>
                     </form>
                   </div>
