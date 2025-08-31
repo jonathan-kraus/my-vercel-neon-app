@@ -103,27 +103,31 @@ export default async function Home() {
             </select>
             <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Create Post</button>
           </form>
-          {posts.length === 0 ? (
-            <p>No posts found...</p>
-          ) : (
-            <ul className="space-y-4">
-              {posts.map((post: BlogPost) => (
-                <li key={post.id} className="border-b pb-2">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <span className="text-lg font-semibold">{post.title}</span>
-                      <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString()}</p>
-                      <p>{post.content}</p>
-                    </div>
-                    <form action={deletePost}>
-                      <input type="hidden" name="id" value={post.id} />
-                      <button type="submit" className="text-sky-600 ml-4">Delete</button>
-                    </form>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+  {posts.length === 0 ? (
+  <p>No posts found...</p>
+) : (
+  <ul className="space-y-4">
+    {posts.map((post: BlogPost, index: number) => (
+      <li 
+        key={post.id} 
+        className={`border-b pb-2 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}
+      >
+        <div className="flex justify-between items-center">
+          <div>
+            <span className="text-lg font-semibold">{post.title}</span>
+            <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString()}</p>
+            <p>{post.content}</p>
+          </div>
+          <form action={deletePost}>
+            <input type="hidden" name="id" value={post.id} />
+            <button type="submit" className="text-sky-600 ml-4">Delete</button>
+          </form>
+        </div>
+      </li>
+    ))}
+  </ul>
+)}
+
         </section>
         {/* ...existing code... */}
         <main className="flex flex-1 flex-col justify-center">
