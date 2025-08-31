@@ -13,8 +13,8 @@ const DATA = {
   description:
     "A minimal template for Jonathan!",
   button: {
-    text: "Deploy to Vercel with Neon",
-    href: "https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fneondatabase-labs%2Fvercel-marketplace-neon%2Ftree%2Fmain&project-name=my-vercel-neon-app&repository-name=my-vercel-neon-app&products=[{%22type%22:%22integration%22,%22integrationSlug%22:%22neon%22,%22productSlug%22:%22neon%22,%22protocol%22:%22storage%22}]",
+    text: "Posts by user",
+    href: "/pstbyusr",
   },
 
   link: {
