@@ -15,8 +15,8 @@ export const dynamic = "force-dynamic";
 // import logoDark from "@/assets/logo-dark.svg";
 // import Link from "next/link";
 // import arrow from "@/assets/arrow.svg";
-import discord from "@/assets/discord.svg";
-import docs from "@/assets/docs.svg";
+// import discord from "@/assets/discord.svg";
+// import docs from "@/assets/docs.svg";
 import { checkDbConnection } from "../db";
 
 
