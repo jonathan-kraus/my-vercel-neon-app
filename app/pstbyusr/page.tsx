@@ -40,7 +40,8 @@ type BlogPost = {
 export default async function Home() {
   const prisma = new PrismaClient();
   const posts = await prisma.post.findMany({
-    where: { authorId: 1 }, // Replace with actual user ID
+    where: 
+    { author: { name: { contains: "Emily" } } },
     orderBy: { createdAt: 'desc' },
     include: { author: true },
   });
