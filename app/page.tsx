@@ -9,8 +9,8 @@ import docs from "@/assets/docs.svg";
 import { checkDbConnection } from "./db";
 
 const DATA = {
-  title: "Blog Posts with Neon ",
-  
+  title: "Jonathan's Blog",
+  description: "A blog showcasing posts with Neon.",
   button: {
     text: "Posts by user",
     href: "/pstbyusr/",
