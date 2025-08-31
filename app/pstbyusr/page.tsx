@@ -10,6 +10,7 @@
 //   );
 // }
 export const dynamic = "force-dynamic";
+import { useParams } from "next/navigation";
 // import Image from "next/image";
 // import logo from "@/assets/logo.svg";
 // import logoDark from "@/assets/logo-dark.svg";
@@ -19,10 +20,8 @@ export const dynamic = "force-dynamic";
 // import docs from "@/assets/docs.svg";
 import { checkDbConnection } from "../db";
 
-
-
-
-
+const { author } = useParams();
+  <div>{author}</div>
 import { PrismaClient } from '@prisma/client';
 
 type BlogPost = {

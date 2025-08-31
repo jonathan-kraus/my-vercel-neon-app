@@ -14,7 +14,7 @@ const DATA = {
     "A minimal template for Jonathan!",
   button: {
     text: "Posts by user",
-    href: "/pstbyusr",
+    href: "/pstbyusr/:author",
   },
 
   link: {
