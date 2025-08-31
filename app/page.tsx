@@ -93,7 +93,9 @@ export default async function Home() {
           <form action={createPost} className="mb-6 flex flex-col gap-2">
             <input name="title" placeholder="Title" className="border px-2 py-1 rounded" required />
             <textarea name="content" placeholder="Content" className="border px-2 py-1 rounded" required />
-            <select name="authorId" className="border px-2 py-1 rounded" required>
+            <select name="authorId" 
+             className="border px-2 py-1 rounded"
+             required defaultValue="1">
               <option value="">Select author</option>
               {users.map((user: { id: number; name: string | null; email: string }) => (
                 <option key={user.id} value={user.id}>{user.name || user.email}</option>
