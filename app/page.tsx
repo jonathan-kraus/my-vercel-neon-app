@@ -9,9 +9,8 @@ import docs from "@/assets/docs.svg";
 import { checkDbConnection } from "./db";
 
 const DATA = {
-  title: "Vercel with Neon Postgres",
-  description:
-    "A minimal template for Jonathan!",
+  title: "Blog Posts with Neon ",
+  
   button: {
     text: "Posts by user",
     href: "/pstbyusr/",
