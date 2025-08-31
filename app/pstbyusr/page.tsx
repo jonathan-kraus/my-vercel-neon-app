@@ -17,7 +17,7 @@ import Link from "next/link";
 import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
-import { checkDbConnection } from "./db";
+import { checkDbConnection } from "../db";
 
 const DATA = {
   title: "Vercel with Neon Postgres",
