@@ -10,40 +10,16 @@
 //   );
 // }
 export const dynamic = "force-dynamic";
-import Image from "next/image";
-import logo from "@/assets/logo.svg";
-import logoDark from "@/assets/logo-dark.svg";
-import Link from "next/link";
-import arrow from "@/assets/arrow.svg";
+// import Image from "next/image";
+// import logo from "@/assets/logo.svg";
+// import logoDark from "@/assets/logo-dark.svg";
+// import Link from "next/link";
+// import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 import { checkDbConnection } from "../db";
 
-const DATA = {
-  title: "Vercel with Neon Postgres",
-  description:
-    "A minimal template for Jonathan!",
-  button: {
-    text: "Deploy to Vercel with Neon",
-    href: "https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fneondatabase-labs%2Fvercel-marketplace-neon%2Ftree%2Fmain&project-name=my-vercel-neon-app&repository-name=my-vercel-neon-app&products=[{%22type%22:%22integration%22,%22integrationSlug%22:%22neon%22,%22productSlug%22:%22neon%22,%22protocol%22:%22storage%22}]",
-  },
-  link: {
-    text: "View on GitHub",
-    href: "https://github.com/neondatabase-labs/vercel-marketplace-neon",
-  },
-  footerLinks: [
-    {
-      text: "Docs",
-      href: "https://neon.tech/docs/",
-      icon: docs,
-    },
-    {
-      text: "Discord",
-      href: "https://discord.com/invite/92vNTzKDGp",
-      icon: discord,
-    },
-  ],
-};
+
 
 
 
@@ -56,8 +32,8 @@ type BlogPost = {
   createdAt: Date;
   author?: { name?: string | null };
 };
-import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+// import { revalidatePath } from 'next/cache';
+// import { redirect } from 'next/navigation';
 
 
 
@@ -67,9 +43,9 @@ export default async function Home() {
     orderBy: { createdAt: 'desc' },
     include: { author: true },
   });
-  const users = await prisma.user.findMany({
-    orderBy: { name: 'asc' },
-  });
+  // const users = await prisma.user.findMany({
+  //   orderBy: { name: 'asc' },
+  // });
   const result = await checkDbConnection();
   console.log('Database connection result:', result);
   return (
