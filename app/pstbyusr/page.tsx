@@ -6,9 +6,9 @@ function Head1(mytestid: string): string {
       <h1>Posts by User ${mytestid}</h1>
     </div>`;
 }
-
+console.log(Head1(mytestid));
 Head1(mytestid);
-
+console.log(Head1("Alice"));
 // import Image from "next/image";
 // import logo from "@/assets/logo.svg";
 // import logoDark from "@/assets/logo-dark.svg";
