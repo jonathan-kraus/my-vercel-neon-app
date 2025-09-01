@@ -1,16 +1,11 @@
-// export default function PstByUsr() {
-//   return (
-//     <div>
-//       <h1>Posts by User</h1>
-//       <p>
-//         Welcome to our website! We are dedicated to providing the best services
-//         and experiences for our users. Thank you for visiting!
-//       </p>
-//     </div>
-//   );
-// }
+const mytestid = ' Test ID'
+function Head1() {
+    <div>
+      <h1>Posts by User {mytestid}</h1>
+    </div>
+    }
 export const dynamic = "force-dynamic";
-
+Head1();
 // import Image from "next/image";
 // import logo from "@/assets/logo.svg";
 // import logoDark from "@/assets/logo-dark.svg";
