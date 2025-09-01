@@ -1,11 +1,14 @@
-const mytestid = ' Test ID'
-function Head1() {
-    <div>
-      <h1>Posts by User {mytestid}</h1>
-    </div>
-    }
-export const dynamic = "force-dynamic";
-Head1();
+//export const dynamic = "force-dynamic";
+const mytestid = ' Test ID '
+function Head1(mytestid: string): string {
+
+    return  `<div>
+      <h1>Posts by User ${mytestid}</h1>
+    </div>`;
+}
+
+Head1(mytestid);
+
 // import Image from "next/image";
 // import logo from "@/assets/logo.svg";
 // import logoDark from "@/assets/logo-dark.svg";
