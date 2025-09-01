@@ -76,6 +76,7 @@ async function deletePost(formData: FormData) {
 
 export default async function Home() {
   const prisma = new PrismaClient();
+  const myspace = ' '
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: 'desc' },
     include: { author: true },
@@ -116,7 +117,7 @@ export default async function Home() {
           <div>
             <span className="text-lg font-semibold">{post.title}</span>
             <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} 
-                &lsquo;on&rsquo; {new Date(post.createdAt).toLocaleDateString(
+                {myspace} on {new Date(post.createdAt).toLocaleDateString(
                 'en-US',
                 { year: 'numeric', month: '2-digit', day: '2-digit' }
               )}</p>
