@@ -1,13 +1,12 @@
 //export const dynamic = "force-dynamic";
 const mytestid = ' Test ID '
-
+console.log(mytestid);
 function Head1(mytestid: string): string {
 
     return  `<div>
       <h1>Posts by User ${mytestid}</h1>
     </div>`;
 }
-console.log(mytestid);
 Head1(mytestid);
 console.log(Head1("Alice"));
 // import Image from "next/image";
