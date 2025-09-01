@@ -115,8 +115,8 @@ export default async function Home() {
         <div className="flex justify-between items-center">
           <div>
             <span className="text-lg font-semibold">{post.title}</span>
-            <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on 
-              {new Date(post.createdAt).toLocaleDateString(
+            <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'}
+                on {new Date(post.createdAt).toLocaleDateString(
                 'en-US',
                 { year: 'numeric', month: '2-digit', day: '2-digit' }
               )}</p>
