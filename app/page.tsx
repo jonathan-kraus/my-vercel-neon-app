@@ -224,7 +224,7 @@ export default async function Home() {
     </div>
   );
 }
-const myuser = "Jonathan";
+const myuser = "Melissa";
 const prisma = new PrismaClient();
 const post = await prisma.post.update({
   where: {

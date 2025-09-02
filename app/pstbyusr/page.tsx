@@ -70,12 +70,11 @@ export default async function Home() {
       </li>
     ))}
   </ul>
-  console.log("my name: " + myname);
-  console.log("Database connection result: " + result);
 )}
-
         </section>
         {/* ...existing code... */}
+console.log("my name after: " + myname);
+
         <main className="flex flex-1 flex-col justify-center">
           <span
             className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
