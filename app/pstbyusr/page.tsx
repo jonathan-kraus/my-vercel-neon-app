@@ -73,8 +73,6 @@ export default async function Home() {
 )}
         </section>
         {/* ...existing code... */}
-console.log( myname);
-
         <main className="flex flex-1 flex-col justify-center">
           <span
             className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
@@ -91,3 +89,4 @@ console.log( myname);
     </div>
   );
 }
+console.log( "Finis" + myname);
