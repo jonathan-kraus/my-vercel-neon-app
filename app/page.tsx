@@ -18,7 +18,7 @@ function Sender() {
 
   return <button onClick={handleNavigate}>Go to Receiver</button>;
 }
-Sender();
+
 const DATA = {
   title: "Jonathan's Blog",
   description: "A blog showcasing posts with Neon.",
