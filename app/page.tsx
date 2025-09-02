@@ -8,7 +8,7 @@ import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 //import { useNavigate } from 'react-router-dom';
 import { checkDbConnection } from "./db";
-
+let myuser = "Melissa";
 const DATA = {
   title: "Jonathan's Blog",
   description: "A blog showcasing posts with Neon.",
@@ -224,7 +224,7 @@ export default async function Home() {
     </div>
   );
 }
-const myuser = "Melissa";
+
 const prisma = new PrismaClient();
 const post = await prisma.post.update({
   where: {

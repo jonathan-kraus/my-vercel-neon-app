@@ -89,4 +89,4 @@ export default async function Home() {
     </div>
   );
 }
-console.log( "Finis" + myname);
+console.log( "Finis " + myname);
