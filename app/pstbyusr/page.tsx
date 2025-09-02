@@ -34,6 +34,7 @@ type BlogPost = {
 // import { redirect } from 'next/navigation';
 const prisma = new PrismaClient();
 const myid = 1;
+const myname = 'A';
 const user = await prisma.user.findUnique({
   where: {
     id: myid,
@@ -41,14 +42,15 @@ const user = await prisma.user.findUnique({
 })
 console.log(user);
 if (user!.name != null) {
-console.log(user!.name);
+  const myname = user!.name;
+  console.log(myname);
 }
 export default async function Home() {
 
   const prisma = new PrismaClient();
   const posts = await prisma.post.findMany({
     where: 
-    { author: { name: { contains: "Emily" } } },
+    { author: { name: { contains: myname } } },
     orderBy: { createdAt: 'desc' },
     include: { author: true },
   });
