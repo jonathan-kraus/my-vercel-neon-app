@@ -224,12 +224,14 @@ export default async function Home() {
     </div>
   );
 }
-async function updatePost(myuser) {
-  'use server';
-  const prisma = new PrismaClient();
-await prisma.post.update({
-  where: {id: 21,},
-  data: {title: {myuser},},
-})}
-console.log('Updated post:', updatePost);
-updatePost(1002);
+const myuser = "Jonathan";
+const prisma = new PrismaClient();
+const post = await prisma.post.update({
+  where: {
+    id: 21,
+  },
+  data: {
+    title: myuser
+  }
+})
+console.log('Updated post:', post);
