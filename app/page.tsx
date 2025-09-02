@@ -8,7 +8,17 @@ import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 //import { useNavigate } from 'react-router-dom';
 import { checkDbConnection } from "./db";
+export  function HomePage(props) {
+   const handleClick = (data) => {
+    props.history.push('/pstbyusr/' + data);
+   }
 
+  return (
+    <div>
+      <button onClick={() => handleClick('Jonathan')}>To Posts by User</button>
+    </div>
+  )
+}
 const DATA = {
   title: "Jonathan's Blog",
   description: "A blog showcasing posts with Neon.",
