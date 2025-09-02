@@ -9,7 +9,7 @@ import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 //import { useNavigate } from 'react-router-dom';
 import { checkDbConnection } from "./db";
-export default function HomePage(props) {
+export function j12(props) {
    const handleClick = (data) => {
     props.history.push('/pstbyusr/' + data);
    }
