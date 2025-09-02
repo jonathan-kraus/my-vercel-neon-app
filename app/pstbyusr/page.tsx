@@ -30,18 +30,17 @@ type BlogPost = {
   createdAt: Date;
   author?: { name?: string | null };
 };
-// import { revalidatePath } from 'next/cache';
-// import { redirect } from 'next/navigation';
+
+// post 21 title is name
 const prisma = new PrismaClient();
-const myid = 1;
 let myname = 'A';
-const user = await prisma.user.findUnique({
+const post = await prisma.post.findUnique({
   where: {
-    id: myid,
+    id: 21,
   },
 })
-console.log(user);
-myname = user?.name || 'No email found';
+console.log(post);
+myname = post?.title || 'No data found';
 console.log("my name: " + myname);
 
 export default async function Home() {
