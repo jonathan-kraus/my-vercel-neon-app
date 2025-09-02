@@ -3,23 +3,12 @@ import Image from "next/image";
 import logo from "@/assets/logo.svg";
 import logoDark from "@/assets/logo-dark.svg";
 import Link from "next/link";
-import React from "react";
 import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 //import { useNavigate } from 'react-router-dom';
 import { checkDbConnection } from "./db";
-export function j12(props) {
-   const handleClick = (data) => {
-    props.history.push('/pstbyusr/' + data);
-   }
 
-  return (
-    <div>
-      <button onClick={() => handleClick('Jonathan')}>To Posts by User</button>
-    </div>
-  )
-}
 const DATA = {
   title: "Jonathan's Blog",
   description: "A blog showcasing posts with Neon.",
