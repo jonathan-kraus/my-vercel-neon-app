@@ -79,10 +79,10 @@ export default async function Home() {
   const myspace = ' '
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: 'desc' },
+    where: { published: { equals: true } },
     include: { author: true },
   });
   const users = await prisma.user.findMany({
-    where: { published: { equals: true } },
     orderBy: { name: 'asc' },
   });
   const result = await checkDbConnection();
