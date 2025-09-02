@@ -34,17 +34,16 @@ type BlogPost = {
 // import { redirect } from 'next/navigation';
 const prisma = new PrismaClient();
 const myid = 1;
-const myname = 'A';
+let myname = 'A';
 const user = await prisma.user.findUnique({
   where: {
     id: myid,
   },
 })
 console.log(user);
-if (user!.name != null) {
-  const myname = user!.name;
-  console.log(myname);
-}
+myname = user?.name || 'No email found';
+console.log("my name: " + myname);
+
 export default async function Home() {
 
   const prisma = new PrismaClient();
