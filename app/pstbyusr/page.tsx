@@ -1,16 +1,5 @@
 //export const dynamic = "force-dynamic";
 //import { useLocation } from 'react-router-dom';
-const mytestid = ' Test ID '
-console.log(mytestid);
-function Head1(mytestid: string): string {
-
-    return  `<div>
-      <h1>Posts by User ${mytestid}</h1>
-    </div>`;
-}
-Head1(mytestid);
-
-console.log(Head1("Alice"));
 // import Image from "next/image";
 // import logo from "@/assets/logo.svg";
 // import logoDark from "@/assets/logo-dark.svg";
@@ -19,8 +8,6 @@ console.log(Head1("Alice"));
 // import discord from "@/assets/discord.svg";
 // import docs from "@/assets/docs.svg";
 import { checkDbConnection } from "../db";
-
-
 import { PrismaClient } from '@prisma/client';
 
 type BlogPost = {
@@ -79,7 +66,7 @@ export default async function Home() {
             <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString()}</p>
             <p>{post.content}</p>
           </div>
-
+console.log('Database connection result:', result);
         </div>
       </li>
     ))}
