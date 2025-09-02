@@ -8,13 +8,13 @@ import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 //import { useNavigate } from 'react-router-dom';
 import { checkDbConnection } from "./db";
-
+const myd = 'Jonathan';
 const DATA = {
   title: "Jonathan's Blog",
   description: "A blog showcasing posts with Neon.",
   button: {
     text: "Posts by user",
-    href: "/pstbyusr/" + data,
+    href: "/pstbyusr/" + myd,
   },
 
   link: {
