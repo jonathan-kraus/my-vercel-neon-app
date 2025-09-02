@@ -224,3 +224,11 @@ export default async function Home() {
     </div>
   );
 }
+async function updatePost() {
+  'use server';
+  const prisma = new PrismaClient();
+await prisma.post.update({
+  where: {id: 21,},
+  data: {title: 'Viola the Magnificent',},
+})}
+console.log('Updated post:', updatePost);
