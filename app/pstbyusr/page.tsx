@@ -73,7 +73,7 @@ export default async function Home() {
 )}
         </section>
         {/* ...existing code... */}
-console.log("my name after: " + myname);
+console.log( myname);
 
         <main className="flex flex-1 flex-col justify-center">
           <span
