@@ -232,3 +232,4 @@ await prisma.post.update({
   data: {title: 'Viola the Magnificent',},
 })}
 console.log('Updated post:', updatePost);
+updatePost();
