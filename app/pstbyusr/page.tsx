@@ -9,17 +9,7 @@ function Head1(mytestid: string): string {
     </div>`;
 }
 Head1(mytestid);
-export function Passit(props) {
-  if(!props.match.params.aboutId) {
-      return <div>No Data Yet</div>
-  }
-  
-  return (
-    <div>
-      {`Data from HomePage ${props.match.params.aboutId}`}
-    </div>
-  )
-}
+
 console.log(Head1("Alice"));
 // import Image from "next/image";
 // import logo from "@/assets/logo.svg";
