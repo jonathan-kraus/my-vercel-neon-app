@@ -13,8 +13,8 @@ const DATA = {
   title: "Jonathan's Blog",
   description: "A blog showcasing posts with Neon.",
   button: {
-    text: "Posts by user",
-    href: "/pstbyusr/:myd",
+    text: `Posts by user ${myd}`,
+    href: `/pstbyusr/:${myd}?`,
   },
 
   link: {
