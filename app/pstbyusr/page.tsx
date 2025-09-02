@@ -66,11 +66,12 @@ export default async function Home() {
             <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString()}</p>
             <p>{post.content}</p>
           </div>
-console.log(myname + result);
         </div>
       </li>
     ))}
   </ul>
+  console.log("my name: " + myname);
+  console.log("Database connection result: " + result);
 )}
 
         </section>
