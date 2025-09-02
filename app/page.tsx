@@ -82,6 +82,7 @@ export default async function Home() {
     include: { author: true },
   });
   const users = await prisma.user.findMany({
+    where: { published: { equals: true } },
     orderBy: { name: 'asc' },
   });
   const result = await checkDbConnection();
