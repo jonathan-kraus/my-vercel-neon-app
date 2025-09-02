@@ -80,7 +80,15 @@ export default async function Home() {
         </section>
         {/* ...existing code... */}
         <main className="flex flex-1 flex-col justify-center">
-
+          <span
+            className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
+              result === "Database connected"
+                ? "border-[#00E599]/20 bg-[#00E599]/10 text-[#1a8c66] dark:bg-[#00E599]/10 dark:text-[#00E599]"
+                : "border-red-500/20 bg-red-500/10 text-red-500 dark:text-red-500"
+            }`}
+          >
+            {result}
+          </span>
         </main>
   
       </div>
