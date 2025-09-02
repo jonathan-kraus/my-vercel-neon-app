@@ -32,10 +32,19 @@ type BlogPost = {
 };
 // import { revalidatePath } from 'next/cache';
 // import { redirect } from 'next/navigation';
-
-
-
+const prisma = new PrismaClient();
+const myid = 1;
+const user = await prisma.user.findUnique({
+  where: {
+    id: myid,
+  },
+})
+console.log(user);
+if (user.name != null) {
+console.log(user.name);
+}
 export default async function Home() {
+
   const prisma = new PrismaClient();
   const posts = await prisma.post.findMany({
     where: 
