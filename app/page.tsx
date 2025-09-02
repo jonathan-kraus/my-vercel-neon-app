@@ -6,18 +6,8 @@ import Link from "next/link";
 import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import { checkDbConnection } from "./db";
-
-function Sender() {
-  const navigate = useNavigate();
-
-  const handleNavigate = () => {
-    navigate('/receiver', { state: { message: 'Hello from Sender!' } });
-  };
-
-  return <button onClick={handleNavigate}>Go to Receiver</button>;
-}
 
 const DATA = {
   title: "Jonathan's Blog",

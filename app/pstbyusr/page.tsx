@@ -1,5 +1,5 @@
 //export const dynamic = "force-dynamic";
-import { useLocation } from 'react-router-dom';
+//import { useLocation } from 'react-router-dom';
 const mytestid = ' Test ID '
 console.log(mytestid);
 function Head1(mytestid: string): string {
@@ -8,13 +8,6 @@ function Head1(mytestid: string): string {
       <h1>Posts by User ${mytestid}</h1>
     </div>`;
 }
-function Receiver() {
-  const location = useLocation();
-  const { message } = location.state || {};
-
-  return <div>{message ? message : 'No data received'}</div>;
-}
-Receiver();
 Head1(mytestid);
 console.log(Head1("Alice"));
 // import Image from "next/image";
