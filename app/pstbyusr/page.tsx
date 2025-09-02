@@ -40,8 +40,8 @@ const user = await prisma.user.findUnique({
   },
 })
 console.log(user);
-if (user.name != null) {
-console.log(user.name);
+if (user!.name != null) {
+console.log(user!.name);
 }
 export default async function Home() {
 
