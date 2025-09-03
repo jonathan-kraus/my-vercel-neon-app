@@ -6,6 +6,7 @@ import Link from "next/link";
 import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
+import { FlagValues } from 'flags/react';
 //import { useNavigate } from 'react-router-dom';
 import { checkDbConnection } from "./db";
 const DATA = {
@@ -65,7 +66,14 @@ async function createPost(formData: FormData) {
   revalidatePath('/');
   redirect('/');
 }
-
+export function Page() {
+  return (
+    <div>
+      <button type="submit" className="text-sky-600 ml-4">Flag</button>
+      <FlagValues values={{ exampleFlag: true }} />
+    </div>
+  );
+}
 async function deletePost(formData: FormData) {
   'use server';
   const prisma = new PrismaClient();
@@ -94,7 +102,7 @@ export default async function Home() {
           <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
           <form action={createPost} className="mb-6 flex flex-col gap-2">
             <input name="title" placeholder="Title" className="border px-2 py-1 rounded" required />
-            <textarea name="content" placeholder="Content 1.17" className="border px-2 py-1 rounded" required />
+            <textarea name="content" placeholder="Content 1.18" className="border px-2 py-1 rounded" required />
             <select name="authorId" 
              className="border px-2 py-1 rounded"
              required defaultValue="1">
