@@ -1,40 +1,109 @@
-import { NextResponse } from 'next/server';
+'use client';
 
-// Mock data to simulate fetching from a database or external source
-const posts = [
-  { id: 1, title: 'First Post', author: { id: 101, name: 'Alice' } },
-  { id: 2, title: 'Second Post', author: { id: 102, name: 'Bob' } },
-  { id: 3, title: 'Third Post', author: { id: 101, name: 'Alice' } },
-  { id: 4, title: 'Fourth Post', author: { id: 103, name: 'Charlie' } },
-  { id: 5, title: 'Fifth Post', author: { id: 102, name: 'Bob' } },
-  { id: 6, title: 'Sixth Post', author: { id: 101, name: 'Alice' } },
-  { id: 7, title: 'Seventh Post', author: { id: 103, name: 'Charlie' } },
-  { id: 8, title: 'Eighth Post', author: { id: 104, name: 'David' } },
-];
+import { useEffect, useState } from 'react';
 
-export async function GET() {
-  try {
-    // 1. Count posts per author
-    const postCounts = new Map<string, number>();
-    posts.forEach(post => {
-      const authorName = post.author.name || 'Unknown';
-      postCounts.set(authorName, (postCounts.get(authorName) || 0) + 1);
-    });
+type Author = {
+  id: number;
+  name: string | null;
+};
 
-    // 2. Convert map to an array of objects and sort by count
-    const topPosters = Array.from(postCounts.entries())
-      .map(([author, count]) => ({
-        author,
-        count,
-      }))
-      .sort((a, b) => b.count - a.count);
+type BlogPost = {
+  id: number;
+  title: string;
+  content: string;
+  createdAt: string;
+  author?: Author;
+};
 
-    return NextResponse.json(topPosters);
-  } catch (error) {
-    console.error('Failed to generate top posters:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
-  }
+export default function BlogViewer() {
+  const [authors, setAuthors] = useState<Author[]>([]);
+  const [selectedAuthor, setSelectedAuthor] = useState<string>('');
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // Fetch authors on mount
+  useEffect(() => {
+    fetch('/api/authors')
+      .then((res) => res.json())
+      .then((data) => setAuthors(data));
+  }, []);
+
+  // Fetch posts when selectedAuthor changes
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/posts?author=${encodeURIComponent(selectedAuthor)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setPosts(data);
+        setLoading(false);
+      });
+  }, [selectedAuthor]);
+console.log("Selected author:", selectedAuthor);
+  return (
+    <div className="max-w-xl mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">
+      Blog Posts {selectedAuthor && `by ${selectedAuthor}`}
+      </h2>
+      <label htmlFor="author-select" className="block mb-2 font-medium">
+        Filter by Author
+      </label>
+      <select
+        id="author-select"
+        className="mb-6 w-full p-2 border rounded"
+        value={selectedAuthor}
+        onChange={(e) => setSelectedAuthor(e.target.value)}
+      >
+        <option value="">All Authors</option>
+        {authors.map((author) => (
+          <option key={author.id} value={author.name || ''}>
+            {author.name || 'Unknown'}
+          </option>
+        ))}
+      </select>
+      <style jsx>{`
+        .spinner {
+          border: 4px solid #f3f3f3;
+          border-top: 4px solid #3498db;
+          border-radius: 50%;
+          width: 36px;
+          height: 36px;
+          animation: spin 0.8s linear infinite;
+          margin: auto;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+{loading ? (
+  <div className="flex justify-center items-center h-24">
+    <div className="spinner" />
+  </div>
+) : posts.length === 0 ? (
+  <p>No posts found.</p>
+      ) : (
+        <ul className="space-y-4">
+          {posts.map((post, index) => (
+            <li
+              key={post.id}
+              className={`border-b pb-2 ${
+                index % 2 === 0 ? 'bg-gray-50' : 'bg-sky-50'
+              }`}
+            >
+              <span className="text-lg font-semibold">{post.title}</span>
+              <p>{post.content}</p>
+              <p className="text-sm text-gray-600">
+                By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString(
+                'en-US',
+                { year: 'numeric', month: '2-digit', day: '2-digit' }
+              )}
+              </p>
+              
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
