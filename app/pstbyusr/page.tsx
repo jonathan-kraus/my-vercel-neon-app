@@ -1,92 +1,88 @@
-//export const dynamic = "force-dynamic";
-//import { useLocation } from 'react-router-dom';
-// import Image from "next/image";
-// import logo from "@/assets/logo.svg";
-// import logoDark from "@/assets/logo-dark.svg";
-// import Link from "next/link";
-// import arrow from "@/assets/arrow.svg";
-// import discord from "@/assets/discord.svg";
-// import docs from "@/assets/docs.svg";
-import { checkDbConnection } from "../db";
-import { PrismaClient } from '@prisma/client';
+'use client';
+
+import { useEffect, useState } from 'react';
+
+type Author = {
+  id: number;
+  name: string | null;
+};
 
 type BlogPost = {
   id: number;
   title: string;
   content: string;
-  createdAt: Date;
-  author?: { name?: string | null };
+  createdAt: string;
+  author?: Author;
 };
 
-// post 21 title is name
-const prisma = new PrismaClient();
-let myname = 'A';
-const post = await prisma.post.findUnique({
-  where: {
-    id: 21,
-  },
-})
-console.log(post);
-myname = post?.title || 'No data found';
-console.log("my name: " + myname);
+export default function BlogViewer() {
+  const [authors, setAuthors] = useState<Author[]>([]);
+  const [selectedAuthor, setSelectedAuthor] = useState<string>('');
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
-export default async function Home() {
+  // Fetch authors on mount
+  useEffect(() => {
+    fetch('/api/authors')
+      .then((res) => res.json())
+      .then((data) => setAuthors(data));
+  }, []);
 
-  const prisma = new PrismaClient();
-  const posts = await prisma.post.findMany({
-    where: 
-    { author: { name: { contains: myname } } },
-    orderBy: { createdAt: 'desc' },
-    include: { author: true },
-  });
-  // const users = await prisma.user.findMany({
-  //   orderBy: { name: 'asc' },
-  // });
-  const result = await checkDbConnection();
-  console.log('Database connection result:', result);
+  // Fetch posts when selectedAuthor changes
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/posts?author=${encodeURIComponent(selectedAuthor)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setPosts(data);
+        setLoading(false);
+      });
+  }, [selectedAuthor]);
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 md:max-w-lg md:px-0 lg:max-w-xl">
-        {/* Post List Above Main Content */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
-          
-  {posts.length === 0 ? (
-  <p>No posts found...</p>
-) : (
-  <ul className="space-y-4">
-    {posts.map((post: BlogPost, index: number) => (
-      <li 
-        key={post.id} 
-        className={`border-b pb-2 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-sky-50'}`}
+    <div className="max-w-xl mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
+
+      <label htmlFor="author-select" className="block mb-2 font-medium">
+        Filter by Author
+      </label>
+      <select
+        id="author-select"
+        className="mb-6 w-full p-2 border rounded"
+        value={selectedAuthor}
+        onChange={(e) => setSelectedAuthor(e.target.value)}
       >
-        <div className="flex justify-between items-center">
-          <div>
-            <span className="text-lg font-semibold">{post.title}</span>
-            <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString()}</p>
-            <p>{post.content}</p>
-          </div>
-        </div>
-      </li>
-    ))}
-  </ul>
-)}
-        </section>
-        {/* ...existing code... */}
-        <main className="flex flex-1 flex-col justify-center">
-          <span
-            className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
-              result === "Database connected"
-                ? "border-[#00E599]/20 bg-[#00E599]/10 text-[#1a8c66] dark:bg-[#00E599]/10 dark:text-[#00E599]"
-                : "border-red-500/20 bg-red-500/10 text-red-500 dark:text-red-500"
-            }`}
-          >
-            {result}
-          </span>
-        </main>
-  
-      </div>
+        <option value="">All Authors</option>
+        {authors.map((author) => (
+          <option key={author.id} value={author.name || ''}>
+            {author.name || 'Unknown'}
+          </option>
+        ))}
+      </select>
+
+      {loading ? (
+        <p>Loading posts...</p>
+      ) : posts.length === 0 ? (
+        <p>No posts found.</p>
+      ) : (
+        <ul className="space-y-4">
+          {posts.map((post, index) => (
+            <li
+              key={post.id}
+              className={`border-b pb-2 ${
+                index % 2 === 0 ? 'bg-gray-50' : 'bg-sky-50'
+              }`}
+            >
+              <span className="text-lg font-semibold">{post.title}</span>
+              <p className="text-sm text-gray-600">
+                By {post.author?.name || 'Unknown'} on{' '}
+                {new Date(post.createdAt).toLocaleDateString()}
+              </p>
+              <p>{post.content}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
-console.log( "Finis " + myname);
