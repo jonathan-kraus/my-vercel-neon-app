@@ -38,11 +38,11 @@ export default function BlogViewer() {
         setLoading(false);
       });
   }, [selectedAuthor]);
-
+console.log("Selected author:", selectedAuthor);
   return (
     <div className="max-w-xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
-
+      <h2 className="text-2xl font-bold mb-4">Selected Author: {selectedAuthor}</h2>
       <label htmlFor="author-select" className="block mb-2 font-medium">
         Filter by Author
       </label>
