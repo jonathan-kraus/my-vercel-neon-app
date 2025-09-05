@@ -42,7 +42,7 @@ console.log("Selected author:", selectedAuthor);
   return (
     <div className="max-w-xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">
-      Blog Posts {selectedAuthor && `by ${authors.find(a => a.id.toString() === selectedAuthor)?.name}`}
+      Blog Posts {selectedAuthor && `by ${selectedAuthor}`}
       </h2>
       <label htmlFor="author-select" className="block mb-2 font-medium">
         Filter by Author
