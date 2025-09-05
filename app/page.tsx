@@ -94,8 +94,8 @@ export default async function Home() {
           <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
           <form action={createPost} className="mb-6 flex flex-col gap-2">
             <input name="title" placeholder="Title" className="border px-2 py-1 rounded" required />
-            <textarea name="content" placeholder="Content 1.18A"  
-            className="border px-2 py-1 rounded text-primary" required />
+            <textarea name="content" placeholder="Content 1.19"  
+            className="border px-2 py-1 rounded .text-primary" required />
             <select name="authorId" 
              className="border px-2 py-1 rounded"
              required defaultValue="1">
