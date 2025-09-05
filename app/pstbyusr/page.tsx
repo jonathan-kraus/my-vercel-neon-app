@@ -41,8 +41,9 @@ export default function BlogViewer() {
 console.log("Selected author:", selectedAuthor);
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
-      <h2 className="text-2xl font-bold mb-4">Selected Author: {selectedAuthor}</h2>
+      <h2 className="text-2xl font-bold mb-4">
+      Blog Posts {selectedAuthor && `by ${authors.find(a => a.id.toString() === selectedAuthor)?.name}`}
+      </h2>
       <label htmlFor="author-select" className="block mb-2 font-medium">
         Filter by Author
       </label>
@@ -59,11 +60,28 @@ console.log("Selected author:", selectedAuthor);
           </option>
         ))}
       </select>
+      <style jsx>{`
+        .spinner {
+          border: 4px solid #f3f3f3;
+          border-top: 4px solid #3498db;
+          border-radius: 50%;
+          width: 36px;
+          height: 36px;
+          animation: spin 0.8s linear infinite;
+          margin: auto;
+        }
 
-      {loading ? (
-        <p>Loading posts...</p>
-      ) : posts.length === 0 ? (
-        <p>No posts found.</p>
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+{loading ? (
+  <div className="flex justify-center items-center h-24">
+    <div className="spinner" />
+  </div>
+) : posts.length === 0 ? (
+  <p>No posts found.</p>
       ) : (
         <ul className="space-y-4">
           {posts.map((post, index) => (
