@@ -1,17 +1,18 @@
-import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const author = searchParams.get('author');
+export async function GET() {
+  try {
+    const authors = await prisma.user.findMany({
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true },
+    });
 
-  const posts = await prisma.post.findMany({
-    where: author ? { author: { name: { contains: author } } } : {},
-    orderBy: { createdAt: 'desc' },
-    include: { author: true },
-  });
-
-  return NextResponse.json(posts);
+    return NextResponse.json(authors);
+  } catch (error) {
+    console.error('Error fetching authors:', error);
+    return NextResponse.json({ error: 'Failed to fetch authors' }, { status: 500 });
+  }
 }
