@@ -16,6 +16,7 @@
     "@vercel/speed-insights": "^1.2.0",
     "@vercel/toolbar": "^0.1.39",
     "next": "^15.5.1-canary.20",
+    "node-fetch": "^3.3.2",
     "prisma": "^6.15.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
