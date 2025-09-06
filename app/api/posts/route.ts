@@ -9,16 +9,19 @@ export async function GET(request: Request) {
     const author = searchParams.get('author');
 
     const posts = await prisma.post.findMany({
-      where: author
-        ? {
-            author: {
-              name: {
-                contains: author,
-                mode: 'insensitive', // case-insensitive match
+      where: {
+        published: true,            // Filter to only published posts
+        ...(author
+          ? {
+              author: {
+                name: {
+                  contains: author,
+                  mode: 'insensitive',
+                },
               },
-            },
-          }
-        : {},
+            }
+          : {}),
+      },
       orderBy: { createdAt: 'desc' },
       include: { author: true },
     });
