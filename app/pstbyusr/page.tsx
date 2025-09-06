@@ -27,7 +27,8 @@ export default function BlogViewer() {
       .then((res) => res.json())
       .then((data) => setAuthors(data));
   }, []);
-
+console.log('Selected Author:', selectedAuthor);
+console.log('Posts fetched:', posts);
   // Fetch posts when selectedAuthor changes
   useEffect(() => {
     setLoading(true);
