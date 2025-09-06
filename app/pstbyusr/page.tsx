@@ -106,25 +106,31 @@ export default function BlogViewer() {
   );
 }
 // blob test
-import fetch from 'node-fetch';
+import { get } from '@vercel/blob';
 
 async function readBlob(blobUrl) {
-try {
-// Fetch the blob content from the provided URL
-const response = await fetch(blobUrl);
 
-if (!response.ok) {
-throw new Error(`Failed to fetch blob: ${response.statusText}`);
-}
+export default async function handler(req, res) {
+  try {
+    // Replace with your actual blob URL or key
+    const blobUrl = 'https://pnz5lopkqmsuig0d.public.blob.vercel-storage.com/info12.txt';
 
-// Read the content as text or binary depending on the blob type
-const content = await response.text(); // Use response.blob() for binary data
-console.log('Blob Content:', content);
-} catch (error) {
-console.error('Error reading blob:', error.message);
-}
-}
+    // Get the blob
+    const response = await get(blobUrl);
 
+    // Ensure the blob exists
+    if (!response) {
+      return res.status(404).json({ error: 'Blob not found' });
+    }
+
+    // Read the blob as text (you can also use response.blob() and then read as ArrayBuffer, etc.)
+    const text = await response.text();
+
+    return res.status(200).json({ content: text });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+}
 // Example usage with a public blob URL
-const blobUrl = 'https://pnz5lopkqmsuig0d.public.blob.vercel-storage.com/info12.txt';
+
 readBlob(blobUrl);
