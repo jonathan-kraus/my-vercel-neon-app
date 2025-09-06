@@ -21,16 +21,13 @@ export default function BlogViewer() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Fetch authors on mount
-  useEffect(() => {
+  useEffect(() => {  // Fetch authors on mount
     fetch('/api/authors')
       .then((res) => res.json())
       .then((data) => setAuthors(data));
   }, []);
-console.log('Selected Author:', selectedAuthor);
-console.log('Posts fetched:', posts);
-  // Fetch posts when selectedAuthor changes
-  useEffect(() => {
+
+  useEffect(() => { // Fetch posts when selectedAuthor changes
     setLoading(true);
     fetch(`/api/posts?author=${encodeURIComponent(selectedAuthor)}`)
       .then((res) => res.json())
