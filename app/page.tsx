@@ -95,7 +95,7 @@ export default async function Home() {
           <form action={createPost} className="mb-6 flex flex-col gap-2">
             <input name="title" placeholder="Title" className="border px-2 py-1 rounded" required />
             <textarea name="content" placeholder="Content 1.27"  
-            className="border px-2 py-1 rounded .text-primary" required />
+            className="border px-2 py-1 rounded text-black" required />
             <select name="authorId" 
              className="border px-2 py-1 rounded"
              required defaultValue="1">
@@ -119,7 +119,7 @@ export default async function Home() {
           <div>
             <span className="text-lg font-semibold">{post.title}</span>
             <p>{post.content}</p>
-            <p className="text-sm text-gray-600">By {post.author?.name || 'Unknown'} 
+            <p className="text-sm text-navy-600">By {post.author?.name || 'Unknown'} 
                 {myspace} on {new Date(post.createdAt).toLocaleDateString(
                 'en-US',
                 { year: 'numeric', month: '2-digit', day: '2-digit' }
