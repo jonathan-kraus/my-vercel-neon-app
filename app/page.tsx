@@ -71,6 +71,7 @@ async function deletePost(formData: FormData) {
   const prisma = new PrismaClient();
   const id = Number(formData.get('id'));
   await prisma.post.delete({ where: { id } });
+  console.log(`Deleted post with id: ${id}`);
   revalidatePath('/');
 }
 
@@ -113,7 +114,7 @@ export default async function Home() {
     {posts.map((post: BlogPost, index: number) => (
       <li 
         key={post.id} 
-        className={`border-b pb-2 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-sky-50'}`}
+        className={`border-b pb-2 ${index % 2 === 0 ? 'bg-gray-50' : 'bg-blue-400'}`}
       >
         <div className="flex justify-between items-center">
           <div>
@@ -225,7 +226,7 @@ export default async function Home() {
     </div>
   );
 }
-const myuser = "Emil";
+const myuser = "Jonathan";
 const prisma = new PrismaClient();
 const post = await prisma.post.update({
   where: {
