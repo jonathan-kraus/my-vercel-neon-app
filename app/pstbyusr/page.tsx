@@ -14,7 +14,26 @@ type BlogPost = {
   createdAt: string;
   author?: Author;
 };
+//--------------------------------------------------------------------------------------------------------
+import { list } from '@vercel/blob';
+ 
+async function fetchBlob() {
+  const response = await list();
+ 
+  return (
+    <>
+      {response.blobs.map((blob) => (
+        <a key={blob.pathname} href={blob.downloadUrl}>
+          {blob.pathname}
+        </a>
+      ))}
+    </>
+  );console.log('Fetched blobs:', response.blobs);
+  return response.blobs;
+}
 
+fetchBlob();
+//---------------------------------------------------------------------------------------------------------
 export default function BlogViewer() {
   const [authors, setAuthors] = useState<Author[]>([]);
   const [selectedAuthor, setSelectedAuthor] = useState<string>('');
