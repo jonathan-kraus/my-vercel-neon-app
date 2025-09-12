@@ -18,35 +18,35 @@ import { list } from '@vercel/blob';
 const blobs = await list({ cursor: '', limit: 10 }); // Limit to 10 blobs
 //const blobs = await list({ cursor: '', limit: 100, token: 'vercel_blob_rw_pnz5lOPKqmsUig0D_VdUKDyLDEMnMnruXjJR4IttVSCjAuX' });
 console.log('blobs:', blobs);
-// import * as vercelBlob from '@vercel/blob';
-// const abortController = new AbortController();
+import * as vercelBlob from '@vercel/blob';
+const abortController = new AbortController();
  
-// try {
-//   const blobPromise = vercelBlob.put('hello.txt', 'Hello World!', {
-//     access: 'public',
-//     abortSignal: abortController.signal,
-//   });
+try {
+  const blobPromise = vercelBlob.put('hello.txt', 'Hello World!', {
+    access: 'public',
+    abortSignal: abortController.signal,
+  });
  
-//   const timeout = setTimeout(() => {
-//     // Abort the request after 1 second
-//     abortController.abort();
-//   }, 1000);
+  const timeout = setTimeout(() => {
+    // Abort the request after 1 second
+    abortController.abort();
+  }, 1000);
  
-//   const blob = await blobPromise;
+  const blob = await blobPromise;
  
-//   console.info('blob put request completed', blob);
+  console.info('blob put request completed', blob);
  
-//   clearTimeout(timeout);
+  clearTimeout(timeout);
  
-//   //return blob.url;
-// } catch (error) {
-//   if (error instanceof vercelBlob.BlobRequestAbortedError) {
-//     // Handle the abort
-//     console.info('canceled put request');
-//   }
+  //return blob.url;
+} catch (error) {
+  if (error instanceof vercelBlob.BlobRequestAbortedError) {
+    // Handle the abort
+    console.info('canceled put request');
+  }
  
-//   // Handle other errors
-// }
+  // Handle other errors
+}
 export default function BlogViewer() {
   const [authors, setAuthors] = useState<Author[]>([]);
   const [selectedAuthor, setSelectedAuthor] = useState<string>('');
