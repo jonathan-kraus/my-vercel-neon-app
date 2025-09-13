@@ -95,20 +95,20 @@ export default async function Home() {
           <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
           <form action={createPost} className="mb-6 flex flex-col gap-2">
             <input name="title" placeholder="Title" className="border px-2 py-1 rounded" required />
-            <textarea name="content" placeholder="Content 1.29"  
+            <textarea name="content" placeholder="Content 1.301" rows={4}
             className="border px-2 py-1 rounded text-black" required />
             <select name="authorId" 
              className="border px-2 py-1 rounded"
              required defaultValue="1">
               <option value="">Select author</option>
               {users.map((user: { id: number; name: string | null; email: string }) => (
-                <option key={user.id} value={user.id}>{user.name || user.email}</option>
+              <option key={user.id} value={user.id}>{user.name || user.email}</option>
               ))}
             </select>
             <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Create Post</button>
           </form>
   {posts.length === 0 ? (
-  <p>No posts found...</p>
+  <p>   No posts found "\U0001f600"  </p>
 ) : (
   <ul className="space-y-4">
     {posts.map((post: BlogPost, index: number) => (
