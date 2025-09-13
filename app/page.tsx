@@ -236,4 +236,4 @@ const post = await prisma.post.update({
     title: myuser
   }
 })
-console.log('Updated post:', post);
+console.log('Updated post: 2', post);
