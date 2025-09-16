@@ -15,7 +15,7 @@ type BlogPost = {
   author?: Author;
 };
 import { list } from '@vercel/blob';
-const blobs = await list({ cursor: '', limit: 10 }); // Limit to 10 blobs
+const blobs = await list({ cursor: '', limit: 10, token: 'vercel_blob_rw_pnz5lOPKqmsUig0D_VdUKDyLDEMnMnruXjJR4IttVSCjAuX' }); // Limit to 10 blobs
 //const blobs = await list({ cursor: '', limit: 100, token: 'vercel_blob_rw_pnz5lOPKqmsUig0D_VdUKDyLDEMnMnruXjJR4IttVSCjAuX' });
 console.log('blobs:', blobs);
 // import * as vercelBlob from '@vercel/blob';
