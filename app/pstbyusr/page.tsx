@@ -118,7 +118,7 @@ export default function BlogViewer() {
             <li
               key={post.id}
               className={`border-b pb-2 ${
-                index % 2 === 0 ? 'bg-gray-50' : 'bg-sky-50'
+                index % 2 === 0 ? 'bg-blue-50' : 'bg-sky-50'
               }`}
             >
               <span className="text-lg font-semibold">{post.title}</span>
