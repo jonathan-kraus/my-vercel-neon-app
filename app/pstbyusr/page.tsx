@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import PostCountBadge from '../components/PostCountBadge';
 
 type Author = {
   id: number;
   name: string | null;
+  _count?: { posts: number };
 };
 
 type BlogPost = {
@@ -48,6 +50,7 @@ type BlogPost = {
 //   // Handle other errors
 // }
 export default function BlogViewer() {
+  // ...existing code...
   const [authors, setAuthors] = useState<Author[]>([]);
   const [selectedAuthor, setSelectedAuthor] = useState<string>('');
   const [posts, setPosts] = useState<BlogPost[]>([]);
@@ -86,7 +89,7 @@ export default function BlogViewer() {
         <option value="">All Authors</option>
         {authors.map((author) => (
           <option key={author.id} value={author.name || ''}>
-            {author.name || 'Unknown'}
+            {author.name || 'Unknown'} {`(${author._count?.posts ?? 0})`}
           </option>
         ))}
       </select>
@@ -124,7 +127,9 @@ export default function BlogViewer() {
               <span className="text-lg font-semibold">{post.title}</span>
               <p>{post.content}</p>
               <p className="text-sm text-gray-600">
-                By {post.author?.name || 'Unknown'} on {new Date(post.createdAt).toLocaleDateString(
+                By {post.author?.name || 'Unknown'}
+                <PostCountBadge count={authors.find((a) => a.id === post.author?.id)?._count?.posts ?? 0} />
+                 on {new Date(post.createdAt).toLocaleDateString(
                 'en-US',
                 { year: 'numeric', month: '2-digit', day: '2-digit' }
               )}

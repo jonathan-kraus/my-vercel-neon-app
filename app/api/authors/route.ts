@@ -5,9 +5,10 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
+    // Include a posts count for each user so clients can render badges without extra queries
     const authors = await prisma.user.findMany({
       orderBy: { name: 'asc' },
-      select: { id: true, name: true },
+      select: { id: true, name: true, _count: { select: { posts: true } } },
     });
 
     return NextResponse.json(authors);

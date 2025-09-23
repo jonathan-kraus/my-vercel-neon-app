@@ -43,10 +43,11 @@ type BlogPost = {
   title: string;
   content: string;
   createdAt: Date;
-  author?: { name?: string | null };
+  author?: { id?: number; name?: string | null };
 };
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import PostCountBadge from './components/PostCountBadge';
 
 async function createPost(formData: FormData) {
   'use server';
@@ -85,7 +86,10 @@ export default async function Home() {
   });
   const users = await prisma.user.findMany({
     orderBy: { name: 'asc' },
+    include: { _count: { select: { posts: true } } },
   });
+  // Build a fast lookup for each user's post count so we can show a badge in the UI
+  const userCounts = new Map<number, number>(users.map((u) => [u.id, u._count?.posts ?? 0]));
   const result = await checkDbConnection();
   return (
     <div className="flex min-h-screen flex-col">
@@ -101,9 +105,9 @@ export default async function Home() {
              className="border px-2 py-1 rounded"
              required defaultValue="1">
               <option value="">Select author</option>
-              {users.map((user: { id: number; name: string | null; email: string }) => (
-                <option key={user.id} value={user.id}>{user.name || user.email}</option>
-              ))}
+              {users.map((user: { id: number; name: string | null; email: string; _count?: { posts: number } }) => (
+                  <option key={user.id} value={user.id}>{user.name || user.email} ({user._count?.posts ?? 0})</option>
+                ))}
             </select>
             <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Create Post</button>
           </form>
@@ -120,8 +124,10 @@ export default async function Home() {
           <div>
             <span className="text-lg font-semibold">{post.title}</span>
             <p>{post.content}</p>
-            <p className="text-sm text-navy-600">By {post.author?.name || 'Unknown'} 
-                {myspace} on {new Date(post.createdAt).toLocaleDateString(
+            <p className="text-sm text-navy-600">
+              By {post.author?.name || 'Unknown'}
+              <PostCountBadge count={userCounts.get(post.author?.id ?? 0) ?? 0} />
+              {myspace} on {new Date(post.createdAt).toLocaleDateString(
                 'en-US',
                 { year: 'numeric', month: '2-digit', day: '2-digit' }
               )}
