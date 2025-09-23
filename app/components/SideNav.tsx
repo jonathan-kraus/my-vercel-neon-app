@@ -6,7 +6,7 @@ export default function SideNav() {
       <nav className="flex flex-col gap-3">
         <Link className="font-semibold text-lg" href="/">Home</Link>
         <Link href="/pstbyusr/">Posts by User</Link>
-        <Link href="/api/authors">Authors API</Link>
+  <Link href="/authors">Authors</Link>
         <div className="mt-6 pt-4 border-t">
           <div className="text-xs text-gray-500">Dev</div>
           <Link className="text-sm text-red-600" href="/dev/update-post">Update Post (dev)</Link>
