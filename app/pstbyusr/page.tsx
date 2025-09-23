@@ -75,7 +75,7 @@ export default function BlogViewer() {
       Blog Posts {selectedAuthor && `by ${selectedAuthor}`}
       </h2>
       <label htmlFor="author-select" className="block mb-2 font-medium">
-        by Author
+        Filter by Author
       </label>
       <select
         id="author-select"
