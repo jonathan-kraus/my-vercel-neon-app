@@ -232,14 +232,5 @@ export default async function Home() {
     </div>
   );
 }
-const myuser = "Jonathan";
-const prisma = new PrismaClient();
-const post = await prisma.post.update({
-  where: {
-    id: 21,
-  },
-  data: {
-    title: myuser
-  }
-})
-console.log('Updated post: 2', post);
+// Note: avoid running database writes at module scope. If you need to run one-off updates,
+// perform them inside a server action or a local script (not during build).

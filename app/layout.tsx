@@ -3,6 +3,7 @@ import "./globals.css";
 // import { inter } from "./fonts";
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import SideNav from './components/SideNav';
 
 export const metadata: Metadata = {
   title: "Vercel + Neon + J",
@@ -17,7 +18,10 @@ export default function RootLayout({
   return (
   <html lang="en" className="dark">
       <body>
-        {children}
+        <div className="flex">
+          <SideNav />
+          <main className="flex-1">{children}</main>
+        </div>
         <Analytics />
         <SpeedInsights />
       </body>
