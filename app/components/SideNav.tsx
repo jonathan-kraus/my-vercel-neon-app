@@ -4,7 +4,7 @@ export default function SideNav() {
   return (
     <aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
       <nav className="flex flex-col gap-3">
-        <Link className="font-semibold text-lg" href="/">Home</Link>
+        <Link className="font-semibold text-lg" href="/">* Home *</Link>
         <Link href="/pstbyusr/">Posts by User</Link>
   <Link href="/authors">Authors</Link>
         <div className="mt-6 pt-4 border-t">
