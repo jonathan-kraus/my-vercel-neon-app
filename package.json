@@ -16,6 +16,8 @@
     "@vercel/blob": "^1.1.1",
     "@vercel/speed-insights": "^1.2.0",
     "@vercel/toolbar": "^0.1.39",
+    "dotenv": "^17.2.2",
+    "mailersend": "^2.6.0",
     "next": "^15.5.1-canary.20",
     "node-fetch": "^3.3.2",
     "prisma": "^6.15.0",

@@ -1,12 +1,22 @@
-import { Resend } from 'resend';
+import 'dotenv/config';
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
+const mailerSend = new MailerSend({
+  apiKey: "mlsn.12387b37da7114b5f3b9228c6894f606b08a0619200d54e341b8138324a703ce"
+});
 
-export async function sendNewPostEmail({ title, content, to }: { title: string; content: string; to: string }) {
-  await resend.emails.send({
-    from: 'jonathan@yourdomain.com',
-    to,
-    subject: `New Blog Post: ${title}`,
-    html: `<h1>${title}</h1><p>${content}</p>`,
-  });
-}
+const sentFrom = new Sender("you@yourdomain.com", "Your name");
+
+const recipients = [
+  new Recipient("your@client.com", "Your Client")
+];
+
+const emailParams = new EmailParams()
+  .setFrom(sentFrom)
+  .setTo(recipients)
+  .setReplyTo(sentFrom)
+  .setSubject("This is a Subject")
+  .setHtml("<strong>This is the HTML content</strong>")
+  .setText("This is the text content");
+
+await mailerSend.email.send(emailParams);
