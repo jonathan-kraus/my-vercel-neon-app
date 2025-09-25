@@ -7,6 +7,7 @@ export default function SideNav() {
         <Link className="font-semibold text-lg" href="/">* Home *</Link>
         <Link href="/pstbyusr/">Posts by User</Link>
   <Link href="/authors">Authors</Link>
+  <Link href="/mail">Mail</Link>
         <div className="mt-6 pt-4 border-t">
           <div className="text-xs text-gray-500">Dev</div>
           <Link className="text-sm text-red-600" href="/dev/update-post">Update Post (dev)</Link>
