@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
-import { NextResponse } from "next/server";
+// import { NextResponse } from "next/server";
 const mailerSend = new MailerSend({
   apiKey: "mlsn.724bcfc2a6ad6922a4456d8304f4756fe0a7abb59194f0e63d63b91a6a8b4d73",
 });
@@ -21,8 +21,8 @@ const emailParams = new EmailParams()
 
 await mailerSend.email.send(emailParams);
 console.log('✅ Email sent successfully to:', jemail);
-return NextResponse.json({
-  message: 'Email sent successfully!',
-  recipient: jemail,
-  timestamp: new Date().toISOString(),
-}, { status: 200 });
+// return NextResponse.json({
+//   message: 'Email sent successfully!',
+//   recipient: jemail,
+//   timestamp: new Date().toISOString(),
+// }, { status: 200 });
