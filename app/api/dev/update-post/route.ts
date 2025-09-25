@@ -5,9 +5,9 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   // Prevent accidental production use
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ error: 'Not allowed in production' }, { status: 403 });
-  }
+  // if (process.env.NODE_ENV === 'production') {
+  //   return NextResponse.json({ error: 'Not allowed in production' }, { status: 403 });
+  // }
 
   try {
     const body = await req.json();
