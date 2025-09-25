@@ -5,6 +5,7 @@ const mailerSend = new MailerSend({
   apiKey: "mlsn.724bcfc2a6ad6922a4456d8304f4756fe0a7abb59194f0e63d63b91a6a8b4d73",
 });
 
+//const sentFrom = new Sender("Jonathan@kraus.my.id", "Jonathan");
 const sentFrom = new Sender("J@test-51ndgwv663dlzqx8.mlsender.net", "Jonathan");
 const jemail = "jonathanckraus@gmail.com";
 const recipients = [
