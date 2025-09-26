@@ -29,3 +29,9 @@ model Post {
   authorId  Int
   author    User     @relation(fields: [authorId], references: [id])
 }
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  message   String
+  createdAt DateTime @default(now())
+}
