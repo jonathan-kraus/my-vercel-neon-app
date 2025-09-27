@@ -72,7 +72,6 @@ createLog({authorId: 1101,title: 'Log Page.tsx',content: 'Main page log.',});
 
 async function deletePost(formData: FormData) {
   'use server';
-  createLog({authorId: 1101,title: 'Log Page.tsx',content: 'Delete log.',});
   const prisma = new PrismaClient();
   const id = Number(formData.get('id'));
   await prisma.post.delete({ where: { id } });
@@ -82,6 +81,7 @@ async function deletePost(formData: FormData) {
 
 export default async function Home() {
   const prisma = new PrismaClient();
+    createLog({authorId: 1101,title: 'Log Page.tsx',content: 'second home log.',});
   const myspace = ' '
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: 'desc' },
