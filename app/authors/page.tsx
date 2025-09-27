@@ -2,12 +2,11 @@ export const dynamic = "force-dynamic";
 import { PrismaClient } from '@prisma/client';
 import PostCountBadge from '../components/PostCountBadge';
 import { createLog } from '../utils/db';
-import { sendConfirmationEmail } from '../utils/sendemail';
+//import { sendConfirmationEmail } from '../utils/sendemail';
 
 
-
+//sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Authors');
 await createLog({authorId: 1101,title: 'Authors',content: 'Author log',});
-sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Authors');
 type Author = {
   id: number;
   name: string | null;
