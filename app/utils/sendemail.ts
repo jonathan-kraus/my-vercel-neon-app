@@ -15,9 +15,9 @@ export async function sendConfirmationEmail(toEmail: string, toName: string) {
     .setTo(recipients)
     .setReplyTo(sentFrom)
     .setSubject('Mail Success')
-    .setHtml(`<strong>Sent from my neonvercelJ ${toEmail} app</strong>`)
-    .setText(`Sent from my neonvercelJ ${toEmail} app`);
+    .setHtml(`<strong>Sent from utils ${toEmail} app</strong>`)
+    .setText(`Sent from utils ${toEmail} app`);
 
   await mailerSend.email.send(emailParams);
-  console.log('✅ Email sent successfully to:', toEmail);
+  console.log('✅ Email from utils sent successfully to:', toEmail);
 }
