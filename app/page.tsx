@@ -68,7 +68,7 @@ async function createPost(formData: FormData) {
 }
 import { createLog } from './utils/db';
 import { sendConfirmationEmail } from "./utils/sendemail";
-sendConfirmationEmail({ to: 'jonathanckraus@gmail.com', subject: 'JKGM Main Page' });
+sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Main Page');
 createLog({authorId: 1101,title: 'Log Page.tsx',content: 'Main page log.',});
 
 async function deletePost(formData: FormData) {
