@@ -66,6 +66,9 @@ async function createPost(formData: FormData) {
   revalidatePath('/');
   redirect('/');
 }
+import { createLog } from './utils/db';
+
+await createLog({authorId: 1101,title: 'Log Page.tsx',content: 'This is a log',});
 
 async function deletePost(formData: FormData) {
   'use server';
