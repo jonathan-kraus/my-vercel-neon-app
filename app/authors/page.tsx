@@ -4,9 +4,10 @@ import PostCountBadge from '../components/PostCountBadge';
 import { createLog } from '../utils/db';
 import { sendConfirmationEmail } from '../utils/sendemail';
 
-sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM');
 
-await createLog({authorId: 1101,title: 'Authors',content: 'This is a log',});
+
+await createLog({authorId: 1101,title: 'Authors',content: 'Author log',});
+sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Authors');
 type Author = {
   id: number;
   name: string | null;
