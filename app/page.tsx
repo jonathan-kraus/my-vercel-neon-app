@@ -68,10 +68,11 @@ async function createPost(formData: FormData) {
 }
 import { createLog } from './utils/db';
 
-createLog({authorId: 1101,title: 'Log Page.tsx',content: 'This is a log.',});
+createLog({authorId: 1101,title: 'Log Page.tsx',content: 'Main page log.',});
 
 async function deletePost(formData: FormData) {
   'use server';
+  createLog({authorId: 1101,title: 'Log Page.tsx',content: 'Delete log.',});
   const prisma = new PrismaClient();
   const id = Number(formData.get('id'));
   await prisma.post.delete({ where: { id } });
