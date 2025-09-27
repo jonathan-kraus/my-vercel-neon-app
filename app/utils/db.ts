@@ -24,6 +24,7 @@ export async function createLog({
       title,
       content,
       authorId,
+      createdAt: new Date(),
       published: false,
     },
   });
