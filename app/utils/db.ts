@@ -10,7 +10,6 @@ export async function createLog({
   title: string;
   content: string;
   authorId: number;
-  createdAt: Date;
 }): Promise<{
   title: string;
   content: string;
