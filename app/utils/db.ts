@@ -16,7 +16,6 @@ export async function createLog({
   content: string;
   authorId: number;
   published: boolean;
-  createdAt: Date;
   id: number;
 }> {
   const log = await prisma.post.create({
@@ -24,7 +23,6 @@ export async function createLog({
       title,
       content,
       authorId,
-      createdAt: new Date(),
       published: false,
     },
   });
