@@ -17,8 +17,8 @@ const emailParams = new EmailParams()
   .setTo(recipients)
   .setReplyTo(sentFrom)
   .setSubject("Mail Success")
-  .setHtml("<strong>Sent from my neonvercelJ app</strong>")
-  .setText("Sent from my neonvercelJ app");
+  .setHtml(`<strong>Sent from my neonvercelJ ${jemail} app</strong>`)
+  .setText(`Sent from my neonvercelJ ${jemail} app`);
 
 await mailerSend.email.send(emailParams);
 console.log('✅ Email sent successfully to:', jemail);
@@ -27,3 +27,25 @@ console.log('✅ Email sent successfully to:', jemail);
 //   recipient: jemail,
 //   timestamp: new Date().toISOString(),
 // }, { status: 200 });
+// import { PrismaClient } from '@prisma/client';
+
+// export async function POST(request) {
+//  const prisma = new PrismaClient();
+//   const title = "log title";
+//   const content = "log content";
+//   const g = request
+//   const authorId = 1101; // Assuming author with ID 1 exists
+//   await prisma.post.create({
+//     data: {
+//       title,
+//       content,
+//       authorId,
+//       published: false,
+//     },
+//   });
+
+//   return new Response(JSON.stringify({ message: 'Mail received' }), {
+//     status: 200,
+//     headers: { 'Content-Type': 'application/json' },
+//   });
+// }
