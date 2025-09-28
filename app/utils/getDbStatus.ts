@@ -10,6 +10,7 @@ export async function getDbStatus() {
     prisma.post.count(),
     prisma.post.findFirst({ orderBy: { createdAt: 'desc' } }),
     prisma.post.count({ where: { published: false } }), // Uncomment if you want to include log count
+    
   ]);
 
   return {
@@ -17,5 +18,7 @@ export async function getDbStatus() {
     postCount,
     latestPostDate: latestPost?.createdAt || null,
     logCount, // Uncomment if you want to include log count
+    
   };
 }
+const 

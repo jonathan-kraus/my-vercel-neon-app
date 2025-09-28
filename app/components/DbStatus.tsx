@@ -7,6 +7,7 @@ type DbStatusType = {
   postCount: number;
   latestPostDate: string | null;
   logCount: number;
+  region ?: string;
 };
 
 export default function DbStatus() {
@@ -34,10 +35,11 @@ export default function DbStatus() {
 
 
   if (!status) return <p>Loading DB status...</p>;
-
+  const region = process.env.DATABASE_URL?.match(/neon\.(.*?)\.neon\.tech/)?.[1] || 'Unknown';
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-bold">Database Status</h2>
+      <p><strong>Neon Region:</strong> {region}</p>
       <p><strong>PostgreSQL Version:</strong> {status.version}</p>
       <p><strong>Total Posts:</strong> {status.postCount}</p>
       <p><strong>Latest Post:</strong> {status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}</p>
