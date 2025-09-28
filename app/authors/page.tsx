@@ -4,8 +4,7 @@ import PostCountBadge from '../components/PostCountBadge';
 import { createLog } from '../utils/db';
 import { sendConfirmationEmail } from '../utils/sendemail';
 
-sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Authors');
-await createLog({authorId: 1101,title: 'Authors',content: 'Author log',});
+
 type Author = {
   id: number;
   name: string | null;
@@ -14,6 +13,13 @@ type Author = {
 
 export default async function AuthorsPage() {
   const prisma = new PrismaClient();
+try {
+  console.log('🚀 Starting logic');
+    sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Authors');
+    await createLog({authorId: 1101,title: 'Authors',content: 'Author log',});
+    } catch (err) {
+  console.error('❌ Error caught:', err);
+}
   const authors: Author[] = await prisma.user.findMany({
     orderBy: { name: 'asc' },
     select: { id: true, name: true, _count: { select: { posts: true } } },
