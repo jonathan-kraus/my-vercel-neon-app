@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import PostCountBadge from '../components/PostCountBadge';
-import { createLog } from '../utils/db';
+//import { createLog } from '../utils/db';
 
 type Author = {
   id: number;
@@ -53,7 +53,7 @@ type BlogPost = {
 // }
 export default function BlogViewer() {
   // ...existing code...
-  createLog({authorId: 1101,title: 'pstbyusr page',content: `pstbyusr page visited `});
+  //createLog({authorId: 1101,title: 'pstbyusr page',content: `pstbyusr page visited `});
   const [authors, setAuthors] = useState<Author[]>([]);
   const [selectedAuthor, setSelectedAuthor] = useState<string>('');
   const [posts, setPosts] = useState<BlogPost[]>([]);
