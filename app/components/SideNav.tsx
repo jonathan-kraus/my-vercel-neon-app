@@ -9,11 +9,13 @@ export default function SideNav() {
   const router = useRouter();
 
 const handleAuthorsClick = async () => {
-  console.log('Clicked!');
+  console.log('handleAuthorsClick!');
   toast.loading('Sending email...');
   try {
     await triggerEmail();
+    console.log('Email function completed');
    toast.success('Email sent!');
+   console.log('after toast✅');
    setTimeout(() => router.push('/authors'), 1500);
    console.log('✅ Email sent and redirected to /authors');
 
