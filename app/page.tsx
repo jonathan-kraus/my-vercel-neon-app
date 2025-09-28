@@ -70,6 +70,7 @@ try {
       'jonathanckraus@gmail.com',
       `Title "${post.title}" content ${post.content} created at ${post.createdAt}`
     );
+    await triggerEmail("Createpostj");
     console.log('✅ Email sent with post info');
     createLog({authorId: 1101,title: 'create post',content: `Title "${post.title}" content ${post.content} `});
   } catch (err) {
@@ -81,6 +82,7 @@ try {
 }
 import { createLog } from './utils/db';
 import { sendConfirmationEmail } from "./utils/sendemail";
+import { triggerEmail } from "./components/actions";
 
 
 async function deletePost(formData: FormData) {
