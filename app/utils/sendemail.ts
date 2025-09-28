@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
+console.log('📦 sendemail.ts loaded');
 
 const mailerSend = new MailerSend({
   apiKey: process.env.MAILERSEND_API_KEY!, // use env variable
