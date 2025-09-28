@@ -51,14 +51,13 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import PostCountBadge from './components/PostCountBadge';
 
-const prisma = new PrismaClient();
-
-export async function createPost(formData: FormData) {
+async function createPost(formData: FormData) {
+  'use server';
+  const prisma = new PrismaClient();
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
   const authorId = Number(formData.get('authorId'));
-
-  const post = await prisma.post.create({
+  await prisma.post.create({
     data: {
       title,
       content,
@@ -66,16 +65,6 @@ export async function createPost(formData: FormData) {
       published: true,
     },
   });
-
-  try {
-    await sendConfirmationEmail(
-      'jonathanckraus@gmail.com',
-      `New post created: "${post.title}" by author ${post.authorId}`
-    );
-    console.log('✅ Email sent with post info');
-  } catch (err) {
-    console.error('❌ Email failed to send:', err);
-  }
   revalidatePath('/');
   redirect('/');
 }
