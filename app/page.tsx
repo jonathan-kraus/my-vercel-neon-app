@@ -6,6 +6,8 @@ import Link from "next/link";
 import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
+import { createLog } from './utils/db';
+import { sendConfirmationEmail } from "./utils/sendemail";
 //import { useNavigate } from 'react-router-dom';
 import { checkDbConnection } from "./db";
 const DATA = {
@@ -48,6 +50,7 @@ type BlogPost = {
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import PostCountBadge from './components/PostCountBadge';
+
 const prisma = new PrismaClient();
 
 export async function createPost(formData: FormData) {
@@ -73,14 +76,12 @@ export async function createPost(formData: FormData) {
   } catch (err) {
     console.error('❌ Email failed to send:', err);
   }
-
   revalidatePath('/');
   redirect('/');
+}
 
-import { createLog } from './utils/db';
-import { sendConfirmationEmail } from "./utils/sendemail";
-sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Main Page');
-
+//sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Main Page');
+//createLog({authorId: 1101,title: 'Log Page.tsx',content: 'Main page log.',});
 
 async function deletePost(formData: FormData) {
   'use server';
