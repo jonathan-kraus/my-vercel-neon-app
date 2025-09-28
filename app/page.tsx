@@ -68,10 +68,10 @@ async function createPost(formData: FormData) {
 try {
     await sendConfirmationEmail(
       'jonathanckraus@gmail.com',
-      `Title "${post.title}" by author ${post.authorId}`
+      `Title "${post.title}" content ${post.content} created at ${post.createdAt}`
     );
     console.log('✅ Email sent with post info');
-    createLog({authorId: 1101,title: 'create post',content: 'Main page log.',});
+    createLog({authorId: 1101,title: 'create post',content: `Title "${post.title}" content ${post.content} `});
   } catch (err) {
     console.error('❌ Email failed to send:', err);
   } 
