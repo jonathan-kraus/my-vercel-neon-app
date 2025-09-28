@@ -20,6 +20,7 @@ export default function DbStatus() {
       const formattedData: DbStatusType = {
         ...data,
         latestPostDate: data.latestPostDate ? data.latestPostDate.toISOString() : null,
+        logCount: data.logCount
       };
       setStatus(formattedData);
     } catch (err) {
