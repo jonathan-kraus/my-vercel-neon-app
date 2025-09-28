@@ -1,7 +1,7 @@
 // utils/db.js
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-console.log('in log route');
+
 export async function createLog({
   title,
   content,
@@ -17,6 +17,8 @@ export async function createLog({
   published: boolean;
   id: number;
 }> {
+  console.log('📬 createLog called with:', { title, content, authorId });
+
   const log = await prisma.post.create({
     data: {
       title,
