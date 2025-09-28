@@ -8,17 +8,20 @@ import { triggerEmail } from './actions'; // adjust path if needed
 export default function SideNav() {
   const router = useRouter();
 
-  const handleAuthorsClick = async () => {
-    toast.loading('Sending email...');
-    try {
-      await triggerEmail();
-      toast.success('Email sent!');
-      router.push('/authors');
-    } catch (err) {
-      toast.error('Email failed');
-      console.error(err);
-    }
-  };
+const handleAuthorsClick = async () => {
+  console.log('Clicked!');
+  toast.loading('Sending email...');
+  try {
+    await triggerEmail();
+    console.log('Email sent!');
+    toast.success('Email sent!');
+    router.push('/authors');
+  } catch (err) {
+    console.error('Email failed:', err);
+    toast.error('Email failed');
+  }
+};
+
 
   return (
     <aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
