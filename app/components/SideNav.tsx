@@ -12,7 +12,7 @@ const handleAuthorsClick = async () => {
   console.log('handleAuthorsClick!');
   toast.loading('Sending email...');
   try {
-    await triggerEmail();
+    await triggerEmail("Authorj");
     console.log('Email function completed');
    toast.success('Email sent!');
    console.log('after toast✅');
