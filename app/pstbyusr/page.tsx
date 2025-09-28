@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import PostCountBadge from '../components/PostCountBadge';
-//import { createLog } from '../utils/db';
+import { createLog } from '../utils/db';
 
 type Author = {
   id: number;
@@ -144,4 +144,11 @@ export default function BlogViewer() {
       )}
     </div>
   );
+}
+try {
+  console.log('🚀 Starting logic');
+    //sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Authors');
+    await createLog({authorId: 1101,title: 'Authors',content: 'Author log',});
+    } catch (err) {
+  console.error('❌ Error caught:', err);
 }
