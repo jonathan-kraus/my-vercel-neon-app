@@ -13,9 +13,10 @@ const handleAuthorsClick = async () => {
   toast.loading('Sending email...');
   try {
     await triggerEmail();
-    console.log('Email sent!');
-    toast.success('Email sent!');
-    router.push('/authors');
+   toast.success('Email sent!');
+   setTimeout(() => router.push('/authors'), 1500);
+   console.log('✅ Email sent and redirected to /authors');
+
   } catch (err) {
     console.error('Email failed:', err);
     toast.error('Email failed');
