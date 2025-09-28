@@ -1,12 +1,39 @@
+'use client';
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { triggerEmail } from '@/app/actions'; // adjust path if needed
 
 export default function SideNav() {
+  const router = useRouter();
+
+  const handleAuthorsClick = async () => {
+    toast.loading('Sending email...');
+    try {
+      await triggerEmail();
+      toast.success('Email sent!');
+      router.push('/authors');
+    } catch (err) {
+      toast.error('Email failed');
+      console.error(err);
+    }
+  };
+
   return (
     <aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
       <nav className="flex flex-col gap-3">
         <Link className="font-semibold text-lg" href="/">* Home *</Link>
         <Link href="/pstbyusr/">Posts by User</Link>
-        <Link href="/authors">Authors</Link>
+
+        {/* Replace Link with button for Authors */}
+        <button
+          onClick={handleAuthorsClick}
+          className="text-left w-full px-2 py-1 hover:bg-gray-100"
+        >
+          Authors
+        </button>
+
         <Link href="/mail">Mail</Link>
         <Link href="/dev/update-post">Update Post </Link> 
       </nav>

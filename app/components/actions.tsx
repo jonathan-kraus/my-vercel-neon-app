@@ -1,7 +1,7 @@
-// 'use server';
+'use server';
 
-// import { sendConfirmationEmail } from '../utils/sendemail';
+import { sendConfirmationEmail } from '../utils/sendemail';
 
-// export async function triggerEmail() {
-//   await sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGMail');
-// }
+export async function triggerEmail() {
+  await sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGMail');
+}
