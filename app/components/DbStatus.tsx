@@ -6,6 +6,7 @@ type DbStatusType = {
   version: string;
   postCount: number;
   latestPostDate: string | null;
+  logCount: number;
 };
 
 export default function DbStatus() {
