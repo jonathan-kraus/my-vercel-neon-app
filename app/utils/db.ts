@@ -1,7 +1,7 @@
 // utils/db.js
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-
+console.log('in log route');
 export async function createLog({
   title,
   content,
