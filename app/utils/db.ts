@@ -17,8 +17,6 @@ export async function createLog({
   published: boolean;
   id: number;
 }> {
-  console.log('📬 createLog called with:', { title, content, authorId });
-  try {
   const log = await prisma.post.create({
     data: {
       title,
@@ -27,9 +25,8 @@ export async function createLog({
       published: false,
     },
   });
-
-  console.log('✅ Log successfully written:', log);
+  console.log('📬 createLog called with:', { title, content, authorId });
   return log;
-} catch (err) {
-  console.error('❌ Prisma write failed:', err);
 }
+
+  
