@@ -5,7 +5,6 @@ import { getDbStatus } from '@/app/utils/getDbStatus';
 type DbStatusType = {
   version: string;
   postCount: number;
-  logCount: number;
   latestPostDate: string | null;
 };
 
