@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { triggerEmail } from '@/app/actions'; // adjust path if needed
+import { triggerEmail } from './actions'; // adjust path if needed
 
 export default function SideNav() {
   const router = useRouter();
