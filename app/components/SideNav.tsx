@@ -34,7 +34,7 @@ export default function SideNav() {
           Authors
         </button>
 
-        <Link href="/mail">Mail</Link>
+        <Link href="/logs">Logs</Link>
         <Link href="/dev/update-post">Update Post </Link> 
       </nav>
     </aside>
