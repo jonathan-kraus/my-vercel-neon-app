@@ -57,6 +57,8 @@ async function createPost(formData: FormData) {
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
   const authorId = Number(formData.get('authorId'));
+  sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Main Page');
+  createLog({authorId: 1101,title: 'Log Page.tsx',content: 'Main page log.',});
   await prisma.post.create({
     data: {
       title,
@@ -69,8 +71,7 @@ async function createPost(formData: FormData) {
   redirect('/');
 }
 
-//sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Main Page');
-//createLog({authorId: 1101,title: 'Log Page.tsx',content: 'Main page log.',});
+
 
 async function deletePost(formData: FormData) {
   'use server';
