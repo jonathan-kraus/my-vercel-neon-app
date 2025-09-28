@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import PostCountBadge from '../components/PostCountBadge';
-import { createLog } from '../utils/db';
+//import { createLog } from '../utils/db';
 
 type Author = {
   id: number;
@@ -17,8 +17,7 @@ type BlogPost = {
   createdAt: string;
   author?: Author;
 };
-createLog({authorId: 1101,title: 'Log Page.tsx',content: 'in pstbyusr page'});
-console.log('in pstbyusr page');
+
 //import { list } from '@vercel/blob';
 //const blobs = await list({ cursor: '', limit: 10, token: 'vercel_blob_rw_pnz5lOPKqmsUig0D_VdUKDyLDEMnMnruXjJR4IttVSCjAuX' }); // Limit to 10 blobs
 //const blobs = await list({ cursor: '', limit: 100, token: 'vercel_blob_rw_pnz5lOPKqmsUig0D_VdUKDyLDEMnMnruXjJR4IttVSCjAuX' });
