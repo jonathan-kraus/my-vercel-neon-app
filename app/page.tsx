@@ -68,7 +68,7 @@ async function createPost(formData: FormData) {
 try {
     await sendConfirmationEmail(
       'jonathanckraus@gmail.com',
-      `New : "${post.title}" by author ${post.authorId}`
+      `Title "${post.title}" by author ${post.authorId}`
     );
     console.log('✅ Email sent with post info');
     createLog({authorId: 1101,title: 'create post',content: 'Main page log.',});

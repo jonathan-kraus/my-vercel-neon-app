@@ -16,9 +16,9 @@ export async function sendConfirmationEmail(toEmail: string, toName: string) {
     .setTo(recipients)
     .setReplyTo(sentFrom)
     .setSubject('Mail Success')
-    .setHtml(`<strong>Sent from utils ${toEmail} app</strong>`)
-    .setText(`Sent from utils ${toEmail} app`);
+    .setHtml(`<strong>Sent from utils ${toName} app</strong>`)
+    .setText(`Sent from utils ${toName} app`);
 
   await mailerSend.email.send(emailParams);
-  console.log('✅ Email from utils sent successfully to:', toEmail);
+  console.log('✅ Email from utils sent successfully to:', toEmail, toName);
 }
