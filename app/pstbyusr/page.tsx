@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import PostCountBadge from '../components/PostCountBadge';
-import { createLog } from '../utils/db';
 
 type Author = {
   id: number;
