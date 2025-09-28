@@ -7,7 +7,7 @@ import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 //import { useNavigate } from 'react-router-dom';
-import { checkDbConnection } from "./db";
+//import { checkDbConnection } from "./db";
 const DATA = {
   title: "Jonathan's Blog",
   description: "A blog showcasing posts with Neon.",
@@ -106,7 +106,7 @@ export default async function Home() {
   });
   // Build a fast lookup for each user's post count so we can show a badge in the UI
   const userCounts = new Map<number, number>(users.map((u) => [u.id, u._count?.posts ?? 0]));
-  const result = await checkDbConnection();
+  //const result = await checkDbConnection();
   return (
     <div className="flex min-h-screen flex-col">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 md:max-w-lg md:px-0 lg:max-w-xl">
@@ -234,7 +234,7 @@ export default async function Home() {
               </Link>
             ))}
           </ul>
-          <span
+          {/* <span
             className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${
               result === "Database connected"
                 ? "border-[#00E599]/20 bg-[#00E599]/10 text-[#1a8c66] dark:bg-[#00E599]/10 dark:text-[#00E599]"
@@ -242,7 +242,7 @@ export default async function Home() {
             }`}
           >
             {result}
-          </span>
+          </span> */}
         </footer>
       </div>
     </div>
