@@ -6,8 +6,6 @@ import Link from "next/link";
 import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
-import { createLog } from './utils/db';
-import { sendConfirmationEmail } from "./utils/sendemail";
 //import { useNavigate } from 'react-router-dom';
 import { checkDbConnection } from "./db";
 const DATA = {
@@ -57,9 +55,7 @@ async function createPost(formData: FormData) {
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
   const authorId = Number(formData.get('authorId'));
-  sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Main Page');
-  createLog({authorId: 1101,title: 'Log Page.tsx',content: 'Main page log.',});
-  await prisma.post.create({
+  const post = await prisma.post.create({
     data: {
       title,
       content,
@@ -67,10 +63,24 @@ async function createPost(formData: FormData) {
       published: true,
     },
   });
+  
+
+try {
+    await sendConfirmationEmail(
+      'jonathanckraus@gmail.com',
+      `New : "${post.title}" by author ${post.authorId}`
+    );
+    console.log('✅ Email sent with post info');
+    createLog({authorId: 1101,title: 'create post',content: 'Main page log.',});
+  } catch (err) {
+    console.error('❌ Email failed to send:', err);
+  } 
+  
   revalidatePath('/');
   redirect('/');
 }
-
+import { createLog } from './utils/db';
+import { sendConfirmationEmail } from "./utils/sendemail";
 
 
 async function deletePost(formData: FormData) {
@@ -84,7 +94,6 @@ async function deletePost(formData: FormData) {
 
 export default async function Home() {
   const prisma = new PrismaClient();
-    createLog({authorId: 1101,title: 'Log Page.tsx',content: 'second home log.',});
   const myspace = ' '
   const posts = await prisma.post.findMany({
     orderBy: { createdAt: 'desc' },
