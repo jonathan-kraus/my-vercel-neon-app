@@ -33,8 +33,8 @@ export default function SideNav() {
         >
           Authors
         </button>
-
         <Link href="/logs">Logs</Link>
+        <Link href="/admin/db-status">Db Status</Link>
         <Link href="/dev/update-post">Update Post </Link> 
       </nav>
     </aside>
