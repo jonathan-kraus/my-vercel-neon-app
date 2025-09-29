@@ -1,7 +1,9 @@
 'use client';
+import toast, { Toaster } from 'react-hot-toast';
 
 import { useEffect, useState } from 'react';
 import { getDbStatus } from '@/app/utils/getDbStatus';
+
 type DbStatusType = {
   version: string;
   postCount: number;
@@ -18,6 +20,7 @@ export default function DbStatus() {
   const fetchStatus = async () => {
     try {
       const data = await getDbStatus();
+
       const formattedData: DbStatusType = {
         ...data,
         latestPostDate: data.latestPostDate ? data.latestPostDate.toISOString() : null,
@@ -33,6 +36,8 @@ export default function DbStatus() {
 }, []);
 
 
+const notify = () => toast('DbStatus toast!');
+
 
   if (!status) return <p>Loading DB status...</p>;
   const region = process.env.DATABASE_URL?.match(/neon\.(.*?)\.neon\.tech/)?.[1] || 'Unknown';
@@ -43,6 +48,9 @@ export default function DbStatus() {
       <p><strong>PostgreSQL Version:</strong> {status.version}</p>
       <p><strong>Total Posts:</strong> {status.postCount}</p>
       <p><strong>Latest Post:</strong> {status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}</p>
+      <p><strong>Total Logs:</strong> {status.logCount}</p>
+      <button onClick={notify}>Make me a toast!</button>
+      <Toaster />
     </div>
   );
 }

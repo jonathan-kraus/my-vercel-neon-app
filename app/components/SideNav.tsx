@@ -2,15 +2,16 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { triggerEmail } from './actions'; // adjust path if needed
+import { createLog } from '../utils/db';
 
 export default function SideNav() {
   const router = useRouter();
 
 const handleAuthorsClick = async () => {
   console.log('handleAuthorsClick!');
-  toast.loading('Sending email...');
+  //toast.loading('Sending email...');
   try {
     await triggerEmail("Authorj");
     console.log('Email function completed');
@@ -24,7 +25,22 @@ const handleAuthorsClick = async () => {
     toast.error('Email failed');
   }
 };
+const handleDbStatusClick = async () => {
+  console.log('handleDbStatusClick!');
+  //toast.loading('Sending email...');
+  try {
+    await triggerEmail("DbStatus");
+    console.log('Email function completed');
+   toast.success('Email sent!');
+   console.log('after toast✅');
+   setTimeout(() => router.push('/admin/db-status'), 1500);
+   console.log('✅ Email sent and redirected to /admin/db-status');
 
+  } catch (err) {
+    console.error('Email failed:', err);
+    toast.error('Email failed');
+  }
+};
 
   return (
     <aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
@@ -36,11 +52,20 @@ const handleAuthorsClick = async () => {
         <button
           onClick={handleAuthorsClick}
           className="text-left w-full px-2 py-1 hover:bg-gray-100"
-        >
+        > 
           Authors
         </button>
+
+        {/* {createLog({authorId: 1101,title: 'DbStatus',content: 'DbStatus log',})} */}
         <Link href="/logs">Logs</Link>
-        <Link href="/admin/db-status">Db Status</Link>
+                <button
+          onClick={handleDbStatusClick}
+          className="text-left w-full px-2 py-1 hover:bg-gray-100"
+        >
+          DbStatus
+        </button>
+          <Toaster />
+        
         <Link href="/dev/update-post">Update Post </Link> 
       </nav>
     </aside>
