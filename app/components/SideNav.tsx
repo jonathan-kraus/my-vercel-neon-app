@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { triggerEmail } from './actions'; // adjust path if needed
-import { createLog } from '../utils/db';
+//import { createLog } from '../utils/db';
 
 export default function SideNav() {
   const router = useRouter();
@@ -28,7 +28,7 @@ const handleAuthorsClick = async () => {
 };
 const handleDbStatusClick = async () => {
   console.log('handleDbStatusClick!');
-  createLog({authorId: 1101,title: 'SideNav',content: `DbStatus SideNav component`});
+  //createLog({authorId: 1101,title: 'SideNav',content: `DbStatus SideNav component`});
   //toast.loading('Sending email...');
   try {
    await triggerEmail("DbStatus");

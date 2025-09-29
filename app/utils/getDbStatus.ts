@@ -1,10 +1,12 @@
 'use server';
 
 import { PrismaClient } from '@prisma/client';
+import { createLog } from './db';
 
 const prisma = new PrismaClient();
 
 export async function getDbStatus() {
+  createLog({authorId: 1101,title: 'getDbStatus',content: `getDbStatus called`});
   const [version, postCount, latestPost, logCount] = await Promise.all([
     prisma.$queryRaw`SELECT version()`,
     prisma.post.count({ where: { authorId: { not: 1101 } } }),
