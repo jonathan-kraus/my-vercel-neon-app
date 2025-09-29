@@ -4,18 +4,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { triggerEmail } from './actions'; // adjust path if needed
-import { createLog } from '../utils/db';
+//import { createLog } from '../utils/db';
 
 export default function SideNav() {
   const router = useRouter();
-createLog({authorId: 1101,title: 'SideNav',content: `Starting SideNav component`});
+
 const handleAuthorsClick = async () => {
   console.log('handleAuthorsClick!');
-  //toast.loading('Sending email...');
+  //createLog({authorId: 1101,title: 'SideNav',content: `Author SideNav component`});
+  toast.loading('Sending email...');
   try {
     await triggerEmail("Authorj");
     console.log('Email function completed');
-   toast.success('Email sent!');
+   //toast.success('Email sent!');
    console.log('after toast✅');
    setTimeout(() => router.push('/authors'), 1500);
    console.log('✅ Email sent and redirected to /authors');
@@ -27,11 +28,12 @@ const handleAuthorsClick = async () => {
 };
 const handleDbStatusClick = async () => {
   console.log('handleDbStatusClick!');
+  //createLog({authorId: 1101,title: 'SideNav',content: `DbStatus SideNav component`});
   //toast.loading('Sending email...');
   try {
-    await triggerEmail("DbStatus");
-    console.log('Email function completed');
-   toast.success('Email sent!');
+    //await triggerEmail("DbStatus");
+    console.log('Email function was here');
+   //toast.success('Email sent!');
    console.log('after toast✅');
    setTimeout(() => router.push('/admin/db-status'), 1500);
    console.log('✅ Email sent and redirected to /admin/db-status');
