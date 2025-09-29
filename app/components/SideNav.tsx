@@ -31,9 +31,9 @@ const handleDbStatusClick = async () => {
   //createLog({authorId: 1101,title: 'SideNav',content: `DbStatus SideNav component`});
   //toast.loading('Sending email...');
   try {
-    //await triggerEmail("DbStatus");
-    console.log('Email function was here');
-   //toast.success('Email sent!');
+   await triggerEmail("DbStatus");
+   console.log('Email function was here');
+   toast.success('Email sent!');
    console.log('after toast✅');
    setTimeout(() => router.push('/admin/db-status'), 1500);
    console.log('✅ Email sent and redirected to /admin/db-status');
