@@ -8,7 +8,7 @@ import { createLog } from '../utils/db';
 
 export default function SideNav() {
   const router = useRouter();
-
+createLog({authorId: 1101,title: 'SideNav',content: `Starting SideNav component`});
 const handleAuthorsClick = async () => {
   console.log('handleAuthorsClick!');
   //toast.loading('Sending email...');
