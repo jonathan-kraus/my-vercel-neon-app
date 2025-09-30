@@ -33,7 +33,7 @@ const handleDbStatusClick = async () => {
   try {
    await triggerEmail("DbStatus");
    console.log('Email function was here');
-   toast.success('Email sent!');
+   //toast.success('Email sent!');
    console.log('after toast✅');
    setTimeout(() => router.push('/admin/db-status'), 1500);
    console.log('✅ Email sent and redirected to /admin/db-status');
@@ -43,7 +43,23 @@ const handleDbStatusClick = async () => {
     toast.error('Email failed');
   }
 };
+const handleWeatherClick = async () => {
+  console.log('handleWeatherClick!');
+  //createLog({authorId: 1101,title: 'SideNav',content: `Weather SideNav component`});
+  //toast.loading('Sending email...');
+  try {
+   await triggerEmail("Weather");
+   console.log('Email function was here');
+   //toast.success('Email sent!');
+   console.log('after toast✅');
+   setTimeout(() => router.push('/admin/weather'), 1500);
+   console.log('✅ Email sent and redirected to /admin/weather');
 
+  } catch (err) {
+    console.error('Email failed:', err);
+    toast.error('Email failed');
+  }
+};
   return (
     <aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
       <nav className="flex flex-col gap-3">
@@ -60,16 +76,23 @@ const handleDbStatusClick = async () => {
 
         {/* {createLog({authorId: 1101,title: 'DbStatus',content: 'DbStatus log',})} */}
         <Link href="/logs">Logs</Link>
-                <button
+        <button
           onClick={handleDbStatusClick}
           className="text-left w-full px-2 py-1 hover:bg-gray-100"
         >
           DbStatus
         </button>
-          <Toaster />
+        <button
+          onClick={handleWeatherClick}
+          className="text-left w-full px-2 py-1 hover:bg-gray-100"
+        >
+          Weather
+        </button>
+        <Toaster />
+        
 
         <Link href="/dev/update-post">Update Post </Link>
-        <Link href="/admin/weather">Weather </Link>
+        
       </nav>
     </aside>
   );
