@@ -1,5 +1,5 @@
 'use client';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import { getWeather } from '@/app/actions/getWeather';
 type WeatherType = {
