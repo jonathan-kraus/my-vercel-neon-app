@@ -67,8 +67,9 @@ const handleDbStatusClick = async () => {
           DbStatus
         </button>
           <Toaster />
-        
-        <Link href="/dev/update-post">Update Post </Link> 
+
+        <Link href="/dev/update-post">Update Post </Link>
+        <Link href="/admin/weather">Weather </Link>
       </nav>
     </aside>
   );

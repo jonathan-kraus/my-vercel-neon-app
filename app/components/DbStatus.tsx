@@ -10,6 +10,7 @@ type DbStatusType = {
   latestPostDate: string | null;
   logCount: number;
   region ?: string;
+  latencyMs ?: number;
 };
 
 export default function DbStatus() {
@@ -50,6 +51,7 @@ const notify = () => toast('DbStatus toast!');
       <p><strong>Total Posts:</strong> {status.postCount}</p>
       <p><strong>Latest Post:</strong> {status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}</p>
       <p><strong>Total Logs:</strong> {status.logCount}</p>
+      <p><strong>Latency:</strong> {status.latencyMs} ms</p>
       <button onClick={notify}>Make me a toast!</button>
       <Toaster />
     </div>
