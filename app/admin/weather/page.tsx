@@ -2,6 +2,7 @@ import WeatherCard from "@/app/components/WeatherCard";
 
 
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
+import DailyForecastCard from "@/app/components/DailyForecastCard";
 //import { getHourlyForecast } from '@/app/actions/getWeather';
 
 
@@ -12,6 +13,7 @@ export default function WeatherPage() {
     <main className="p-6 space-y-6">
       <WeatherCard />
       <HourlyForecastChart />
+      <DailyForecastCard />
     </main>
   );
 }

@@ -38,7 +38,7 @@ export async function getHourlyForecast(): Promise<
   { time: string; temperature: number; precipitation: number; windSpeed: number }[]
 > {
   const apiKey = process.env.TOMORROW_API_KEY;
-  const zip = '19406';
+  const zip = '02445'; // Brookline, MA ZIP code
 
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${zip}&timesteps=1h&units=imperial&apikey=${apiKey}`;
   const res = await fetch(url);
