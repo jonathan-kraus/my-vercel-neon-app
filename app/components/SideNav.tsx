@@ -12,7 +12,7 @@ export default function SideNav() {
 const handleAuthorsClick = async () => {
   console.log('handleAuthorsClick!');
   //createLog({authorId: 1101,title: 'SideNav',content: `Author SideNav component`});
-  toast.loading('Sending email...');
+  //toast.loading('Sending email...');
   try {
     await triggerEmail("Authorj");
     console.log('Email function completed');
