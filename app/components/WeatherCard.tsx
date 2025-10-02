@@ -2,15 +2,19 @@
 import toast from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import { getWeather } from '@/app/actions/getWeather';
+import { getIcon, getLabel } from '@/app/utils/weatherUtils';
+import { getDailyForecast } from '@/app/actions/GetDailyForecast';
 type WeatherType = {
   temperature: number;
   humidity: number;
   windSpeed: number;
   windGust: number;
   precipitationProbability: number;
-  conditions: string;
+  conditions: {
+    day: number;
+    night: number;
+  };
 };
-
 export default function WeatherCard() {
   const [weather, setWeather] = useState<WeatherType | null>(null);
 
@@ -26,6 +30,15 @@ export default function WeatherCard() {
 
     fetchWeather();
   }, []);
+  useEffect(() => {
+  const fetch = async () => {
+    const data = await getDailyForecast();
+    console.log('Client received forecast:', data); // This will show in browser console
+    //setForecast(data);
+  };
+  fetch();
+}, []);
+
 const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
   if (!weather) return <p>Loading weather...</p>;
 
@@ -37,7 +50,9 @@ const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
       <p><strong>Wind Speed:</strong> {weather.windSpeed} mph</p>
       <p><strong>Wind Gust:</strong> {weather.windGust} mph</p>
       <p><strong>Precipitation Probability:</strong> {weather.precipitationProbability}%</p>
-      <p><strong>Conditions:</strong> {weather.conditions}</p>
+      <p>Day: {getIcon(weather.conditions.day)} {getLabel(weather.conditions.day)}</p>
+      <p>Night: {getIcon(weather.conditions.night)} {getLabel(weather.conditions.night)}</p>
+
       <button onClick={notify}>Temperature!</button>
     </div>
   );

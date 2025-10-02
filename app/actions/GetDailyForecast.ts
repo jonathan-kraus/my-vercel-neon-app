@@ -5,7 +5,10 @@ export type DailyForecastPoint = {
   temperatureMax: number;
   temperatureMin: number;
   precipitation: number;
-  conditions: string;
+    conditions: {
+    day: number;
+    night: number;
+};
 };
 type RawDailyEntry = {
   time: string;
@@ -13,7 +16,8 @@ type RawDailyEntry = {
     temperatureMax: number;
     temperatureMin: number;
     precipitationProbability: number;
-    weatherCode: string;
+    weatherCodeMax: number;
+    weatherCodeMin: number;
   };
 };
 
@@ -28,12 +32,16 @@ export async function getDailyForecast(): Promise<DailyForecastPoint[]> {
   const data = await res.json();
 const daily: RawDailyEntry[] = data.timelines?.daily;
 //const daily = data.timelines?.daily ?? [];
-
+console.log('Raw daily values:', daily.map(d => d.values));
+console.log('JJJ daily entries:', daily);
   return daily.slice(0, 7).map((day): DailyForecastPoint => ({
     time: day.time,
     temperatureMax: day.values?.temperatureMax ?? 0,
     temperatureMin: day.values?.temperatureMin ?? 0,
     precipitation: day.values?.precipitationProbability ?? 0,
-    conditions: day.values?.weatherCode ?? 'unknown',
+    conditions: {
+      day: day.values.weatherCodeMax ?? -1,
+      night: day.values.weatherCodeMin ?? -1,
+    },
   }));
 }
