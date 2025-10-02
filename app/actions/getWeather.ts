@@ -13,6 +13,7 @@ export async function getWeather() {
   if (!res.ok) throw new Error('Failed to fetch weather');
 
   const data = await res.json();
+  console.log('Realtime weather values:', data.data.values);
 
   return {
     temperature: data.data.values.temperature,
@@ -21,8 +22,8 @@ export async function getWeather() {
     windGust: data.data.values.windGust,
     precipitationProbability: data.data.values.precipitationProbability,
     conditions: {
-      day: data.data.values.weatherCodeMax ?? -1,
-      night: data.data.values.weatherCodeMin ?? -1,
+      day: data.data.values.weatherCode ?? -1,
+      night: data.data.values.weatherCode ?? -1,
     },
   };
   

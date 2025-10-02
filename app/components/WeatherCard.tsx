@@ -1,5 +1,5 @@
 'use client';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import { getWeather } from '@/app/actions/getWeather';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
@@ -18,18 +18,19 @@ type WeatherType = {
 export default function WeatherCard() {
   const [weather, setWeather] = useState<WeatherType | null>(null);
 
-  useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        const data = await getWeather();
-        setWeather(data);
-      } catch (err) {
-        console.error('Weather fetch failed:', err);
-      }
-    };
+useEffect(() => {
+  const fetchWeather = async () => {
+    try {
+      const data = await getWeather();
+      console.log('Current weather:', data);
+      setWeather(data);
+    } catch (err) {
+      console.error('Failed to fetch current weather:', err);
+    }
+  };
+  fetchWeather();
+}, []);
 
-    fetchWeather();
-  }, []);
   useEffect(() => {
   const fetch = async () => {
     const data = await getDailyForecast();
@@ -43,7 +44,12 @@ export default function WeatherCard() {
 }, []);
 
 console.log('Current conditions:', weather?.conditions);
-
+<Toaster position="top-right" />
+useEffect(() => {
+    if (weather?.temperature) {
+      toast.success(`Current temperature: ${weather.temperature.toFixed(1)} °F`);
+    }
+  }, [weather]);
 const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
   if (!weather) return <p>Loading weather...</p>;
 
