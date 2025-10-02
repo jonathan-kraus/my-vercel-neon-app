@@ -16,6 +16,7 @@
     "@vercel/blob": "^1.1.1",
     "@vercel/speed-insights": "^1.2.0",
     "@vercel/toolbar": "^0.1.39",
+    "chart.js": "^4.5.0",
     "dotenv": "^17.2.2",
     "mailersend": "^2.6.0",
     "next": "^15.5.1-canary.20",
