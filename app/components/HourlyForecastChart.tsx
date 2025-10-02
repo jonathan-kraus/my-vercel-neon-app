@@ -49,7 +49,7 @@ export default function HourlyForecastChart() {
     labels: data.map(d => new Date(d.time).toLocaleTimeString()),
     datasets: [
       {
-        label: 'Temperature (°C)',
+        label: 'Temperature (°F)',
         data: data.map(d => d.temperature),
         borderColor: 'orange',
         fill: false,
