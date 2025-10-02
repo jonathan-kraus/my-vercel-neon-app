@@ -49,7 +49,7 @@ const handleWeatherClick = async () => {
   //toast.loading('Sending email...');
   try {
    await triggerEmail("Weather");
-   console.log('Email function was here');
+   console.log('Email function here');
    //toast.success('Email sent!');
    console.log('after toast✅');
    setTimeout(() => router.push('/admin/weather'), 1500);
