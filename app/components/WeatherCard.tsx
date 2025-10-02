@@ -47,7 +47,7 @@ console.log('Current conditions:', weather?.conditions);
 <Toaster position="top-right" />
 useEffect(() => {
     if (weather?.temperature) {
-      toast.success(`Current temperature: ${weather.temperature.toFixed(1)} °F`);
+      toast.success(`Current temperature: ${weather.temperature.toFixed(1)} °F`, { icon: '🔥', duration: 4000 });
     }
   }, [weather]);
 const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
