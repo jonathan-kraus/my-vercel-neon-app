@@ -3,6 +3,18 @@
 import { useEffect, useState } from 'react';
 import { getHourlyForecast } from '@/app/actions/getWeather';
 import { Line } from 'react-chartjs-2';
+import {
+  Chart,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+
+Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
 type ForecastPoint = {
   time: string;
   temperature: number;
