@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getDailyForecast, DailyForecastPoint } from '@/app/actions/getDailyForecast';
+import { getDailyForecast, DailyForecastPoint } from '@/app/actions/GetDailyForecast';
+
 
 export default function DailyForecastCard() {
   const [forecast, setForecast] = useState<DailyForecastPoint[]>([]);
