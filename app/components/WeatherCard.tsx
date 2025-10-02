@@ -33,11 +33,16 @@ export default function WeatherCard() {
   useEffect(() => {
   const fetch = async () => {
     const data = await getDailyForecast();
+
     console.log('Client received forecast:', data); // This will show in browser console
+    console.log('Raw current weather values:', data.values());
+    
     //setForecast(data);
   };
   fetch();
 }, []);
+
+console.log('Current conditions:', weather?.conditions);
 
 const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
   if (!weather) return <p>Loading weather...</p>;

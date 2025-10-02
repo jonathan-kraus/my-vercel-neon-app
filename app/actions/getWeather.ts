@@ -20,7 +20,10 @@ export async function getWeather() {
     windSpeed: data.data.values.windSpeed,
     windGust: data.data.values.windGust,
     precipitationProbability: data.data.values.precipitationProbability,
-    conditions: data.data.values.weatherCode
+    conditions: {
+      day: data.data.values.weatherCodeMax ?? -1,
+      night: data.data.values.weatherCodeMin ?? -1,
+    },
   };
   
 }

@@ -34,6 +34,9 @@ const daily: RawDailyEntry[] = data.timelines?.daily;
 //const daily = data.timelines?.daily ?? [];
 console.log('Raw daily values:', daily.map(d => d.values));
 console.log('JJJ daily entries:', daily);
+console.log('Raw API response:', data);
+console.log('Daily intervals:', data.timelines.daily);
+    if (!daily || daily.length === 0) throw new Error('No daily forecast data available');
   return daily.slice(0, 7).map((day): DailyForecastPoint => ({
     time: day.time,
     temperatureMax: day.values?.temperatureMax ?? 0,
