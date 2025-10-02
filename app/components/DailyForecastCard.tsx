@@ -2,6 +2,28 @@
 
 import { useEffect, useState } from 'react';
 import { getDailyForecast, DailyForecastPoint } from '@/app/actions/GetDailyForecast';
+const weatherIcons: Record<string, string> = {
+  rain: '🌧️',
+  snow: '❄️',
+  clear: '☀️',
+  cloudy: '☁️',
+  fog: '🌫️',
+  wind: '💨',
+  thunderstorm: '⛈️',
+  drizzle: '🌦️',
+  unknown: '❓',
+};
+function getIcon(code: string): string {
+  if (code.includes('rain')) return weatherIcons.rain;
+  if (code.includes('snow')) return weatherIcons.snow;
+  if (code.includes('clear')) return weatherIcons.clear;
+  if (code.includes('cloud')) return weatherIcons.cloudy;
+  if (code.includes('fog')) return weatherIcons.fog;
+  if (code.includes('wind')) return weatherIcons.wind;
+  if (code.includes('thunder')) return weatherIcons.thunderstorm;
+  if (code.includes('drizzle')) return weatherIcons.drizzle;
+  return weatherIcons.unknown;
+}
 
 
 export default function DailyForecastCard() {
@@ -24,6 +46,7 @@ export default function DailyForecastCard() {
         {forecast.map((day) => (
           <div key={day.time} className="border p-4 rounded shadow">
             <p><strong>{new Date(day.time).toLocaleDateString()}</strong></p>
+            <p className="text-3xl">{getIcon(day.conditions)}</p>
             <p>High: {day.temperatureMax}°F</p>
             <p>Low: {day.temperatureMin}°F</p>
             <p>Precipitation: {day.precipitation}%</p>

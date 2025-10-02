@@ -26,14 +26,14 @@ export async function getDailyForecast(): Promise<DailyForecastPoint[]> {
   if (!res.ok) throw new Error('Failed to fetch daily forecast');
 
   const data = await res.json();
-const daily: RawDailyEntry[] = data.timelines.daily;
+const daily: RawDailyEntry[] = data.timelines?.daily;
+//const daily = data.timelines?.daily ?? [];
 
-return daily.slice(0, 7).map((day): DailyForecastPoint => ({
-  time: day.time,
-  temperatureMax: day.values.temperatureMax,
-  temperatureMin: day.values.temperatureMin,
-  precipitation: day.values.precipitationProbability,
-  conditions: day.values.weatherCode,
-}));
-
+  return daily.slice(0, 7).map((day): DailyForecastPoint => ({
+    time: day.time,
+    temperatureMax: day.values?.temperatureMax ?? 0,
+    temperatureMin: day.values?.temperatureMin ?? 0,
+    precipitation: day.values?.precipitationProbability ?? 0,
+    conditions: day.values?.weatherCode ?? 'unknown',
+  }));
 }
