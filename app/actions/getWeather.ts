@@ -8,7 +8,8 @@ export async function getWeather() {
   //const lon = -75.383; // Upper Merion longitude
   const zip = '02445'; // Brookline, MA ZIP code
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
-  
+  console.log('getWeather invoked');
+
   //const url = `https://api.tomorrow.io/v4/weather/realtime?location=${lat},${lon}&apikey=${apiKey}`;
 
   const res = await fetch(url);
