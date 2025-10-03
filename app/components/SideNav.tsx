@@ -48,7 +48,7 @@ const handleWeatherClick = async () => {
   //createLog({authorId: 1101,title: 'SideNav',content: `Weather SideNav component`});
   //toast.loading('Sending email...');
   try {
-   await triggerEmail("Weather");
+   //await triggerEmail("Weather");
    console.log('Email function here');
    //toast.success('Email sent!');
    console.log('after toast✅');
