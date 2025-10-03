@@ -8,7 +8,6 @@ export async function getWeather() {
   //const lon = -75.383; // Upper Merion longitude
   const zip = '02445'; // Brookline, MA ZIP code
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
-  console.log('getWeather invoked');
 
   //const url = `https://api.tomorrow.io/v4/weather/realtime?location=${lat},${lon}&apikey=${apiKey}`;
 
@@ -28,9 +27,13 @@ const now = new Date();
 console.log('Hours since last log:', hoursSinceLast);
   const values = data.data.values;
   // If it's been more than 24 hours, send email and log weather
-  if (true) {
-  //if (hoursSinceLast >= 24) {
-    await triggerEmail("Weather");
+  if (hoursSinceLast <= 24) {
+    try {
+  await triggerEmail("Weather");
+} catch (err) {
+  console.error('Email failed:', err);
+}
+
 
     await prisma.weatherLog.create({
       data: {
