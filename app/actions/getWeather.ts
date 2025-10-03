@@ -33,7 +33,7 @@ const latestLog = await prisma.weatherLog.findFirst({
   orderBy: { createdAt: 'desc' },
 });
 
-const now = new Date();
+
 const hoursSinceLast = latestLog
   ? (now.getTime() - latestLog.createdAt.getTime()) / 3600000
   : Infinity;
