@@ -86,3 +86,32 @@ export async function getWeather(): Promise<WeatherResponse> {
     lastEmailTimestamp,
   };
 }
+type HourlyForecastEntry = {
+  time: string;
+  values: {
+    temperature: number;
+    precipitationProbability: number;
+    windSpeed: number;
+  };
+};
+
+export async function getHourlyForecast(): Promise<
+  { time: string; temperature: number; precipitation: number; windSpeed: number }[]
+> {
+  const apiKey = process.env.TOMORROW_API_KEY;
+  const zip = '02445'; // Brookline, MA ZIP code
+
+  const url = `https://api.tomorrow.io/v4/weather/forecast?location=${zip}&timesteps=1h&units=imperial&apikey=${apiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch forecast');
+
+  const data = await res.json();
+  const hourly: HourlyForecastEntry[] = data.timelines.hourly;
+
+  return hourly.slice(0, 12).map(hour => ({
+    time: hour.time,
+    temperature: hour.values.temperature,
+    precipitation: hour.values.precipitationProbability,
+    windSpeed: hour.values.windSpeed,
+  }));
+}
