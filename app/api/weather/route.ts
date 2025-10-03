@@ -1,6 +1,9 @@
-// app/api/weather/route.ts
-import { getWeather } from '@/app/actions/getWeather';
-console.log('API route for weather called');
+/**
+ * @vercel/cron 0 13 * * *
+ */
+
+import { getWeather } from '@/lib/getWeather';
+
 export async function GET() {
   await getWeather();
   return new Response('Weather logged');
