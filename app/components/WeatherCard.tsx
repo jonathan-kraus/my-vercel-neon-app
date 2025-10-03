@@ -117,9 +117,7 @@ console.log('Interval set for fetching weather every 10 minutes');
         </span>
       )}
 
-      <button onClick={() => toast(`Temperature: ${weather.temperature} °F`)}>
-        Temperature!
-      </button>
+
     </div>
   );
 }
