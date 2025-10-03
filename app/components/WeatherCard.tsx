@@ -22,12 +22,21 @@ useEffect(() => {
   const fetchWeather = async () => {
     try {
       const data = await getWeather();
-      console.log('Current weather:', data);
       setWeather(data);
+
+      toast.success(`Current temp: ${data.temperature.toFixed(1)} °F`);
+
+      if (data.emailSent) {
+        toast.success('📧 Weather email sent!');
+      } else {
+        toast('⏱️ Email already sent today');
+      }
     } catch (err) {
       console.error('Failed to fetch current weather:', err);
+      toast.error('❌ Failed to load weather');
     }
   };
+
   fetchWeather();
 }, []);
 
@@ -52,11 +61,7 @@ useEffect(() => {
   }, [weather]);
 const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
   if (!weather) return <p>Loading weather...</p>;
-if (data.emailSent) {
-  toast.success('📧 Weather email sent!');
-} else {
-  toast('⏱️ Email already sent today');
-}
+
 
   return (
     <div className="space-y-2">
