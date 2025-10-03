@@ -16,6 +16,7 @@ type WeatherType = {
     night: number;
   };
   emailSent?: boolean;
+  lastEmailTimestamp: string | null;
 };
 
 export default function WeatherCard() {
@@ -86,6 +87,21 @@ console.log('Interval set for fetching weather every 10 minutes');
       <p>Day: {getIcon(weather.conditions.day)} {getLabel(weather.conditions.day)}</p>
       <p>Night: {getIcon(weather.conditions.night)} {getLabel(weather.conditions.night)}</p>
       <button onClick={notify}>Temperature!</button>
+      {weather.lastEmailTimestamp && (
+  <p className="text-sm text-gray-500">
+    📧 Last email sent: {new Date(weather.lastEmailTimestamp).toLocaleString()}
+  </p>
+)}
+
+{weather.emailSent ? (
+  <span className="inline-block px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">
+    Email sent ✅
+  </span>
+) : (
+  <span className="inline-block px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
+    Email pending ⏳
+  </span>
+)}
     </div>
   );
 }
