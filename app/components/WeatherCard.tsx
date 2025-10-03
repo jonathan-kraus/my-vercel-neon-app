@@ -39,7 +39,7 @@ export default function WeatherCard() {
       toast.error('❌ Failed to load weather');
     }
   };
-
+console.log('WeatherCard rendered');
   useEffect(() => {
     fetchWeather(); // initial fetch
 
