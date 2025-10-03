@@ -52,6 +52,11 @@ useEffect(() => {
   }, [weather]);
 const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
   if (!weather) return <p>Loading weather...</p>;
+if (data.emailSent) {
+  toast.success('📧 Weather email sent!');
+} else {
+  toast('⏱️ Email already sent today');
+}
 
   return (
     <div className="space-y-2">

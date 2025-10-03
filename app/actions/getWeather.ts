@@ -1,8 +1,18 @@
 'use server';
 import { PrismaClient } from '@prisma/client';
 import { triggerEmail } from "../components/actions";
+type WeatherResponse = {
+  temperature: number;
+  humidity: number;
+  windSpeed: number;
+  windGust: number;
+  precipitationProbability: number;
+  conditions: { day: number; night: number };
+  emailSent: boolean;
+};
+
 const prisma = new PrismaClient();
-export async function getWeather() {
+export async function getWeather(): Promise<WeatherResponse> {
   const apiKey = process.env.TOMORROW_API_KEY;
   //const lat = 40.089; // Upper Merion latitude
   //const lon = -75.383; // Upper Merion longitude
@@ -17,7 +27,7 @@ export async function getWeather() {
   const data = await res.json();
   console.log('Realtime weather values:', data.data.values);
 const now = new Date();
-
+let emailSent = false; // ✅ Declare here so it's always available
   // Check last weather log
   const latestLog = await prisma.weatherLog.findFirst({
     orderBy: { createdAt: 'desc' },
@@ -30,6 +40,7 @@ console.log('Hours since last log:', hoursSinceLast);
   if (hoursSinceLast >= 24) {
     try {
   await triggerEmail("Weather");
+  emailSent = true; // Mark that email was sent
 } catch (err) {
   console.error('Email failed:', err);
 }
