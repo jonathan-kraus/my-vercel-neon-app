@@ -12,6 +12,7 @@ type WeatherResponse = {
   emailSent: boolean;
   lastEmailTimestamp: string | null;
 };
+console.log(`[Weather] Fetching at ${new Date().toISOString()}`);
 
 const prisma = new PrismaClient();
 
