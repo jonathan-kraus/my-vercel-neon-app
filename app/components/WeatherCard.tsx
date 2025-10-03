@@ -46,7 +46,7 @@ export default function WeatherCard() {
     intervalRef.current = setInterval(() => {
       fetchWeather();
     }, 10 * 60 * 1000); // every 10 minutes
-
+console.log('Interval set for fetching weather every 10 minutes');
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
