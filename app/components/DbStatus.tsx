@@ -54,15 +54,26 @@ const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
 
   console.log('region:', region);
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold">Database Status</h2>
-      <p className="flex items-center gap-2">
-      <strong>Neon </strong>
-      <RegionBadge region={region || 'Unknown'} />
-      </p>
+          <div className="space-y-4">
+        <h2 className="text-xl font-bold">Database Status</h2>
 
-      <p><strong>PostgreSQL Version:</strong> {status.version}</p>
-      <p><strong>Total Posts:</strong> {status.postCount}</p>
+        <p className="flex items-center gap-2">
+          <strong>Neon Region:</strong>
+          <RegionBadge region={region} />
+        </p>
+        <p>
+          <strong>Compute Size:</strong> 0.5 ↔ 2 CU
+        </p>
+        <p>
+          <strong>History Retention:</strong> 1 day
+        </p>
+        <p>
+          <strong>PostgreSQL Version:</strong> {status.version}
+        </p>
+        <p>
+          <strong>Total Posts:</strong> {status.postCount}
+        </p>
+
       <p><strong>Latest Post:</strong> {status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}</p>
       <p><strong>Total Logs:</strong> {status.logCount}</p>
       <p><strong>Latency:</strong> {status.latencyMs} ms</p>
