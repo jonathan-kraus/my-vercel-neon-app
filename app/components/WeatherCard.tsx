@@ -1,9 +1,10 @@
 'use client';
+import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import { useEffect, useState } from 'react';
 import { getWeather } from '@/app/actions/getWeather';
-import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 import { getDailyForecast } from '@/app/actions/GetDailyForecast';
+import { getIcon, getLabel } from '@/app/utils/weatherUtils';
+
 type WeatherType = {
   temperature: number;
   humidity: number;
@@ -14,11 +15,13 @@ type WeatherType = {
     day: number;
     night: number;
   };
+  emailSent?: boolean;
 };
+
 export default function WeatherCard() {
   const [weather, setWeather] = useState<WeatherType | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-useEffect(() => {
   const fetchWeather = async () => {
     try {
       const data = await getWeather();
@@ -37,34 +40,43 @@ useEffect(() => {
     }
   };
 
-  fetchWeather();
-}, []);
+  useEffect(() => {
+    fetchWeather(); // initial fetch
+
+    intervalRef.current = setInterval(() => {
+      fetchWeather();
+    }, 10 * 60 * 1000); // every 10 minutes
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   useEffect(() => {
-  const fetch = async () => {
-    const data = await getDailyForecast();
+    const fetchForecast = async () => {
+      const data = await getDailyForecast();
+      console.log('Client received forecast:', data);
+      console.log('Raw current weather values:', data.values());
+    };
+    fetchForecast();
+  }, []);
 
-    console.log('Client received forecast:', data); // This will show in browser console
-    console.log('Raw current weather values:', data.values());
-    
-    //setForecast(data);
-  };
-  fetch();
-}, []);
-
-console.log('Current conditions:', weather?.conditions);
-<Toaster position="top-right" />
-useEffect(() => {
+  useEffect(() => {
     if (weather?.temperature) {
-      toast.success(`Current temperature: ${weather.temperature.toFixed(1)} °F`, { icon: '🔥', duration: 4000 });
+      toast.success(`Current temperature: ${weather.temperature.toFixed(1)} °F`, {
+        icon: '🔥',
+        duration: 4000,
+      });
     }
   }, [weather]);
-const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
-  if (!weather) return <p>Loading weather...</p>;
 
+  const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
+
+  if (!weather) return <p>Loading weather...</p>;
 
   return (
     <div className="space-y-2">
+      <Toaster position="top-right" />
       <h2 className="text-xl font-bold">Current Weather</h2>
       <p><strong>Temperature:</strong> {weather.temperature} °F</p>
       <p><strong>Humidity:</strong> {weather.humidity}%</p>
@@ -73,7 +85,6 @@ const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
       <p><strong>Precipitation Probability:</strong> {weather.precipitationProbability}%</p>
       <p>Day: {getIcon(weather.conditions.day)} {getLabel(weather.conditions.day)}</p>
       <p>Night: {getIcon(weather.conditions.night)} {getLabel(weather.conditions.night)}</p>
-
       <button onClick={notify}>Temperature!</button>
     </div>
   );
