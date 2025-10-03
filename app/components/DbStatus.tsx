@@ -43,14 +43,7 @@ const notify = () => toast('DbStatus toast!');
   if (!status) return <p>Loading DB status...</p>;
 
 
-const host = process.env.DATABASE_URL?.split('@')[1]?.split('/')[0];
-console.log('DB host:', host);
-
-const match = host?.match(/\.([a-z0-9\-]+)\.aws\.neon\.tech/);
-console.log('Regex match:', match);
-
-const region = match?.[1] || 'Unknown';
-console.log('Parsed region:', region);
+const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
 
   console.log('region:', region);
   return (
