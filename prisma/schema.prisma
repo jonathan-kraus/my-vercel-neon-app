@@ -35,3 +35,15 @@ model Log {
   message   String
   createdAt DateTime @default(now())
 }
+
+model WeatherLog {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  temperature Float
+  humidity    Float
+  windSpeed   Float
+  windGust    Float
+  precipitationProbability Float
+  weatherCode Int
+  emailSent   Boolean @default(false)
+}

@@ -1,5 +1,7 @@
 'use server';
-
+import { PrismaClient } from '@prisma/client';
+import { triggerEmail } from "../components/actions";
+const prisma = new PrismaClient();
 export async function getWeather() {
   const apiKey = process.env.TOMORROW_API_KEY;
   //const lat = 40.089; // Upper Merion latitude
@@ -14,7 +16,32 @@ export async function getWeather() {
 
   const data = await res.json();
   console.log('Realtime weather values:', data.data.values);
+const now = new Date();
 
+  // Check last weather log
+  const latestLog = await prisma.weatherLog.findFirst({
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const hoursSinceLast = latestLog ? (now.getTime() - latestLog.createdAt.getTime()) / 3600000 : Infinity;
+console.log('Hours since last log:', hoursSinceLast);
+  const values = data.data.values;
+  // If it's been more than 24 hours, send email and log weather
+  if (hoursSinceLast >= 24) {
+    await triggerEmail("Weather");
+
+    await prisma.weatherLog.create({
+      data: {
+        temperature: values.temperature,
+        humidity: values.humidity,
+        windSpeed: values.windSpeed,
+        windGust: values.windGust,
+        precipitationProbability: values.precipitationProbability,
+        weatherCode: values.weatherCode,
+        emailSent: true,
+      },
+    });
+  }
   return {
     temperature: data.data.values.temperature,
     humidity: data.data.values.humidity,
