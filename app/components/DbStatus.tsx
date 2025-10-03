@@ -57,7 +57,7 @@ const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
     <div className="space-y-4">
       <h2 className="text-xl font-bold">Database Status</h2>
       <p className="flex items-center gap-2">
-      <strong>Neon Region:</strong>
+      <strong>Neon </strong>
       <RegionBadge region={region || 'Unknown'} />
       </p>
 
