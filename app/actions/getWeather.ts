@@ -28,7 +28,8 @@ const now = new Date();
 console.log('Hours since last log:', hoursSinceLast);
   const values = data.data.values;
   // If it's been more than 24 hours, send email and log weather
-  if (hoursSinceLast >= 24) {
+  if (true) {
+  //if (hoursSinceLast >= 24) {
     await triggerEmail("Weather");
 
     await prisma.weatherLog.create({
