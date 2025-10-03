@@ -75,10 +75,17 @@ console.log('Interval set for fetching weather every 10 minutes');
 
   if (!weather) return <p>Loading weather...</p>;
 
+
+  const nextEmailInHours =
+    weather.lastEmailTimestamp
+      ? 24 - ((Date.now() - new Date(weather.lastEmailTimestamp).getTime()) / 3600000)
+      : null;
+
   return (
     <div className="space-y-2">
       <Toaster position="top-right" />
       <h2 className="text-xl font-bold">Current Weather</h2>
+
       <p><strong>Temperature:</strong> {weather.temperature} °F</p>
       <p><strong>Humidity:</strong> {weather.humidity}%</p>
       <p><strong>Wind Speed:</strong> {weather.windSpeed} mph</p>
@@ -87,21 +94,32 @@ console.log('Interval set for fetching weather every 10 minutes');
       <p>Day: {getIcon(weather.conditions.day)} {getLabel(weather.conditions.day)}</p>
       <p>Night: {getIcon(weather.conditions.night)} {getLabel(weather.conditions.night)}</p>
       <button onClick={notify}>Temperature!</button>
+      {/* Email status */}
       {weather.lastEmailTimestamp && (
-  <p className="text-sm text-gray-500">
-    📧 Last email sent: {new Date(weather.lastEmailTimestamp).toLocaleString()}
-  </p>
-)}
+        <p className="text-sm text-gray-500">
+          📧 Last email sent: {new Date(weather.lastEmailTimestamp).toLocaleString()}
+        </p>
+      )}
 
-{weather.emailSent ? (
-  <span className="inline-block px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">
-    Email sent ✅
-  </span>
-) : (
-  <span className="inline-block px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
-    Email pending ⏳
-  </span>
-)}
+      {nextEmailInHours !== null && nextEmailInHours > 0 && (
+        <p className="text-xs text-gray-500">
+          Next email in: {nextEmailInHours.toFixed(1)} hours
+        </p>
+      )}
+
+      {weather.emailSent ? (
+        <span className="inline-block px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">
+          Email sent ✅
+        </span>
+      ) : (
+        <span className="inline-block px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">
+          Email pending ⏳
+        </span>
+      )}
+
+      <button onClick={() => toast(`Temperature: ${weather.temperature} °F`)}>
+        Temperature!
+      </button>
     </div>
   );
 }
