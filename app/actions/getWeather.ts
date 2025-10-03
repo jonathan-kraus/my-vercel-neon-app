@@ -29,22 +29,23 @@ export async function getWeather(): Promise<WeatherResponse> {
 const now = new Date();
 let emailSent = false; // ✅ Declare here so it's always available
   // Check last weather log
-  const latestLog = await prisma.weatherLog.findFirst({
-    orderBy: { createdAt: 'desc' },
-  });
+const latestLog = await prisma.weatherLog.findFirst({
+  orderBy: { createdAt: 'desc' },
+});
 
-  const hoursSinceLast = latestLog ? (now.getTime() - latestLog.createdAt.getTime()) / 3600000 : Infinity;
+const now = new Date();
+const hoursSinceLast = latestLog
+  ? (now.getTime() - latestLog.createdAt.getTime()) / 3600000
+  : Infinity;
+
 console.log('Hours since last log:', hoursSinceLast);
-  const values = data.data.values;
-  // If it's been more than 24 hours, send email and log weather
-  if (hoursSinceLast >= 24) {
-    try {
-  await triggerEmail("Weather");
-  emailSent = true; // Mark that email was sent
-} catch (err) {
-  console.error('Email failed:', err);
-}} 
-  if (true) {
+
+const values = data.data.values;
+
+if (hoursSinceLast >= 24) {
+  try {
+    await triggerEmail("Weather");
+
     await prisma.weatherLog.create({
       data: {
         temperature: values.temperature,
@@ -56,7 +57,15 @@ console.log('Hours since last log:', hoursSinceLast);
         emailSent: true,
       },
     });
+
+    console.log('✅ Weather email sent and log created');
+  } catch (err) {
+    console.error('❌ Email failed:', err);
   }
+} else {
+  console.log('⏱️ Email already sent within the last 24 hours');
+}
+
   return {
     temperature: data.data.values.temperature,
     humidity: data.data.values.humidity,
