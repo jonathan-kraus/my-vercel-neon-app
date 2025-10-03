@@ -19,9 +19,17 @@ export async function getWeather(): Promise<WeatherResponse> {
   const apiKey = process.env.TOMORROW_API_KEY;
   const zip = '02445'; // Brookline, MA ZIP code
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
+if (!apiKey) {
+  console.error('❌ Missing TOMORROW_API_KEY');
+  throw new Error('Missing TOMORROW_API_KEY');
+}
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Failed to fetch weather');
+if (!res.ok) {
+  const errorBody = await res.text();
+  console.error('❌ Tomorrow.io API error:', errorBody);
+  throw new Error('Failed to fetch weather');
+}
 
   const data = await res.json();
   const values = data.data.values;
@@ -100,10 +108,19 @@ export async function getHourlyForecast(): Promise<
 > {
   const apiKey = process.env.TOMORROW_API_KEY;
   const zip = '02445'; // Brookline, MA ZIP code
+  if (!apiKey) {
+  console.error('❌ Missing TOMORROW_API_KEY');
+  throw new Error('Missing TOMORROW_API_KEY');
+}
 
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${zip}&timesteps=1h&units=imperial&apikey=${apiKey}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Failed to fetch forecast');
+if (!res.ok) {
+  const errorBody = await res.text();
+  console.error('❌ Tomorrow.io API error:', errorBody);
+  throw new Error('Failed to fetch weather');
+}
+
 
   const data = await res.json();
   const hourly: HourlyForecastEntry[] = data.timelines.hourly;
