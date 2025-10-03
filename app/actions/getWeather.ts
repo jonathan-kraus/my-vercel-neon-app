@@ -43,9 +43,8 @@ console.log('Hours since last log:', hoursSinceLast);
   emailSent = true; // Mark that email was sent
 } catch (err) {
   console.error('Email failed:', err);
-}
-
-
+}} 
+  if (true) {
     await prisma.weatherLog.create({
       data: {
         temperature: values.temperature,
