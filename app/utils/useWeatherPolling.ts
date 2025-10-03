@@ -1,22 +1,52 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { getWeather } from '@/app/actions/getWeather';
+import toast from 'react-hot-toast';
+
+type WeatherType = {
+  temperature: number;
+  humidity: number;
+  windSpeed: number;
+  windGust: number;
+  precipitationProbability: number;
+  conditions: {
+    day: number;
+    night: number;
+  };
+  emailSent?: boolean;
+};
 
 export const useWeatherPolling = (intervalMs = 10 * 60 * 1000) => {
-  const [weather, setWeather] = useState(null);
+  const [weather, setWeather] = useState<WeatherType | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchWeather = async () => {
-    const res = await fetch('/api/weather'); // or your actual route
-    const data = await res.json();
-    setWeather(data);
+    console.log('[Polling] Fetching weather...');
+    try {
+      const data = await getWeather();
+      setWeather(data);
+
+      toast.success(`Current temp: ${data.temperature.toFixed(1)} °F`);
+      if (data.emailSent) {
+        toast.success('📧 Weather email sent!');
+      } else {
+        toast('⏱️ Email already sent today');
+      }
+    } catch (err) {
+      console.error('Failed to fetch weather:', err);
+      toast.error('❌ Failed to load weather');
+    }
   };
 
   useEffect(() => {
-    fetchWeather(); // initial load
+    fetchWeather(); // initial fetch
 
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       fetchWeather();
     }, intervalMs);
 
-    return () => clearInterval(interval);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, [intervalMs]);
 
   return weather;

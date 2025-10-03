@@ -27,7 +27,7 @@ export default function WeatherCard() {
       const data = await getWeather();
       setWeather(data);
 
-      toast.success(`Current temp: ${data.temperature.toFixed(1)} °F`);
+      //toast.success(`Current temp: ${data.temperature.toFixed(1)} °F`);
 
       if (data.emailSent) {
         toast.success('📧 Weather email sent!');
