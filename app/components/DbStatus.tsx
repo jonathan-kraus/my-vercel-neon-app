@@ -12,6 +12,13 @@ type DbStatusType = {
   region ?: string;
   latencyMs ?: number;
 };
+function RegionBadge({ region }: { region: string }) {
+  return (
+    <span className="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded">
+      Region: {region}
+    </span>
+  );
+}
 
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
@@ -50,6 +57,8 @@ const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
     <div className="space-y-4">
       <h2 className="text-xl font-bold">Database Status</h2>
       <p><strong>Neon Region:</strong> {region}</p>
+      <RegionBadge region="us-east-1" />
+
       <p><strong>PostgreSQL Version:</strong> {status.version}</p>
       <p><strong>Total Posts:</strong> {status.postCount}</p>
       <p><strong>Latest Post:</strong> {status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}</p>
