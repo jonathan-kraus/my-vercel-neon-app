@@ -41,7 +41,11 @@ const notify = () => toast('DbStatus toast!');
 
 
   if (!status) return <p>Loading DB status...</p>;
-  const region = process.env.DATABASE_URL?.match(/neon\.(.*?)\.neon\.tech/)?.[1] || 'Unknown';
+  const region =
+  process.env.DATABASE_URL?.match(/\.([a-z\-0-9]+)\.aws\.neon\.tech/)?.[1] ||
+  process.env.DATABASE_URL?.match(/neon\.([a-z\-0-9]+)\.neon\.tech/)?.[1] ||
+  'Unknown';
+
   console.log('region:', region);
   return (
     <div className="space-y-4">
