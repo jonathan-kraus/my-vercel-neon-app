@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { triggerEmail } from '@/components/actions';
+import { triggerEmail } from '@/app/components/actions';
 
 const prisma = new PrismaClient();
 
