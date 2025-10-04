@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import { getWeather } from '@/app/actions/getWeather';
 import { getDailyForecast } from '@/app/actions/GetDailyForecast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 
@@ -23,14 +22,14 @@ export default function WeatherCard() {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-      const fetchWeather = async () => {
-        try {
-          const data = await getWeather();
-          setWeather(data);
-          console.log('Weather received:', data);
-      //toast.success(`Current temp: ${data.temperature.toFixed(1)} °F`);
-      // update row 1 for last update time
-      
+  const fetchWeather = async () => {
+    try {
+      const res = await fetch('/api/getWeather');
+      if (!res.ok) throw new Error('API response not OK');
+      const data: WeatherType = await res.json();
+      setWeather(data);
+      console.log('Weather received:', data);
+
       if (data.emailSent) {
         toast.success('📧 Weather email sent!');
       } else {
@@ -41,7 +40,9 @@ export default function WeatherCard() {
       toast.error('❌ Failed to load weather');
     }
   };
-console.log('WeatherCard rendered');
+
+  console.log('WeatherCard rendered');
+
   useEffect(() => {
     fetchWeather(); // initial fetch
     console.log('Interval set for fetching weather every 30 minutes');
@@ -75,7 +76,6 @@ console.log('WeatherCard rendered');
 
   if (!weather) return <p>Loading weather...</p>;
 
-
   const nextEmailInHours =
     weather.lastEmailTimestamp
       ? 24 - ((Date.now() - new Date(weather.lastEmailTimestamp).getTime()) / 3600000)
@@ -93,9 +93,9 @@ console.log('WeatherCard rendered');
       <p><strong>Precipitation Probability:</strong> {weather.precipitationProbability}%</p>
       <p>Day: {getIcon(weather.conditions.day)} {getLabel(weather.conditions.day)}</p>
       <p>Night: {getIcon(weather.conditions.night)} {getLabel(weather.conditions.night)}</p>
-      
+
       <button onClick={notify}>Temperature!</button>
-      {/* Email status */}
+
       {weather.lastEmailTimestamp && (
         <p className="text-sm text-gray-500">
           📧 Last email sent: {new Date(weather.lastEmailTimestamp).toLocaleString()}
@@ -117,8 +117,6 @@ console.log('WeatherCard rendered');
           Email pending ⏳
         </span>
       )}
-
-
     </div>
   );
 }
