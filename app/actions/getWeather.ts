@@ -26,6 +26,19 @@ export async function getWeather(): Promise<WeatherResponse> {
   const data = await res.json();
   const values = data.data.values;
   const now = new Date();
+  await prisma.weatherLog.update({
+  where: { id: 1 },
+  data: {
+    temperature: data.temperature,
+    humidity: data.humidity,
+    windSpeed: data.windSpeed,
+    windGust: data.windGust,
+    precipitationProbability: data.precipitationProbability,
+    weatherCode: data.weatherCode,
+    //emailSent: false, // or preserve existing value
+    createdAt: new Date(), // 👈 this marks the last update
+  },
+});
 
   let emailSent = false;
   let lastEmailTimestamp: string | null = null;
