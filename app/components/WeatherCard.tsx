@@ -23,11 +23,11 @@ export default function WeatherCard() {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchWeather = async () => {
-    try {
-      const data = await getWeather();
-      setWeather(data);
-
+      const fetchWeather = async () => {
+        try {
+          const data = await getWeather();
+          setWeather(data);
+          console.log('Client received weather:', data);
       //toast.success(`Current temp: ${data.temperature.toFixed(1)} °F`);
 
       if (data.emailSent) {
