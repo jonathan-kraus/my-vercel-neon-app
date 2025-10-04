@@ -41,20 +41,17 @@ export default function WeatherCard() {
     }
   };
 console.log('WeatherCard rendered');
-useEffect(() => {
-  getWeather('initial'); // Initial fetch
+  useEffect(() => {
+    fetchWeather(); // initial fetch
 
-  console.log('Interval set for fetching weather every 10 minutes');
-  intervalRef.current = setInterval(() => {
-    console.log(`[Weather] Polling triggered at ${new Date().toISOString()}`);
-    getWeather('interval');
-  }, 10 * 60 * 1000);
-
-  return () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
-}, []);
-
+    intervalRef.current = setInterval(() => {
+      fetchWeather();
+    }, 10 * 60 * 1000); // every 10 minutes
+console.log('Interval set for fetching weather every 10 minutes');
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchForecast = async () => {
