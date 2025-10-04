@@ -56,8 +56,7 @@ console.log('Interval set for fetching weather every 10 minutes');
   useEffect(() => {
     const fetchForecast = async () => {
       const data = await getDailyForecast();
-      console.log('Client received forecast:', data);
-      console.log('Raw current weather values:', data.values());
+      console.log(`[${new Date().toLocaleTimeString()}] Client received forecast:`, data);
     };
     fetchForecast();
   }, []);
@@ -93,6 +92,7 @@ console.log('Interval set for fetching weather every 10 minutes');
       <p><strong>Precipitation Probability:</strong> {weather.precipitationProbability}%</p>
       <p>Day: {getIcon(weather.conditions.day)} {getLabel(weather.conditions.day)}</p>
       <p>Night: {getIcon(weather.conditions.night)} {getLabel(weather.conditions.night)}</p>
+      <p>Last updated: {new Date().toLocaleTimeString()}</p>
       <button onClick={notify}>Temperature!</button>
       {/* Email status */}
       {weather.lastEmailTimestamp && (
