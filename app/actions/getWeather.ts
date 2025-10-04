@@ -38,7 +38,7 @@ await prisma.weatherLog.update({
     createdAt: now, // 👈 this marks the last update
   },
 });
-
+  const values = data;
 
   let emailSent = false;
   let lastEmailTimestamp: string | null = null;
