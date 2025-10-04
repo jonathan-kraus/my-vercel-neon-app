@@ -61,18 +61,18 @@ export async function getWeather(): Promise<WeatherResponse> {
         },
       });
             // update row 1 for last update time
-      await prisma.weatherLog.update({
-  where: { id: 1 },
-  data: {
-    temperature: data.temperature,
-    humidity: data.humidity,
-    windSpeed: data.windSpeed,
-    windGust: data.windGust,
-    precipitationProbability: data.precipitationProbability,
+  //     await prisma.weatherLog.update({
+  // where: { id: 1 },
+  // data: {
+  //   temperature: data.temperature,
+  //   humidity: data.humidity,
+  //   windSpeed: data.windSpeed,
+  //   windGust: data.windGust,
+  //   precipitationProbability: data.precipitationProbability,
     //weatherCode: data.weatherCode,
     //emailSent: false, // or preserve existing value
-    createdAt: new Date(), // 👈 this marks the last update
-  },});
+  //   createdAt: new Date(), // 👈 this marks the last update
+  // },});
 
       emailSent = true;
       lastEmailTimestamp = now.toISOString();
