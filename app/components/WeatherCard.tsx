@@ -26,6 +26,7 @@ export default function WeatherCard() {
   const fetchWeather = async () => {
     try {
       const data = await getWeather();
+      console.log('Raw current weather values:', data);
       setWeather(data);
 
       //toast.success(`Current temp: ${data.temperature.toFixed(1)} °F`);
