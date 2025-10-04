@@ -20,13 +20,13 @@ export async function getWeather(): Promise<WeatherResponse> {
   const zip = '02445'; // Brookline, MA ZIP code
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
 
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Failed to fetch weather');
+const res = await fetch(url);
+if (!res.ok) throw new Error('Failed to fetch weather');
 
-  const data = await res.json();
-  const values = data.data.values;
-  const now = new Date();
-  await prisma.weatherLog.update({
+const data = await res.json();
+const now = new Date();
+
+await prisma.weatherLog.update({
   where: { id: 1 },
   data: {
     temperature: data.temperature,
@@ -35,10 +35,10 @@ export async function getWeather(): Promise<WeatherResponse> {
     windGust: data.windGust,
     precipitationProbability: data.precipitationProbability,
     weatherCode: data.weatherCode,
-    //emailSent: false, // or preserve existing value
-    createdAt: new Date(), // 👈 this marks the last update
+    createdAt: now, // 👈 this marks the last update
   },
 });
+
 
   let emailSent = false;
   let lastEmailTimestamp: string | null = null;
