@@ -27,9 +27,10 @@ export default function WeatherCard() {
         try {
           const data = await getWeather();
           setWeather(data);
-          console.log('Client received weather:', data);
+          console.log('Weather received:', data);
       //toast.success(`Current temp: ${data.temperature.toFixed(1)} °F`);
-
+      // update row 1 for last update time
+      
       if (data.emailSent) {
         toast.success('📧 Weather email sent!');
       } else {
@@ -56,7 +57,7 @@ console.log('WeatherCard rendered');
   useEffect(() => {
     const fetchForecast = async () => {
       const data = await getDailyForecast();
-      console.log(`[${new Date().toLocaleTimeString()}] Client received forecast:`, data);
+      console.log(`[${new Date().toLocaleTimeString()}] Forecast received:`, data);
     };
     fetchForecast();
   }, []);
@@ -92,7 +93,7 @@ console.log('WeatherCard rendered');
       <p><strong>Precipitation Probability:</strong> {weather.precipitationProbability}%</p>
       <p>Day: {getIcon(weather.conditions.day)} {getLabel(weather.conditions.day)}</p>
       <p>Night: {getIcon(weather.conditions.night)} {getLabel(weather.conditions.night)}</p>
-      <p>Last updated: {new Date().toLocaleTimeString()}</p>
+      
       <button onClick={notify}>Temperature!</button>
       {/* Email status */}
       {weather.lastEmailTimestamp && (
