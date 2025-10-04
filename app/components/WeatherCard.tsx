@@ -46,7 +46,7 @@ console.log('WeatherCard rendered');
 console.log('Interval set for fetching weather every 10 minutes');
     intervalRef.current = setInterval(() => {
       fetchWeather();
-    }, 10 * 60 * 1000); // every 10 minutes
+    }, 30 * 60 * 1000); // every 30 minutes
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
