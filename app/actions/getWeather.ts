@@ -16,7 +16,8 @@ console.log(`[Weather] Fetching at ${new Date().toISOString()}`);
 
 const prisma = new PrismaClient();
 
-export async function getWeather(): Promise<WeatherResponse> {
+export async function getWeather(source: 'initial' | 'interval'): Promise<WeatherResponse> {
+  console.log(`[getWeather] Triggered by: ${source}`);
   const apiKey = process.env.TOMORROW_API_KEY;
   const zip = '02445'; // Brookline, MA ZIP code
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
