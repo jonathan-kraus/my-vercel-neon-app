@@ -13,6 +13,11 @@ type WeatherResponse = {
   lastEmailTimestamp: string | null;
 };
 console.log(`[getWeather] Server function triggered at ${new Date().toISOString()}`);
+if (typeof window !== 'undefined') {
+  console.log('[getWeather] Running on the client');
+} else {
+  console.log('[getWeather] Running on the server');
+}
 
 const prisma = new PrismaClient();
 
