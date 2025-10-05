@@ -8,7 +8,7 @@ const mailerSend = new MailerSend({
 
 const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
 
-export async function sendConfirmationEmail(toEmail: string, toName: string) {
+export async function sendConfirmationEmail(toEmail: string, toName: string, requestId?: string) {
   const recipients = [new Recipient(toEmail, toName)];
 
   const emailParams = new EmailParams()
@@ -17,6 +17,7 @@ export async function sendConfirmationEmail(toEmail: string, toName: string) {
     .setReplyTo(sentFrom)
     .setSubject('Mail Success')
     .setHtml(`<strong>Sent from utils ${toName} app</strong>`)
+    .setHtml(`${requestId} second line`)
     .setText(`Sent from utils ${toName} app`);
 
   await mailerSend.email.send(emailParams);

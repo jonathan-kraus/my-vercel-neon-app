@@ -53,7 +53,7 @@ const handleWeatherClick = async () => {
    //toast.success('Email sent!');
    //console.log('after toast✅');
    setTimeout(() => router.push('/admin/weather'), 1500);
-   console.log('✅ Email sent and redirected to /admin/weather');
+   console.log('✅ Redirected to /admin/weather');
 
   } catch (err) {
     console.error('Email failed:', err);

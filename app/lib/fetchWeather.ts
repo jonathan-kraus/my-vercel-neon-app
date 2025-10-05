@@ -39,7 +39,7 @@ const prisma = new PrismaClient();
 
   if (hoursSinceLast > 4) {
     try {
-      await triggerEmail("Weather");
+      await triggerEmail("Weather", requestId);
       console.log(`[${requestId}] 📧 Weather email triggered`);
       await prisma.weatherLog.create({
         data: {
