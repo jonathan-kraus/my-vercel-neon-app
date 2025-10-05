@@ -70,7 +70,7 @@ try {
       'jonathanckraus@gmail.com',
       `Title "${post.title}" content ${post.content} created at ${post.createdAt}`
     );
-    await triggerEmail("Createpostj");
+    await triggerEmail("Createpostj", post.content);
     console.log('✅ Email sent with post info');
     createLog({authorId: 1101,title: 'create post',content: `Title "${post.title}" content ${post.content} `});
   } catch (err) {
