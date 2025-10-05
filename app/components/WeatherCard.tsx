@@ -10,12 +10,10 @@ type WeatherType = {
   windSpeed: number;
   windGust: number;
   precipitationProbability: number;
-  conditions: {
-    day: number;
-    night: number;
-  };
+  conditions: { day: number; night: number };
   emailSent?: boolean;
   lastEmailTimestamp: string | null;
+  requestId?: string; // 👈 add this
 };
 
 export default function WeatherCard() {
@@ -28,12 +26,12 @@ export default function WeatherCard() {
       if (!res.ok) throw new Error('API response not OK');
       const data: WeatherType = await res.json();
       setWeather(data);
-      console.log('Weather received:', data);
+      console.log(`Weather received [${data.requestId}]:`, data);
 
       if (data.emailSent) {
-        toast.success('📧 Weather email sent!');
+        toast.success(`[${data.requestId}] 📧 Weather email sent!`);
       } else {
-        toast('⏱️ Email already sent today');
+        toast(`[${data.requestId}] ⏱️ Email already sent today`, { icon: '⏳' } );
       }
     } catch (err) {
       console.error('Failed to fetch current weather:', err);

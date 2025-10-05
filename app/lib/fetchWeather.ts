@@ -1,9 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 import { triggerEmail } from '@/app/components/actions';
+import { randomUUID } from 'crypto';
+
+export async function fetchWeather() {
+  const requestId = randomUUID();
+  console.log(`[${requestId}] Server function triggered`);
 
 const prisma = new PrismaClient();
 
-export async function fetchWeather() {
   const apiKey = process.env.TOMORROW_API_KEY;
   const zip = '02445';
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
@@ -31,12 +35,12 @@ export async function fetchWeather() {
     lastEmailTimestamp = latestLog.createdAt.toISOString();
   }
 
-  console.log(`[fetchWeather] Hours since last email log: ${hoursSinceLast}`);
+  console.log(`[${requestId}] Hours since last email log: ${hoursSinceLast}`);
 
   if (hoursSinceLast > 4) {
     try {
       await triggerEmail("Weather");
-      console.log('[fetchWeather] 📧 Weather email triggered');
+      console.log(`[${requestId}] 📧 Weather email triggered`);
       await prisma.weatherLog.create({
         data: {
           temperature: values.temperature,
@@ -48,7 +52,7 @@ export async function fetchWeather() {
           emailSent: true,
         },
       });
-      console.log('[fetchWeather] 📝 Weather log created in DB');
+      console.log(`[${requestId}] 📝 Weather log created in DB`);
       await prisma.weatherLog.update({
         where: { id: 1 },
         data: {
@@ -61,19 +65,19 @@ export async function fetchWeather() {
           createdAt: now,
         },
       });
-      console.log('[fetchWeather] 📝 Weather log with ID 1 updated in DB');
+      console.log(`[${requestId}] 📝 Weather log with ID 1 updated in DB`);
       emailSent = true;
       lastEmailTimestamp = now.toISOString();
 
-      console.log('✅ Weather email sent and log created');
+      console.log(`[${requestId}] ✅ Weather email sent and log created`);
     } catch (err) {
-      console.error('❌ Email failed:', err);
+      console.error(`[${requestId}] ❌ Email failed:`, err);
     }
   } else {
-    console.log('⏱️ Email already sent within the last 24 hours');
+    console.log(`[${requestId}] ⏱️ Email already sent within the last 4 hours`);
   }
 
-  return {
+return {
     temperature: values.temperature,
     humidity: values.humidity,
     windSpeed: values.windSpeed,
@@ -85,5 +89,6 @@ export async function fetchWeather() {
     },
     emailSent,
     lastEmailTimestamp,
+    requestId, // 👈 include it in the response
   };
 }
