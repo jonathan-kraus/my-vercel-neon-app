@@ -46,4 +46,5 @@ model WeatherLog {
   precipitationProbability Float
   weatherCode Int
   emailSent   Boolean @default(false)
+  requestId   String?  // 👈 optional trace ID
 }

@@ -50,6 +50,7 @@ const prisma = new PrismaClient();
           precipitationProbability: values.precipitationProbability,
           weatherCode: values.weatherCode,
           emailSent: true,
+          requestId, // 👈 logged here
         },
       });
       console.log(`[${requestId}] 📝 Weather log created in DB`);
@@ -63,6 +64,7 @@ const prisma = new PrismaClient();
           precipitationProbability: values.precipitationProbability,
           weatherCode: values.weatherCode,
           createdAt: now,
+          requestId, // 👈 logged here  
         },
       });
       console.log(`[${requestId}] 📝 Weather log with ID 1 updated in DB`);
