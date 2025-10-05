@@ -76,7 +76,7 @@ export default function WeatherCard() {
 
   const nextEmailInHours =
     weather.lastEmailTimestamp
-      ? 24 - ((Date.now() - new Date(weather.lastEmailTimestamp).getTime()) / 3600000)
+      ? 4 - ((Date.now() - new Date(weather.lastEmailTimestamp).getTime()) / 3600000)
       : null;
 
   return (
