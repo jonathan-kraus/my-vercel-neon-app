@@ -20,16 +20,17 @@ import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 
 
 
-export default function DailyForecastCard() {
+export default function DailyForecastCard({ zip }: { zip: string }) {
   const [forecast, setForecast] = useState<DailyForecastPoint[]>([]);
 
-  useEffect(() => {
-    const fetch = async () => {
-      const data = await getDailyForecast();
-      setForecast(data);
-    };
-    fetch();
-  }, []);
+useEffect(() => {
+  const fetch = async () => {
+    const data = await getDailyForecast(zip);
+    setForecast(data);
+  };
+  fetch();
+}, [zip]); // ✅ now it re-runs when zip changes
+
       console.log('Weather codes:', forecast.map(f => f.conditions));
   if (!forecast.length) return <p>Loading daily forecast...</p>;
 
