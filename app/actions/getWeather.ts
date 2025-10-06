@@ -12,7 +12,7 @@ type WeatherResponse = {
   emailSent: boolean;
   lastEmailTimestamp: string | null;
 };
-console.log(`[getWeather] Server function triggered at ${new Date().toISOString()}`);
+console.log(`[getWeather] Server function started at ${new Date().toISOString()}`);
 if (typeof window !== 'undefined') {
   console.log('[getWeather] Running on the client');
 } else {
@@ -51,9 +51,9 @@ export async function getWeather(): Promise<WeatherResponse> {
 
   console.log('Hours since last email log:', hoursSinceLast);
 
-  if (hoursSinceLast >= 24) {
+  if (hoursSinceLast > 4) {
     try {
-      await triggerEmail("Weather");
+      await triggerEmail("Weather", latestLog ? latestLog.id.toString() : undefined);
 
       await prisma.weatherLog.create({
         data: {

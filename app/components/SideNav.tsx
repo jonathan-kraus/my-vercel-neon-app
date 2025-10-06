@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { triggerEmail } from './actions'; // adjust path if needed
+import { randomUUID } from 'crypto';
 //import { createLog } from '../utils/db';
-
+const requestId = randomUUID();
 export default function SideNav() {
   const router = useRouter();
 
@@ -14,7 +15,7 @@ const handleAuthorsClick = async () => {
   //createLog({authorId: 1101,title: 'SideNav',content: `Author SideNav component`});
   //toast.loading('Sending email...');
   try {
-    await triggerEmail("Authorj");
+    await triggerEmail("Authorj", requestId);
     console.log('Email function completed');
    //toast.success('Email sent!');
    console.log('after toast✅');
@@ -31,7 +32,7 @@ const handleDbStatusClick = async () => {
   //createLog({authorId: 1101,title: 'SideNav',content: `DbStatus SideNav component`});
   //toast.loading('Sending email...');
   try {
-   await triggerEmail("DbStatus");
+   await triggerEmail("DbStatus", requestId);
    console.log('Email function was here');
    //toast.success('Email sent!');
    console.log('after toast✅');
@@ -48,7 +49,7 @@ const handleWeatherClick = async () => {
   //createLog({authorId: 1101,title: 'SideNav',content: `Weather SideNav component`});
   //toast.loading('Sending email...');
   try {
-   //await triggerEmail("Weather");
+   //await triggerEmail("Weather", requestId);
    //console.log('Email function here');
    //toast.success('Email sent!');
    //console.log('after toast✅');

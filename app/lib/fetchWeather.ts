@@ -4,7 +4,7 @@ import { randomUUID } from 'crypto';
 
 export async function fetchWeather() {
   const requestId = randomUUID();
-  console.log(`[${requestId}] Server function triggered`);
+  console.log(`[${requestId}] Server function started`);
 
 const prisma = new PrismaClient();
 

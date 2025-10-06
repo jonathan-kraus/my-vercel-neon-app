@@ -6,6 +6,9 @@ import Link from "next/link";
 import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
+import { createLog } from './utils/db';
+import { sendConfirmationEmail } from "./utils/sendemail";
+import { triggerEmail } from "./components/actions";
 //import { useNavigate } from 'react-router-dom';
 //import { checkDbConnection } from "./db";
 const DATA = {
@@ -80,9 +83,7 @@ try {
   revalidatePath('/');
   redirect('/');
 }
-import { createLog } from './utils/db';
-import { sendConfirmationEmail } from "./utils/sendemail";
-import { triggerEmail } from "./components/actions";
+
 
 
 async function deletePost(formData: FormData) {
