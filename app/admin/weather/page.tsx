@@ -11,9 +11,9 @@ import DailyForecastCard from "@/app/components/DailyForecastCard";
 export default function WeatherPage() {
   return (
     <main className="p-6 space-y-6">
-      <WeatherCard zip = '02245'/>
+      <WeatherCard />
       <HourlyForecastChart />
-      <DailyForecastCard zip = '02245'/>
+      <DailyForecastCard />
     </main>
   );
 }

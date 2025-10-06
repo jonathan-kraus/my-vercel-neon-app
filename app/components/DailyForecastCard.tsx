@@ -20,22 +20,16 @@ import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 
 
 
-export default function DailyForecastCard({ zip }: { zip: string }) {
+export default function DailyForecastCard() {
   const [forecast, setForecast] = useState<DailyForecastPoint[]>([]);
 
-useEffect(() => {
-  const fetchForecast = async () => {
-    try {
-      const data = await getDailyForecast('02245');
+  useEffect(() => {
+    const fetch = async () => {
+      const data = await getDailyForecast();
       setForecast(data);
-    } catch (err) {
-      console.error(`❌ Failed to fetch forecast for ZIP ${zip}:`, err);
-    }
-  };
-  fetchForecast();
-}, [zip]);
-
-
+    };
+    fetch();
+  }, []);
       console.log('Weather codes:', forecast.map(f => f.conditions));
   if (!forecast.length) return <p>Loading daily forecast...</p>;
 

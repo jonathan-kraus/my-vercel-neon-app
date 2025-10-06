@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getWeather } from '@/app/actions/getWeather';
-
+import toast from 'react-hot-toast';
 
 type WeatherType = {
   temperature: number;
@@ -15,24 +15,39 @@ type WeatherType = {
   emailSent?: boolean;
 };
 
-
-export function useWeatherPolling(zip: string) {
+export const useWeatherPolling = (intervalMs = 10 * 60 * 1000) => {
   const [weather, setWeather] = useState<WeatherType | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const requestId = useMemo(() => crypto.randomUUID(), []);
+  const fetchWeather = async () => {
+    console.log('[Polling] Fetching weather...');
+    try {
+      const data = await getWeather();
+      setWeather(data);
+
+      toast.success(`Current temp: ${data.temperature.toFixed(1)} °F`);
+      if (data.emailSent) {
+        toast.success('📧 Weather email sent!');
+      } else {
+        toast('⏱️ Email already sent today');
+      }
+    } catch (err) {
+      console.error('Failed to fetch weather:', err);
+      toast.error('❌ Failed to load weather');
+    }
+  };
 
   useEffect(() => {
-    const fetchWeather = async () => {
-      console.log(`[${requestId}] Polling weather for ZIP: ${zip}`);
-      const data = await getWeather(zip);
-      setWeather(data);
+    fetchWeather(); // initial fetch
+
+    intervalRef.current = setInterval(() => {
+      fetchWeather();
+    }, intervalMs);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-
-    fetchWeather();
-
-    const interval = setInterval(fetchWeather, 30 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [zip, requestId]);
+  }, [intervalMs]);
 
   return weather;
-}
+};

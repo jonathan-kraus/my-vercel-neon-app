@@ -29,9 +29,9 @@ type RawDailyEntry = {
   };
 };
 
-export async function getDailyForecast(zip: string): Promise<DailyForecastPoint[]> {
+export async function getDailyForecast(): Promise<DailyForecastPoint[]> {
   const apiKey = process.env.TOMORROW_API_KEY;
-  //const zip = '07981'; // Brookline, MA ZIP code
+  const zip = '07981'; // Brookline, MA ZIP code
   //const zip = '02445'; // Brookline, MA ZIP code
 
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${zip}&timesteps=1d&units=imperial&apikey=${apiKey}`;

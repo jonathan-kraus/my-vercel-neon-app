@@ -20,57 +20,50 @@ type WeatherType = {
   rainAccumulationSum: number;
 };
 
-export default function WeatherCard({ zip }: { zip: string }) {
+export default function WeatherCard() {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // const fetchWeather = async () => {
-  //   try {
-  //     const res = await fetch(`/api/getWeather?zip=${zip}`);
-  //     if (!res.ok) throw new Error('API response not OK');
-  //     const data: WeatherType = await res.json();
-  //     setWeather(data);
-  //     console.log(`Weather received [${data.requestId}]:`, data);
 
-  //     if (data.emailSent) {
-  //       toast.success(`[${data.requestId}] 📧 Weather email sent!`);
-  //     } else {
-  //       toast(`[${data.requestId}] ⏱️ Email already sent today`, { icon: '⏳' } );
-  //     }
-  //   } catch (err) {
-  //     console.error('Failed to fetch current weather:', err);
-  //     toast.error('❌ Failed to load weather');
-  //   }
-  //};
+  const fetchWeather = async () => {
+    try {
+      const res = await fetch('/api/getWeather');
+      if (!res.ok) throw new Error('API response not OK');
+      const data: WeatherType = await res.json();
+      setWeather(data);
+      console.log(`Weather received [${data.requestId}]:`, data);
+
+      if (data.emailSent) {
+        toast.success(`[${data.requestId}] 📧 Weather email sent!`);
+      } else {
+        toast(`[${data.requestId}] ⏱️ Email already sent today`, { icon: '⏳' } );
+      }
+    } catch (err) {
+      console.error('Failed to fetch current weather:', err);
+      toast.error('❌ Failed to load weather');
+    }
+  };
 
   console.log('WeatherCard rendered');
 
   useEffect(() => {
-    const fetchWeather = async () => {
-      const res = await fetch(`/api/getWeather?zip=${zip}`);
-      const data: WeatherType = await res.json();
-      setWeather(data);
-    };
-
     fetchWeather(); // initial fetch
+    console.log('Interval set for fetching weather every 30 minutes');
     intervalRef.current = setInterval(() => {
       fetchWeather();
-    }, 30 * 60 * 1000);
+    }, 30 * 60 * 1000); // every 30 minutes
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-    }, [zip]); // ✅ include zip
+  }, []);
 
-
-    useEffect(() => {
-      const fetchForecast = async () => {
-        const data = await getDailyForecast(zip);
-        console.log(`[${new Date().toLocaleTimeString()}] Forecast received:`, data);
-      };
-      fetchForecast();
-    }, [zip]);
-
+  useEffect(() => {
+    const fetchForecast = async () => {
+      const data = await getDailyForecast();
+      console.log(`[${new Date().toLocaleTimeString()}] Forecast received:`, data);
+    };
+    fetchForecast();
+  }, []);
 
   useEffect(() => {
     if (weather?.temperature) {
