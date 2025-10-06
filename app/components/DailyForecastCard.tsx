@@ -26,7 +26,7 @@ export default function DailyForecastCard({ zip }: { zip: string }) {
 useEffect(() => {
   const fetchForecast = async () => {
     try {
-      const data = await getDailyForecast(zip);
+      const data = await getDailyForecast('02245');
       setForecast(data);
     } catch (err) {
       console.error(`❌ Failed to fetch forecast for ZIP ${zip}:`, err);
@@ -34,7 +34,7 @@ useEffect(() => {
   };
   fetchForecast();
 }, [zip]);
-  
+
 
       console.log('Weather codes:', forecast.map(f => f.conditions));
   if (!forecast.length) return <p>Loading daily forecast...</p>;
