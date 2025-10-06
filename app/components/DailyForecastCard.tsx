@@ -3,11 +3,9 @@
 import { useEffect, useState } from 'react';
 import { getDailyForecast, DailyForecastPoint } from '@/app/actions/GetDailyForecast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
-import { randomUUID } from 'crypto';
 
-
-  const requestId = randomUUID();
-  console.log(`[${requestId}] DailyForecastCard loaded`);
+const requestId = crypto.randomUUID();
+console.log(`[${requestId}] DailyForecastCard loaded`);
 
 // const weatherIcons: Record<string, string> = {
 //   rain: '🌧️',
