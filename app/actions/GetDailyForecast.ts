@@ -28,7 +28,7 @@ type RawDailyEntry = {
     rainAccumulationSum: number,
   };
 };
-
+console.log('GetDailyForecast module loaded');
 export async function getDailyForecast(): Promise<DailyForecastPoint[]> {
   const apiKey = process.env.TOMORROW_API_KEY;
   const zip = '02445'; // Brookline, MA ZIP code
