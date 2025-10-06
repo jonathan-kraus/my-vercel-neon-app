@@ -4,9 +4,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { triggerEmail } from './actions'; // adjust path if needed
-import { randomUUID } from 'crypto';
-//import { createLog } from '../utils/db';
-const requestId = randomUUID(); // Example requestId, replace with actual logic to generate or retrieve it
+
+
+const requestId = crypto.randomUUID(); 
 export default function SideNav() {
   const router = useRouter();
 
