@@ -9,7 +9,9 @@ export async function fetchWeather() {
 const prisma = new PrismaClient();
 
   const apiKey = process.env.TOMORROW_API_KEY;
-  const zip = '02445';
+  const zip = '07981'; // Brookline, MA ZIP code
+  //const zip = '02245'; // Brookline, MA ZIP code
+
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
 
   const res = await fetch(url);

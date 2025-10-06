@@ -23,7 +23,8 @@ const prisma = new PrismaClient();
 
 export async function getWeather(): Promise<WeatherResponse> {
   const apiKey = process.env.TOMORROW_API_KEY;
-  const zip = '02445'; // Brookline, MA ZIP code
+  const zip = '07981'; // Brookline, MA ZIP code
+  //const zip = '02445'; // Brookline, MA ZIP code
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
 
   const res = await fetch(url);
@@ -118,7 +119,8 @@ export async function getHourlyForecast(): Promise<
   { time: string; temperature: number; precipitation: number; windSpeed: number }[]
 > {
   const apiKey = process.env.TOMORROW_API_KEY;
-  const zip = '02445'; // Brookline, MA ZIP code
+  const zip = '07981'; // Brookline, MA ZIP code
+  //const zip = '02445'; // Brookline, MA ZIP code
 
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${zip}&timesteps=1h&units=imperial&apikey=${apiKey}`;
   const res = await fetch(url);
