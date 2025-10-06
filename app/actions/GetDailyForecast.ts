@@ -9,6 +9,10 @@ export type DailyForecastPoint = {
     day: number;
     night: number;
 };
+  rainAccumulationAvg: number | 0,
+  rainAccumulationMax: number | 0,
+  rainAccumulationMin: number | 0,
+  rainAccumulationSum: number | 0,
 };
 type RawDailyEntry = {
   time: string;
@@ -43,5 +47,9 @@ console.log('JJJ daily entries:', daily);
       day: day.values.weatherCodeMax ?? -1,
       night: day.values.weatherCodeMin ?? -1,
     },
+    rainAccumulationAvg: values.rainAccumulationAvg,
+  rainAccumulationMax: values.rainAccumulationMax,
+  rainAccumulationMin: values.rainAccumulationMin,
+  rainAccumulationSum: values.rainAccumulationSum,
   }));
 }
