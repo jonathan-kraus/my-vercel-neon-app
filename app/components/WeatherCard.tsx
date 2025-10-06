@@ -20,13 +20,13 @@ type WeatherType = {
   rainAccumulationSum: number;
 };
 
-export default function WeatherCard() {
+export default function WeatherCard({ zip }: { zip: string }) {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
+  
   const fetchWeather = async () => {
     try {
-      const res = await fetch('/api/getWeather');
+      const res = await fetch(`/api/getWeather?zip=${zip}`);
       if (!res.ok) throw new Error('API response not OK');
       const data: WeatherType = await res.json();
       setWeather(data);
