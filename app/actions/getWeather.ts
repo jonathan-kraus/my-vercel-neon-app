@@ -1,6 +1,6 @@
 'use server';
 import { PrismaClient } from '@prisma/client';
-import { triggerEmail } from "../components/actions";
+//import { triggerEmail } from "../components/actions";
 
 type WeatherResponse = {
   temperature: number;
