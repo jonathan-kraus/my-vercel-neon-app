@@ -16,7 +16,7 @@ const handleAuthorsClick = async () => {
   //toast.loading('Sending email...');
   try {
     await triggerEmail("Authorj", requestId);
-    console.log('Email function completed');
+    console.log(`Email function completed Authorj ${requestId}`);
    //toast.success('Email sent!');
    console.log('after toast✅');
    setTimeout(() => router.push('/authors'), 1500);
