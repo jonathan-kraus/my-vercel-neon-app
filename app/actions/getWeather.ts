@@ -9,8 +9,14 @@ type WeatherResponse = {
   windGust: number;
   precipitationProbability: number;
   conditions: { day: number; night: number };
-  emailSent: boolean;
+  emailSent?: boolean;
   lastEmailTimestamp: string | null;
+  requestId?: string;
+  locationName?: string; // ✅ Add this
+  rainAccumulationAvg: number;
+  rainAccumulationMax: number;
+  rainAccumulationMin: number;
+  rainAccumulationSum: number;
 };
 console.log(`[getWeather] Server function started at ${new Date().toISOString()}`);
 if (typeof window !== 'undefined') {
@@ -90,20 +96,28 @@ export async function getWeather(): Promise<WeatherResponse> {
   } else {
     console.log('⏱️ Email already sent within the last 24 hours');
   }
-
-  return {
-    temperature: values.temperature,
-    humidity: values.humidity,
-    windSpeed: values.windSpeed,
-    windGust: values.windGust,
-    precipitationProbability: values.precipitationProbability,
-    conditions: {
-      day: values.weatherCode ?? -1,
-      night: values.weatherCode ?? -1,
-    },
-    emailSent,
-    lastEmailTimestamp,
-  };
+const locationName = data.location?.name ?? 'Unknown';
+const requestId = crypto.randomUUID();
+console.log(`Weather data fetched [${requestId}] for ${locationName}:`, values);
+return {
+  temperature: values.temperature,
+  humidity: values.humidity,
+  windSpeed: values.windSpeed,
+  windGust: values.windGust,
+  precipitationProbability: values.precipitationProbability,
+  conditions: {
+    day: values.weatherCode ?? -1,
+    night: values.weatherCode ?? -1,
+  },
+  rainAccumulationAvg: values.rainAccumulationAvg,
+  rainAccumulationMax: values.rainAccumulationMax,
+  rainAccumulationMin: values.rainAccumulationMin,
+  rainAccumulationSum: values.rainAccumulationSum,
+  locationName, // ✅ Include it here
+  emailSent,
+  lastEmailTimestamp,
+  requestId,
+};
 }
 type HourlyForecastEntry = {
   time: string;

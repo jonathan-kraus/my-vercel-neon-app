@@ -13,7 +13,8 @@ type WeatherType = {
   conditions: { day: number; night: number };
   emailSent?: boolean;
   lastEmailTimestamp: string | null;
-  requestId?: string; // 👈 add this
+  requestId?: string;
+  locationName?: string; // ✅ Add this
   rainAccumulationAvg: number;
   rainAccumulationMax: number;
   rainAccumulationMin: number;
@@ -31,6 +32,7 @@ export default function WeatherCard() {
       const data: WeatherType = await res.json();
       setWeather(data);
       console.log(`Weather received [${data.requestId}]:`, data);
+      console.log(`[${data.requestId}] Weather received for ${data.locationName} at ${data.lastEmailTimestamp}:`, data);
 
       if (data.emailSent) {
         toast.success(`[${data.requestId}] 📧 Weather email sent!`);
