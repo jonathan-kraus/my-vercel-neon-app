@@ -14,10 +14,10 @@ type WeatherType = {
   emailSent?: boolean;
   lastEmailTimestamp: string | null;
   requestId?: string; // 👈 add this
-  rainAccumulationAvg: number | 0;
-  rainAccumulationMax: number | 0;
-  rainAccumulationMin: number | 0;
-  rainAccumulationSum: number | 0;
+  rainAccumulationAvg: number;
+  rainAccumulationMax: number;
+  rainAccumulationMin: number;
+  rainAccumulationSum: number;
 };
 
 export default function WeatherCard() {

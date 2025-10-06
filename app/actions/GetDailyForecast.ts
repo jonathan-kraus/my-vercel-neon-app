@@ -9,10 +9,10 @@ export type DailyForecastPoint = {
     day: number;
     night: number;
 };
-  rainAccumulationAvg: number | 0,
-  rainAccumulationMax: number | 0,
-  rainAccumulationMin: number | 0,
-  rainAccumulationSum: number | 0,
+  rainAccumulationAvg: number,
+  rainAccumulationMax: number,
+  rainAccumulationMin: number,
+  rainAccumulationSum: number,
 };
 type RawDailyEntry = {
   time: string;
@@ -22,6 +22,10 @@ type RawDailyEntry = {
     precipitationProbability: number;
     weatherCodeMax: number;
     weatherCodeMin: number;
+    rainAccumulationAvg: number,
+    rainAccumulationMax: number,
+    rainAccumulationMin: number,
+    rainAccumulationSum: number,
   };
 };
 
@@ -48,9 +52,10 @@ console.log('JJJ daily entries:', daily);
       day: day.values.weatherCodeMax ?? -1,
       night: day.values.weatherCodeMin ?? -1,
     },
-    rainAccumulationAvg: values.rainAccumulationAvg,
-  rainAccumulationMax: values.rainAccumulationMax,
-  rainAccumulationMin: values.rainAccumulationMin,
-  rainAccumulationSum: values.rainAccumulationSum,
+    rainAccumulationAvg: day.values?.rainAccumulationAvg ?? 0,
+    rainAccumulationMax: day.values?.rainAccumulationMax ?? 0,
+    rainAccumulationMin: day.values?.rainAccumulationMin ?? 0,
+    rainAccumulationSum: day.values?.rainAccumulationSum ?? 0,
+
   }));
 }
