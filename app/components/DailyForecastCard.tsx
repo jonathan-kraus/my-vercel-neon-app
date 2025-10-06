@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getDailyForecast, DailyForecastPoint } from '@/app/actions/GetDailyForecast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 
@@ -24,14 +24,20 @@ console.log(`[${requestId}] DailyForecastCard loaded`);
 
 export default function DailyForecastCard() {
   const [forecast, setForecast] = useState<DailyForecastPoint[]>([]);
+  const requestId = useMemo(() => crypto.randomUUID(), []);
 
   useEffect(() => {
     const fetch = async () => {
-      const data = await getDailyForecast();
-      setForecast(data);
+      try {
+        console.log(`[${requestId}] Fetching forecast for ZIP code 02245...`);
+        const data = await getDailyForecast(requestId);
+        setForecast(data);
+      } catch (err) {
+        console.error(`[${requestId}] Forecast fetch failed:`, err);
+      } 
     };
     fetch();
-  }, []);
+  }, [requestId]);
       console.log('Weather codes:', forecast.map(f => f.conditions));
   if (!forecast.length) return <p>Loading daily forecast...</p>;
 

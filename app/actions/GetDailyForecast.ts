@@ -29,7 +29,7 @@ type RawDailyEntry = {
   };
 };
 console.log('GetDailyForecast module loaded');
-export async function getDailyForecast(): Promise<DailyForecastPoint[]> {
+export async function getDailyForecast(requestId?: string): Promise<DailyForecastPoint[]> {
   const apiKey = process.env.TOMORROW_API_KEY;
   const zip = '02445'; // Brookline, MA ZIP code
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${zip}&timesteps=1d&units=imperial&apikey=${apiKey}`;
@@ -39,8 +39,8 @@ export async function getDailyForecast(): Promise<DailyForecastPoint[]> {
   const data = await res.json();
 const daily: RawDailyEntry[] = data.timelines?.daily;
 //const daily = data.timelines?.daily ?? [];
-console.log('Raw daily values:', daily.map(d => d.values));
-console.log('JJJ daily entries:', daily);
+console.log(`[${requestId}] Raw daily values:`, daily.map(d => d.values));
+console.log(`[${requestId}] JJJ daily entries:`, daily);
   return daily.slice(0, 7).map((day): DailyForecastPoint => ({
     time: day.time,
     temperatureMax: day.values?.temperatureMax ?? 0,
