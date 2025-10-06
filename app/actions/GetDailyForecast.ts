@@ -31,6 +31,9 @@ type RawDailyEntry = {
 console.log('GetDailyForecast module loaded');
 export async function getDailyForecast(requestId?: string): Promise<DailyForecastPoint[]> {
   const apiKey = process.env.TOMORROW_API_KEY;
+  if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
+  if (!requestId) requestId = crypto.randomUUID();
+  console.log(`[${requestId}] getDailyForecast started`);
   const zip = '02445'; // Brookline, MA ZIP code
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${zip}&timesteps=1d&units=imperial&apikey=${apiKey}`;
   const res = await fetch(url);
