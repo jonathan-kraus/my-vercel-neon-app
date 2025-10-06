@@ -14,6 +14,10 @@ type WeatherType = {
   emailSent?: boolean;
   lastEmailTimestamp: string | null;
   requestId?: string; // 👈 add this
+  rainAccumulationAvg: number | 0;
+  rainAccumulationMax: number | 0;
+  rainAccumulationMin: number | 0;
+  rainAccumulationSum: number | 0;
 };
 
 export default function WeatherCard() {
@@ -83,7 +87,14 @@ export default function WeatherCard() {
     <div className="space-y-2">
       <Toaster position="top-right" />
       <h2 className="text-xl font-bold">Current Weather</h2>
-
+      {weather.rainAccumulationSum > 0 && (
+  <div className="space-y-1">
+    <p><strong>Rain Avg:</strong> {weather.rainAccumulationAvg.toFixed(2)} in</p>
+    <p><strong>Rain Max:</strong> {weather.rainAccumulationMax.toFixed(2)} in</p>
+    <p><strong>Rain Min:</strong> {weather.rainAccumulationMin.toFixed(2)} in</p>
+    <p><strong>Rain Total:</strong> {weather.rainAccumulationSum.toFixed(2)} in</p>
+  </div>
+)}
       <p><strong>Temperature:</strong> {weather.temperature} °F</p>
       <p><strong>Humidity:</strong> {weather.humidity}%</p>
       <p><strong>Wind Speed:</strong> {weather.windSpeed} mph</p>
