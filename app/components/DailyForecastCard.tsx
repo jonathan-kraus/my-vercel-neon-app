@@ -34,8 +34,8 @@ const fetchDailyForecast = async () => {
 };
 
 
-export default function DailyForecastCard() {
-  const [forecast] = useState<DailyForecastPoint[]>([]);
+export default function DailyForecastCard({ forecast }: { forecast: DailyForecastPoint[] }) {
+  //const [forecast] = useState<DailyForecastPoint[]>([]);
   const requestId = useMemo(() => crypto.randomUUID(), []);
 
   useEffect(() => {
