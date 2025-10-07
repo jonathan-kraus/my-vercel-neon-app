@@ -2,13 +2,14 @@ import { NextResponse } from 'next/server';
 import { fetchWeather } from '@/app/lib/fetchWeather';
 
 export async function GET() {
+  const requestId = crypto.randomUUID();
   console.log(`[getWeather] API route started at ${new Date().toISOString()}`);
+
   try {
-    const weather = await fetchWeather();
-    return NextResponse.json(weather);
+    const weather = await fetchWeather( requestId );
+    return NextResponse.json({ ...weather, requestId });
   } catch (err) {
-    console.error('❌ Error in getWeather API:', err);
+    console.error(`[getWeather] ❌ Error:`, err);
     return NextResponse.json({ error: 'Failed to fetch weather' }, { status: 500 });
   }
 }
-

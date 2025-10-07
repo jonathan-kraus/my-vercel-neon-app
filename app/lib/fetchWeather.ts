@@ -1,9 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import { triggerEmail } from '@/app/components/actions';
-import { randomUUID } from 'crypto';
+
 console.log(`[fetchWeather] Module loaded`);
-export async function fetchWeather() {
-  const requestId = randomUUID();
+export async function fetchWeather(requestId?: string) {
+  if (!requestId) requestId = 'requestid-not-passed'; //crypto.randomUUID()
   console.log(`[fetchWeather] [${requestId}] Server function started`);
 
 const prisma = new PrismaClient();
