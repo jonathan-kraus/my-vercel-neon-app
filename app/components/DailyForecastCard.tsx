@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 
