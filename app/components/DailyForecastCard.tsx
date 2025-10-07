@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
+import { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 
 const requestId = crypto.randomUUID();
-console.log(`[${requestId}] DailyForecastCard loaded`);
+console.log(`[DailyForecastCard] [${requestId}] DailyForecastCard loaded`);
 
 // const weatherIcons: Record<string, string> = {
 //   rain: '🌧️',
@@ -20,25 +20,38 @@ console.log(`[${requestId}] DailyForecastCard loaded`);
 // };
 
 
+const fetchDailyForecast = async () => {
+  try {
+    const res = await fetch('/api/getDailyForecast');
+    if (!res.ok) throw new Error('Forecast API failed');
+    const { forecast, requestId } = await res.json();
+
+    console.log(`[DailyForecastCard] Forecast received [${requestId}]:`, forecast);
+    //setForecast(forecast); // assuming you have a state for this
+  } catch (err) {
+    console.error(`[DailyForecastCard] ❌ Forecast fetch error:`, err);
+  }
+};
 
 
 export default function DailyForecastCard() {
-  const [forecast, setForecast] = useState<DailyForecastPoint[]>([]);
+  const [forecast] = useState<DailyForecastPoint[]>([]);
   const requestId = useMemo(() => crypto.randomUUID(), []);
 
   useEffect(() => {
     const fetch = async () => {
       try {
-        console.log(`[${requestId}] Fetching forecast for ZIP code 02245...`);
-        const data = await getDailyForecast(requestId);
-        setForecast(data);
+        console.log(`[DailyForecastCard] [${requestId}] Fetching forecast for ZIP code 02245...`);
+        const data = await fetchDailyForecast();
+          console.log(`[DailyForecastCard] [${requestId}] Forecast data:`, data);
+        //setForecast(data);
       } catch (err) {
-        console.error(`[${requestId}] Forecast fetch failed:`, err);
-      } 
+        console.error(`[DailyForecastCard] [${requestId}] Forecast fetch failed:`, err);
+      }
     };
     fetch();
   }, [requestId]);
-      console.log('Weather codes:', forecast.map(f => f.conditions));
+  console.log(`[DailyForecastCard] [${requestId}] Weather codes:`, forecast.map(f => f.conditions));
   if (!forecast.length) return <p>Loading daily forecast...</p>;
 
 
