@@ -1,10 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { triggerEmail } from '@/app/components/actions';
 import { randomUUID } from 'crypto';
-
+console.log(`[fetchWeather] Module loaded`);
 export async function fetchWeather() {
   const requestId = randomUUID();
-  console.log(`[${requestId}] Server function started`);
+  console.log(`[fetchWeather] [${requestId}] Server function started`);
 
 const prisma = new PrismaClient();
 
@@ -19,7 +19,7 @@ const prisma = new PrismaClient();
   const data = await res.json();
   const values = data.data.values;
   const locationName = data.data?.location?.name ?? 'Unknown';
-  console.log(`[featchWeather] [${requestId}] Weather data fetched for ${locationName}`);
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched for ${locationName}`);
   const now = new Date();
 
   let emailSent = false;
