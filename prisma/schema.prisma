@@ -44,12 +44,11 @@ model WeatherLog {
 }
 
 model Log {
-  id         String   @id @default(uuid())
-  userId     String?  // Optional, if tied to auth
-  timestamp  DateTime @default(now())
-  severity   String
-  module     String
-  requestId  String?
-  message    String
-  metadata   Json?
+  id        String   @id @default(uuid())
+  severity  String
+  source    String   
+  message   String
+  requestId String?
+  metadata  Json?
+  timestamp DateTime @default(now())
 }
