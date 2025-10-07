@@ -46,13 +46,21 @@ const handleDbStatusClick = async () => {
 };
 const handleWeatherClick = async () => {
   console.log('handleWeatherClick!');
-  //createLog({authorId: 1101,title: 'SideNav',content: `Weather SideNav component`});
-  //toast.loading('Sending email...');
   try {
-   //await triggerEmail("Weather", requestId);
-   //console.log('Email function here');
-   //toast.success('Email sent!');
-   //console.log('after toast✅');
+    await fetch('/api/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        severity: 'info',
+        source: 'SideNav',
+        message: 'Weather SideNav component clicked',
+        requestId: requestId, // or generate dynamically
+        metadata: { userAction: 'navigate' },
+      }),
+    });
+   console.log('Log event created for Weather click');
+   toast.success('Log event created!');
+   console.log('after toast✅');
    setTimeout(() => router.push('/admin/weather'), 1500);
    console.log('✅ Redirected to /admin/weather');
 
