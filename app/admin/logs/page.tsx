@@ -1,9 +1,10 @@
 'use client'
 
+import { LogRow } from '@/app/lib/types'
 import { useEffect, useState } from 'react'
 
 export default function LogViewer() {
-  const [logs, setLogs] = useState([])
+const [logs, setLogs] = useState<LogRow[]>([])
 
   useEffect(() => {
     fetch('/api/logs')

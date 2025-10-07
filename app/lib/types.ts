@@ -8,3 +8,8 @@ export type LogEvent = {
   requestId?: string
   metadata?: Prisma.JsonValue
 }
+
+export type LogRow = LogEvent & {
+  id: string
+  timestamp: string
+}
