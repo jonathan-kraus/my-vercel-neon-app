@@ -30,12 +30,6 @@ model Post {
   author    User     @relation(fields: [authorId], references: [id])
 }
 
-model Log {
-  id        Int      @id @default(autoincrement())
-  message   String
-  createdAt DateTime @default(now())
-}
-
 model WeatherLog {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -47,4 +41,15 @@ model WeatherLog {
   weatherCode Int
   emailSent   Boolean @default(false)
   requestId   String?  // 👈 optional trace ID
+}
+
+model Log {
+  id         String   @id @default(uuid())
+  userId     String?  // Optional, if tied to auth
+  timestamp  DateTime @default(now())
+  severity   String
+  module     String
+  requestId  String?
+  message    String
+  metadata   Json?
 }
