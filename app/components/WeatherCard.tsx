@@ -99,7 +99,7 @@ export default function WeatherCard() {
     <div className="space-y-2">
       <Toaster position="top-right" />
       <h2 className="text-xl font-bold">Current Weather</h2>
-      {weather.rainAccumulationSum > 0 && (
+      {weather.rainAccumulationSum < 90 && (
   <div className="space-y-1">
     <p><strong>Rain Avg:</strong> {weather.rainAccumulationAvg.toFixed(2)} in</p>
     <p><strong>Rain Max:</strong> {weather.rainAccumulationMax.toFixed(2)} in</p>
