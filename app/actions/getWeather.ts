@@ -40,7 +40,7 @@ if (typeof window !== 'undefined') {
   const data = await res.json();
   const values = data.data.values;
   const now = new Date();
-console.log(`[${requestId}] Raw weather API response:`, data);
+  console.log(`[getWeather] [${requestId}] Raw weather API response:`, data);
 
   let emailSent = false;
   let lastEmailTimestamp: string | null = null;
@@ -101,6 +101,7 @@ console.log(`[${requestId}] Raw weather API response:`, data);
   }
 const locationName = data.location?.name ?? 'Unknown';
 console.log(`Weather data fetched [${requestId}] for ${locationName}:`, values);
+  console.log(`[getWeather] [${requestId}] Weather for ZIP ${zip} resolved to ${locationName}`);
 return {
   temperature: values.temperature,
   humidity: values.humidity,
