@@ -20,6 +20,7 @@ type WeatherType = {
   rainAccumulationSum: number;
 };
 
+
 export default function WeatherCard() {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -89,7 +90,8 @@ export default function WeatherCard() {
   const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
 
   if (!weather) return <p>Loading weather...</p>;
-
+const WIND_ALERT_THRESHOLD = 15;
+const windIcon = weather.windSpeed > WIND_ALERT_THRESHOLD ? '💨' : '';
   const nextEmailInHours =
     weather.lastEmailTimestamp
       ? 4 - ((Date.now() - new Date(weather.lastEmailTimestamp).getTime()) / 3600000)
@@ -99,7 +101,7 @@ export default function WeatherCard() {
     <div className="space-y-2">
       <Toaster position="top-right" />
       <h2 className="text-xl font-bold">Current Weather</h2>
-      {weather.rainAccumulationSum < 90 && (
+      {weather.rainAccumulationSum > 0 && (
   <div className="space-y-1">
     <p><strong>Rain Avg:</strong> {weather.rainAccumulationAvg.toFixed(2)} in</p>
     <p><strong>Rain Max:</strong> {weather.rainAccumulationMax.toFixed(2)} in</p>
@@ -109,7 +111,7 @@ export default function WeatherCard() {
 )}
       <p><strong>Temperature:</strong> {weather.temperature} °F</p>
       <p><strong>Humidity:</strong> {weather.humidity}%</p>
-      <p><strong>Wind Speed:</strong> {weather.windSpeed} mph</p>
+      <p><strong>Wind Speed:</strong> {weather.windSpeed} {windIcon}mph</p>
       <p><strong>Wind Gust:</strong> {weather.windGust} mph</p>
       <p><strong>Precipitation Probability:</strong> {weather.precipitationProbability}%</p>
       <p>Day: {getIcon(weather.conditions.day)} {getLabel(weather.conditions.day)}</p>
