@@ -18,6 +18,8 @@ const prisma = new PrismaClient();
 
   const data = await res.json();
   const values = data.data.values;
+  const locationName = data.data?.location?.name ?? 'Unknown';
+  console.log(`[featchWeather] [${requestId}] Weather data fetched for ${locationName}`);
   const now = new Date();
 
   let emailSent = false;
@@ -81,17 +83,22 @@ const prisma = new PrismaClient();
   }
 
 return {
-    temperature: values.temperature,
-    humidity: values.humidity,
-    windSpeed: values.windSpeed,
-    windGust: values.windGust,
-    precipitationProbability: values.precipitationProbability,
-    conditions: {
-      day: values.weatherCode ?? -1,
-      night: values.weatherCode ?? -1,
-    },
-    emailSent,
-    lastEmailTimestamp,
-    requestId, // 👈 include it in the response
-  };
+  temperature: values.temperature,
+  humidity: values.humidity,
+  windSpeed: values.windSpeed,
+  windGust: values.windGust,
+  precipitationProbability: values.precipitationProbability,
+  conditions: {
+    day: values.weatherCode ?? -1,
+    night: values.weatherCode ?? -1,
+  },
+  rainAccumulationAvg: values.rainAccumulationAvg ?? 0,
+  rainAccumulationMax: values.rainAccumulationMax ?? 0,
+  rainAccumulationMin: values.rainAccumulationMin ?? 0,
+  rainAccumulationSum: values.rainAccumulationSum ?? 0,
+  locationName: locationName ?? 'Unknown',
+  emailSent,
+  lastEmailTimestamp,
+  requestId,
+};
 }
