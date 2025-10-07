@@ -17,7 +17,7 @@ export async function logEvent(event: LogEvent) {
         source,
         requestId,
         message,
-        metadata,
+        metadata: metadata ?? {}, // ensures it's never null
         timestamp: new Date(),
       },
     })

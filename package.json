@@ -9,9 +9,7 @@
     "lint": "eslint .",
     "postinstall": "prisma generate"
   },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
-  },
+  
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
     "@prisma/client": "^6.16.3",
