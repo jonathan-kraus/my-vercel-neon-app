@@ -18,26 +18,29 @@ type WeatherResponse = {
   rainAccumulationMin: number;
   rainAccumulationSum: number;
 };
-console.log(`[getWeather] Server function started at ${new Date().toISOString()}`);
-if (typeof window !== 'undefined') {
-  console.log('[getWeather] Running on the client');
-} else {
-  console.log('[getWeather] Running on the server');
-}
+
+
 
 const prisma = new PrismaClient();
 
 export async function getWeather(): Promise<WeatherResponse> {
+  const requestId = crypto.randomUUID();
   const apiKey = process.env.TOMORROW_API_KEY;
   const zip = '02445'; // Brookline, MA ZIP code
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
-
+console.log(`[getWeather] [${requestId}] Server function started at ${new Date().toISOString()}`);
+if (typeof window !== 'undefined') {
+  console.log(`[getWeather] [${requestId}] Running on the client`);
+} else {
+  console.log(`[getWeather] [${requestId}] Running on the server`);
+}
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch weather');
 
   const data = await res.json();
   const values = data.data.values;
   const now = new Date();
+console.log(`[${requestId}] Raw weather API response:`, data);
 
   let emailSent = false;
   let lastEmailTimestamp: string | null = null;
@@ -97,7 +100,6 @@ export async function getWeather(): Promise<WeatherResponse> {
     console.log('⏱️ Email already sent within the last 24 hours');
   }
 const locationName = data.location?.name ?? 'Unknown';
-const requestId = crypto.randomUUID();
 console.log(`Weather data fetched [${requestId}] for ${locationName}:`, values);
 return {
   temperature: values.temperature,

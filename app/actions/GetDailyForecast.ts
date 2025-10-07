@@ -42,7 +42,7 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   const data = await res.json();
 const daily: RawDailyEntry[] = data.timelines?.daily;
 //const daily = data.timelines?.daily ?? [];
-console.log(`[${requestId}] Raw daily values:`, daily.map(d => d.values));
+console.log(`[${requestId}] Raw daily forecastvalues:`, daily.map(d => d.values));
 console.log(`[${requestId}] JJJ daily entries:`, daily);
   return daily.slice(0, 7).map((day): DailyForecastPoint => ({
     time: day.time,
