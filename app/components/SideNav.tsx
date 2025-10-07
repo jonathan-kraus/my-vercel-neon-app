@@ -77,6 +77,7 @@ const handleWeatherClick = async () => {
       <nav className="flex flex-col gap-3">
         <Link className="font-semibold text-lg" href="/">* Home *</Link>
         <Link href="/pstbyusr/">Posts by User</Link>
+        <Link href="/admin/logs">Activity Logs</Link>
 
         {/* Replace Link with button for Authors */}
         <button
