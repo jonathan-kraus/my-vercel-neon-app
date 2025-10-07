@@ -38,8 +38,7 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   console.log(`[${requestId}] getDailyForecast started`);
   //const zip = '02445'; // Brookline, MA ZIP code
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=42.3317,-71.1212&timesteps=1d&units=imperial&apikey=${apiKey}`;
-  console.log(`[GetDailyForecast] [${requestId}] Fetching daily forecast from: ${url}`);
-
+  
   const res = await fetch(url);
   
   if (!res.ok) {
@@ -47,10 +46,8 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   console.error(`[GetDailyForecast] [${requestId}] ❌ API error ${res.status}:`, errorBody);
   throw new Error('Failed to fetch daily forecast');
 }
-const raw = await res.json();
-console.log(`[GetDailyForecast] [${requestId}] Forecast response:`, raw);
-
   const data = await res.json();
+  console.log(`[GetDailyForecast] [${requestId}] Forecast response:`, data);
 const daily: RawDailyEntry[] = data.timelines?.daily;
 //const daily = data.timelines?.daily ?? [];
 console.log(`[${requestId}] Raw daily forecastvalues:`, daily.map(d => d.values));
