@@ -9,19 +9,20 @@ export async function fetchWeather() {
 const prisma = new PrismaClient();
 
   const apiKey = process.env.TOMORROW_API_KEY;
-  const zip = '02245'; // Brookline, MA ZIP code
+  //const zip = '02245'; // Brookline, MA ZIP code
 
-  const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
+  //const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
+  const url = `https://api.tomorrow.io/v4/weather/realtime?location=42.3317,-71.1212&units=imperial&apikey=${apiKey}`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch weather');
 
   const data = await res.json();
   const values = data.data.values;
-  const locationName = data.data?.location?.name ?? 'Unknown';
-  const locationName2 = data?.location?.name ?? 'Unknown';
-  console.log(`[fetchWeather] [${requestId}] Weather data.data fetched for ${locationName}`);
-  console.log(`[fetchWeather] [${requestId}] Weather data fetched for ${locationName2}`);
+  const locationName = data?.location?.name ?? 'Unknown';
+  
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched for ${locationName}`);
+  
   const now = new Date();
 
   let emailSent = false;
