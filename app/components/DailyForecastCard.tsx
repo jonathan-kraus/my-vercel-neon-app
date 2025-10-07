@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { getDailyForecast, DailyForecastPoint } from '@/app/actions/GetDailyForecast';
+import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 
 const requestId = crypto.randomUUID();

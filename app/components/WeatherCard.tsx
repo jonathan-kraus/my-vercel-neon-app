@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import { getDailyForecast } from '@/app/actions/GetDailyForecast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 
 type WeatherType = {
@@ -58,10 +57,21 @@ export default function WeatherCard() {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
+  const fetchDailyForecast = async () => {
+  try {
+    const res = await fetch('/api/getDailyForecast');
+    if (!res.ok) throw new Error('Forecast API failed');
+    const { forecast, requestId } = await res.json();
 
+    console.log(`[WeatherCard] Forecast received [${requestId}]:`, forecast);
+    //setForecast(forecast); // assuming you have a state for this
+  } catch (err) {
+    console.error(`[WeatherCard] ❌ Forecast fetch error:`, err);
+  }
+};
   useEffect(() => {
     const fetchForecast = async () => {
-      const data = await getDailyForecast();
+      const data = await fetchDailyForecast();
       console.log(`[${new Date().toLocaleTimeString()}] Forecast received:`, data);
     };
     fetchForecast();
