@@ -44,11 +44,11 @@ export default function WeatherCard() {
     }
   };
 
-  console.log('WeatherCard rendered');
+  console.log(`[WeatherCard]  WeatherCard rendered`);
 
   useEffect(() => {
     fetchWeather(); // initial fetch
-    console.log('Interval set for fetching weather every 30 minutes');
+    console.log(`[WeatherCard] Interval set for fetching weather every 30 minutes`);
     intervalRef.current = setInterval(() => {
       fetchWeather();
     }, 30 * 60 * 1000); // every 30 minutes
@@ -72,7 +72,7 @@ export default function WeatherCard() {
   useEffect(() => {
     const fetchForecast = async () => {
       const data = await fetchDailyForecast();
-      console.log(`[${new Date().toLocaleTimeString()}] Forecast received:`, data);
+      console.log(`[WeatherCard] Forecast received:`, data);
     };
     fetchForecast();
   }, []);
