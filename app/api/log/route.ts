@@ -19,7 +19,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ status: 'ok' })
   } catch (error) {
-    console.error('Log insert failed:', error)
-    return NextResponse.json({ status: 'error', error: error.message }, { status: 500 })
-  }
+  console.error('Log insert failed:', error)
+
+  const message = error instanceof Error ? error.message : 'Unknown error'
+
+  return NextResponse.json({ status: 'error', error: message }, { status: 500 })
+}
 }
