@@ -1,27 +1,20 @@
-// lib/logger.ts
-import { db } from '@/lib/db' // Prisma client
+import { db } from './db'
+import type { LogEvent } from './types'
 
-export async function logEvent({
-  userId,
-  severity = 'info',
-  module,
-  requestId,
-  message,
-  metadata = {},
-}: {
-  userId?: string
-  severity?: 'info' | 'warn' | 'error' | 'debug'
-  module: string
-  requestId?: string
-  message: string
-  metadata?: Record<string, any>
-}) {
+export async function logEvent(event: LogEvent) {
+  const {
+    severity = 'info',
+    source,
+    requestId,
+    message,
+    metadata = {},
+  } = event
+
   try {
     await db.log.create({
       data: {
-        userId,
         severity,
-        module,
+        source,
         requestId,
         message,
         metadata,
