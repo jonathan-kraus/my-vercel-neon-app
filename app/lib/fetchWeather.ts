@@ -19,7 +19,9 @@ const prisma = new PrismaClient();
   const data = await res.json();
   const values = data.data.values;
   const locationName = data.data?.location?.name ?? 'Unknown';
-  console.log(`[fetchWeather] [${requestId}] Weather data fetched for ${locationName}`);
+  const locationName2 = data?.location?.name ?? 'Unknown';
+  console.log(`[fetchWeather] [${requestId}] Weather data.data fetched for ${locationName}`);
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched for ${locationName2}`);
   const now = new Date();
 
   let emailSent = false;
