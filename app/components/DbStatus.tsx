@@ -19,7 +19,21 @@ function RegionBadge({ region }: { region: string }) {
     </span>
   );
 }
-
+ try {
+    await fetch('/api/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        severity: 'info',
+        source: 'DbStatus',
+        message: 'Retrieving database status',
+        requestId: 'In db-status', // or generate dynamically
+        metadata: { userAction: 'fetch' },
+      }),
+    });
+  } catch (error) {
+    console.error('Failed to log event:', error);
+  }
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
 
