@@ -59,9 +59,6 @@ const handleWeatherClick = async () => {
       }),
     });
    console.log('Log event created for Weather click');
-   toast.success('Log event created!', {
-    duration: 3000,
-})
 
    console.log('after toast✅');
    setTimeout(() => router.push('/admin/weather'), 1500);
