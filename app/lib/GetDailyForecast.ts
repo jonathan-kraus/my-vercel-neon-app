@@ -28,7 +28,8 @@ type RawDailyEntry = {
     rainAccumulationSum: number,
   };
 };
-console.log('GetDailyForecast module loaded');
+
+
 export async function getDailyForecast(requestId?: string): Promise<DailyForecastPoint[]> {
   console.log(`[getDailyForecast] [${requestId}] Function started`);
   const apiKey = process.env.TOMORROW_API_KEY;

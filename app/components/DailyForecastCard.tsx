@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic'
 
 import { useEffect, useMemo } from 'react';
 import type { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
