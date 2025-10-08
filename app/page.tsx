@@ -90,19 +90,11 @@ export default async function Home() {
         {/* Post List Above Main Content */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
-          <CreatePostForm users={users} />
-            <input name="title" placeholder="Title" className="border px-2 py-1 rounded" required />
-            <textarea name="content" placeholder="Content 1.42"  
-            className="border px-2 py-1 rounded text-black" required />
-            <select name="authorId" 
-             className="border px-2 py-1 rounded"
-             required defaultValue="1">
-              <option value="">Select author</option>
+          
               {users.map((user: { id: number; name: string | null; email: string; _count?: { posts: number } }) => (
                   <option key={user.id} value={user.id}>{user.name || user.email} ({user._count?.posts ?? 0})</option>
                 ))}
-            </select>
-            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Create Post</button>
+          <section/>
           
           
   {posts.length === 0 ? (
