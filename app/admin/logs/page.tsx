@@ -19,11 +19,11 @@ const [logs, setLogs] = useState<LogRow[]>([])
       <table className="w-full border-collapse">
         <thead>
           <tr className="bg-gray-100">
-            <th className="p-2 text-left">Timestamp</th>
-            <th className="p-2 text-left">Severity</th>
-            <th className="p-2 text-left">Source</th>
-            <th className="p-2 text-left">Message</th>
-            <th className="p-2 text-left">Request ID</th>
+            <th className="p-2 text-left">🕒 Timestamp</th>
+            <th className="p-2 text-left">⚠️ Severity</th>
+            <th className="p-2 text-left">📍 Source</th>
+            <th className="p-2 text-left">🧾 Message</th>
+            <th className="p-2 text-left">🧵 Request ID</th>
           </tr>
         </thead>
         <tbody>

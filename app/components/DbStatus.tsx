@@ -23,8 +23,9 @@ function RegionBadge({ region }: { region: string }) {
 
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
-  const requestId = crypto.randomUUID();
+  
 useEffect(() => {
+  const requestId = crypto.randomUUID();
   const logEvent = async () => {
     try {
       await fetch('/api/log', {
