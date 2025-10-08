@@ -53,64 +53,10 @@ type BlogPost = {
 import PostCountBadge from './components/PostCountBadge';
 
 
-import { getSession } from "@stackframe/stack/server"; // adjust if needed
+//import { getSession } from "@stackframe/stack/server"; // adjust if needed
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
+//import { redirect } from 'next/navigation';
 
-import { logEvent } from "./lib/logger";
-
-async function createPost(formData: FormData) {
-  'use server';
-
-  const session = await getSession();
-
-  if (!session?.user?.id) {
-    console.error("Unauthorized attempt to create post");
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  const prisma = new PrismaClient();
-  const title = formData.get('title') as string;
-  const content = formData.get('content') as string;
-  const authorId = Number(formData.get('authorId')); // still manually selected
-
-  const post = await prisma.post.create({
-    data: {
-      title,
-      content,
-      authorId,
-      published: true,
-    },
-  });
-
-  try {
-    await sendConfirmationEmail(
-      session.user.email ?? 'unknown@user.com',
-      `Title "${post.title}" content ${post.content} created at ${post.createdAt}`
-    );
-    await triggerEmail("Createpostj", post.content);
-await logEvent({
-  severity: "info",
-  event: "post.created",
-  message: `Post "${post.title}" created`,
-  metadata: {
-    postId: post.id,
-    authorId,
-    content: post.content,
-    createdAt: post.createdAt.toISOString(),
-  },
-  trace: {
-    userId: session.user.id,
-    email: session.user.email,
-  },
-});
-  } catch (err) {
-    console.error('❌ Email failed to send:', err);
-  }
-
-  revalidatePath('/');
-  redirect('/');
-}
 
 
 
