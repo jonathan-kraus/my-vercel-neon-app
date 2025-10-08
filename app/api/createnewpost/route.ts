@@ -1,7 +1,7 @@
 // app/api/createnewpost/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { logEvent } from "@/app/lib/logger"; // adjust path
+//import { logEvent } from "@/app/lib/logger"; // adjust path
 import { sendConfirmationEmail } from "@/app/utils/sendemail";
 import { triggerEmail } from "@//app/components/actions";
 
@@ -31,16 +31,16 @@ export async function POST(req: NextRequest) {
 
     await triggerEmail("Createpostj", post.content);
 
-    await logEvent({
-      severity: "info",
-      event: "post.created",
-      message: `Post "${post.title}" created`,
-      metadata: {
-        postId: post.id,
-        authorId,
-        content: post.content,
-        createdAt: post.createdAt.toISOString(),
-      },
+await fetch('/api/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        severity: 'info',
+        source: 'SideNav',
+        message: 'Weather SideNav component clicked',
+        requestId: 'createnewpost', // or generate dynamically
+        metadata: { userAction: 'navigate' },
+      }),
     });
 
     return NextResponse.json({ success: true, post });
