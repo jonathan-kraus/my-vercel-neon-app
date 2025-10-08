@@ -6,9 +6,10 @@ import Link from "next/link";
 import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
-import { createLog } from './utils/db';
+//import { createLog } from './utils/db';
 import { sendConfirmationEmail } from "./utils/sendemail";
 import { triggerEmail } from "./components/actions";
+import CreatePostForm from "./components/CreatePostForm";
 //import { useNavigate } from 'react-router-dom';
 //import { checkDbConnection } from "./db";
 const DATA = {
@@ -48,16 +49,31 @@ type BlogPost = {
   createdAt: Date;
   author?: { id?: number; name?: string | null };
 };
+
+import PostCountBadge from './components/PostCountBadge';
+
+
+import { getSession } from "@stackframe/stack/server"; // adjust if needed
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import PostCountBadge from './components/PostCountBadge';
+
+import { logEvent } from "./lib/logger";
 
 async function createPost(formData: FormData) {
   'use server';
+
+  const session = await getSession();
+
+  if (!session?.user?.id) {
+    console.error("Unauthorized attempt to create post");
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const prisma = new PrismaClient();
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
-  const authorId = Number(formData.get('authorId'));
+  const authorId = Number(formData.get('authorId')); // still manually selected
+
   const post = await prisma.post.create({
     data: {
       title,
@@ -66,20 +82,32 @@ async function createPost(formData: FormData) {
       published: true,
     },
   });
-  
 
-try {
+  try {
     await sendConfirmationEmail(
-      'jonathanckraus@gmail.com',
+      session.user.email ?? 'unknown@user.com',
       `Title "${post.title}" content ${post.content} created at ${post.createdAt}`
     );
     await triggerEmail("Createpostj", post.content);
-    console.log('✅ Email sent with post info');
-    createLog({authorId: 1101,title: 'create post',content: `Title "${post.title}" content ${post.content} `});
+await logEvent({
+  severity: "info",
+  event: "post.created",
+  message: `Post "${post.title}" created`,
+  metadata: {
+    postId: post.id,
+    authorId,
+    content: post.content,
+    createdAt: post.createdAt.toISOString(),
+  },
+  trace: {
+    userId: session.user.id,
+    email: session.user.email,
+  },
+});
   } catch (err) {
     console.error('❌ Email failed to send:', err);
-  } 
-  
+  }
+
   revalidatePath('/');
   redirect('/');
 }
@@ -116,7 +144,7 @@ export default async function Home() {
         {/* Post List Above Main Content */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
-          <form action={createPost} className="mb-6 flex flex-col gap-2">
+          <CreatePostForm users={users} />
             <input name="title" placeholder="Title" className="border px-2 py-1 rounded" required />
             <textarea name="content" placeholder="Content 1.42"  
             className="border px-2 py-1 rounded text-black" required />
@@ -129,7 +157,8 @@ export default async function Home() {
                 ))}
             </select>
             <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Create Post</button>
-          </form>
+          
+          
   {posts.length === 0 ? (
   <p>  No posts found  </p>
 ) : (
