@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { StackProvider, StackTheme } from "@stackframe/stack";
+import { stackClientApp } from "../stack/client";
 import "./globals.css";
 // import { inter } from "./fonts";
 import { Analytics } from '@vercel/analytics/next';
@@ -20,14 +22,14 @@ export default function RootLayout({
 }>) {
   return (
   <html lang="en" className="dark">
-      <body>
+      <body><StackProvider app={stackClientApp}><StackTheme>
         <div className="flex">
           <SideNav />
           <main className="flex-1">{children}</main>
         </div>
         <Analytics />
         <SpeedInsights />
-      </body>
+      </StackTheme></StackProvider></body>
     </html>
   );
 }
