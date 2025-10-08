@@ -53,6 +53,27 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
     fetch();
   }, [requestId]);
   console.log(`[DailyForecastCard] [${requestId}] Weather codes:`, forecast.map(f => f.conditions));
+  useEffect(() => {
+  const logEvent = async () => {
+    try {
+      await fetch('/api/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          severity: 'info',
+          source: 'DailyForecastCard',
+          message: 'Retrieving daily forecast',
+          requestId: requestId, // or generate dynamically
+          metadata: { userAction: 'fetch' },
+        }),
+      });
+    } catch (error) {
+      console.error(`[${requestId}] Failed to log event:`, error);
+    }
+  };
+
+  logEvent();
+}, []);
   if (!forecast.length) return <p>Loading daily forecast...</p>;
 
 
