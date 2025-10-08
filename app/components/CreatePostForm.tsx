@@ -47,11 +47,12 @@ export default function CreatePostForm({ users }: { users: User[] }) {
       <textarea name="content" placeholder="Content" className="border px-2 py-1 rounded text-black" required />
       <select name="authorId" className="border px-2 py-1 rounded" required defaultValue="1">
         <option value="">Select author</option>
-          {users.map((user: { id: number; name: string | null; email: string; _count?: { posts: number } }) => (
-          <option key={user.id} value={user.id}>
-            {user.name || user.email} ({user._count?.posts ?? 0})
-          </option>
-        ))}
+{users.map((user) => (
+  <option key={user.id} value={user.id}>
+    {user.name ?? user.email} ({user._count?.posts ?? 0})
+  </option>
+))}
+
       </select>
       <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded" disabled={loading}>
         {loading ? "Creating..." : "Create Post"}
