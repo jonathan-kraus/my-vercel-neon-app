@@ -4,9 +4,6 @@
 import { useState } from "react";
 import { useUser } from "@stackframe/react";
 
-const { user } = useUser(); // gives you user.id, user.name, etc.
-console.log("[CreatePostForm] Current user:", user);
-
 
 type User = {
   id: number;
@@ -19,7 +16,8 @@ type User = {
 
 export default function CreatePostForm({ users }: { users: User[] }) {
   const [loading, setLoading] = useState(false);
-
+const { user } = useUser(); // gives you user.id, user.name, etc.
+console.log("[CreatePostForm] Current user:", user);
   async function handleCreatePost(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
