@@ -8,7 +8,6 @@ import logoDark from "@/assets/logo-dark.svg";
 import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
-import PostCountBadge from "./components/PostCountBadge";
 import CreatePostForm from "./components/CreatePostForm";
 import { revalidatePath } from "next/cache";
 
