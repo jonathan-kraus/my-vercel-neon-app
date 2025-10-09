@@ -2,9 +2,11 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "@stackframe/react";
+import { useUser } from "@stackframe/react";
 
-const { data: session } = useSession();
+const { user } = useUser(); // gives you user.id, user.name, etc.
+console.log("[CreatePostForm] Current user:", user);
+
 
 type User = {
   id: number;
@@ -26,7 +28,7 @@ export default function CreatePostForm({ users }: { users: User[] }) {
     const payload = {
       title: formData.get("title"),
       content: formData.get("content"),
-      authorId: session?.user?.id, // ✅ pass the signed-in user ID
+      authorId: user.id, // ✅ pass the signed-in user ID
     };
 console.log("Creating post with payload:", payload);
     const res = await fetch("/api/createnewpost", {
