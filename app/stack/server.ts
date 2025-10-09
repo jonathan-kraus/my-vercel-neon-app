@@ -1,5 +1,5 @@
 import { StackServerApp } from "@stackframe/js";
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const stackServerApp = new StackServerApp({
   // You should store these in environment variables based on your project setup
     projectId: process.env.NEXT_PUBLIC_STACK_PROJECT_ID || "clg3j0z1e0000qzrmn8v6n4r9",

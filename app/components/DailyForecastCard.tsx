@@ -73,7 +73,7 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
   };
 
   logEvent();
-}, []);
+}, [requestId]);
   if (!forecast.length) return <p>Loading daily forecast...</p>;
 
 
