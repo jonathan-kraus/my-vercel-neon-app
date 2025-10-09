@@ -9,10 +9,14 @@ export async function POST(req: NextRequest) {
   const prisma = new PrismaClient();
   const body = await req.json();
   const { title, content, authorId } = body;
-
-  if (!authorId) {
-    console.warn("⚠️ No authorId provided — skipping auth for now");
-  }
+  const allowedUserIds = [1, 2, 3]; // ✅ replace with actual allowed IDs
+if (!allowedUserIds.includes(authorId)) {
+  console.warn(`Unauthorized post attempt by user ${authorId}`);
+  return NextResponse.json({ error: "Not allowed to create posts" }, { status: 403 });
+}
+if (!authorId) {
+  console.warn("⚠️ No authorId provided — skipping auth for now");
+}
 
   try {
     const post = await prisma.post.create({
