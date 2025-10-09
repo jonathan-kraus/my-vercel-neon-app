@@ -76,7 +76,7 @@ export default async function Home() {
                       <p>{post.content}</p>
                       <p className="text-sm text-navy-600">
                         By {post.author?.name || "Unknown"}{" "}
-                        <PostCountBadge count={userCounts.get(post.author?.id ?? 0) ?? 0} /> on{" "}
+                        
                         {new Date(post.createdAt).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "2-digit",
