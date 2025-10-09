@@ -53,22 +53,13 @@ export default async function Home() {
     include: { author: true },
   });
 
-  const users = await prisma.user.findMany({
-    orderBy: { name: "asc" },
-    include: { _count: { select: { posts: true } } },
-  });
-
-  const userCounts = new Map<number, number>(
-    users.map((u) => [u.id, u._count?.posts ?? 0])
-  );
-
   return (
     <div className="flex min-h-screen flex-col">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 md:max-w-lg md:px-0 lg:max-w-xl">
         {/* Post Creation + List */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
-          <CreatePostForm users={users} />
+          <CreatePostForm />
 
           {posts.length === 0 ? (
             <p>No posts found</p>
