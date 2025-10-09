@@ -7,7 +7,7 @@ const stackClientApp = new StackClientApp({
   publishableClientKey: process.env.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY!,
   tokenStore: 'localStorage', // Required!
 });
-const app = stackClientApp;
+//const app = stackClientApp;
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
     <StackProvider app={app}>
