@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
   <html lang="en" className="dark">
-      <body><Providers app={stackClientApp}><StackTheme>
+      <body><Providers ><StackTheme>
         <div className="flex">
           <SideNav />
           <main className="flex-1">{children}</main>
