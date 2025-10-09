@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
-import { StackProvider, StackTheme } from "@stackframe/stack";
+'use client';
+import Providers from './providers';
+import { StackTheme } from "@stackframe/stack";
 import { stackClientApp } from "../stack/client";
 import "./globals.css";
 // import { inter } from "./fonts";
@@ -10,10 +11,7 @@ import { Toaster } from 'react-hot-toast';
 
 <Toaster position="top-right" />
 
-export const metadata: Metadata = {
-  title: "Vercel + Neon + J",
-  description: "Use Neon with Vercel",
-};
+
 
 export default function RootLayout({
   children,
@@ -22,14 +20,14 @@ export default function RootLayout({
 }>) {
   return (
   <html lang="en" className="dark">
-      <body><StackProvider app={stackClientApp}><StackTheme>
+      <body><Providers app={stackClientApp}><StackTheme>
         <div className="flex">
           <SideNav />
           <main className="flex-1">{children}</main>
         </div>
         <Analytics />
         <SpeedInsights />
-      </StackTheme></StackProvider></body>
+      </StackTheme></Providers></body>
     </html>
   );
 }
