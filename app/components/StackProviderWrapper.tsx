@@ -1,6 +1,6 @@
 import { StackProvider } from '@stackframe/react';
-import { stackServerApp } from '../lib/stackServerApp';
+import { stackClientApp } from '../lib/stackClientApp';
 
 export default function StackProviderWrapper({ children }: { children: React.ReactNode }) {
-  return <StackProvider app={stackServerApp}>{children}</StackProvider>;
+  return <StackProvider app={stackClientApp}>{children}</StackProvider>;
 }
