@@ -10,6 +10,8 @@ const requestId = crypto.randomUUID();
 export default function SideNav() {
   const router = useRouter();
 const setUser = useMockUserSetter();
+const user = useMockUser();
+console.log('Current mock user:', user);
 const handleAuthorsClick = async () => {
   console.log('handleAuthorsClick!');
   //createLog({authorId: 1101,title: 'SideNav',content: `Author SideNav component`});
