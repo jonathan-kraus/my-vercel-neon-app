@@ -1,8 +1,8 @@
 'use client';
 import Providers from './providers';
 import { StackTheme } from "@stackframe/stack";
-import { StackProvider } from '@stackframe/react';
-import { stackServerApp } from '@/stack/server';
+//import { StackProvider } from '@stackframe/react';
+//import { stackServerApp } from '@/stack/server';
 import "./globals.css";
 // import { inter } from "./fonts";
 import { Analytics } from '@vercel/analytics/next';

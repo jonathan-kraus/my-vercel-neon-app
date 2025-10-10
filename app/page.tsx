@@ -9,7 +9,7 @@ import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 import CreatePostForm from "./components/CreatePostForm";
-import { revalidatePath } from "next/cache";
+//import { revalidatePath } from "next/cache";
 
 const DATA = {
   title: "Jonathan's Blog",
