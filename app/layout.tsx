@@ -1,8 +1,8 @@
 'use client';
 import Providers from './providers';
 import { StackTheme } from "@stackframe/stack";
-//import { StackProvider } from '@stackframe/react';
-//import { stackServerApp } from '@/stack/server';
+import { StackProvider } from '@stackframe/react';
+import { stackServerApp } from '@/stack/server';
 import "./globals.css";
 // import { inter } from "./fonts";
 import { Analytics } from '@vercel/analytics/next';
@@ -14,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body>
+        <StackProvider app={stackServerApp}>
           <Providers>
             <StackTheme>
               <div className="flex">
@@ -22,9 +23,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
               <Analytics />
               <SpeedInsights />
+              <Toaster position="top-right" />
             </StackTheme>
-            <Toaster position="top-right" />
           </Providers>
+        </StackProvider>
       </body>
     </html>
   );
