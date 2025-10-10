@@ -10,15 +10,10 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import SideNav from './components/SideNav';
 import { Toaster } from 'react-hot-toast';
 
-<Toaster position="top-right" />
-
-
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
       <body>
-
           <Providers>
             <StackTheme>
               <div className="flex">
@@ -28,8 +23,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Analytics />
               <SpeedInsights />
             </StackTheme>
+            <Toaster position="top-right" />
           </Providers>
-
       </body>
     </html>
   );
