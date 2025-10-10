@@ -34,6 +34,8 @@ jobs:
         env:
           # This line maps the GitHub Secret to the variable Next.js needs.
           NEXT_PUBLIC_STACK_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_STACK_PROJECT_ID }} 
+          NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY: ${{ secrets.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY }}
+
 
       - name: Generate Prisma client
         run: npx prisma generate
