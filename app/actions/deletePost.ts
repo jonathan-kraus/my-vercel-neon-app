@@ -1,6 +1,7 @@
 'use server';
 
 import { db } from '@/app/lib/db';
+import toast from 'react-hot-toast';
 
 export async function deletePost(formData: FormData) {
   const id = Number(formData.get('id'));
@@ -12,7 +13,5 @@ export async function deletePost(formData: FormData) {
   await db.post.delete({
     where: { id },
   });
-
-  // Optional: redirect after delete
-  return { success: true };
+toast.success('Post deleted successfully');
 }
