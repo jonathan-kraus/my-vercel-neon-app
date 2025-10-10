@@ -1,4 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+//import { PrismaClient } from '@prisma/client';
+import { db } from './db';
 import { triggerEmail } from '@/app/components/actions';
 
 console.log(`[fetchWeather] Module loaded`);
@@ -6,9 +7,11 @@ export async function fetchWeather(requestId?: string) {
   if (!requestId) requestId = 'requestid-not-passed'; //crypto.randomUUID()
   console.log(`[fetchWeather] [${requestId}] Server function started`);
 
-const prisma = new PrismaClient();
+//const prisma = new PrismaClient();
 
   const apiKey = process.env.TOMORROW_API_KEY;
+  requestId = requestId ?? 'no-request-id';
+  if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
   //const zip = '02245'; // Brookline, MA ZIP code
 
   //const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
@@ -21,6 +24,25 @@ const prisma = new PrismaClient();
   const values = data.data.values;
   const locationName = data?.location?.name ?? 'Unknown';
   
+  const logEvent = async () => {
+    try {
+      await fetch('/api/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          severity: 'info',
+          source: 'fetchWeather',
+          message: `Weather data fetched for ${locationName}`,
+          requestId: requestId, // or generate dynamically
+          metadata: { userAction: 'fetch' },
+        }),
+      });
+    } catch (error) {
+      console.error(`[fetchWeather] [${requestId}] Failed to log event:`, error);
+    }
+  };
+
+  logEvent();
   console.log(`[fetchWeather] [${requestId}] Weather data fetched for ${locationName}`);
   
   const now = new Date();
@@ -28,7 +50,7 @@ const prisma = new PrismaClient();
   let emailSent = false;
   let lastEmailTimestamp: string | null = null;
 
-  const latestLog = await prisma.weatherLog.findFirst({
+  const latestLog = await db.weatherLog.findFirst({
     where: { emailSent: true },
     orderBy: { createdAt: 'desc' },
   });
@@ -47,7 +69,7 @@ const prisma = new PrismaClient();
     try {
       await triggerEmail("Weather", requestId);
       console.log(`[${requestId}] 📧 Weather email triggered`);
-      await prisma.weatherLog.create({
+      await db.weatherLog.create({
         data: {
           temperature: values.temperature,
           humidity: values.humidity,
@@ -60,7 +82,7 @@ const prisma = new PrismaClient();
         },
       });
       console.log(`[${requestId}] 📝 Weather log created in DB`);
-      await prisma.weatherLog.update({
+      await db.weatherLog.update({
         where: { id: 1 },
         data: {
           temperature: values.temperature,
