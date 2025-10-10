@@ -9,3 +9,4 @@ export const stackServerApp = new StackServerApp({
   publishableClientKey,
   tokenStore: "nextjs-cookie",
 });
+// this is not used
