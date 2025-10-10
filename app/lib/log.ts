@@ -1,4 +1,6 @@
 // lib/log.ts
+type LogMetadata = Record<string, unknown>;
+
 export async function logEvent({
   severity = 'info',
   source,
@@ -10,7 +12,7 @@ export async function logEvent({
   source: string;
   message: string;
   requestId: string;
-  metadata?: Record<string, any>;
+  metadata?: LogMetadata;
 }) {
   try {
     await fetch('/api/log', {
