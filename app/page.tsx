@@ -1,5 +1,5 @@
 export const dynamic = "force-dynamic";
-
+import { deletePost } from '@/app/actions/deletePost';
 import Image from "next/image";
 import Link from "next/link";
 import { PrismaClient } from "@prisma/client";
@@ -36,13 +36,13 @@ type BlogPost = {
   author?: { id?: number; name?: string | null };
 };
 
-async function deletePost(formData: FormData) {
-  "use server";
-  const prisma = new PrismaClient();
-  const id = Number(formData.get("id"));
-  await prisma.post.delete({ where: { id } });
-  revalidatePath("/");
-}
+// async function deletePost(formData: FormData) {
+//   "use server";
+//   const prisma = new PrismaClient();
+//   const id = Number(formData.get("id"));
+//   await prisma.post.delete({ where: { id } });
+//   revalidatePath("/");
+// }
 
 export default async function Home() {
   const prisma = new PrismaClient();

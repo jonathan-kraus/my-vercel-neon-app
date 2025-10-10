@@ -1,6 +1,7 @@
-import { StackHandler } from "@stackframe/stack"; 
-import { stackServerApp } from "../../../stack/server"; 
+'use client';
 
-export default function Handler(props: unknown) { 
-   return <StackHandler fullPage app = { stackServerApp } routeProps = { props } />; 
- } 
+import { StackHandler } from '@stackframe/stack';
+
+export default function StackRoutePage(props: unknown) {
+  return <StackHandler fullPage routeProps={props} />;
+}
