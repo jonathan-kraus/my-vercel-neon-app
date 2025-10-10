@@ -1,5 +1,7 @@
 // import "server-only";
 
+import { StackServerApp } from "@stackframe/stack";
+
 // import { StackServerApp } from "@stackframe/stack";
 
 // export const stackServerApp = new StackServerApp({
@@ -8,4 +10,4 @@
 //   tokenStore: "nextjs-cookie",
 // });
 // eslint-disable-next-line @next/next/no-server-import-in-client-component
-export const stackServerApp = {} as any;
+export const stackServerApp = {} as StackServerApp;
