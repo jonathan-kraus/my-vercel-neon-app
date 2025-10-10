@@ -1,6 +1,6 @@
 'use client';
 
-import StackProviderWrapper from './components/StackProviderWrapper';
+//import StackProviderWrapper from './components/StackProviderWrapper';
 import Providers from './providers';
 import { StackTheme } from '@stackframe/stack';
 import SideNav from './components/SideNav';
@@ -12,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body>
-        <StackProviderWrapper>
+        
           <Providers>
             <StackTheme>
               <div className="flex">
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Toaster position="top-right" />
             </StackTheme>
           </Providers>
-        </StackProviderWrapper>
+       
       </body>
     </html>
   );
