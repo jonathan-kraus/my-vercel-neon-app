@@ -9,6 +9,7 @@ import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 import CreatePostForm from "./components/CreatePostForm";
+import { DeleteButton } from '@/api/components/DeleteButton';
 //import { revalidatePath } from "next/cache";
 
 const DATA = {
@@ -83,10 +84,7 @@ export default async function Home() {
                         })}
                       </p>
                     </div>
-                    <form action={deletePost}>
-                      <input type="hidden" name="id" value={post.id} />
-                      <button type="submit" className="text-sky-600 ml-4">Delete</button>
-                    </form>
+                      <DeleteButton postId={post.id} />
                   </div>
                 </li>
               ))}
