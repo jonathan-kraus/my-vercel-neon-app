@@ -21,5 +21,8 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return Response.redirect('/pstbyusr', 302);
+  return new Response(null, {
+  status: 302,
+  headers: { Location: '/pstbyusr' },
+});
 }
