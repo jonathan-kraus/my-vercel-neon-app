@@ -29,6 +29,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run Next.js Build
+        run: npm run build
+        env:
+          # This line maps the GitHub Secret to the variable Next.js needs.
+          NEXT_PUBLIC_STACK_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_STACK_PROJECT_ID }} 
+
       - name: Generate Prisma client
         run: npx prisma generate
 
