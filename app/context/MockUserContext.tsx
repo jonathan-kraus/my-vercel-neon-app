@@ -11,7 +11,7 @@ export function MockUserProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <MockUserContext.Provider value={user}>
-      <button onClick={() => setUser({ id: 'J', name: 'Jonathan' })}>
+      <button onClick={() => setUser({ id: '1', name: 'Jonathan' })}>
         Set Mock User
       </button>
       {children}

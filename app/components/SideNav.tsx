@@ -4,12 +4,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { triggerEmail } from './actions'; // adjust path if needed
-
+import { useMockUser } from '@/app/context/MockUserContext';
 
 const requestId = crypto.randomUUID(); 
 export default function SideNav() {
   const router = useRouter();
-
+const setUser = useMockUserSetter();
 const handleAuthorsClick = async () => {
   console.log('handleAuthorsClick!');
   //createLog({authorId: 1101,title: 'SideNav',content: `Author SideNav component`});
@@ -71,39 +71,37 @@ const handleWeatherClick = async () => {
 };
   return (
     <aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
-      <nav className="flex flex-col gap-3">
-        <Link className="font-semibold text-lg" href="/">* Home *</Link>
-        <Link href="/pstbyusr/">Posts by User</Link>
-        <Link href="/admin/logs">Activity Logs</Link>
+      <div className="flex flex-col h-full">
+        <nav className="flex flex-col gap-3">
+          <Link className="font-semibold text-lg" href="/">* Home *</Link>
+          <Link href="/pstbyusr/">Posts by User</Link>
+          <Link href="/admin/logs">Activity Logs</Link>
 
-        {/* Replace Link with button for Authors */}
+          <button onClick={handleAuthorsClick} className="text-left w-full px-2 py-1 hover:bg-gray-100">
+            Authors
+          </button>
+
+          <Link href="/logs">Logs</Link>
+          <button onClick={handleDbStatusClick} className="text-left w-full px-2 py-1 hover:bg-gray-100">
+            DbStatus
+          </button>
+          <button onClick={handleWeatherClick} className="text-left w-full px-2 py-1 hover:bg-gray-100">
+            Weather
+          </button>
+
+          <Link href="/dev/update-post">Update Post</Link>
+        </nav>
+
+        {/* Push this to the bottom */}
         <button
-          onClick={handleAuthorsClick}
-          className="text-left w-full px-2 py-1 hover:bg-gray-100"
-        > 
-          Authors
+          onClick={() => setUser({ id: '1', name: 'Jonathan' })}
+          className="mt-auto bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+        >
+          🍎 Set Mock User
         </button>
 
-        {/* {createLog({authorId: 1101,title: 'DbStatus',content: 'DbStatus log',})} */}
-        <Link href="/logs">Logs</Link>
-        <button
-          onClick={handleDbStatusClick}
-          className="text-left w-full px-2 py-1 hover:bg-gray-100"
-        >
-          DbStatus
-        </button>
-        <button
-          onClick={handleWeatherClick}
-          className="text-left w-full px-2 py-1 hover:bg-gray-100"
-        >
-          Weather
-        </button>
         <Toaster />
-        
-
-        <Link href="/dev/update-post">Update Post </Link>
-        
-      </nav>
+      </div>
     </aside>
   );
 }
