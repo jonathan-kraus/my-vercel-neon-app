@@ -40,5 +40,7 @@ export default function CreatePostForm() {
     Create Post
   </button>
 </form>
-} 
+
+  );
+}
 
