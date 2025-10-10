@@ -4,16 +4,36 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { triggerEmail } from './actions'; // adjust path if needed
-import { useMockUser } from '@/app/context/MockUserContext';
+import { useMockUser, useMockUserSetter } from '@/app/context/MockUserContext';
+
 
 const requestId = crypto.randomUUID(); 
 export default function SideNav() {
-  const router = useRouter();
+const router = useRouter();
 const setUser = useMockUserSetter();
 const user = useMockUser();
 console.log('Current mock user:', user);
 const handleAuthorsClick = async () => {
   console.log('handleAuthorsClick!');
+const logEvent = async () => {
+    try {
+      await fetch('/api/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          severity: 'info',
+          source: 'SideNav',
+          message: 'Author SideNav component clicked',
+          requestId: requestId, // or generate dynamically
+          metadata: { userAction: 'fetch' },
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to log event:', error);
+    }
+  };
+
+  logEvent();  
   //createLog({authorId: 1101,title: 'SideNav',content: `Author SideNav component`});
   //toast.loading('Sending email...');
   try {
