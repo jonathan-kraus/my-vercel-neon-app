@@ -21,5 +21,5 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  return Response.redirect('/posts', 302);
+  return Response.redirect('/pstbyusr', 302);
 }
