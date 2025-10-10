@@ -2,6 +2,7 @@
 
 
 import { db } from '@/app/lib/db';
+import { logEvent } from '../lib/log';
 let start: number;
 let latencyMs: number;
 const prisma = db; // For clarity in this file
@@ -9,25 +10,15 @@ const requestId = crypto.randomUUID();
 export async function getDbStatus() {
   
 
-  const logEvent = async () => {
-    try {
-      await fetch('/api/log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          severity: 'info',
-          source: 'getDbStatus',
-          message: 'Retrieving database status',
-          requestId: requestId, // or generate dynamically
-          metadata: { userAction: 'fetch' },
-        }),
-      });
-    } catch (error) {
-      console.error('Failed to log event:', error);
-    }
-  };
+  
+  await logEvent({
+  source: 'getDbStatus',
+  message: 'Retrieving database status',
+  requestId,
+  metadata: { userAction: 'fetch' },
+});
+ 
 
-  logEvent();
   const [version, postCount, latestPost, logCount] = await Promise.all([
     prisma.$queryRaw`SELECT version()`,
     prisma.post.count({ where: { authorId: { not: 1101 } } }),

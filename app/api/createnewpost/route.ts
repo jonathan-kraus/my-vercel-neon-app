@@ -3,7 +3,7 @@ import { db } from '@/app/lib/db';
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
-
+  const requestId = crypto.randomUUID();
   const authorId = Number(formData.get('authorId'));
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
@@ -20,7 +20,12 @@ export async function POST(req: NextRequest) {
       published: true,
     },
   });
-
+await logEvent({
+  source: 'createNewPost route',
+  message: `Post created with title: ${title}`,
+  requestId,
+  metadata: { userAction: 'create' },
+});
   return new Response(null, {
   status: 302,
   headers: { Location: '/pstbyusr' },
