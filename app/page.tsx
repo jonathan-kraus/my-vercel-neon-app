@@ -1,5 +1,5 @@
 export const dynamic = "force-dynamic";
-import { deletePost } from '@/app/actions/deletePost';
+
 import Image from "next/image";
 import Link from "next/link";
 import { PrismaClient } from "@prisma/client";
@@ -9,7 +9,7 @@ import arrow from "@/assets/arrow.svg";
 import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 import CreatePostForm from "./components/CreatePostForm";
-import { DeleteButton } from '@/api/components/DeleteButton';
+import { DeleteButton } from '@/app/components/DeleteButton';
 //import { revalidatePath } from "next/cache";
 
 const DATA = {
@@ -36,14 +36,6 @@ type BlogPost = {
   createdAt: Date;
   author?: { id?: number; name?: string | null };
 };
-
-// async function deletePost(formData: FormData) {
-//   "use server";
-//   const prisma = new PrismaClient();
-//   const id = Number(formData.get("id"));
-//   await prisma.post.delete({ where: { id } });
-//   revalidatePath("/");
-// }
 
 export default async function Home() {
   const prisma = new PrismaClient();
