@@ -12,12 +12,14 @@ export async function POST(req: NextRequest) {
     return new Response('Invalid authorId', { status: 400 });
   }
 
-  const newPost = await db.post.create({
-    data: { authorId, title, content },
+  await db.post.create({
+    data: {
+      authorId,
+      title,
+      content,
+      published: true,
+    },
   });
 
-  return new Response(JSON.stringify(newPost), {
-    status: 201,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return Response.redirect('/posts', 302);
 }
