@@ -29,11 +29,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+# ... other steps here ...
+
       - name: Run Next.js Build
         run: npm run build
         env:
-          # This line maps the GitHub Secret to the variable Next.js needs.
+          # Variable 1: Next.js needs this one to find the project.
+          # This should have 2 spaces of indentation relative to 'env:'
           NEXT_PUBLIC_STACK_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_STACK_PROJECT_ID }} 
+          
+          # Variable 2: You correctly identified this second requirement.
+          # This must have 2 spaces of indentation relative to 'env:'
           NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY: ${{ secrets.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY }}
 
 
