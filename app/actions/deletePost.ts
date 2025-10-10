@@ -1,9 +1,6 @@
 'use server';
 
 import { db } from '@/app/lib/db';
-import { logEvent } from '@/app/lib/log';
-
-const requestId = crypto.randomUUID();
 
 export async function deletePost(formData: FormData) {
   const id = Number(formData.get('id'));
