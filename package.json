@@ -13,8 +13,6 @@
     "@neondatabase/serverless": "^1.0.0",
     "@prisma/client": "^6.17.0",
     "@stackframe/js": "^2.8.41",
-    "@stackframe/react": "^2.8.41",
-    "@stackframe/stack": "^2.8.41",
     "@vercel/analytics": "^1.5.0",
     "@vercel/blob": "^1.1.1",
     "@vercel/speed-insights": "^1.2.0",
