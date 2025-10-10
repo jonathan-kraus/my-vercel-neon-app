@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/app/lib/db';
+import { logEvent } from '../lib/log';
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
