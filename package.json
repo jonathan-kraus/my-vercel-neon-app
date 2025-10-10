@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.0",
-    "@prisma/client": "^6.16.3",
+    "@prisma/client": "^6.17.0",
     "@stackframe/js": "^2.8.41",
     "@stackframe/react": "^2.8.41",
     "@stackframe/stack": "^2.8.41",
@@ -38,10 +38,12 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
+    "eslint-plugin-next": "^0.0.0",
     "postcss": "^8",
-    "prisma": "^6.16.3",
+    "prisma": "^6.17.0",
     "tailwindcss": "^3.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@10.18.2+sha512.9fb969fa749b3ade6035e0f109f0b8a60b5d08a1a87fdf72e337da90dcc93336e2280ca4e44f2358a649b83c17959e9993e777c2080879f3801e6f0d999ad3dd"
 }
