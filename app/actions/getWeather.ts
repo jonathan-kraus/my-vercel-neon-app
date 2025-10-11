@@ -1,6 +1,5 @@
 'use server';
 import { db } from '@/app/lib/db';
-//import { triggerEmail } from "../components/actions";
 
 type WeatherResponse = {
   temperature: number;
