@@ -39,7 +39,12 @@ export default function WeatherCard() {
       setWeather(data);
       console.log(`Weather received [${data.requestId}]:`, data);
       console.log(`[${data.requestId}] Weather received for ${data.locationName} at ${data.lastEmailTimestamp}:`, data);
-
+      await logEvent({
+        source: 'WeatherCard',
+        message: `WeatherCard received for ${data.locationName} at ${data.lastEmailTimestamp}`,
+        requestId,
+        metadata: { userAction: 'receive' },
+      });
       if (data.emailSent) {
         toast.success(`[${data.requestId}] 📧 Weather email sent!`);
       } else {

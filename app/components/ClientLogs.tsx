@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LogSearch } from './LogSearch';
 import type { Prisma } from '@prisma/client';
-
 
 type LogEntry = {
   id: string;
@@ -11,18 +10,25 @@ type LogEntry = {
   source: string;
   message: string;
   requestId: string | null;
-  metadata?: Prisma.JsonValue;
+  metadata?: Prisma.JsonValue | null;
   timestamp: string;
 };
 
-export default function ClientLogs({ logs }: { logs: LogEntry[] }) {
+export default function ClientLogs() {
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    fetch('/api/logs')
+      .then((res) => res.json())
+      .then((data) => setLogs(data));
+  }, []);
 
   const filteredLogs = logs.filter((log) =>
     log.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
     log.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
     log.severity.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    log.requestId?.toLowerCase().includes(searchQuery.toLowerCase() ?? false)
+    (log.requestId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
   return (
@@ -37,17 +43,16 @@ export default function ClientLogs({ logs }: { logs: LogEntry[] }) {
             <th className="border px-4 py-2 text-left">Source</th>
             <th className="border px-4 py-2 text-left">Message</th>
             <th className="border px-4 py-2 text-left">Request ID</th>
-            <th className="border px-4 py-2 text-left">Metadata</th>
           </tr>
         </thead>
         <tbody>
-          {filteredLogs.map((log, index) => (
-            <tr key={index} className="border-t">
-              <td className="px-4 py-2">{log.timestamp}</td>
+          {filteredLogs.map((log) => (
+            <tr key={log.id} className="border-t">
+              <td className="px-4 py-2">{new Date(log.timestamp).toLocaleString()}</td>
               <td className="px-4 py-2">{log.severity}</td>
               <td className="px-4 py-2">{log.source}</td>
               <td className="px-4 py-2">{log.message}</td>
-              <td className="px-4 py-2">{log.requestId}</td>
+              <td className="px-4 py-2">{log.requestId ?? '—'}</td>
             </tr>
           ))}
         </tbody>
