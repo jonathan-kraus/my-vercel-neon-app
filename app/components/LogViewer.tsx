@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { Post } from '@prisma/client';
+import type { Log } from '@prisma/client';
 
 import { getLogsByAuthor } from '../utils/getLogs'; // adjust path
 
 export default function LogViewer() {
-  const [logs, setLogs] = useState<Post[]>([]);
+  const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
