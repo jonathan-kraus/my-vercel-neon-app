@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
+import { db } from '@/app/lib/db';
 export async function POST(req: Request) {
   // Prevent accidental production use
   // if (process.env.NODE_ENV === 'production') {
@@ -16,7 +13,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'id and title required' }, { status: 400 });
     }
 
-    const updated = await prisma.post.update({ where: { id }, data: { title } });
+    const updated = await db.post.update({ where: { id }, data: { title } });
     return NextResponse.json({ updated });
   } catch (err) {
     console.error('Dev update error:', err);

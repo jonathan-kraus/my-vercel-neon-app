@@ -1,5 +1,5 @@
 'use server';
-import { PrismaClient } from '@prisma/client';
+import { db } from './lib/db';
 //import { triggerEmail } from "../components/actions";
 
 type WeatherResponse = {
@@ -18,10 +18,6 @@ type WeatherResponse = {
   rainAccumulationMin: number;
   rainAccumulationSum: number;
 };
-
-
-
-const prisma = new PrismaClient();
 
 export async function getWeather(): Promise<WeatherResponse> {
   const requestId = crypto.randomUUID();
@@ -45,7 +41,7 @@ if (typeof window !== 'undefined') {
   let emailSent = false;
   let lastEmailTimestamp: string | null = null;
 
-  const latestLog = await prisma.weatherLog.findFirst({
+  const latestLog = await db.weatherLog.findFirst({
     where: { emailSent: true },
     orderBy: { createdAt: 'desc' },
   });
@@ -64,7 +60,7 @@ if (typeof window !== 'undefined') {
     try {
       //await triggerEmail("Weather", latestLog ? latestLog.id.toString() : undefined);
 
-      await prisma.weatherLog.create({
+      await db.weatherLog.create({
         data: {
           temperature: values.temperature,
           humidity: values.humidity,
@@ -76,7 +72,7 @@ if (typeof window !== 'undefined') {
         },
       });
             // update row 1 for last update time
-      await prisma.weatherLog.update({
+      await db.weatherLog.update({
   where: { id: 1 },
   data: {
     temperature: data.temperature,

@@ -1,12 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
-
-const prisma = new PrismaClient();
 
 export async function GET() {
   try {
     // Include a posts count for each user so clients can render badges without extra queries
-    const authors = await prisma.user.findMany({
+    const authors = await db.user.findMany({
       orderBy: { name: 'asc' },
       select: { id: true, name: true, _count: { select: { posts: true } } },
     });

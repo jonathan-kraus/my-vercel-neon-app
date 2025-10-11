@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Image from "next/image";
 import Link from "next/link";
-import { PrismaClient } from "@prisma/client";
+import { db } from "./lib/db";
 import logo from "@/assets/logo.svg";
 import logoDark from "@/assets/logo-dark.svg";
 import arrow from "@/assets/arrow.svg";
@@ -38,8 +38,8 @@ type BlogPost = {
 };
 
 export default async function Home() {
-  const prisma = new PrismaClient();
-  const posts = await prisma.post.findMany({
+  
+  const posts = await db.post.findMany({
     orderBy: { createdAt: "desc" },
     where: { published: true },
     include: { author: true },

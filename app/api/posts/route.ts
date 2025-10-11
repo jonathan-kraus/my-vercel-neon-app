@@ -1,14 +1,12 @@
-import { PrismaClient } from '@prisma/client';
+import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
-
-const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const author = searchParams.get('author');
 
-    const posts = await prisma.post.findMany({
+    const posts = await db.post.findMany({
       where: {
         published: true,            // Filter to only published posts
         ...(author
