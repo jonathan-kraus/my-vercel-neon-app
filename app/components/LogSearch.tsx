@@ -1,6 +1,4 @@
-'use client';
-
-import { useState } from 'react';
+import { useState } from 'react'
 
 export function LogSearch({ onSearch }: { onSearch: (query: string) => void }) {
   const [query, setQuery] = useState('');
@@ -14,7 +12,7 @@ export function LogSearch({ onSearch }: { onSearch: (query: string) => void }) {
         onChange={(e) => setQuery(e.target.value)}
         className="border px-3 py-2 rounded w-full"
       />
-      <button
+       <button
         onClick={() => onSearch(query)}
         className="mt-2 px-4 py-2 bg-sky-600 text-white rounded"
       >
