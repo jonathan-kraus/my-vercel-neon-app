@@ -6,7 +6,7 @@ export async function GET() {
   const requestId = crypto.randomUUID();
   console.log(`[getDailyForecast] API route started at ${new Date().toISOString()}`);
 
-  async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 3, delay = 1000): Promise<Response> {
+  async function fetchWithRetry(url: string, options: RequestInit = {}, retries = 3, delay = 4000): Promise<Response> {
   for (let attempt = 0; attempt < retries; attempt++) {
     try {
       const res = await fetch(url, options);
