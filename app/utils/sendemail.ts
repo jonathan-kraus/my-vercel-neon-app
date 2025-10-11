@@ -22,5 +22,5 @@ export async function sendConfirmationEmail(toEmail: string, toName: string, req
 
   //await mailerSend.email.send(emailParams);
   //console.log('✅ Email from utils sent successfully to:', toEmail, toName);
-  console.log('✅ Email purposely not sent:', emailParams, toEmail, toName);
+  console.log('✅ Email purposely not sent:', mailerSend, emailParams, toEmail, toName);
 }
