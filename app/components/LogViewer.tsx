@@ -23,15 +23,15 @@ export default function LogViewer() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-bold">Log Entries (Author 1101)</h2>
+      <h2 className="text-xl font-bold">Log Entries </h2>
       {logs.length === 0 ? (
         <p>No logs found.</p>
       ) : (
         logs.map((log) => (
           <div key={log.id} className="border p-4 rounded shadow">
-            <h3 className="font-semibold">{log.title}</h3>
-            <p>{log.content}</p>
-            <p className="text-sm text-gray-500">Created: {new Date(log.createdAt).toLocaleString()}</p>
+            <h3 className="font-semibold">{log.source}</h3>
+            <p>{log.message}</p>
+            <p className="text-sm text-gray-500">Created: {new Date(log.timestamp).toLocaleString()}</p>
           </div>
         ))
       )}
