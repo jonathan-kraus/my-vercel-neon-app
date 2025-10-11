@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDailyForecast } from '@/app/lib/GetDailyForecast';
-import { logEvent } from '../lib/log';
+import { logEvent } from '@/app/lib/log';
 
 const requestId = crypto.randomUUID();
       await logEvent({
