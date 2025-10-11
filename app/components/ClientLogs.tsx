@@ -2,13 +2,17 @@
 
 import { useState } from 'react';
 import { LogSearch } from './LogSearch';
+import type { Prisma } from '@prisma/client';
+
 
 type LogEntry = {
-  timestamp: string;
+  id: string;
   severity: string;
   source: string;
   message: string;
-  requestId: string;
+  requestId: string | null;
+  metadata?: Prisma.JsonValue;
+  timestamp: string;
 };
 
 export default function ClientLogs({ logs }: { logs: LogEntry[] }) {
@@ -33,6 +37,7 @@ export default function ClientLogs({ logs }: { logs: LogEntry[] }) {
             <th className="border px-4 py-2 text-left">Source</th>
             <th className="border px-4 py-2 text-left">Message</th>
             <th className="border px-4 py-2 text-left">Request ID</th>
+            <th className="border px-4 py-2 text-left">Metadata</th>
           </tr>
         </thead>
         <tbody>
