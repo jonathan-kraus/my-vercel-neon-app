@@ -2,7 +2,9 @@
 import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
+import { logEvent } from '../lib/log';
 
+const requestId = crypto.randomUUID();
 type WeatherType = {
   temperature: number;
   humidity: number;
@@ -19,7 +21,12 @@ type WeatherType = {
   rainAccumulationMin: number;
   rainAccumulationSum: number;
 };
-
+await logEvent({
+  source: 'WeatherCard',
+  message: `WeatherCard rendered`,
+  requestId,
+  metadata: { userAction: 'render' },
+});
 export default function WeatherCard() {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);

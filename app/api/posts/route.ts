@@ -1,6 +1,8 @@
 import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
+const requestId = crypto.randomUUID();
 
+import { logEvent } from '@/app/lib/log';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -23,7 +25,12 @@ export async function GET(request: Request) {
       orderBy: { createdAt: 'desc' },
       include: { author: true },
     });
-
+await logEvent({
+  source: 'Posts API',
+  message: `Posts API accessed: ${requestId}`,
+  requestId,
+  metadata: { userAction: 'fetch' },
+});
     return NextResponse.json(posts);
   } catch (error) {
     console.error('Error fetching posts:', error);

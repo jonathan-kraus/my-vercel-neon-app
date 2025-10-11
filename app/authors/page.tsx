@@ -1,10 +1,10 @@
 export const dynamic = "force-dynamic";
-import { PrismaClient } from '@prisma/client';
+import { db } from "../lib/db";
 import PostCountBadge from '../components/PostCountBadge';
-import { createLog } from '../utils/db';
+import { logEvent } from '../lib/log';
 //import { sendConfirmationEmail } from '../utils/sendemail';
 
-
+const requestId = crypto.randomUUID();
 type Author = {
   id: number;
   name: string | null;
@@ -12,11 +12,15 @@ type Author = {
 };
 
 export default async function AuthorsPage() {
-  const prisma = new PrismaClient();
+  const prisma = new db();
 try {
   console.log('🚀 Starting logic');
-    //sendConfirmationEmail('jonathanckraus@gmail.com', 'JKGM Authors');
-    await createLog({authorId: 1101,title: 'Authors',content: 'Author log',});
+    await logEvent({
+  source: 'deletePost',
+  message: `Post will be deleted with ID: ${id}`,
+  requestId,
+  metadata: { userAction: 'delete' },
+});
     } catch (err) {
   console.error('❌ Error caught:', err);
 }
