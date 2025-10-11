@@ -16,10 +16,10 @@ export default async function AuthorsPage() {
 try {
   console.log('🚀 Starting logic');
     await logEvent({
-  source: 'deletePost',
-  message: `Post will be deleted with ID: ${id}`,
+  source: 'authors Page',
+  message: `List of authors`,
   requestId,
-  metadata: { userAction: 'delete' },
+  metadata: { userAction: 'fetch' },
 });
     } catch (err) {
   console.error('❌ Error caught:', err);
