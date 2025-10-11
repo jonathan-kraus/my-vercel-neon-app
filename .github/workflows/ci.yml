@@ -43,7 +43,7 @@ jobs:
         run: pnpm run build
 
         env:
-          # Variable 1: Next.js needs this one to find the project.
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           # This should have 2 spaces of indentation relative to 'env:'
           NEXT_PUBLIC_STACK_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_STACK_PROJECT_ID }} 
           
