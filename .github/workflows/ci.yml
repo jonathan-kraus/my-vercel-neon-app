@@ -9,9 +9,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -50,8 +55,8 @@ jobs:
       - name: Generate Prisma client
         run: npx prisma generate
 
-      - name: Lint (if available)
-        run: npm run lint --if-present
+      - name: Lint
+        run: pnpm run lint
 
       - name: Build
         run: npm run build
