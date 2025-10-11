@@ -22,7 +22,7 @@ export default function ClientLogs({ logs }: { logs: LogEntry[] }) {
     log.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
     log.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
     log.severity.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    log.requestId.toLowerCase().includes(searchQuery.toLowerCase())
+    log.requestId?.toLowerCase().includes(searchQuery.toLowerCase() ?? false)
   );
 
   return (
