@@ -12,7 +12,7 @@ type Author = {
 };
 
 export default async function AuthorsPage() {
-  const prisma = new db();
+  
 try {
   console.log('🚀 Starting logic');
     await logEvent({
@@ -24,7 +24,7 @@ try {
     } catch (err) {
   console.error('❌ Error caught:', err);
 }
-  const authors: Author[] = await prisma.user.findMany({
+  const authors: Author[] = await db.user.findMany({
     orderBy: { name: 'asc' },
     select: { id: true, name: true, _count: { select: { posts: true } } },
   });
