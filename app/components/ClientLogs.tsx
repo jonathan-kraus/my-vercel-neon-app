@@ -14,8 +14,8 @@ type LogEntry = {
   timestamp: string;
 };
 
-export default function ClientLogs() {
-  const [logs, setLogs] = useState<LogEntry[]>([]);
+export default function ClientLogs({ logs: initialLogs }: { logs: LogEntry[] }) {
+  const [logs, setLogs] = useState<LogEntry[]>(initialLogs);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
