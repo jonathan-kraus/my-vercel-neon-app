@@ -20,6 +20,7 @@ export async function sendConfirmationEmail(toEmail: string, toName: string, req
     .setHtml(`<strong>Sent from utils ${toName} app</strong> ${requestId}`);
 
 
-  await mailerSend.email.send(emailParams);
-  console.log('✅ Email from utils sent successfully to:', toEmail, toName);
+  //await mailerSend.email.send(emailParams);
+  //console.log('✅ Email from utils sent successfully to:', toEmail, toName);
+  console.log('✅ Email purposely not sent:', emailParams, toEmail, toName);
 }
