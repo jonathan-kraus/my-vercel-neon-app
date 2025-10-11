@@ -26,13 +26,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
-# ... other steps here ...
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run Next.js Build
-        run: npm run build
+        run: pnpm run build
+
         env:
           # Variable 1: Next.js needs this one to find the project.
           # This should have 2 spaces of indentation relative to 'env:'
