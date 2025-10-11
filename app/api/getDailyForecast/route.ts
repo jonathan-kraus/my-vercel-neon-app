@@ -21,7 +21,8 @@ export async function GET() {
     source: 'getDailyForecast',
     message: `Retry attempt ${attempt + 1} failed`,
     requestId,
-    metadata: { status: err },
+    metadata: { status: err instanceof Error ? err.message : String(err) },
+
   },
 });
 
