@@ -1,10 +1,9 @@
-import { PrismaClient } from '@prisma/client';
-import ClientLogs from '@/app/components/ClientLogs';
 
-const prisma = new PrismaClient();
+import ClientLogs from '@/app/components/ClientLogs';
+import { db } from '@/app/lib/db';
 
 export default async function LogsPage() {
-  const rawLogs = await prisma.log.findMany({
+  const rawLogs = await db.log.findMany({
     orderBy: { timestamp: 'desc' },
     take: 100,
   });
