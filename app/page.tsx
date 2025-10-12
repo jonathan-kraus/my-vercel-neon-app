@@ -1,3 +1,4 @@
+
 export const dynamic = "force-dynamic";
 
 import Image from "next/image";
@@ -10,7 +11,6 @@ import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 import CreatePostForm from "./components/CreatePostForm";
 import { DeleteButton } from '@/app/components/DeleteButton';
-import { getAuthorizedUser } from '@/app/lib/authUtils';
 //import { revalidatePath } from "next/cache";
 
 const DATA = {
@@ -45,7 +45,7 @@ export default async function Home() {
     where: { published: true },
     include: { author: true },
   });
-const user = await getAuthorizedUser();
+
   return (
     <div className="flex min-h-screen flex-col">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 md:max-w-lg md:px-0 lg:max-w-xl">
@@ -64,22 +64,19 @@ const user = await getAuthorizedUser();
                   className={`border-b pb-2 ${index % 2 === 0 ? "bg-sky-500" : "bg-blue-400"}`}
                 >
                   <div className="flex justify-between items-center">
-    <div>
-      <span className="text-lg font-semibold">{post.title}</span>
-      <p>{post.content}</p>
-
-      {user && (
-        <p className="text-sm text-gray-600">
-          By {post.author?.name ?? 'Unknown'}{' '}
-          on{' '}
-          {new Date(post.createdAt).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-          })}
-        </p>
-      )}
-    </div>
+                    <div>
+                      <span className="text-lg font-semibold">{post.title}</span>
+                      <p>{post.content}</p>
+                      <p className="text-sm text-navy-600">
+                        By {post.author?.name || "Unknown"}{" "}
+                        
+                        {new Date(post.createdAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        })}
+                      </p>
+                    </div>
                       <DeleteButton postId={post.id} />
                   </div>
                 </li>
