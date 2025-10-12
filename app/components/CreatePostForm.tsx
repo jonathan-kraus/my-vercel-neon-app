@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createPost } from '@/app/actions/createPost'; 
 
 export default function CreatePostForm() {
   const [authorizedUser, setAuthorizedUser] = useState<string | null>(null);
@@ -22,7 +23,7 @@ export default function CreatePostForm() {
 
   return (
     <form
-      action="/api/createnewpost"
+      action={createPost}
       method="POST"
       className="space-y-4 max-w-md mx-auto bg-white p-4 rounded shadow"
     >
