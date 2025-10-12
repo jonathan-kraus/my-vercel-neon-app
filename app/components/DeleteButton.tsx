@@ -22,7 +22,7 @@ export function DeleteButton({ postId }: { postId: number }) {
     try {
       const formData = new FormData();
       formData.append('id', String(postId));
-      await deletePost(formData);
+      await deletePost(postId);
 
       await logEvent({
         source: 'DeleteButton',
