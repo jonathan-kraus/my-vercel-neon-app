@@ -10,6 +10,7 @@ import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 import CreatePostForm from "./components/CreatePostForm";
 import { DeleteButton } from '@/app/components/DeleteButton';
+import { getAuthorizedUser } from '../lib/authUtils';
 //import { revalidatePath } from "next/cache";
 
 const DATA = {
@@ -44,7 +45,7 @@ export default async function Home() {
     where: { published: true },
     include: { author: true },
   });
-
+const user = await getAuthorizedUser();
   return (
     <div className="flex min-h-screen flex-col">
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 md:max-w-lg md:px-0 lg:max-w-xl">
@@ -66,8 +67,16 @@ export default async function Home() {
                     <div>
                       <span className="text-lg font-semibold">{post.title}</span>
                       <p>{post.content}</p>
-                      <p className="text-sm text-navy-600">
-                        By {post.author?.name || "Unknown"}{" "}
+                      
+                        {user && (
+  <p className="text-sm text-gray-600">
+    By {post.author?.name || 'Unknown'}    on {new Date(post.createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })}
+  </p>
+)}
                         
                         {new Date(post.createdAt).toLocaleDateString("en-US", {
                           year: "numeric",
