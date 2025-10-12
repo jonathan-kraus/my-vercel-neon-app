@@ -77,7 +77,7 @@ const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
 
   console.log('region:', region);
   return (
-          <div className="space-y-4">
+          <div className={"space-y-4 animate-fade-in delay-[index * 100]"}>
         <h2 className="text-xl font-bold">Database Status</h2>
 
         <p className="flex items-center gap-2">
