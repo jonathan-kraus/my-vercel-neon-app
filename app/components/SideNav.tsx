@@ -115,12 +115,10 @@ const handleWeatherClick = async () => {
         </nav>
 
         {/* Push this to the bottom */}
-        <button
-          onClick={() => setUser({ id: '1', name: 'Jonathan' })}
-          className="mt-auto bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-        >
-          🍎 Set Mock User
-        </button>
+        <Link href="/auth" className="text-blue-500 hover:underline">
+          🍎 Apple
+        </Link>
+
 
         <Toaster />
       </div>
