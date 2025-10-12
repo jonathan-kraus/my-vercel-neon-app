@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
-import { logEvent } from '../lib/log';
 
 const requestId = crypto.randomUUID();
 type WeatherType = {
@@ -21,12 +20,7 @@ type WeatherType = {
   rainAccumulationMin: number;
   rainAccumulationSum: number;
 };
-await logEvent({
-  source: 'WeatherCard',
-  message: `WeatherCard rendered`,
-  requestId,
-  metadata: { userAction: 'render' },
-});
+
 export default function WeatherCard() {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -39,12 +33,7 @@ export default function WeatherCard() {
       setWeather(data);
       console.log(`Weather received [${data.requestId}]:`, data);
       console.log(`[${data.requestId}] Weather received for ${data.locationName} at ${data.lastEmailTimestamp}:`, data);
-      await logEvent({
-        source: 'WeatherCard',
-        message: `WeatherCard received for ${data.locationName} at ${data.lastEmailTimestamp}`,
-        requestId,
-        metadata: { userAction: 'receive' },
-      });
+
       if (data.emailSent) {
         toast.success(`[${data.requestId}] 📧 Weather email sent!`);
       } else {

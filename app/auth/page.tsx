@@ -2,15 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { logEvent } from '../lib/log'; // if you want to log events
-const requestId = crypto.randomUUID();
-await logEvent({
-  source: 'auth page',
-  message: `auth page accessed`,
-  requestId,
-  metadata: { userAction: 'auth' },
-});
+
 export default function AuthPage() {
+  
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
