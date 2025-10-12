@@ -4,15 +4,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { triggerEmail } from './actions'; // adjust path if needed
-import { useMockUser, useMockUserSetter } from '@/app/context/MockUserContext';
+//import { useMockUser, useMockUserSetter } from '@/app/context/MockUserContext';
 
 
 const requestId = crypto.randomUUID(); 
 export default function SideNav() {
 const router = useRouter();
-const setUser = useMockUserSetter();
-const user = useMockUser();
-console.log('Current mock user:', user);
+//const setUser = useMockUserSetter();
+//const user = useMockUser();
+//console.log('Current mock user:', user);
 const handleAuthorsClick = async () => {
   console.log('handleAuthorsClick!');
 const logEvent = async () => {
