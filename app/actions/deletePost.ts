@@ -1,17 +1,25 @@
 'use server';
 
 import { db } from '@/app/lib/db';
+import { cookies } from 'next/headers';
 
-export async function deletePost(formData: FormData) {
-  const id = Number(formData.get('id'));
-  const session = 1; // mock session
+export async function deletePost(postId: number) {
+  const cookieStore = cookies();
+  const user = cookieStore.get('authorizedUser')?.value;
 
-  if (!session) throw new Error('Unauthorized');
-  if (!id || isNaN(id)) throw new Error('Invalid post ID');
+  if (!user) {
+    throw new Error('Unauthorized');
+  }
 
-  await db.post.delete({
-    where: { id },
-  });
+const post = await db.post.findUnique({
+  where: { id: postId },
+  include: { author: true },
+});
 
-  //toast.success('Post deleted'); // Note: toast won't work in server actions  
+if (post?.author?.name !== user) {
+  throw new Error('Forbidden');
+}
+
+
+  await db.post.delete({ where: { id: postId } });
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-// Mock data to simulate fetching from a database or external source
+
 const posts = [
   { id: 1, title: 'First Post', author: { id: 101, name: 'Alice' } },
   { id: 2, title: 'Second Post', author: { id: 102, name: 'Bob' } },

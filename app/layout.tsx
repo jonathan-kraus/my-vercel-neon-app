@@ -2,15 +2,12 @@
 
 import SideNav from './components/SideNav';
 import ClientShell from '@/app/components/ClientShell';
-import { MockUserProvider } from './context/MockUserContext';
 import './globals.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
       <body>
-        <MockUserProvider>
-
 
               <div className="layout">
                 <SideNav />
@@ -18,8 +15,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
               <ClientShell />
 
-
-        </MockUserProvider>
       </body>
     </html>
   );
