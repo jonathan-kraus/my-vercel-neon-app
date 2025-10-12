@@ -10,7 +10,7 @@ import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 import CreatePostForm from "./components/CreatePostForm";
 import { DeleteButton } from '@/app/components/DeleteButton';
-import { getAuthorizedUser } from '../lib/authUtils';
+import { getAuthorizedUser } from '@/app/lib/authUtils';
 //import { revalidatePath } from "next/cache";
 
 const DATA = {
