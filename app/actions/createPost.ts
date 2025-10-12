@@ -20,7 +20,7 @@ export async function createPost(formData: FormData) {
       title,
       content,
       authorId: user.id,
-      published: false,
+      published: true,
       createdAt: new Date(),
     },
   });
