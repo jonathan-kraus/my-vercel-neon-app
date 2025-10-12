@@ -21,7 +21,8 @@ type WeatherResponse = {
 export async function getWeather(): Promise<WeatherResponse> {
   const requestId = crypto.randomUUID();
   const apiKey = process.env.TOMORROW_API_KEY;
-  const zip = '02445'; // Brookline, MA ZIP code
+  //const zip = '02445'; // Brookline, MA ZIP code
+  const zip = process.env.JZIP || '02445'; // Default to Brookline, MA if not set
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
 console.log(`[getWeather] [${requestId}] Server function started at ${new Date().toISOString()}`);
 if (typeof window !== 'undefined') {

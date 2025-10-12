@@ -22,6 +22,8 @@ export async function fetchWeather(requestId?: string) {
 
   const data = await res.json();
   const values = data.data.values;
+  const location1 = data.data.location;
+  const location2 = data.location;
   const locationName = data?.location?.name ?? 'Unknown';
   
   const logEvent = async () => {
@@ -32,7 +34,7 @@ export async function fetchWeather(requestId?: string) {
         body: JSON.stringify({
           severity: 'info',
           source: '[fetchWeather]',
-          message: `Weather data fetched for ${locationName}`,
+          message: `Weather data fetched for ${locationName}, ${location1}, ${location2}`,
           requestId: requestId, // or generate dynamically
           metadata: { userAction: 'fetch' },
         }),
