@@ -1,34 +1,41 @@
-import { NextRequest } from 'next/server';
-import { db } from '@/app/lib/db';
-import { logEvent } from '@/app/lib/log';
 
-export async function POST(req: NextRequest) {
+import { db } from '@/app/lib/db';
+import { NextResponse } from 'next/server';
+const requestId = crypto.randomUUID();
+import { logEvent } from '@/app/lib/log';
+export async function POST(req: Request) {
   const formData = await req.formData();
-  const requestId = crypto.randomUUID();
-  const authorId = Number(formData.get('authorId'));
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
+  const authorName = formData.get('authorName') as string;
 
-  if (isNaN(authorId)) {
-    return new Response('Invalid authorId', { status: 400 });
-  }
+  try {
+    const user = await db.user.findFirst({
+      where: { name: { equals: authorName, mode: 'insensitive' } },
+    });
 
-  await db.post.create({
-    data: {
-      authorId,
-      title,
-      content,
-      published: true,
-    },
-  });
-await logEvent({
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    await db.post.create({
+      data: {
+        title,
+        content,
+        published: true,
+        createdAt: new Date(),
+        authorId: user.id, // ✅ This must match a real User.id
+      },
+    });
+    await logEvent({
   source: 'createNewPost route',
   message: `Post created with title: ${title}`,
   requestId,
   metadata: { userAction: 'create' },
 });
-  return new Response(null, {
-  status: 302,
-  headers: { Location: '/pstbyusr' },
-});
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Create post error:', err);
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  }
 }
