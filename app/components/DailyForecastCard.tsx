@@ -64,7 +64,7 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
           source: 'DailyForecastCard',
           message: 'Retrieving daily forecast',
           requestId: requestId, // or generate dynamically
-          metadata: { userAction: 'fetch' },
+          metadata: { forecast },
         }),
       });
     } catch (error) {
@@ -73,7 +73,7 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
   };
 
   logEvent();
-}, [requestId]);
+}, [requestId, forecast]);
   if (!forecast.length) return <p>Loading daily forecast...</p>;
 
 
