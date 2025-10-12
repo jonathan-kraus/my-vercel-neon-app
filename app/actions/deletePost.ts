@@ -8,25 +8,19 @@ export async function deletePost(postId: number) {
   const user = cookieStore.get('authorizedUser')?.value;
 
   if (!user) {
-    throw new Error('Unauthorized');
+    return { success: false, error: 'Unauthorized' }; // 401-style
   }
 
-const post = await db.post.findUnique({
-  where: { id: postId },
-  include: { author: true },
-});
-
-
-if (post?.author?.name !== user) {
-  await db.log.create({
-    data: {
-      source: 'deletePost',
-      message: `Unauthorized delete attempt by ${user} on post ${postId}`,
-      severity: 'warn',
-    },
+  const post = await db.post.findUnique({
+    where: { id: postId },
+    include: { author: true },
   });
-  throw new Error('Forbidden');
-}
+
+  if (post?.author?.name !== user) {
+    return { success: false, error: 'Forbidden' }; // ✅ 403-style
+  }
 
   await db.post.delete({ where: { id: postId } });
+
+  return { success: true };
 }
