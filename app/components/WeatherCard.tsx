@@ -45,11 +45,11 @@ export default function WeatherCard() {
     }
   };
 
-  console.log(`[WeatherCard]  WeatherCard rendered`);
+  console.log(`[WeatherCard] [${requestId}] WeatherCard rendered`);
 
   useEffect(() => {
     fetchWeather(); // initial fetch
-    console.log(`[WeatherCard] Interval set for fetching weather every 30 minutes`);
+    console.log(`[WeatherCard] [${requestId}]  Interval set for fetching weather every 30 minutes`);
     intervalRef.current = setInterval(() => {
       fetchWeather();
     }, 30 * 60 * 1000); // every 30 minutes
