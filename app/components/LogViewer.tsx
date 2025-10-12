@@ -2,16 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import type { Log } from '@prisma/client';
+import { getLogs } from '../utils/getLogs'; // adjust path
+import { logEvent } from '../lib/log';
 
-import { getLogsByAuthor } from '../utils/getLogs'; // adjust path
+const requestId = crypto.randomUUID();
 
+await logEvent({
+  source: 'LogViewer',
+  message: `View Activity Log: ${requestId}`,
+  requestId,
+  metadata: { userAction: 'view' },
+});
 export default function LogViewer() {
   const [logs, setLogs] = useState<Log[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchLogs = async () => {
-      const data = await getLogsByAuthor();
+      const data = await getLogs();
       setLogs(data);
       setLoading(false);
     };

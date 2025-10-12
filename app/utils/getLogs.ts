@@ -1,11 +1,11 @@
 'use server';
 
-import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient();
+import { db } from '../lib/db';
 
-export async function getLogsByAuthor() {
-  const logs = await prisma.log.findMany({
+
+export async function getLogs() {
+  const logs = await db.log.findMany({
 
     orderBy: { timestamp: 'desc' }, // optional: newest first
   });
