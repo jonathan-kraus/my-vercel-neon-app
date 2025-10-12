@@ -16,10 +16,17 @@ const post = await db.post.findUnique({
   include: { author: true },
 });
 
+
 if (post?.author?.name !== user) {
+  await db.log.create({
+    data: {
+      source: 'deletePost',
+      message: `Unauthorized delete attempt by ${user} on post ${postId}`,
+      severity: 'warn',
+    },
+  });
   throw new Error('Forbidden');
 }
-
 
   await db.post.delete({ where: { id: postId } });
 }
