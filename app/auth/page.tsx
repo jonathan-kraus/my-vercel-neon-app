@@ -22,12 +22,7 @@ export default function AuthPage() {
     const result = await res.json();
     if (result.exists) {
       document.cookie = `authorizedUser=${name}; path=/`; // ✅ Set cookie
-      await logEvent({
-      source: 'auth page',
-      message: `auth page completed ${document.cookie}`,
-      requestId,
-      metadata: { userAction: 'auth' },
-      });
+      
       router.push('/'); // ✅ Redirect to home
     } else {
       setError('Invalid credentials');
