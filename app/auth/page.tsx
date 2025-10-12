@@ -2,7 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
+import { logEvent } from '../lib/log'; // if you want to log events
+const requestId = crypto.randomUUID();
+await logEvent({
+  source: 'auth page',
+  message: `auth page accessed`,
+  requestId,
+  metadata: { userAction: 'auth' },
+});
 export default function AuthPage() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +27,13 @@ export default function AuthPage() {
 
     const result = await res.json();
     if (result.exists) {
+      document.cookie = `authorizedUser=${name}; path=/`; // ✅ Set cookie
+      await logEvent({
+      source: 'auth page',
+      message: `auth page completed ${document.cookie}`,
+      requestId,
+      metadata: { userAction: 'auth' },
+      });
       router.push('/'); // ✅ Redirect to home
     } else {
       setError('Invalid credentials');

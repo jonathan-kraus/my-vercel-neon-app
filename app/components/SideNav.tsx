@@ -10,9 +10,9 @@ import { triggerEmail } from './actions'; // adjust path if needed
 const requestId = crypto.randomUUID(); 
 export default function SideNav() {
 const router = useRouter();
-//const setUser = useMockUserSetter();
-//const user = useMockUser();
-//console.log('Current mock user:', user);
+const setUser = useMockUserSetter();
+const user = useMockUser();
+console.log('Current mock user:', user);
 const handleAuthorsClick = async () => {
   console.log('handleAuthorsClick!');
 const logEvent = async () => {
