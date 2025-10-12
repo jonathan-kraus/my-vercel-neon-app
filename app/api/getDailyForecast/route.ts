@@ -10,8 +10,8 @@ const requestId = crypto.randomUUID();
         metadata: { userAction: 'receive' },
       });
 export async function GET() {
-  const requestId = crypto.randomUUID();
-  console.log(`[getDailyForecast] API route started at ${new Date().toISOString()}`);
+  
+  console.log(`[getDailyForecast] [${requestId}] API route started at ${new Date().toISOString()}`);
 
   try {
     const forecast = await getDailyForecast(requestId);

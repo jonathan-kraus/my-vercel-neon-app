@@ -1,6 +1,7 @@
 'use server';
 
 export type DailyForecastPoint = {
+  requestId?: string;
   time: string;
   temperatureMax: number;
   temperatureMin: number;
@@ -42,11 +43,17 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=42.3317,-71.1212&timesteps=1d&units=imperial&apikey=${apiKey}`;
   
   const res = await fetch(url);
+      if (!res.ok) {
+      console.error(`[Tomorrow.io] ❌ HTTP error: ${res.status}`);
+      return []; // Return empty array to avoid frontend crash
+    }
+
   const data = await res.json();
-  if (!res.ok) {
-    console.error(`[getDailyForecast] [${requestId}] ❌ API error ${res.status}:`, data);
-  throw new Error('Failed to fetch daily forecast');
-}
+
+      if (!data || !data.timelines || !Array.isArray(data.timelines.daily)) {
+      console.warn(`[Tomorrow.io] ⚠️ Unexpected response format`, data);
+      return []; // Defensive fallback
+    }
   
   console.log(`[GetDailyForecast] [${requestId}] Forecast response:`, data);
 const daily: RawDailyEntry[] = data.timelines?.daily;
@@ -54,6 +61,7 @@ const daily: RawDailyEntry[] = data.timelines?.daily;
 console.log(`[${requestId}] Raw daily forecastvalues:`, daily.map(d => d.values));
 console.log(`[${requestId}] JJJ daily entries:`, daily);
   return daily.slice(0, 7).map((day): DailyForecastPoint => ({
+    requestId,
     time: day.time,
     temperatureMax: day.values?.temperatureMax ?? 0,
     temperatureMin: day.values?.temperatureMin ?? 0,
