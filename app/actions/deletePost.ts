@@ -4,7 +4,7 @@ import { db } from '@/app/lib/db';
 import { cookies } from 'next/headers';
 
 export async function deletePost(postId: number) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const user = cookieStore.get('authorizedUser')?.value;
 
   if (!user) {
