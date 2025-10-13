@@ -126,7 +126,7 @@ return {
   rainAccumulationMax: values.rainAccumulationMax ?? 0,
   rainAccumulationMin: values.rainAccumulationMin ?? 0,
   rainAccumulationSum: values.rainAccumulationSum ?? 0,
-  locationName: locationName ?? 'Unknown',
+  location: location2 ?? 'Unknown',
   emailSent,
   lastEmailTimestamp,
   requestId,
