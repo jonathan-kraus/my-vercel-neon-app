@@ -2,10 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
+import { logEvent } from '@/app/lib/log';
 
 export default function AuthPage() {
-  import { logEvent } from '@/app/lib/log';
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
