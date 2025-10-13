@@ -31,7 +31,7 @@ export async function fetchWeather(requestId?: string) {
 
   const logEvent = async () => {
     try {
-      await fetch('/api/log', {
+      await fetch('https://kraus.my.id/api/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
