@@ -1,7 +1,6 @@
 'use server';
 import { db } from '@/app/lib/db';
 
-
 type WeatherResponse = {
   temperature: number;
   humidity: number;
@@ -33,11 +32,8 @@ if (typeof window !== 'undefined') {
 }
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch weather');
-    const data = await res.json();
 
-
-
-
+  const data = await res.json();
   const values = data.data.values;
   const now = new Date();
   console.log(`[getWeather] [${requestId}] Raw weather API response:`, data);
@@ -135,27 +131,14 @@ export async function getHourlyForecast(): Promise<
   { time: string; temperature: number; precipitation: number; windSpeed: number }[]
 > {
   const apiKey = process.env.TOMORROW_API_KEY;
-  //const zip = '02445'; // Brookline, MA ZIP code
-  const zip = process.env.JZIP || '02445'; // Default to Brookline, MA if not set
+  const zip = '02445'; // Brookline, MA ZIP code
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${zip}&timesteps=1h&units=imperial&apikey=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch forecast');
-const requestId = crypto.randomUUID();
+
   const data = await res.json();
   const hourly: HourlyForecastEntry[] = data.timelines.hourly;
-    const location1 = data.data.location;
-  const location2 = data.location;
-  await db.log.create({
-      data: {
-        severity: 'info',
-        source: '[getHourlyForecast]',
-        requestId,
-        message: `Hourly weather forecast fetched for ${location1}, ${location2} (${zip})`,
-        metadata: { userAction: 'fetch' },  
-        timestamp: new Date(),
-      },
-    })
-  
+
   return hourly.slice(0, 12).map(hour => ({
     time: hour.time,
     temperature: hour.values.temperature,

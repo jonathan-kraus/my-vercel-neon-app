@@ -33,7 +33,7 @@ export async function fetchWeather(requestId?: string) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           severity: 'info',
-          source: '[fetchWeather app/lib/fetchWeather.ts]',
+          source: '[fetchWeather]',
           message: `Weather data fetched for ${locationName}, ${location1}, ${location2}`,
           requestId: requestId, // or generate dynamically
           metadata: { userAction: 'fetch' },
