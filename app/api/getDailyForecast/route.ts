@@ -2,16 +2,17 @@ import { NextResponse } from 'next/server';
 import { getDailyForecast } from '@/app/lib/GetDailyForecast';
 import { logEvent } from '@/app/lib/log';
 
-const requestId = crypto.randomUUID();
-      await logEvent({
-        source: 'getDailyForecast',
-        message: `Route accessed`,
-        requestId,
-        metadata: { userAction: 'receive' },
-      });
 export async function GET() {
-  
+  const requestId = crypto.randomUUID();
+
   console.log(`[getDailyForecast] [${requestId}] API route started at ${new Date().toISOString()}`);
+
+  await logEvent({
+    source: 'getDailyForecast',
+    message: `Route accessed`,
+    requestId,
+    metadata: { userAction: 'receive' },
+  });
 
   try {
     const forecast = await getDailyForecast(requestId);
