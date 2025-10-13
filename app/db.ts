@@ -1,6 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import { db } from "./lib/db";
-
+import { logEvent } from "./lib/log";
 
 console.log("DB module loaded");
 export async function checkDbConnection() {
@@ -9,13 +8,12 @@ export async function checkDbConnection() {
     return "No DATABASE_URL environment variable";
   }
   try {
-    await db.log.create({
-  data: {
+    await logEvent({
     requestId,
     message: 'dbts checker',
     severity: 'info',
     source: 'db.ts',
-  },
+    metadata: { action: 'checkDbConnection' },
 });
 
     const sql = neon(process.env.DATABASE_URL);
