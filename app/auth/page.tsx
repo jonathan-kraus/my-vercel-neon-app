@@ -5,15 +5,22 @@ import { useRouter } from 'next/navigation';
 
 
 export default function AuthPage() {
-  
+  import { logEvent } from '@/app/lib/log';
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const requestId = crypto.randomUUID();
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+await logEvent({
+  source: 'AuthPage',
+  message: `User login attempted for ${name}  `,
+  requestId,
+  metadata: { userAction: 'login' },
+});
     const res = await fetch('/api/checkUser', {
       method: 'POST',
       body: JSON.stringify({ name }),
