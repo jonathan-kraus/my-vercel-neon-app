@@ -48,7 +48,7 @@ export async function fetchWeather(requestId?: string) {
   };
 
   logEvent();
-  console.log(`[fetchWeather] [${requestId}] Weather data fetched for ${locationName}`);
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched for loc2 ${location2}`);
   
   const now = new Date();
 
