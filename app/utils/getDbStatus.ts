@@ -2,7 +2,7 @@
 
 
 import { db } from '@/app/lib/db';
-import { logEvent } from '../lib/log';
+import { logEvent } from '../lib/abslog';
 let start: number;
 let latencyMs: number;
 const prisma = db; // For clarity in this file
