@@ -22,11 +22,9 @@ export async function fetchWeather(requestId?: string) {
 
   const data = await res.json();
   const values = data.data.values;
-  const location1 = data.location?.address ?? 'Unknown1';
   const location2 = data.location ?? 'Unknown2';
   
   console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: values`, values);
-  console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location1`, location1);
   console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location2`, location2);
 
   const logEvent = async () => {
@@ -37,7 +35,7 @@ export async function fetchWeather(requestId?: string) {
         body: JSON.stringify({
           severity: 'info',
           source: '[fetchWeather]',
-          message: `Weather data fetched for ${location2}`,
+          message: `Weather data fetched for ${JSON.stringify(location2)}`,
           requestId: requestId, // or generate dynamically
           metadata: { userAction: 'fetch' },
         }),
@@ -48,8 +46,9 @@ export async function fetchWeather(requestId?: string) {
   };
 
   logEvent();
-  console.log(`[fetchWeather] [${requestId}] Weather data fetched for loc2 ${location2}`);
-  
+
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched for location2 ${JSON.stringify(location2)}`);
+
   const now = new Date();
 
   let emailSent = false;
