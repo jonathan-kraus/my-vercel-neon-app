@@ -1,6 +1,6 @@
 'use server';
 import { db } from '@/app/lib/db';
-import { logEvent } from '../lib/logger';
+
 
 type WeatherResponse = {
   temperature: number;
