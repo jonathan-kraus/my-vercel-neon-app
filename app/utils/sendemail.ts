@@ -12,12 +12,19 @@ const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
 export async function sendConfirmationEmail(toEmail: string, toName: string, requestId?: string) {
   const recipients = [new Recipient(toEmail, toName)];
 
-  await logEvent({
-  source: 'sendConfirmationEmail',
-  message: `Sending email to <${toEmail}>`,
-  requestId: requestId ? requestId : 'no-request-id',
-  metadata: { userAction: 'send_email' },
-});
+  const logEvent = async () => {
+    try {
+      await fetch('https://kraus.my.id/api/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          severity: 'info',
+          source: '[sendEmail]',
+          message: `sending email to <${toEmail}>`,
+          requestId: requestId, // or generate dynamically
+          metadata: { userAction: 'send_email' },
+        }),
+      });
   const emailParams = new EmailParams()
     .setFrom(sentFrom)
     .setTo(recipients)
