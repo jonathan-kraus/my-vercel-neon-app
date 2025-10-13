@@ -8,13 +8,7 @@ let latencyMs: number;
 const prisma = db; // For clarity in this file
 const requestId = crypto.randomUUID();
 export async function getDbStatus() {
-
-  await logEvent({
-  source: 'getDbStatus',
-  message: 'Retrieving database status',
-  requestId,
-  metadata: { userAction: 'fetch' },
-});
+  console.log(`[getDbStatus] [${requestId}] Checking database status...`);
  
   const [version, postCount, latestPost, logCount] = await Promise.all([
     prisma.$queryRaw`SELECT version()`,
@@ -27,6 +21,12 @@ export async function getDbStatus() {
 
   ]);
   
+  await logEvent({
+  source: 'getDbStatusJS',
+  message: `Retrieving database status postcount ${postCount}`,
+  requestId,
+  metadata: { userAction: 'fetch' },
+});
 
   return {
     version: (version as { version: string }[])[0].version,
