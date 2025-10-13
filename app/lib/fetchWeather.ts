@@ -25,7 +25,10 @@ export async function fetchWeather(requestId?: string) {
   const location1 = data.data.location;
   const location2 = data.location;
   const locationName = data?.location?.name ?? 'Unknown';
-  
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: values`, values);
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location1`, location1);
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location2`, location2);
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: locationName`, locationName);
   const logEvent = async () => {
     try {
       await fetch('/api/log', {
