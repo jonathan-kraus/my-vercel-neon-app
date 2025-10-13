@@ -12,7 +12,7 @@ const source = 'getDailyForecast';
 const message = 'Fetching daily forecast';
 const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
 try {
-  await fetch('/api/log', {
+  await fetch('https://kraus.my.id/api/log', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ severity, source, message, requestId, metadata }),
