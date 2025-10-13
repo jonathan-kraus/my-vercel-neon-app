@@ -9,6 +9,7 @@ export async function logEvent(event: LogEvent) {
     message,
     metadata = {},
   } = event
+console.log(`[logEvent] [${requestId}] Logging:`, { source, message, metadata });
 
   try {
     await db.log.create({
