@@ -8,9 +8,7 @@ let latencyMs: number;
 const prisma = db; // For clarity in this file
 const requestId = crypto.randomUUID();
 export async function getDbStatus() {
-  
 
-  
   await logEvent({
   source: 'getDbStatus',
   message: 'Retrieving database status',
@@ -18,7 +16,6 @@ export async function getDbStatus() {
   metadata: { userAction: 'fetch' },
 });
  
-
   const [version, postCount, latestPost, logCount] = await Promise.all([
     prisma.$queryRaw`SELECT version()`,
     prisma.post.count({ where: { authorId: { not: 1101 } } }),
