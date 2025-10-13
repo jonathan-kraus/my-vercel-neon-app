@@ -88,7 +88,8 @@ export default function WeatherCard() {
   }, [weather]);
 
   const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
-  const isWindy = weather?.windSpeed > 10;
+  const isWindy = typeof weather?.windSpeed === 'number' && weather.windSpeed > 10;
+
   if (!weather) return <p>Loading weather...</p>;
 
   const nextEmailInHours =
