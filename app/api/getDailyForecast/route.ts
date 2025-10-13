@@ -7,13 +7,15 @@ export async function GET() {
 
   console.log(`[getDailyForecast] [${requestId}] API route started at ${new Date().toISOString()}`);
 console.log(`[getDailyForecast] 🧭 TRACE: ${requestId}`);
-
+const severity = 'info';
+const source = 'getDailyForecast';
+const message = 'Fetching daily forecast';
+const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
 try {
-  await logEvent({
-    source: 'getDailyForecast',
-    message: `Route accessed`,
-    requestId,
-    metadata: { userAction: 'receive' },
+  await fetch('/api/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ severity, source, message, requestId, metadata }),
   });
 } catch (err) {
   console.error(`[getDailyForecast] ❌ logEvent failed:`, err);
