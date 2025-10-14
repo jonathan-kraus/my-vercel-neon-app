@@ -20,14 +20,21 @@ export async function getDbStatus() {
     latencyMs = Date.now() - start 
 
   ]);
-  
+  console.log(`[getDbStatus] [${requestId}] Start logging database status...`);
+ try {
   await logEvent({
   source: 'getDbStatusJS',
   message: `Retrieving database status postcount ${postCount}`,
   requestId,
   metadata: { userAction: 'fetch' },
+  severity: 'info',
 });
-
+}
+catch (error) {
+  console.error(`[getDbStatus] [${requestId}] Failed to log event:`, error);
+}
+console.log(`[getDbStatus] [${requestId}] After try catch block for logging database status...`);
+ 
   return {
     version: (version as { version: string }[])[0].version,
     postCount,
