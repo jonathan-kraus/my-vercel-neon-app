@@ -52,7 +52,7 @@ export async function fetchWeather(requestId?: string) {
 
 
   console.log(`[fetchWeather] [${requestId}] Location data fetched from API: locationName ${locationName}`);
-  console.log(`[fetchWeather] [${requestId}] Location data fetched from API: locationName ${data2.address.display_name}`);
+  console.log(`[fetchWeather] [${requestId}] Location data fetched from API: display_name ${data2.display_name}`);
 
 
   } catch (error) {
