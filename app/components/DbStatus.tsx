@@ -12,6 +12,7 @@ type DbStatusType = {
   region ?: string;
   latencyMs ?: number;
 };
+console.log('[DbStatus] DbStatus component loaded');
 function RegionBadge({ region }: { region: string }) {
   return (
     <span className="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded">

@@ -3,6 +3,7 @@
 
 import { db } from '@/app/lib/db';
 import { logEvent } from '../lib/abslog';
+import { info } from 'console';
 let start: number;
 let latencyMs: number;
 const prisma = db; // For clarity in this file
@@ -27,14 +28,13 @@ export async function getDbStatus() {
   message: `Retrieving database status postcount ${postCount}`,
   requestId,
   metadata: { userAction: 'fetch' },
-  severity: 'info',
+  
 });
 }
 catch (error) {
   console.error(`[getDbStatus] [${requestId}] Failed to log event:`, error);
 }
-console.log(`[getDbStatus] [${requestId}] After try catch block for logging database status...`);
- 
+logEvent(info(`[getDbStatus] [${requestId}] After try catch block for logging database status...`));
   return {
     version: (version as { version: string }[])[0].version,
     postCount,

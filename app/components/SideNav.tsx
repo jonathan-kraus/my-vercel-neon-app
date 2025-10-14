@@ -52,12 +52,26 @@ const handleDbStatusClick = async () => {
   //createLog({authorId: 1101,title: 'SideNav',content: `DbStatus SideNav component`});
   //toast.loading('Sending email...');
   try {
-   await triggerEmail("DbStatus", requestId);
-   console.log('Email function was here');
-   //toast.success('Email sent!');
-   console.log('after toast✅');
+   const logEvent = async () => {
+    try {
+      await fetch('/api/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          severity: 'info',
+          source: 'SideNav',
+          message: 'DbStatus SideNav component clicked',
+          requestId: requestId, // or generate dynamically
+          metadata: { userAction: 'fetch' },
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to log event:', error);
+    }
+  };
+  logEvent();
    setTimeout(() => router.push('/admin/db-status'), 1500);
-   console.log('✅ Email sent and redirected to /admin/db-status');
+   console.log('✅ Logged and redirected to /admin/db-status');
 
   } catch (err) {
     console.error('Email failed:', err);
