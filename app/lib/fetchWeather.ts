@@ -42,8 +42,17 @@ export async function fetchWeather(requestId?: string) {
   console.log(`[fetchWeather] [${requestId}] Location data fetch response:`, res2);
   const data2 = await res2.json();
   console.log(`[fetchWeather] [${requestId}] Location data fetch response: json`, data2);
-  const locationName = data2.address?.neighbourhood ?? data2.address?.town ?? data2.address?.county ?? 'Unknown Location';
+  const locationName =
+  data2.address?.city ??
+  data2.address?.town ??
+  data2.address?.village ??
+  data2.address?.hamlet ??
+  data2.address?.county ??
+  'Unknown Location';
+
+
   console.log(`[fetchWeather] [${requestId}] Location data fetched from API: locationName ${locationName}`);
+  console.log(`[fetchWeather] [${requestId}] Location data fetched from API: locationName ${data2.address?.display_name}`);
 
 
   } catch (error) {
