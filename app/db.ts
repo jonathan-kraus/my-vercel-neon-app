@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import { logEvent } from "./lib/log";
+import { logEvent } from "./lib/abslog";
 
 console.log("DB module loaded");
 export async function checkDbConnection() {
@@ -19,7 +19,7 @@ export async function checkDbConnection() {
     const sql = neon(process.env.DATABASE_URL);
     const result = await sql`SELECT version()`;
     
-    console.log("Pg version:", result);
+    console.log("Pg version result:", JSON.stringify(result, null, 2));
 
     return "Database connected";
   } catch (error) {
