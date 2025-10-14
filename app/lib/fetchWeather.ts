@@ -31,13 +31,18 @@ export async function fetchWeather(requestId?: string) {
   console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location2`, location2);
   const url2 = "https://nominatim.openstreetmap.org/reverse?lat=42.3317&lon=-71.1212&format=json";
   console.log(`[fetchWeather] [${requestId}] Fetching location data from API: ${url2}`);
-  const res2 = await fetch(url2);
+  try {
+    const res2 = await fetch(url2);
   if (!res2.ok) throw new Error('Failed to fetch location data');
   console.log(`[fetchWeather] [${requestId}] Location data fetch response:`, res2);
   const data2 = await res2.json();
   const locationName = data2.address?.city ?? data2.address?.town ?? data2.address?.village ?? data2.address?.hamlet ?? data2.address?.county ?? 'Unknown Location';
   console.log(`[fetchWeather] [${requestId}] Location data fetched from API: locationName`, locationName);
 
+  } catch (error) {
+    console.error(`[fetchWeather] [${requestId}] Error fetching location data:`, error);
+  }
+  
   const logEvent = async () => {
     try {
       await fetch('https://kraus.my.id/api/log', {
