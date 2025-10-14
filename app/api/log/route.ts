@@ -4,7 +4,7 @@ export async function POST(req: Request) {
   const body = await req.json()
 
   const { severity = 'info', source, message, requestId, metadata } = body
-
+console.log(`[log] [${requestId}] Received log event:`, { severity, source, message, metadata })
   try {
     await db.log.create({
       data: {

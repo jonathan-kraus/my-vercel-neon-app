@@ -14,6 +14,7 @@ export async function logEvent({
   requestId: string;
   metadata?: LogMetadata;
 }) {
+  console.log("log module loaded", {requestId});
   try {
     await fetch('/api/log', {
       method: 'POST',
