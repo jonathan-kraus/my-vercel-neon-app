@@ -80,7 +80,7 @@ export async function fetchWeather(requestId?: string) {
   // logEvent();
 const severity = 'info';
 const source = 'fetchWeather';
-const message = `Weather data fetched for location ${location2}`;
+const message = `Weather data fetched successfully`;
 const metadata = { action: 'fetch', timestamp: new Date().toISOString(), location: location2 };
 
     await db.log.create({

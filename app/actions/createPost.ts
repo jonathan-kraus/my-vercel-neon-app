@@ -24,6 +24,20 @@ export async function createPost(formData: FormData) {
       createdAt: new Date(),
     },
   });
-
+const severity = 'info';
+const source = 'createPost';
+const message = `Post created successfully by ${content}`;
+const metadata = { action: 'create', timestamp: new Date().toISOString(), authorId: user.id };
+const requestId = crypto.randomUUID();
+    await db.log.create({
+      data: {
+        severity,
+        source,
+        message,
+        requestId,
+        metadata: metadata ?? {},
+        timestamp: new Date(),
+      },
+    })
   redirect('/'); // ✅ Send them back to the homepage
 }
