@@ -12,7 +12,21 @@ type Author = {
 };
 
 export default async function AuthorsPage() {
-  
+const severity = 'info';
+const source = 'AuthorsPage';
+const message = `Authors page accessed`;
+const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
+
+    await db.log.create({
+      data: {
+        severity,
+        source,
+        message,
+        requestId,
+        metadata: metadata ?? {},
+        timestamp: new Date(),
+      },
+    })  
 try {
   console.log('🚀 Starting logic');
     await logEvent({

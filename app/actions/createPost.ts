@@ -26,7 +26,7 @@ export async function createPost(formData: FormData) {
   });
 const severity = 'info';
 const source = 'createPost';
-const message = `Post created successfully by ${content}`;
+const message = `Post created successfully: ${content}`;
 const metadata = { action: 'create', timestamp: new Date().toISOString(), authorId: user.id };
 const requestId = crypto.randomUUID();
     await db.log.create({
