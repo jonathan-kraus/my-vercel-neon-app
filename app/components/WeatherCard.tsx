@@ -112,10 +112,9 @@ export default function WeatherCard() {
       <p><strong>Temperature:</strong> {weather.temperature} °F</p>
       <p><strong>Humidity:</strong> {weather.humidity}%</p>
       <p className={`text-sm text-gray-600 flex items-center gap-2 ${isWindy ? 'animate-wiggle' : ''}`}>
-      Wind Speed: {weather.windSpeed ?? 'N/A'} mph 💨
+      <strong>Wind Speed:</strong> {weather.windSpeed ?? 'N/A'} mph 💨
       </p>
 
-      <p><strong>Wind Speed:</strong> {weather.windSpeed} mph</p>
       <p><strong>Wind Gust:</strong> {weather.windGust} mph</p>
       <p><strong>Precipitation Probability:</strong> {weather.precipitationProbability}%</p>
       <p>Day: {getIcon(weather.conditions.day)} {getLabel(weather.conditions.day)}</p>
