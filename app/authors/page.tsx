@@ -16,7 +16,8 @@ const severity = 'info';
 const source = 'AuthorsPage';
 const message = `Authors page accessed`;
 const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
-
+try {
+  console.log('🚀 Starting logic');
     await db.log.create({
       data: {
         severity,
@@ -27,17 +28,9 @@ const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
         timestamp: new Date(),
       },
     })  
-try {
-  console.log('🚀 Starting logic');
-    await logEvent({
-  source: 'authors Page',
-  message: `List of authors`,
-  requestId,
-  metadata: { userAction: 'fetch' },
-});
-    } catch (err) {
-  console.error('❌ Error caught:', err);
-}
+  } catch (err) {
+    console.error(`❌ ${requestId} [AuthorsPage] Error caught:`, err);
+  }
   const authors: Author[] = await db.user.findMany({
     orderBy: { name: 'asc' },
     select: { id: true, name: true, _count: { select: { posts: true } } },
