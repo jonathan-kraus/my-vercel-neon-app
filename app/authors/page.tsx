@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 import { db } from "../lib/db";
 import PostCountBadge from '../components/PostCountBadge';
-import { logEvent } from '../lib/log';
+
 //import { sendConfirmationEmail } from '../utils/sendemail';
 
 const requestId = crypto.randomUUID();
