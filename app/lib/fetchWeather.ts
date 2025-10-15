@@ -15,7 +15,7 @@ export async function fetchWeather(requestId?: string) {
   //const zip = '02245'; // Brookline, MA ZIP code
 
   //const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
-  const url = `https://api.tomorrow.io/v4/weather/realtime?location=42.3317,-71.1212&units=imperial&apikey=${apiKey}`;
+  const url = `https://api.tomorrow.io/v4/weather/realtime?location=40.10520,-75.41404&units=imperial&apikey=${apiKey}`;
 
 
   console.log(`[fetchWeather] [${requestId}] Fetching weather data from API: ${url}`);
@@ -59,27 +59,42 @@ export async function fetchWeather(requestId?: string) {
     console.error(`[fetchWeather] [${requestId}] Error fetching location data:`, error);
   }
   console.log(`[fetchWeather] [${requestId}] Preparing to log event to external logging service`);
-  const logEvent = async () => {
-    try {
-      await fetch('https://kraus.my.id/api/log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          severity: 'info',
-          source: '[fetchWeather]Kraus',
-          message: `Weather data fetched for location ${location2}`,
-          requestId: requestId, // or generate dynamically
-          metadata: { userAction: 'fetch' },
-        }),
-      });
-    } catch (error) {
-      console.error(`[fetchWeather] [${requestId}] Failed to log event:`, error);
-    }
-  };
+  // const logEvent = async () => {
+  //   try {
+  //     await fetch('https://kraus.my.id/api/log', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({
+  //         severity: 'info',
+  //         source: '[fetchWeather]Kraus',
+  //         message: `Weather data fetched for location ${location2}`,
+  //         requestId: requestId, // or generate dynamically
+  //         metadata: { userAction: 'fetch' },
+  //       }),
+  //     });
+  //   } catch (error) {
+  //     console.error(`[fetchWeather] [${requestId}] Failed to log event:`, error);
+  //   }
+  // };
 
-  logEvent();
+  // logEvent();
+const severity = 'info';
+const source = 'fetchWeather';
+const message = `Weather data fetched for location ${location2}`;
+const metadata = { action: 'fetch', timestamp: new Date().toISOString(), location: location2 };
 
-  console.log(`[fetchWeather] [${requestId}] Weather data fetched for location2 ${JSON.stringify(location2)}`);
+    await db.log.create({
+      data: {
+        severity,
+        source,
+        message,
+        requestId,
+        metadata: metadata ?? {},
+        timestamp: new Date(),
+      },
+    })
+
+  console.log(`[fetchWeather]  Weather data fetched for location2 `)
 
   const now = new Date();
 
