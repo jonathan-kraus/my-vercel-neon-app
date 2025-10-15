@@ -111,7 +111,7 @@ export default function WeatherCard() {
 )}
       <p><strong>Temperature:</strong> {weather.temperature} °F</p>
       <p><strong>Humidity:</strong> {weather.humidity}%</p>
-      <p className={`text-sm text-gray-600 flex items-center gap-2 ${isWindy ? 'animate-wiggle' : ''}`}>
+      <p className={`text-sm text-stone-950 flex items-center gap-2 ${isWindy ? 'animate-wiggle' : ''}`}>
       <strong>Wind Speed:</strong> {weather.windSpeed ?? 'N/A'} mph 💨
       </p>
 
