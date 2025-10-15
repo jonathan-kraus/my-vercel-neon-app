@@ -58,7 +58,7 @@ export async function fetchWeather(requestId?: string) {
   } catch (error) {
     console.error(`[fetchWeather] [${requestId}] Error fetching location data:`, error);
   }
-  
+  console.log(`[fetchWeather] [${requestId}] Preparing to log event to external logging service`);
   const logEvent = async () => {
     try {
       await fetch('https://kraus.my.id/api/log', {
