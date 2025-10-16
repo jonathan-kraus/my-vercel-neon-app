@@ -70,9 +70,9 @@ export default function CreatePostForm() {
 
   return (
     <>
+      {/* When using a server action function as `action={createPost}`, do NOT set method/encType — React/Next handle that. */}
       <form
         action={createPost}
-        method="POST"
         className="space-y-4 max-w-md mx-auto bg-white p-4 rounded shadow"
       >
         <input type="hidden" name="authorName" value={authorizedUser} />
