@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { logEvent } from '../lib/log';
 
 export function DeleteButton({ postId }: { postId: number }) {
   const router = useRouter();
@@ -10,20 +11,39 @@ export function DeleteButton({ postId }: { postId: number }) {
 
   const handleDelete = async () => {
     setLoading(true);
+    const requestId = crypto.randomUUID();
+
     try {
+      await logEvent({
+        source: 'DeleteButton',
+        message: `Post delete attempted: ${postId}`,
+        requestId,
+        metadata: { userAction: 'delete_attempt', postId },
+      });
+
       const res = await fetch(`/api/posts/${postId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
       });
+
       if (!res.ok) {
         const json = await res.json().catch(() => null);
         throw new Error(json?.error || 'Delete failed');
       }
+
       toast.success('Post deleted');
       router.refresh();
     } catch (err) {
       console.error('Delete failed', err);
       toast.error('Failed to delete post');
+
+      await logEvent({
+        source: 'DeleteButton',
+        message: `Post delete failed: ${postId}`,
+        requestId,
+        severity: 'error',
+        metadata: { error: err.message, postId },
+      });
     } finally {
       setLoading(false);
     }
