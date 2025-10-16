@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
-import { db } from '../lib/db';
+import { logEvent} from '../lib/abslog';
 
 console.log('📦 sendemail.ts loaded');
 
@@ -21,21 +21,18 @@ export async function sendConfirmationEmail(toEmail: string, toName: string, req
     .setText(`Sent from utils ${toName} app`)
     .setHtml(`<strong>Sent from utils ${toName} app</strong> ${requestId}`);
 
-    const severity = 'info';
-    const source = 'sendemail';
-    const message = `sending email ${requestId}`;
-    const metadata = { action: 'email', timestamp: new Date().toISOString() };
-    
-        await db.log.create({
-          data: {
-            severity,
-            source,
-            message,
-            requestId,
-            metadata: metadata ?? {},
-            timestamp: new Date(),
-          },
-        })
+    // const severity = 'info';
+    // const source = 'sendemail';
+    // const message = `sending email ${requestId}`;
+    // const metadata = { action: 'email', timestamp: new Date().toISOString() };
+    if (requestId) {
+      await logEvent({
+        source: 'sendemail',
+        message: `sendemail accessed: ${requestId}`,
+        requestId: requestId,
+        metadata: { userAction: 'fetch' },
+      });
+    }
   await mailerSend.email.send(emailParams);
   console.log('✅ Email from utils sent successfully to:', toEmail, toName);
   //console.log('✅ Email purposely not sent:', mailerSend, emailParams, toEmail, toName);
