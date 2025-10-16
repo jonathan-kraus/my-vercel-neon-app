@@ -28,7 +28,7 @@ await logEvent({
 
     const result = await res.json();
     if (result.exists) {
-      document.cookie = `authorizedUser=${name}; path=/`; // ✅ Set cookie
+      document.cookie = `authorizedUser=${name}; path=/; max-age=36`;
       
       router.push('/'); // ✅ Redirect to home
     } else {
