@@ -1,53 +1,62 @@
 'use client';
 
-import { useTransition } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { deletePost } from '@/app/actions/deletePost';
-import { logEvent } from '@/app/lib/log';
-import { toast } from 'react-hot-toast';
+import toast from 'react-hot-toast';
+import { logEvent } from '../lib/log';
 
 export function DeleteButton({ postId }: { postId: number }) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const requestId = crypto.randomUUID();
+  const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
-    await logEvent({
-      source: 'DeleteButton',
-      message: `User requested delete for post ${postId}`,
-      requestId,
-      metadata: { postId },
-    });
+    setLoading(true);
+    const requestId = crypto.randomUUID();
 
     try {
-      const formData = new FormData();
-      formData.append('id', String(postId));
-      await deletePost(postId);
-
       await logEvent({
         source: 'DeleteButton',
-        message: `Post ${postId} successfully deleted`,
+        message: `Post delete attempted: ${postId}`,
         requestId,
-        metadata: { postId },
+        metadata: { userAction: 'delete_attempt', postId },
       });
+
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => null);
+        throw new Error(json?.error || 'Delete failed');
+      }
 
       toast.success('Post deleted');
-      startTransition(() => router.refresh());
+      router.refresh();
     } catch (err) {
+      console.error('Delete failed', err);
+      toast.error('Failed to delete post');
+      const errorMessage = err instanceof Error ? err.message : String(err);
       await logEvent({
         source: 'DeleteButton',
-        message: `Delete failed for post ${postId}`,
+        message: `Post delete failed: ${postId}`,
         requestId,
-        metadata: { postId, error: String(err) },
+        severity: 'error',
+        metadata: { error: errorMessage, postId },
       });
-
-      toast.error('Failed to delete post');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <button onClick={handleDelete} disabled={isPending} className="text-sky-600 ml-4">
-      {isPending ? 'Deleting...' : 'Delete'}
+    <button
+      onClick={handleDelete}
+      disabled={loading}
+      className="text-sm text-red-600 hover:underline px-2 py-1"
+      title="Delete post"
+    >
+      {loading ? 'Deleting…' : 'Delete'}
     </button>
   );
 }

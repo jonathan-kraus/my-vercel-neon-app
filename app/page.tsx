@@ -1,4 +1,3 @@
-
 export const dynamic = "force-dynamic";
 
 import Image from "next/image";
@@ -11,6 +10,8 @@ import discord from "@/assets/discord.svg";
 import docs from "@/assets/docs.svg";
 import CreatePostForm from "./components/CreatePostForm";
 import { DeleteButton } from '@/app/components/DeleteButton';
+// removed client-side duplicate form import (PostFormClient)
+// import PostFormClient from '@/app/components/PostFormClient';
 //import { revalidatePath } from "next/cache";
 
 const DATA = {
@@ -48,10 +49,13 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {/* Keep server-side form only (remove client duplicate) */}
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 md:max-w-lg md:px-0 lg:max-w-xl">
         {/* Post Creation + List */}
         <section className="mb-8">
           <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
+
+          {/* Server-side form component */}
           <CreatePostForm />
 
           {posts.length === 0 ? (
