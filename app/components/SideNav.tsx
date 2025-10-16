@@ -5,10 +5,23 @@ import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { triggerEmail } from './actions'; // adjust path if needed
 
-
-
 const requestId = crypto.randomUUID(); 
 export default function SideNav() {
+  try {
+      await fetch('/api/log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          severity: 'info',
+          source: 'SideNav',
+          message: 'SideNav component initialized',
+          requestId: requestId, // or generate dynamically
+          metadata: { userAction: 'fetch' },
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to log event:', error);
+    }
 const router = useRouter();
 
 const handleAuthorsClick = async () => {
