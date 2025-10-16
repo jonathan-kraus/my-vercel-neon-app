@@ -10,7 +10,7 @@ export async function deletePost(postId: number) {
   if (!user) {
     return { success: false, error: 'Unauthorized' };
   }
-
+const requestId = crypto.randomUUID();
   const post = await db.post.findUnique({
     where: { id: postId },
     include: { author: true },
@@ -21,6 +21,14 @@ export async function deletePost(postId: number) {
   }
 
   await db.post.delete({ where: { id: postId } });
-
+db.log.create({
+    data: {
+      severity: 'info',
+      source: 'deletePost',
+      message: `Post deleted: ${postId} by ${user}`,
+      requestId,
+      metadata: { userAction: 'delete' },
+    },
+  });
   return { success: true };
 }

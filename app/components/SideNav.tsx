@@ -23,7 +23,7 @@ const calllog = async (message: string) => {
     console.error('Failed to log event:', error);
   }
 };
-calllog('SideNav component loaded');
+calllog(`[SideNav] [${requestId}] component loaded`);
 export default function SideNav() {
 
 const router = useRouter();
