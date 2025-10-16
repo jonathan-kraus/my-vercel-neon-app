@@ -6,22 +6,26 @@ import toast, { Toaster } from 'react-hot-toast';
 import { triggerEmail } from './actions'; // adjust path if needed
 
 const requestId = crypto.randomUUID(); 
-export default function SideNav() {
+const calllog = async (message: string) => {
   try {
-      await fetch('/api/log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          severity: 'info',
-          source: 'SideNav',
-          message: 'SideNav component initialized',
-          requestId: requestId, // or generate dynamically
-          metadata: { userAction: 'fetch' },
-        }),
-      });
-    } catch (error) {
-      console.error('Failed to log event:', error);
-    }
+    await fetch('/api/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        severity: 'info',
+        source: 'SideNav',
+        message,
+        requestId,
+        metadata: { userAction: 'fetch' },
+      }),
+    });
+  } catch (error) {
+    console.error('Failed to log event:', error);
+  }
+};
+calllog('SideNav component loaded');
+export default function SideNav() {
+
 const router = useRouter();
 
 const handleAuthorsClick = async () => {
