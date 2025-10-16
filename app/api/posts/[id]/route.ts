@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
 import { logEvent } from '@/app/lib/log';
 
-function parseCookies(cookieHeader: string | null) {
+function parseCookies(cookieHeader: string | null): Record<string, string> {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
   cookieHeader.split(';').forEach(pair => {
@@ -16,25 +16,25 @@ function parseCookies(cookieHeader: string | null) {
   return cookies;
 }
 
-function makeRequestId() {
-  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
-    ? (crypto as any).randomUUID()
-    : `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+function makeRequestId(): string {
+  const hasRandomUUID = typeof crypto !== 'undefined' && 'randomUUID' in crypto;
+  if (hasRandomUUID) return (crypto as unknown as { randomUUID: () => string }).randomUUID();
+  return `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 }
 
-// NOTE: Next expects the second param to be { params }
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+// DELETE handler: extract id from the request URL to avoid typing mismatch on the second param
+export async function DELETE(req: Request) {
   const requestId = makeRequestId();
   try {
-    console.log(`[api/posts/[id]] DELETE called with params:`, params);
-
-    const id = Number(params.id);
+    const url = new URL(req.url);
+    const parts = url.pathname.split('/').filter(Boolean);
+    const idStr = parts[parts.length - 1];
+    const id = Number(idStr);
     if (!id || Number.isNaN(id)) {
-      console.warn('Invalid id param:', params.id);
+      console.warn('Invalid id in URL:', idStr);
       return NextResponse.json({ error: 'invalid_id' }, { status: 400 });
     }
 
-    // optional auth check
     const cookieHeader = req.headers.get('cookie');
     const cookies = parseCookies(cookieHeader);
     const username = cookies['username'] ?? null;
@@ -42,7 +42,6 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
       return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
     }
 
-    // delete post
     await db.post.delete({ where: { id } });
 
     try {
@@ -52,13 +51,15 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
         requestId,
         metadata: { userAction: 'delete_post', postId: id },
       });
-    } catch (e) {
-      console.error('logEvent failed in DELETE /api/posts/[id]', e);
+    } catch (e: unknown) {
+      if (e instanceof Error) console.error('logEvent failed in DELETE /api/posts/[id]', e.message);
+      else console.error('logEvent failed in DELETE /api/posts/[id]', e);
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (err) {
-    console.error('/api/posts/[id] DELETE error', err);
+  } catch (err: unknown) {
+    if (err instanceof Error) console.error('/api/posts/[id] DELETE error', err.message, err);
+    else console.error('/api/posts/[id] DELETE error', err);
     return NextResponse.json({ error: 'internal_error' }, { status: 500 });
   }
 }

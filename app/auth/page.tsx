@@ -9,10 +9,7 @@ export default function AuthPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const requestId =
-    typeof crypto !== 'undefined' && 'randomUUID' in crypto
-      ? (crypto as any).randomUUID()
-      : `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+  const requestId = crypto.randomUUID();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

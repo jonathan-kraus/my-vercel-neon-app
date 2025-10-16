@@ -15,7 +15,7 @@ function parseCookies(cookieHeader: string | null) {
   return cookies;
 }
 
-function decodeJwtPayload(token: string | undefined | null) {
+function decodeJwtPayload(token: string | undefined | null): Record<string, unknown> | null {
   if (!token) return null;
   const parts = token.split('.');
   if (parts.length < 2) return null;
@@ -23,7 +23,7 @@ function decodeJwtPayload(token: string | undefined | null) {
     const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
     const padded = payload + '==='.slice((payload.length + 3) % 4);
     const json = Buffer.from(padded, 'base64').toString('utf8');
-    return JSON.parse(json);
+    return JSON.parse(json) as Record<string, unknown>;
   } catch {
     return null;
   }
@@ -44,21 +44,39 @@ export async function GET(req: Request) {
     let username: string | null = null;
     let expiresAt: number | null = null;
 
-    const payload: any | null = decodeJwtPayload(token);
+    const payload = decodeJwtPayload(token);
 
     if (payload) {
-      username = payload.name ?? payload.username ?? payload.sub ?? null;
-      if (payload.exp) expiresAt = Number(payload.exp) * 1000;
+      const nameVal = typeof payload['name'] === 'string' ? payload['name'] : undefined;
+      const usernameVal = typeof payload['username'] === 'string' ? payload['username'] : undefined;
+      const subVal = typeof payload['sub'] === 'string' ? payload['sub'] : undefined;
+      const expRaw = payload['exp'];
+      let expNum: number | undefined;
+      if (typeof expRaw === 'number') expNum = expRaw;
+      else if (typeof expRaw === 'string' && !Number.isNaN(Number(expRaw))) expNum = Number(expRaw);
+
+      username = (nameVal ?? usernameVal ?? subVal) ?? null;
+      if (expNum) expiresAt = expNum * 1000;
     }
 
-    if (payload?.sub && !username) {
+    if (payload?.['sub'] && !username) {
       const prisma = new PrismaClient();
       try {
-        const user = await prisma.user.findUnique({
-          where: { id: payload.sub },
-          select: { username: true },
-        });
-        if (user?.username) username = user.username;
+        // normalize `sub` to a number if possible (Prisma User.id is numeric in this schema)
+        let subIdNum: number | undefined;
+        if (typeof payload['sub'] === 'number') {
+          subIdNum = payload['sub'];
+        } else if (typeof payload['sub'] === 'string' && !Number.isNaN(Number(payload['sub']))) {
+          subIdNum = Number(payload['sub']);
+        }
+
+        if (typeof subIdNum === 'number') {
+          const user = await prisma.user.findUnique({
+            where: { id: subIdNum },
+            select: { name: true },
+          });
+          if (user?.name) username = user.name;
+        }
       } catch (e) {
         console.error('prisma lookup failed in /api/me', e);
       }
