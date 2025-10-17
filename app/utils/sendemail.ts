@@ -32,7 +32,7 @@ export async function sendConfirmationEmail(toEmail: string, toName: string, req
         requestId: requestId,
         metadata: { userAction: 'fetch' },
       });
-      console.log('✅ Log sent successfully to:', toEmail, toName);
+      console.log('✅ [sendemail] Log sent successfully to:', toEmail, toName);
 
     }
   await mailerSend.email.send(emailParams);
