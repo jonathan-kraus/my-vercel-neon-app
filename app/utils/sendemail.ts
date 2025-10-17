@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
-import { logEvent} from '../lib/abslog';
+
+const baseUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
 
 console.log('📦 sendemail.ts loaded');
 
@@ -20,18 +23,17 @@ export async function sendConfirmationEmail(toEmail: string, toName: string, req
     .setSubject('Mail Success')
     .setText(`Sent from utils ${toName} app`)
     .setHtml(`<strong>Sent from utils ${toName} app</strong> ${requestId}`);
-
-    // const severity = 'info';
-    // const source = 'sendemail';
-    // const message = `sending email ${requestId}`;
-    // const metadata = { action: 'email', timestamp: new Date().toISOString() };
+console.log('✅ [sendemail] start logging to:', requestId);
+    const severity = 'info';
+    const source = 'sendemail';
+    const message = `sending email ${requestId}`;
+    const metadata = { action: 'email', timestamp: new Date().toISOString() };
     if (requestId) {
-      await logEvent({
-        source: 'sendemail',
-        message: `sendemail accessed: ${requestId}`,
-        requestId: requestId,
-        metadata: { userAction: 'fetch' },
-      });
+      await fetch(`${baseUrl}/api/log`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ severity, source, message, requestId, metadata }),
+});
       console.log('✅ [sendemail] Log sent successfully to:', toEmail, toName);
 
     }
