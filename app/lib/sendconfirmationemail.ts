@@ -1,0 +1,42 @@
+import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
+import { db } from './db';
+const mailerSend = new MailerSend({ apiKey: process.env.MAILERSEND_API_KEY! });
+const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
+export async function sendConfirmationEmail(toEmail: string, toName: string, requestId?: string) {
+  const recipients = [new Recipient(toEmail, toName)];
+
+  const emailParams = new EmailParams()
+    .setFrom(sentFrom)
+    .setTo(recipients)
+    .setReplyTo(sentFrom)
+    .setSubject('Mail Success')
+    .setText(`Sent from utils ${toName} app`)
+    .setHtml(`<strong>Sent from utils ${toName} app</strong> ${requestId}`);
+
+  await mailerSend.email.send(emailParams);
+  console.log('✅ Email from utils sent successfully to:', toEmail, toName);
+  console.log('✅ Email from utils sent successfully to:', emailParams);
+
+ 
+   const severity = 'info',
+   const source = 'sendemail',
+   const message = `Email sent to ${toEmail}`,
+   const metadata = { action: 'email', timestamp: new Date().toISOString() },
+  
+try {
+  console.log('🚀 Starting logic');
+    await db.log.create({
+      data: {
+        severity,
+        source,
+        message,
+        requestId,
+        metadata: metadata ?? {},
+        timestamp: new Date(),
+      },
+    })  
+  } catch (err) {
+    console.error(`❌ ${requestId} [sendemail.ts] Error caught:`, err);
+  }}
+  return true;
+}
