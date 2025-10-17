@@ -1,4 +1,5 @@
 import { db } from '../lib/db';
+import { LogPayload } from '../lib/types';
 export async function logEvent(payload: LogPayload) {
   if (typeof window === 'undefined') {
     // ✅ Server-side: use Prisma
