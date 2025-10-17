@@ -2,10 +2,13 @@ import 'dotenv/config';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 
 const baseUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+  process.env.SITE_URL?.replace(/\/$/, '') ||
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
+  'https://kraus.my.id';
 
 console.log('📦 sendemail.ts loaded');
+console.log('[sendemail] SITE_URL:', process.env.SITE_URL);
+console.log('[sendemail] NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
 
 const mailerSend = new MailerSend({
   apiKey: process.env.MAILERSEND_API_KEY!, // use env variable
