@@ -31,15 +31,17 @@ console.log('✅ [sendemail] start logging to:', requestId);
     const source = 'sendemail';
     const message = `sending email ${requestId}`;
     const metadata = { action: 'email', timestamp: new Date().toISOString() };
-    if (requestId) {
-      await fetch(`${baseUrl}/api/log`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ severity, source, message, requestId, metadata }),
-});
-      console.log('✅ [sendemail] Log sent successfully to:', toEmail, toName);
+    const logUrl = `${baseUrl}/api/log`;
 
-    }
+try {
+  await fetch(logUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ severity, source, message, requestId, metadata }),
+  });
+} catch (err) {
+  console.error(`[${source}] [${requestId}] ${logUrl} Failed to log event:`, err);
+}
   await mailerSend.email.send(emailParams);
   console.log('✅ Email from utils sent successfully to:', toEmail, toName);
   console.log('✅ Email from utils sent successfully to:', emailParams);
