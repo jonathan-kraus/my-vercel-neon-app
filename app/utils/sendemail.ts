@@ -2,11 +2,13 @@ import 'dotenv/config';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 
 const baseUrl =
+  (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
   process.env.SITE_URL?.replace(/\/$/, '') ||
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
   'https://kraus.my.id';
 
 console.log('📦 sendemail.ts loaded');
+console.log('[sendemail] VERCEL_URL:', process.env.VERCEL_URL);
 console.log('[sendemail] SITE_URL:', process.env.SITE_URL);
 console.log('[sendemail] NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
 
@@ -26,19 +28,21 @@ export async function sendConfirmationEmail(toEmail: string, toName: string, req
     .setSubject('Mail Success')
     .setText(`Sent from utils ${toName} app`)
     .setHtml(`<strong>Sent from utils ${toName} app</strong> ${requestId}`);
-console.log('✅ [sendemail] start logging to:', requestId);
+
     const severity = 'info';
     const source = 'sendemail';
     const message = `sending email ${requestId}`;
     const metadata = { action: 'email', timestamp: new Date().toISOString() };
     const logUrl = `${baseUrl}/api/log`;
-
+console.log(`✅ [sendemail] start logging to: ${logUrl}`);
 try {
+  console.log(`[sendemail] in logger try catch ${logUrl}`);
   await fetch(logUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ severity, source, message, requestId, metadata }),
   });
+  console.log(`[sendemail] log sent to ${logUrl}`);
 } catch (err) {
   console.error(`[${source}] [${requestId}] ${logUrl} Failed to log event:`, err);
 }
