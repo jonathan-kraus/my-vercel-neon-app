@@ -1,28 +1,14 @@
-import { db } from './db'
-import type { LogEvent } from './types'
-
-export async function logEvent(event: LogEvent) {
-  const {
-    severity = 'info',
-    source,
-    requestId,
-    message,
-    metadata = {},
-  } = event
-console.log(`[logEvent] [${requestId}] Logging:`, { source, message, metadata });
-
-  try {
-    await db.log.create({
-      data: {
-        severity,
-        source,
-        requestId,
-        message,
-        metadata: metadata ?? {}, // ensures it's never null
-        timestamp: new Date(),
-      },
-    })
-  } catch (err) {
-    console.error('Failed to log event:', err)
+import { db } from '../lib/db';
+export async function logEvent(payload: LogPayload) {
+  if (typeof window === 'undefined') {
+    // ✅ Server-side: use Prisma
+    await db.log.create({ data: payload });
+  } else {
+    // ✅ Client-side: call API
+    await fetch('/api/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
   }
 }
