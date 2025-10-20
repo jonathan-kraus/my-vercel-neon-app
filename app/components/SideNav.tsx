@@ -179,26 +179,47 @@ export default function SideNav() {
        const { success, message } = await sendConfirmationEmail(emailData);
 
     if (success) {
-      alert(`Success! ${message}`);
+      alert(`[${requestId}] Success! ${message}`);
     } else {
-      alert(`Error: ${message}`);
+      alert(`[${requestId}] Error: ${message}`);
     }
       console.log(`Email sent, navigating to /authors ${requestId}`);
       setTimeout(() => router.push('/authors'), 1500);
-      
+    } catch (err) {
+      console.error(`[Email failed: ${requestId}]`, err);
+      toast.error(`[${requestId}] Email failed`);
   }
+};
 
-
-     
-     catch (err) {
-      console.error('Email failed:', err);
-      toast.error('Email failed');
-    }
-  };
-  
 
   const handleDbStatusClick = async () => {
     console.log('handleDbStatusClick!');
+        try {
+      
+      const emailData = {
+      toEmail: 'jonathanckraus@gmail.com',
+      toName: 'Jonathan',
+      subject: 'DbStatus Page Clicked',
+      requestId: requestId,
+    };
+       const { success, message } = await sendConfirmationEmail(emailData);
+
+    if (success) {
+      alert(`[${requestId}] [DbStatus] Success! ${message}`);
+    } else {
+      alert(`[${requestId}] [DbStatus] Error: ${message}`);
+    }
+      console.log(`Email sent, navigating to /authors ${requestId}`);
+      setTimeout(() => router.push('/authors'), 1500);
+    } catch (err) {
+      console.error(`[Email failed: ${requestId}]`, err);
+      toast.error(`[${requestId}] Email failed`);
+  }
+};    
+    
+    
+    
+    //endpoint: /admin/db-status
     try {
       await fetch('/api/log', {
         method: 'POST',
