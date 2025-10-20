@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { triggerEmail } from './actions'; // adjust path if needed
-
+import { sendConfirmationEmail } from '../utils/email-client';
 const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`; 
 const calllog = async (message: string) => {
   try {
@@ -170,12 +170,32 @@ export default function SideNav() {
     try {
       await triggerEmail("Authorj", requestId);
       console.log(`Email function completed Authorj ${requestId}`);
+      const emailData = {
+      toEmail: 'jonathanckraus@gmail.com',
+      toName: 'Jonathan',
+      subject: 'Test Email from Client Component',
+      requestId: requestId,
+    };
+       const { success, message } = await sendConfirmationEmail(emailData);
+
+    if (success) {
+      alert(`Success! ${message}`);
+    } else {
+      alert(`Error: ${message}`);
+    }
+      console.log(`Email sent, navigating to /authors ${requestId}`);
       setTimeout(() => router.push('/authors'), 1500);
-    } catch (err) {
+      
+  }
+
+
+     
+     catch (err) {
       console.error('Email failed:', err);
       toast.error('Email failed');
     }
   };
+  return ()
 
   const handleDbStatusClick = async () => {
     console.log('handleDbStatusClick!');
