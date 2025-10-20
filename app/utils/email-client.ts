@@ -1,6 +1,7 @@
 interface EmailData {
   toEmail: string;
   toName: string;
+  subject: string;
   requestId?: string;
 }
 

@@ -13,6 +13,7 @@ export default function ContactForm() {
     const emailData = {
       toEmail: 'jonathanckraus@gmail.com',
       toName: 'Jonathan',
+      subject: 'Test Email from Client Component',
       requestId: crypto.randomUUID(),
     };
 
