@@ -1,5 +1,7 @@
 'use server';
 
+import { sendConfirmationEmail } from "../utils/email-client";
+
 export type DailyForecastPoint = {
   requestId?: string;
   time: string;
@@ -54,7 +56,28 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
       console.warn(`[Tomorrow.io] ⚠️ Unexpected response format`, data);
       return []; // Defensive fallback
     }
-  
+      try {
+      
+      const emailData = {
+      toEmail: 'jonathanckraus@gmail.com',
+      toName: 'Jonathan',
+      subject: 'Get Daily Forecast Page Clicked',
+      requestId: requestId,
+    };
+       const { success, message } = await sendConfirmationEmail(emailData);
+
+    if (success) {
+      alert(`[${requestId}] Success! ${message}`);
+    } else {
+      alert(`[${requestId}] Error: ${message}`);
+    }
+      console.log(`Email sent, GDF ${requestId}`);
+      
+    } catch (err) {
+      console.error(`[Email failed: ${requestId}]`, err);
+      
+  }
+
   console.log(`[GetDailyForecast] [${requestId}] Forecast response:`, data);
 const daily: RawDailyEntry[] = data.timelines?.daily;
 //const daily = data.timelines?.daily ?? [];
