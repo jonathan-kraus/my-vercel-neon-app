@@ -11,13 +11,13 @@ const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
 interface EmailRequest {
   toEmail: string;
   toName: string;
-  Subject: string
+  subject: string
   requestId?: string;
 }
 
 // Route Handlers use standard Web API Request/Response objects
 export async function POST(request: Request) {
-  const { toEmail, toName, Subject, requestId }: EmailRequest = await request.json();
+  const { toEmail, toName, subject, requestId }: EmailRequest = await request.json();
 
   if (!toEmail || !toName) {
     return NextResponse.json(
@@ -33,9 +33,10 @@ console.log('📧 [send-email/route.ts] Sending email to:', toEmail, toName);
       .setFrom(sentFrom)
       .setTo(recipients)
       .setReplyTo(sentFrom)
-      .setSubject(Subject)
+      .setSubject(subject)
       .setText(`Sent from API to ${toName} app`)
       .setHtml(`<strong>Sent from API to ${toName} app</strong> ${requestId}`);
+console.log('📧 Subject:', subject);
 
     await mailerSend.email.send(emailParams);
     
