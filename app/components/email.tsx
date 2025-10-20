@@ -11,8 +11,8 @@ export default function ContactForm() {
     setLoading(true);
 
     const emailData = {
-      toEmail: 'user@example.com', // Replace with dynamic form data
-      toName: 'Test User',
+      toEmail: 'jonathanckraus@gmail.com',
+      toName: 'Jonathan',
       requestId: crypto.randomUUID(),
     };
 
