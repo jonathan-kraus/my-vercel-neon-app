@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
-import { triggerEmail } from './actions'; // adjust path if needed
+//import { triggerEmail } from './actions'; // adjust path if needed
 import { sendConfirmationEmail } from '../utils/email-client';
 const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`; 
 const calllog = async (message: string) => {
@@ -168,12 +168,12 @@ export default function SideNav() {
     }
 
     try {
-      await triggerEmail("Authorj", requestId);
-      console.log(`Email function completed Authorj ${requestId}`);
+      //await triggerEmail("Authorj", requestId);
+      //console.log(`Email function completed Authorj ${requestId}`);
       const emailData = {
       toEmail: 'jonathanckraus@gmail.com',
       toName: 'Jonathan',
-      subject: 'Test Email from Client Component',
+      subject: 'Authors Page Clicked',
       requestId: requestId,
     };
        const { success, message } = await sendConfirmationEmail(emailData);
