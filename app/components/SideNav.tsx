@@ -195,7 +195,7 @@ export default function SideNav() {
       toast.error('Email failed');
     }
   };
-  return ()
+  
 
   const handleDbStatusClick = async () => {
     console.log('handleDbStatusClick!');
