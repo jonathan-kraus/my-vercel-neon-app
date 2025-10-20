@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
-
+console.log('📧 [send-email/route.ts] Sending email to:', toEmail, toName);
   try {
     const recipients = [new Recipient(toEmail, toName)];
 
