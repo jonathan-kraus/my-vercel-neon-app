@@ -215,7 +215,7 @@ export default function SideNav() {
       console.error(`[Email failed: ${requestId}]`, err);
       toast.error(`[${requestId}] Email failed`);
   }
-};    
+
     
     
     
@@ -318,4 +318,5 @@ export default function SideNav() {
       </div>
     </aside>
   );
+  return null;
 }
