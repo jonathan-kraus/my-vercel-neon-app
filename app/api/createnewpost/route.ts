@@ -1,11 +1,11 @@
 
 import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
+import { logEvent } from '@/app/lib/log';
 console.log('[build] Generating /createnewpost');
 
-const requestId = crypto.randomUUID();
-import { logEvent } from '@/app/lib/log';
 export async function POST(req: Request) {
+  const requestId = crypto.randomUUID();
   const formData = await req.formData();
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
