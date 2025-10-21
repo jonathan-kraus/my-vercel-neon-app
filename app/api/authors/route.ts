@@ -22,7 +22,7 @@ export async function GET() {
           const emailData = {
           toEmail: 'jonathanckraus@gmail.com',
           toName: 'Jonathan',
-          subject: 'DbStatus Page Clicked',
+          subject: 'Authors Route Page Clicked',
           requestId: requestId,
         };
            const { success, message } = await sendConfirmationEmail(emailData);
