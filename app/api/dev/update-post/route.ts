@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
+console.log('[build] Generating /dev/update-post');
 export async function POST(req: Request) {
   // Prevent accidental production use
   // if (process.env.NODE_ENV === 'production') {

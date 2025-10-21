@@ -1,6 +1,7 @@
 
 import ClientLogs from '@/app/components/ClientLogs';
 import { db } from '@/app/lib/db';
+console.log('[build] Generating /logs');
 
 export default async function LogsPage() {
   const rawLogs = await db.log.findMany({

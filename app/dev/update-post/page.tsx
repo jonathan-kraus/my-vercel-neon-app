@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from 'react';
+console.log('[build] Generating /dev/update-post page');
+
 
 export default function UpdatePostDev() {
   const [id, setId] = useState('');

@@ -2,6 +2,7 @@
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { db } from './../../lib/db';
 import { z } from 'zod';
+console.log('[build] Generating /api/send-email');
 // Initialize MailerSend outside the handler for better performance
 // NOTE: Always use process.env.VAR directly here, or set the key
 // in the MailerSend constructor. Next.js automatically handles envs.

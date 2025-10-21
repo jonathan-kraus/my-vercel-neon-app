@@ -8,6 +8,7 @@ import type { DailyForecastPoint } from "@/app/lib/GetDailyForecast";
 
 export default function WeatherPage() {
   const [forecast, setForecast] = useState<DailyForecastPoint[]>([]);
+console.log('[build] Generating /admin/weather');
 
   useEffect(() => {
     const fetchForecast = async () => {

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-
+console.log('[build] Generating /api/me');
 function parseCookies(cookieHeader: string | null) {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;

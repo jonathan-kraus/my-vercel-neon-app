@@ -1,6 +1,8 @@
 
 import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
+console.log('[build] Generating /createnewpost');
+
 const requestId = crypto.randomUUID();
 import { logEvent } from '@/app/lib/log';
 export async function POST(req: Request) {

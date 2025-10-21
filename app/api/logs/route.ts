@@ -1,6 +1,6 @@
 import { db } from '@/app/lib/db'
 import { NextResponse } from 'next/server'
-
+console.log('[build] Generating /logs');
 export async function GET() {
   try {
     const logs = await db.log.findMany({

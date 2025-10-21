@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/app/lib/db' 
+console.log('[build] Generating /log');
 export async function POST(req: Request) {
   const body = await req.json()
 

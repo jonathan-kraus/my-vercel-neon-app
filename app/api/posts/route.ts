@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
 import { logEvent } from '@/app/lib/log';
 import { Prisma } from '@prisma/client';
-
+console.log('[build] Generating /api/posts');
 function parseCookies(cookieHeader: string | null): Record<string, string> {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
