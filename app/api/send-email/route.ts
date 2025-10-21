@@ -91,12 +91,12 @@ console.log('📧 Subject:', subject);
 });
 
   } catch (err) {
-    console.error(`[send-email] ❌ Error for requestId ${requestId || 'none'}:`, err);
+    console.error(`[send-email] ❌ Error sending email`, err);
 
     return new Response(JSON.stringify({
   status: 'error',
   message: 'Internal server error',
-  requestId: requestId || 'none',
+  requestId: 'none',
 }), {
   status: 500,
   headers: {
