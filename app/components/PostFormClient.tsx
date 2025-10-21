@@ -38,7 +38,7 @@ console.log('📨 [PostFormClient] Post created, response received');
 
     // ✅ Trigger email after successful post
     await sendConfirmationEmail({
-      toEmail: 'jonathan@kraus.my.id', // or pull from post.author.email if available
+      toEmail: 'jonathanckraus@gmail.com', // or pull from post.author.email if available
       toName: 'Jonathan',             // or post.author.name
       subject: `New post created: ${title}`,
       requestId: post.id,             // optional, if your post API returns an ID
