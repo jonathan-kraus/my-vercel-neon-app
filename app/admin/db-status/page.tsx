@@ -25,12 +25,3 @@ export default async function DbStatusPage() {
     </main>
   );
 }
-
-export const revalidate = 0;
-export const dynamic = 'force-dynamic';
-export const metadata = {
-  title: 'DbStatus',
-  description: 'Database status page',
-};
-export const runtime = 'nodejs';
-export const preferredRegion = 'us-east-1';
