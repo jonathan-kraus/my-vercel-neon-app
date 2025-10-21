@@ -33,7 +33,12 @@ const requestId = crypto.randomUUID();
 console.log(`[createPost] [${requestId}] Post created by ${authorName}`);
 
 // Send confirmation email to the author  
-await sendConfirmationEmail(user.email, user.name || 'Jonathan', requestId);
+await sendConfirmationEmail(
+  user.email,
+  user.name || 'Jonathan',
+  requestId,
+  `📝 New Post Created: "${title}" at ${new Date().toLocaleString()}`
+);
 
     await db.log.create({
       data: {
