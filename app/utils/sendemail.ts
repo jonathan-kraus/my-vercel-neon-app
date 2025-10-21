@@ -66,6 +66,7 @@ export async function logEvent(payload: LogPayload) {
 export async function sendConfirmationEmail(toEmail: string, toName: string, requestId?: string) {
   const recipients = [new Recipient(toEmail, toName)];
 
+console.log(`[email-client] sendConfirmationEmail triggered for ${toEmail} with requestId: ${requestId}`);    
   const emailParams = new EmailParams()
     .setFrom(sentFrom)
     .setTo(recipients)
