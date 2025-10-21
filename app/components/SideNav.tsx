@@ -209,8 +209,8 @@ export default function SideNav() {
     } else {
       alert(`[${requestId}] [DbStatus] Error: ${message}`);
     }
-      console.log(`Email sent, navigating to /authors ${requestId}`);
-      setTimeout(() => router.push('/authors'), 1500);
+      console.log(`Email sent, navigating to /DbStatus ${requestId}`);
+      setTimeout(() => router.push('/admin/db-status'), 1500);
     } catch (err) {
       console.error(`[Email failed: ${requestId}]`, err);
       toast.error(`[${requestId}] Email failed`);
