@@ -172,30 +172,10 @@ export default function SideNav() {
       console.error('Failed to log event:', error);
     }
 
-    try {
-      //await triggerEmail("Authorj", requestId);
-      //console.log(`Email function completed Authorj ${requestId}`);
-      const emailData = {
-      toEmail: 'jonathanckraus@gmail.com',
-      toName: 'Jonathan',
-      subject: 'Authors Page Clicked',
-      requestId: requestId,
-    };
-       const { success, message } = await sendConfirmationEmail(emailData);
-
-    if (success) {
-      toast.success(`[${requestId}] Success! ${message}`);
-    } else {
-      toast.error(`[${requestId}] Error: ${message}`);
-    }
-      console.log(`Email sent, navigating to /authors ${requestId}`);
+    console.log(`Navigating to /authors ${requestId}`);
       setTimeout(() => router.push('/authors'), 1500);
-    } catch (err) {
-      console.error(`[Email failed: ${requestId}]`, err);
-      toast.error(`[${requestId}] Email failed`);
-  }
-};
 
+};
 
   const handleDbStatusClick = async () => {
     console.log('handleDbStatusClick!');
