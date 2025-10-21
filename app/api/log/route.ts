@@ -28,7 +28,14 @@ console.log(`[log] [${requestId}] Received log event:`, { severity, source, mess
       },
     })
 
-    return NextResponse.json({ status: 'ok' })
+    console.log(`[log] [${requestId}] Log event inserted successfully`);
+    return new Response(JSON.stringify({ success: true }), {
+  status: 200,
+  headers: {
+    'Access-Control-Allow-Origin': '*', // or your domain
+  },
+})
+
   } catch (error) {
   console.error('Log insert failed:', error)
 
