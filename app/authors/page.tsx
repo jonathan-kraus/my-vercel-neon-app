@@ -45,6 +45,7 @@ try {
         console.error(`[${requestId}] Email failed: ${message}`);
       }
     } catch (emailErr) {
+      console.error(`❌ [${requestId}] Error sending email:`, emailErr);
   }
   const authors: Author[] = await db.user.findMany({
     orderBy: { name: 'asc' },
