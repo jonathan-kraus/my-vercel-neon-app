@@ -18,7 +18,7 @@ export async function logEvent({
   const baseUrl =
   (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
-  'https://kraus.my.id';
+  'https://www.kraus.my.id';
   try {
     await fetch(`${baseUrl}/api/log`, {
       method: 'POST',

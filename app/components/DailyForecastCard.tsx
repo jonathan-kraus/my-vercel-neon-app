@@ -58,7 +58,7 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
     const baseUrl =
   (typeof window !== 'undefined' && window.location.origin) ||
   (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-  (process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || 'https://kraus.my.id');
+  (process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || 'https://www.kraus.my.id');
     try {
       await fetch(`${baseUrl}/api/log`, {
         method: 'POST',

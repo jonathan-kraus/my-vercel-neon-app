@@ -46,7 +46,7 @@ export async function logEvent(payload: LogPayload) {
     (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
     process.env.SITE_URL?.replace(/\/$/, '') ||
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
-    'https://kraus.my.id';
+    'https://www.kraus.my.id';
 
   const logUrl = `${baseUrl}/api/log`;
   console.log(`✅ [sendemail] start logging to: ${logUrl} with payload:`, payload);

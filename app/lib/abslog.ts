@@ -15,7 +15,12 @@ export async function logEvent({
   metadata?: LogMetadata;
 }) {
   try {
-    await fetch('https://kraus.my.id/api/log', {
+    const baseUrl =
+      (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
+      process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
+      'https://www.kraus.my.id';
+
+    await fetch(`${baseUrl}/api/log`, { 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ severity, source, message, requestId, metadata }),
