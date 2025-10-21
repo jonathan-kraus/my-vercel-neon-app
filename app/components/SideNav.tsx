@@ -6,10 +6,15 @@ import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 //import { triggerEmail } from './actions'; // adjust path if needed
 import { sendConfirmationEmail } from '../utils/email-client';
+const baseUrl =
+  typeof window !== 'undefined'
+    ? window.location.origin
+    : process.env.NEXT_PUBLIC_SITE_URL || 'https://kraus.my.id';
+
 const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`; 
 const calllog = async (message: string) => {
   try {
-    await fetch('/api/log', {
+    await fetch(`${baseUrl}/api/log`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -152,7 +157,7 @@ export default function SideNav() {
   const handleAuthorsClick = async () => {
     console.log('handleAuthorsClick!');
     try {
-      await fetch('/api/log', {
+      await fetch(`${baseUrl}/api/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -221,7 +226,7 @@ export default function SideNav() {
     
     //endpoint: /admin/db-status
     try {
-      await fetch('/api/log', {
+      await fetch(`${baseUrl}/api/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -242,7 +247,7 @@ export default function SideNav() {
   const handleWeatherClick = async () => {
     console.log('handleWeatherClick!');
     try {
-      await fetch('/api/log', {
+      await fetch(`${baseUrl}/api/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

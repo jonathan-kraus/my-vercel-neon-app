@@ -3,6 +3,17 @@ import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { db } from './../../lib/db';
 import { z } from 'zod';
 console.log('[build] Generating /api/send-email');
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*', // or 'https://www.kraus.my.id'
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}
+
 // Initialize MailerSend outside the handler for better performance
 // NOTE: Always use process.env.VAR directly here, or set the key
 // in the MailerSend constructor. Next.js automatically handles envs.
@@ -71,9 +82,13 @@ console.log('📧 Subject:', subject);
   requestId: requestId || 'none',
 }), {
   status: 200,
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*', // or 'https://www.kraus.my.id'
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    },
 });
-
 
   } catch (err) {
     console.error('❌ API error:', err);
