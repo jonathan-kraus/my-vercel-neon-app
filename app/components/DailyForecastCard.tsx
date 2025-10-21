@@ -55,8 +55,12 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
   console.log(`[DailyForecastCard] [${requestId}] Weather codes:`, forecast.map(f => f.conditions));
   useEffect(() => {
   const logEvent = async () => {
+    const baseUrl =
+  (typeof window !== 'undefined' && window.location.origin) ||
+  (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
+  (process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || 'https://kraus.my.id');
     try {
-      await fetch('/api/log', {
+      await fetch(`${baseUrl}/api/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

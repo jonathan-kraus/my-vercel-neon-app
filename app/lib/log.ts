@@ -15,7 +15,10 @@ export async function logEvent({
   metadata?: LogMetadata;
 }) {
   console.log("log module loaded", {requestId});
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kraus.my.id';
+  const baseUrl =
+  (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
+  'https://kraus.my.id';
   try {
     await fetch(`${baseUrl}/api/log`, {
       method: 'POST',
