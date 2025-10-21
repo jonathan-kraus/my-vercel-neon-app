@@ -2,6 +2,7 @@
 import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
 import { logEvent } from '@/app/lib/log';
+import { sendConfirmationEmail } from '@/app/utils/sendemail';
 console.log('[build] Generating /createnewpost');
 
 export async function POST(req: Request) {
@@ -29,6 +30,9 @@ export async function POST(req: Request) {
         authorId: user.id, // ✅ This must match a real User.id
       },
     });
+
+    await sendConfirmationEmail(user.email, user.name || 'Jonathan', requestId);
+
     await logEvent({
   source: 'createNewPost route',
   message: `Post created with title: ${title}`,
