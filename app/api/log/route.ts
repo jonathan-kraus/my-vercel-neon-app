@@ -1,6 +1,16 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/app/lib/db' 
 console.log('[build] Generating /log');
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*', // or your domain
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}
 export async function POST(req: Request) {
   const body = await req.json()
 
