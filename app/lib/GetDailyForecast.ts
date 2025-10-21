@@ -1,6 +1,4 @@
-'use server';
-
-import { toast } from "react-hot-toast";
+'use server'
 import { sendConfirmationEmail } from "../utils/email-client";
 
 export type DailyForecastPoint = {
@@ -68,9 +66,9 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
        const { success, message } = await sendConfirmationEmail(emailData);
 
     if (success) {
-      toast.success(`[${requestId}] Success! ${message}`);
+  console.log(`[${requestId}] Success! ${message}`);
     } else {
-      toast.error(`[${requestId}] Error: ${message}`);
+      console.log(`[${requestId}] Error: ${message}`);
     }
       console.log(`Email sent, GDF ${requestId}`);
       

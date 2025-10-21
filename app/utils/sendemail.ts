@@ -18,7 +18,7 @@ const message = `sendemail.ts module accessed`;
 const requestId = crypto.randomUUID();
 const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
 try {
-  console.log('🚀 Starting logic');
+  console.log(`🚀 [${requestId}] sendemail.ts Starting logic`);
     await db.log.create({
       data: {
         severity,
