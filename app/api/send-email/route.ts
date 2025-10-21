@@ -14,6 +14,7 @@ interface EmailRequest {
   subject: string
   requestId?: string;
 }
+console.log('📥 [API] Received email request');
 
 // Route Handlers use standard Web API Request/Response objects
 export async function POST(request: Request) {
