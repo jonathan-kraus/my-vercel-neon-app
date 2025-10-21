@@ -64,7 +64,15 @@ console.log('📧 Subject:', subject);
         timestamp: new Date(),
       },
     });
-    return new Response('Email sent', { status: 200 });
+    return new Response(JSON.stringify({
+  status: 'success',
+  message: 'Email sent',
+  requestId: requestId || 'none',
+}), {
+  status: 200,
+  headers: { 'Content-Type': 'application/json' },
+});
+
 
   } catch (err) {
     console.error('❌ API error:', err);
