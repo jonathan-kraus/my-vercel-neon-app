@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { sendConfirmationEmail } from '../utils/email-client'; // Import the client utility
+import { toast } from 'react-hot-toast';
 
 export default function ContactForm() {
   const [loading, setLoading] = useState(false);
@@ -20,9 +21,9 @@ export default function ContactForm() {
     const { success, message } = await sendConfirmationEmail(emailData);
 
     if (success) {
-      alert(`Success! ${message}`);
+      toast.success(`Success! ${message}`);
     } else {
-      alert(`Error: ${message}`);
+      toast.error(`Error: ${message}`);
     }
 
     setLoading(false);

@@ -146,7 +146,7 @@ export default function SideNav() {
         return `${k}=${decodeURIComponent(v ?? '')}`;
       })
       .join('; ');
-    alert(`Cookies (sensitive values redacted):\n${safeSummary}`);
+    toast.success(`Cookies (sensitive values redacted):\n${safeSummary}`);
   };
 
   const handleAuthorsClick = async () => {
@@ -179,9 +179,9 @@ export default function SideNav() {
        const { success, message } = await sendConfirmationEmail(emailData);
 
     if (success) {
-      alert(`[${requestId}] Success! ${message}`);
+      toast.success(`[${requestId}] Success! ${message}`);
     } else {
-      alert(`[${requestId}] Error: ${message}`);
+      toast.error(`[${requestId}] Error: ${message}`);
     }
       console.log(`Email sent, navigating to /authors ${requestId}`);
       setTimeout(() => router.push('/authors'), 1500);
@@ -205,9 +205,9 @@ export default function SideNav() {
        const { success, message } = await sendConfirmationEmail(emailData);
 
     if (success) {
-      alert(`[${requestId}] [DbStatus] Success! ${message}`);
+      toast.success(`[${requestId}] [DbStatus] Success! ${message}`);
     } else {
-      alert(`[${requestId}] [DbStatus] Error: ${message}`);
+      toast.error(`[${requestId}] [DbStatus] Error: ${message}`);
     }
       console.log(`Email sent, navigating to /DbStatus ${requestId}`);
       setTimeout(() => router.push('/admin/db-status'), 1500);

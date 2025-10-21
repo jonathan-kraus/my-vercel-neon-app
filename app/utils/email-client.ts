@@ -4,10 +4,12 @@ interface EmailData {
   subject: string;
   requestId?: string;
 }
-
+console.log('[email-client] sendConfirmationEmail function defined'); 
 export async function sendConfirmationEmail(data: EmailData): Promise<{ success: boolean; message: string }> {
   try {
-    const response = await fetch('/api/send-email', {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kraus.my.id';
+
+    const response = await fetch(`${baseUrl}/api/send-email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
