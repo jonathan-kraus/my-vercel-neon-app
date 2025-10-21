@@ -9,12 +9,13 @@ console.log('[sendemail] NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_UR
 const mailerSend = new MailerSend({
   apiKey: process.env.MAILERSEND_API_KEY!,
 });
-const requestId = crypto.randomUUID();
+
 const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
-export default async function LogIt() {
+export default async function logSendEmailModuleAccess() {
 const severity = 'info';
 const source = 'sendemail.ts';
 const message = `sendemail.ts module accessed`;
+const requestId = crypto.randomUUID();
 const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
 try {
   console.log('🚀 Starting logic');
@@ -51,11 +52,9 @@ export async function logEvent(payload: LogPayload) {
   console.log(`✅ [sendemail] start logging to: ${logUrl}`);
 
   try {
-    await fetch(logUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    await logSendEmailModuleAccess();
+
+      
     console.log(`[logEvent] sent to ${logUrl}`);
   } catch (err) {
     console.error(`[logEvent] failed`, err);
@@ -90,4 +89,4 @@ export async function sendConfirmationEmail(toEmail: string, toName: string, req
 
   return true;
 
-} LogIt();
+} logSendEmailModuleAccess();
