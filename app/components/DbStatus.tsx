@@ -27,9 +27,10 @@ export default function DbStatus() {
   
 useEffect(() => {
   const requestId = crypto.randomUUID();
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://kraus.my.id';
   const logEvent = async () => {
     try {
-      await fetch('/api/log', {
+      await fetch(`${baseUrl}/api/log`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
