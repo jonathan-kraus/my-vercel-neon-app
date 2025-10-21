@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 import { db } from "../lib/db";
 import PostCountBadge from '../components/PostCountBadge';
+import { sendConfirmationEmail } from "../utils/email-client";
 
 //import { sendConfirmationEmail } from '../utils/sendemail';
 
@@ -17,7 +18,7 @@ const source = 'AuthorsPage';
 const message = `Authors page accessed`;
 const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
 try {
-  console.log('🚀 Starting logic');
+  console.log('🚀 Authors Starting logic');
     await db.log.create({
       data: {
         severity,
@@ -30,6 +31,20 @@ try {
     })  
   } catch (err) {
     console.error(`❌ ${requestId} [AuthorsPage] Error caught:`, err);
+    try {
+      const emailData = {
+        toEmail: 'jonathanckraus@gmail.com',
+        toName: 'Jonathan',
+        subject: 'Authors Page Error',
+        requestId: requestId,
+      };
+      const { success, message } = await sendConfirmationEmail(emailData);
+      if (success) {
+        console.log(`[${requestId}] Email sent successfully: ${message}`);
+      } else {
+        console.error(`[${requestId}] Email failed: ${message}`);
+      }
+    } catch (emailErr) {
   }
   const authors: Author[] = await db.user.findMany({
     orderBy: { name: 'asc' },
@@ -51,4 +66,22 @@ try {
       </ul>
     </div>
   );
-}
+} finally {
+        
+        try {
+      const emailData = {
+        toEmail: 'jonathanckraus@gmail.com',
+        toName: 'Jonathan',
+        subject: `Authors Page Completed Successfully - ${new Date().toISOString()}`,
+        requestId: requestId,
+      };
+      const { success, message } = await sendConfirmationEmail(emailData);
+      if (success) {
+        console.log(`[${requestId}] Email sent successfully: ${message}`);
+      } else {
+        console.error(`[${requestId}] Email failed: ${message}`);
+      }
+    } catch (emailErr) {
+          console.error(`❌ [${requestId}] Error sending email:`, emailErr);
+        }
+      }}  
