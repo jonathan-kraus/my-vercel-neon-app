@@ -49,7 +49,7 @@ export async function logEvent(payload: LogPayload) {
     'https://kraus.my.id';
 
   const logUrl = `${baseUrl}/api/log`;
-  console.log(`✅ [sendemail] start logging to: ${logUrl}`);
+  console.log(`✅ [sendemail] start logging to: ${logUrl} with payload:`, payload);
 
   try {
     await logSendEmailModuleAccess();
