@@ -4,8 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
-//import { triggerEmail } from './actions'; // adjust path if needed
-import { sendConfirmationEmail } from '../utils/email-client';
+
 const baseUrl =
   typeof window !== 'undefined'
     ? window.location.origin
