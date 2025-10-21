@@ -91,7 +91,19 @@ console.log('📧 Subject:', subject);
 });
 
   } catch (err) {
-    console.error('❌ API error:', err);
-    return new Response('Internal error', { status: 500 });
+    console.error(`[send-email] ❌ Error for requestId ${requestId || 'none'}:`, err);
+
+    return new Response(JSON.stringify({
+  status: 'error',
+  message: 'Internal server error',
+  requestId: requestId || 'none',
+}), {
+  status: 500,
+  headers: {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+  },
+});
+
   }
 }
