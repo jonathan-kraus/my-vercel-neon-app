@@ -179,30 +179,8 @@ export default function SideNav() {
 
   const handleDbStatusClick = async () => {
     console.log('handleDbStatusClick!');
-        try {
-      
-      const emailData = {
-      toEmail: 'jonathanckraus@gmail.com',
-      toName: 'Jonathan',
-      subject: 'DbStatus Page Clicked',
-      requestId: requestId,
-    };
-       const { success, message } = await sendConfirmationEmail(emailData);
-
-    if (success) {
-      toast.success(`[${requestId}] [DbStatus] Success! ${message}`);
-    } else {
-      toast.error(`[${requestId}] [DbStatus] Error: ${message}`);
-    }
-      console.log(`Email sent, navigating to /DbStatus ${requestId}`);
-      setTimeout(() => router.push('/admin/db-status'), 1500);
-    } catch (err) {
-      console.error(`[Email failed: ${requestId}]`, err);
-      toast.error(`[${requestId}] Email failed`);
-  }
-
-    
-    
+      console.log(`[DbStatus] Clicked, navigating to /DbStatus ${requestId}`);
+      setTimeout(() => router.push('/admin/db-status'), 1500);    
     
     //endpoint: /admin/db-status
     try {
