@@ -71,7 +71,7 @@ console.log(`[email-client] sendConfirmationEmail triggered for ${toEmail} with 
     .setFrom(sentFrom)
     .setTo(recipients)
     .setReplyTo(sentFrom)
-    .setSubject('Mail Success')
+    .setSubject(`Mail Success sendemail.ts Confirmation - ${toName}`)
     .setText(`Sent from utils ${toName} app`)
     .setHtml(`<strong>Sent from utils ${toName} app</strong> ${requestId}`);
 
