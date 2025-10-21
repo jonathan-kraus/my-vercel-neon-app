@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+//import { NextResponse } from 'next/server';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { db } from './../../lib/db';
 import { z } from 'zod';
@@ -9,12 +9,12 @@ const mailerSend = new MailerSend({ apiKey: process.env.MAILERSEND_API_KEY! });
 const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
 
 // Define the expected structure of the incoming request body
-interface EmailRequest {
-  toEmail: string;
-  toName: string;
-  subject: string
-  requestId?: string;
-}
+// interface EmailRequest {
+//   toEmail: string;
+//   toName: string;
+//   subject: string
+//   requestId?: string;
+// }
 console.log('📥 [API] Received email request');
 const EmailSchema = z.object({
   toEmail: z.string().email(),
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       return new Response('Invalid payload', { status: 400 });
     }
 
-    const { toEmail, toName, subject, message, requestId } = parsed.data;
+    const { toEmail, toName, subject, message = '', requestId } = parsed.data;
         // Proceed with sending email
     console.log('📨 Sending email to:', toEmail);
     // await mailerSend.email.send(...)
@@ -50,7 +50,22 @@ export async function POST(request: Request) {
 console.log('📧 Subject:', subject);
 
     await mailerSend.email.send(emailParams)
+        const severity = 'info';
+    const source = 'sendemail';
+    
+    const metadata = { action: 'email', timestamp: new Date().toISOString() };
+        await db.log.create({
+      data: {
+        severity,
+        source,
+        message,
+        requestId,
+        metadata: metadata ?? {},
+        timestamp: new Date(),
+      },
+    });
     return new Response('Email sent', { status: 200 });
+
   } catch (err) {
     console.error('❌ API error:', err);
     return new Response('Internal error', { status: 500 });
