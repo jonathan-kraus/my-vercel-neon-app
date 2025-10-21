@@ -6,7 +6,7 @@ function getCookie(name: string): string | null {
   const match = typeof document !== 'undefined' && document.cookie.match(new RegExp('(^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
   return match ? decodeURIComponent(match[2]) : null;
 }
-
+console.log('🔧 [PostFormClient] Component loaded');
 export default function PostFormClient() {
   const [username, setUsername] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -33,7 +33,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     });
 
     if (!res.ok) throw new Error('failed');
-
+console.log('📨 [PostFormClient] Post created, response received');
     const post = await res.json(); // assuming your API returns the created post
 
     // ✅ Trigger email after successful post
@@ -43,7 +43,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       subject: `New post created: ${title}`,
       requestId: post.id,             // optional, if your post API returns an ID
     });
-
+console.log('📧 [PostFormClient] Confirmation email sent for post ID:', post.id);
     setTitle('');
     setBody('');
     setStatus('posted');
