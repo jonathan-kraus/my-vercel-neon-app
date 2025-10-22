@@ -13,9 +13,13 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
     source,
     message,
     requestId,
-    throttleMinutes = 15,
+    throttleMinutes, // may be undefined
     sendFn,
   } = opts;
+
+  // Allow overriding default via environment variable
+  const envThrottle = typeof process !== 'undefined' && process.env.EMAIL_THROTTLE_MINUTES ? parseInt(process.env.EMAIL_THROTTLE_MINUTES, 10) : NaN;
+  const effectiveThrottle: number = throttleMinutes ?? (Number.isFinite(envThrottle) ? envThrottle : 15);
 
   const now = new Date();
 
@@ -31,7 +35,7 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
 
     const minutesSince = recent ? (now.getTime() - recent.timestamp.getTime()) / 60000 : Infinity;
 
-    if (minutesSince < throttleMinutes) {
+    if (minutesSince < effectiveThrottle) {
       // Suppress
       const suppressedMessage = `Email suppressed: ${message} (last sent ${Math.round(minutesSince)} minutes ago)`;
       await db.log.create({
