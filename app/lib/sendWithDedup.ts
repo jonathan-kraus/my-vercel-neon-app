@@ -5,7 +5,7 @@ export type SendWithDedupOptions = {
   message: string; // human message for the log
   requestId?: string;
   throttleMinutes?: number; // minutes to suppress duplicate sends
-  sendFn: () => Promise<any>; // function that actually sends the email
+  sendFn: () => Promise<unknown>; // function that actually sends the email
 };
 
 export async function sendWithDedup(opts: SendWithDedupOptions) {

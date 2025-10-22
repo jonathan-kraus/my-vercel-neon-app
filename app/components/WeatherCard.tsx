@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState, useRef } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 
 const requestId = crypto.randomUUID();

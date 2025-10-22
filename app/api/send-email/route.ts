@@ -1,6 +1,6 @@
 //import { NextResponse } from 'next/server';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
-import { db } from './../../lib/db';
+// db is intentionally not used here; sendWithDedup handles logging
 import { sendWithDedup } from '@/app/lib/sendWithDedup';
 import { z } from 'zod';
 console.log('[build] Generating /api/send-email');
