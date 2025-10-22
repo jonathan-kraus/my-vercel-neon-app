@@ -3,9 +3,6 @@ import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { db } from '../lib/db';
 import { sendWithDedup } from '@/app/lib/sendWithDedup';
 console.log('📦 sendemail.ts loaded');
-console.log('[sendemail] VERCEL_URL:', process.env.VERCEL_URL);
-console.log('[sendemail] SITE_URL:', process.env.SITE_URL);
-console.log('[sendemail] NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
 
 const mailerSend = new MailerSend({
   apiKey: process.env.MAILERSEND_API_KEY!,
@@ -100,7 +97,7 @@ export async function sendConfirmationEmail(
       source: 'sendemail',
       message: `Email to ${toEmail}`,
       requestId,
-      throttleMinutes: 15,
+      throttleMinutes: process.env.EMAIL_THROTTLE_MINUTES ? 15 : 0,
       sendFn,
     });
 
