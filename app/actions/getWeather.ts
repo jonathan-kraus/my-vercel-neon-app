@@ -27,9 +27,9 @@ export async function getWeather(): Promise<WeatherResponse> {
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
 console.log(`[getWeather] [${requestId}] Server function started at ${new Date().toISOString()}`);
 if (typeof window !== 'undefined') {
-  console.log(`[getWeather] [${requestId}] Running on the client`);
+  console.log(`[getWeather] [${requestId}] Running on the client zip: ${zip}`);
 } else {
-  console.log(`[getWeather] [${requestId}] Running on the server`);
+  console.log(`[getWeather] [${requestId}] Running on the server zip: ${zip}`);
 }
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch weather');

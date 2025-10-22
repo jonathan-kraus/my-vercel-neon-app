@@ -3,6 +3,8 @@
 
 import { db } from '@/app/lib/db';
 import { logEvent } from '../lib/abslog';
+import { tr } from 'zod/v4/locales';
+import { triggerEmail } from '@/app/components/actions';
 
 let start: number;
 let latencyMs: number;
@@ -28,7 +30,8 @@ export async function getDbStatus() {
   requestId,
   metadata: { userAction: 'fetch' },
 });
-
+await triggerEmail("JDB Status", requestId, `Database Status Update`);
+  
   console.log(`[getDbStatus] [${requestId}] Database status logged.`);
   return {
     version: (version as { version: string }[])[0].version,
