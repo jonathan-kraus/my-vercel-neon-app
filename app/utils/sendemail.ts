@@ -18,7 +18,18 @@ const message = `sendemail.ts module accessed`;
 const requestId = crypto.randomUUID();
 const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
 try {
-  console.log(`🚀 [${requestId}] sendemail.ts Starting logic`);
+    const lasttime = await db.log.findFirst({
+      where: { message: { contains: 'email sent', mode: 'insensitive' } },
+      orderBy: { timestamp: 'desc' },
+    });
+    console.log(`🚀 [${requestId}] sendemail.ts Last email sent at:`, lasttime?.timestamp);
+    console.log(`🚀 [${requestId}] sendemail.ts Last email sent at:`, lasttime?.message);
+  } catch (err) {
+    console.error(`❌ ${requestId} [sendemail.ts] Error caught:`, err);
+  }
+  
+  try {
+    console.log(`🚀 [${requestId}] sendemail.ts Starting logic`);
     await db.log.create({
       data: {
         severity,

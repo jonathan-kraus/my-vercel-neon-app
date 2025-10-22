@@ -41,7 +41,7 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   if (!requestId) requestId = 'requestid-not-passed'; //crypto.randomUUID();
   console.log(`[getDailyForecast] [${requestId}] getDailyForecast started`);
   //const zip = '02445'; // Brookline, MA ZIP code
-  const url = `https://api.tomorrow.io/v4/weather/forecast?location=42.3317,-71.1212&timesteps=1d&units=imperial&apikey=${apiKey}`;
+  const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1d&units=imperial&apikey=${apiKey}`;
   
   const res = await fetch(url);
       if (!res.ok) {

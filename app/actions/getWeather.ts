@@ -24,7 +24,7 @@ export async function getWeather(): Promise<WeatherResponse> {
   const apiKey = process.env.TOMORROW_API_KEY;
   //const zip = '02445'; // Brookline, MA ZIP code
   const zip = process.env.JZIP || '02445'; // Default to Brookline, MA if not set
-  const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
+  const url = `https://api.tomorrow.io/v4/weather/realtime?location=40.10520,-75.41404&units=imperial&apikey=${apiKey}`;
 console.log(`[getWeather] [${requestId}] Server function started at ${new Date().toISOString()}`);
 if (typeof window !== 'undefined') {
   console.log(`[getWeather] [${requestId}] Running on the client zip: ${zip}`);
@@ -134,7 +134,7 @@ export async function getHourlyForecast(): Promise<
 > {
   const apiKey = process.env.TOMORROW_API_KEY;
   const zip = '02445'; // Brookline, MA ZIP code
-  const url = `https://api.tomorrow.io/v4/weather/forecast?location=${zip}&timesteps=1h&units=imperial&apikey=${apiKey}`;
+  const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1h&units=imperial&apikey=${apiKey}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch forecast');
 
