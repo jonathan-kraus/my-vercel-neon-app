@@ -1,5 +1,6 @@
 'use server';
 import { db } from '@/app/lib/db';
+import { triggerEmail } from '../components/actions';
 
 type WeatherResponse = {
   temperature: number;
@@ -58,7 +59,8 @@ if (typeof window !== 'undefined') {
 
   if (hoursSinceLast > 2) {
     try {
-      //await triggerEmail("Weather", latestLog ? latestLog.id.toString() : undefined);
+      const subject = `Weather Update for ${data.location?.name ?? 'Unknown'}`;
+      await triggerEmail("Weather", latestLog ? latestLog.id.toString() : undefined, subject);
 
       await db.weatherLog.create({
         data: {

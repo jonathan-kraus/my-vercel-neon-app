@@ -67,7 +67,7 @@ export async function sendConfirmationEmail(
   toEmail: string,
   toName: string,
   requestId?: string,
-  subject?: string
+  subject?: string  
 ) {
   const recipients = [new Recipient(toEmail, toName)];
   const finalSubject = subject || `Mail Success Confirmation - ${toName}`;    
