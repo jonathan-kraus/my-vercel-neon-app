@@ -3,7 +3,6 @@
 
 import { db } from '@/app/lib/db';
 import { logEvent } from '../lib/abslog';
-import { tr } from 'zod/v4/locales';
 import { triggerEmail } from '@/app/components/actions';
 
 let start: number;
