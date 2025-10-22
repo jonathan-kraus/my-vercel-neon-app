@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { db } from '../lib/db';
+import { sendWithDedup } from '@/app/lib/sendWithDedup';
 console.log('📦 sendemail.ts loaded');
 console.log('[sendemail] VERCEL_URL:', process.env.VERCEL_URL);
 console.log('[sendemail] SITE_URL:', process.env.SITE_URL);
@@ -23,7 +24,7 @@ try {
       orderBy: { timestamp: 'desc' },
     });
     console.log(`🚀 [${requestId}] sendemail.ts Last email sent at:`, lasttime?.timestamp);
-    console.log(`🚀 [${requestId}] sendemail.ts Last email sent at:`, lasttime?.message);
+    console.log(`🚀 [${requestId}] sendemail.ts Last email message:`, lasttime?.message);
   } catch (err) {
     console.error(`❌ ${requestId} [sendemail.ts] Error caught:`, err);
   }
@@ -91,19 +92,24 @@ export async function sendConfirmationEmail(
     .setText(`Sent from utils ${toName} app`)
     .setHtml(`<strong>Sent from utils ${toName} app</strong> ${requestId}`);
 
-  await mailerSend.email.send(emailParams);
-  console.log('✅ Email from utils sent successfully to:', toEmail, toName);
-  console.log('✅ Email from utils sent successfully to:', emailParams);
+    const sendFn = async () => {
+      await mailerSend.email.send(emailParams);
+    };
 
-  // ✅ Call logger here
-  await logEvent({
-    severity: 'info',
-    source: 'sendemail',
-    message: `Email sent to ${toEmail}`,
-    requestId,
-    metadata: { action: 'email', timestamp: new Date().toISOString() },
-  });
+    const result = await sendWithDedup({
+      source: 'sendemail',
+      message: `Email to ${toEmail}`,
+      requestId,
+      throttleMinutes: 15,
+      sendFn,
+    });
 
-  return true;
+    if (result.sent) {
+      console.log('✅ Email from utils sent successfully to:', toEmail, toName);
+      return true;
+    }
+
+    console.log('ℹ️ Email skipped:', result.reason || 'throttled');
+    return false;
 
 } logSendEmailModuleAccess();

@@ -21,7 +21,7 @@ export default async function DbStatusPage() {
   return (
     <main className="p-6">
       <DbStatus />
-      <Email />
+      <Email sendOnMount={false} />
     </main>
   );
 }

@@ -88,17 +88,18 @@ const metadata = { action: 'fetch', timestamp: new Date().toISOString(), locatio
     orderBy: { createdAt: 'desc' },
   });
 
-  const hoursSinceLast = latestLog
-    ? (now.getTime() - latestLog.createdAt.getTime()) / 3600000
+  // Calculate minutes since the last sent email and enforce a 15-minute throttle
+  const minutesSinceLast = latestLog
+    ? (now.getTime() - latestLog.createdAt.getTime()) / 60000
     : Infinity;
 
   if (latestLog) {
     lastEmailTimestamp = latestLog.createdAt.toISOString();
   }
 
-  console.log(`[${requestId}] Hours since last email log: ${hoursSinceLast}`);
+  console.log(`[${requestId}] Minutes since last email log: ${minutesSinceLast}`);
 
-  if (hoursSinceLast > 4) {
+  if (minutesSinceLast >= 15) {
     try {
       await triggerEmail("Weather", requestId);
       console.log(`[${requestId}] 📧 Weather email triggered`);
@@ -137,7 +138,27 @@ const metadata = { action: 'fetch', timestamp: new Date().toISOString(), locatio
       console.error(`[${requestId}] ❌ Email failed:`, err);
     }
   } else {
-    console.log(`[${requestId}] ⏱️ Email already sent within the last 4 hours`);
+    // Suppress sending when within the throttle window and write a log entry
+    const suppressedMessage = `Email suppressed: last sent ${Math.round(
+      minutesSinceLast
+    )} minutes ago`;
+    const suppressedMetadata = { action: 'throttle', minutesSinceLast: Math.round(minutesSinceLast) };
+    console.log(`[${requestId}] ⏱️ ${suppressedMessage}`);
+    try {
+      await db.log.create({
+        data: {
+          severity: 'info',
+          source: 'fetchWeather',
+          message: suppressedMessage,
+          requestId,
+          metadata: suppressedMetadata ?? {},
+          timestamp: new Date(),
+        },
+      });
+    } catch (err) {
+      // If logging fails, still continue without throwing so callers aren't impacted
+      console.error(`[${requestId}] ❌ Failed to write suppressed-email log:`, err);
+    }
   }
 
 return {

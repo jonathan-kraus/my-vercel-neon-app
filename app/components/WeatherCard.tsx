@@ -99,7 +99,7 @@ export default function WeatherCard() {
 
   return (
     <div className="space-y-2">
-      <Toaster position="top-right" />
+     
       <h2 className="text-xl font-bold">Current Weather</h2>
       {weather.rainAccumulationSum > 0 && (
   <div className="space-y-1">

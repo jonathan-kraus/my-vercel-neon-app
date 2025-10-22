@@ -1,6 +1,7 @@
 //import { NextResponse } from 'next/server';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { db } from './../../lib/db';
+import { sendWithDedup } from '@/app/lib/sendWithDedup';
 import { z } from 'zod';
 console.log('[build] Generating /api/send-email');
 export async function OPTIONS() {
@@ -59,36 +60,37 @@ export async function POST(request: Request) {
       .setSubject(subject)
       .setText(`Sent from API to ${toName} app message: ${message || ''}  ${requestId || ''}`)
       .setHtml(`<strong>Sent from API to ${toName} app</strong> ${requestId}`);
-console.log('📧 Subject:', subject);
 
-    await mailerSend.email.send(emailParams)
-        const severity = 'info';
-    const source = 'sendemail';
-    
-    const metadata = { action: 'email', timestamp: new Date().toISOString() };
-        await db.log.create({
-      data: {
-        severity,
-        source,
-        message,
-        requestId,
-        metadata: metadata ?? {},
-        timestamp: new Date(),
-      },
+    console.log('📧 Subject:', subject);
+
+    const sendFn = async () => {
+      await mailerSend.email.send(emailParams);
+    };
+
+    const result = await sendWithDedup({
+      source: 'sendemail',
+      message: `Email to ${toEmail}`,
+      requestId,
+      throttleMinutes: 15,
+      sendFn,
     });
-    return new Response(JSON.stringify({
-  status: 'success',
-  message: 'Email sent',
-  requestId: requestId || 'none',
-}), {
-  status: 200,
-  headers: {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*', // or 'https://www.kraus.my.id'
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    },
-});
+
+    if (result.sent) {
+      return new Response(JSON.stringify({ status: 'success', message: 'Email sent', requestId: requestId || 'none' }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      });
+    }
+
+    return new Response(JSON.stringify({ status: 'skipped', reason: result.reason || 'throttled', requestId: requestId || 'none' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+    });
 
   } catch (err) {
     console.error(`[send-email] ❌ Error sending email`, err);
