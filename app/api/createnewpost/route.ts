@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       },
     });
 
-    await sendConfirmationEmail(user.email, user.name || 'Jonathan', requestId), 'Create new post';
+    await sendConfirmationEmail(user.email, user.name || 'Jonathan', requestId, 'Create new post');
 
     await logEvent({
   source: 'createNewPost route',
