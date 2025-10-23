@@ -32,12 +32,13 @@ const metadata = { action: 'create', timestamp: new Date().toISOString(), author
 const requestId = crypto.randomUUID();
 console.log(`[createPost] [${requestId}] Post created by ${authorName}`);
 
-// Send confirmation email to the author  
+// Send confirmation email to the author
+const timestamp = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
 await sendConfirmationEmail(
   user.email,
   user.name || 'Jonathan',
   requestId,
-  `📝 New Post Created: "${title}" at ${new Date().toLocaleString()}`
+  `📝 New Post Created: "${title}" at ${timestamp}`
 );
 
     await db.log.create({

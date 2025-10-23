@@ -28,7 +28,8 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
     const recent = await db.log.findFirst({
       where: {
         source,
-        message: { contains: message, mode: 'insensitive' },
+        //message: { contains: message, mode: 'insensitive' }, // timer per component
+          message: { contains: 'email sent', mode: 'insensitive' },
       },
       orderBy: { timestamp: 'desc' },
     });

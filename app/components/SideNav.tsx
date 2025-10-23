@@ -8,7 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 const baseUrl =
   typeof window !== 'undefined'
     ? window.location.origin
-    : process.env.NEXT_PUBLIC_SITE_URL || 'https://kraus.my.id';
+    : process.env.NEXT_PUBLIC_SITE_URL || 'https://www.kraus.my.id';
 
 const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`; 
 const calllog = async (message: string) => {
