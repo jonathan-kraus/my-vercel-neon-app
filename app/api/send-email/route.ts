@@ -69,7 +69,7 @@ export async function POST(request: Request) {
 
     const result = await sendWithDedup({
       source: 'sendemail',
-      message: `Email to ${toEmail}`,
+      message: `Email with subject ${subject}`,
       requestId,
       throttleMinutes: 15,
       sendFn,
