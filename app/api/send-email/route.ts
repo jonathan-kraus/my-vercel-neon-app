@@ -61,7 +61,7 @@ export async function POST(request: Request) {
       .setText(`Sent from API to ${toName} app message: ${message || ''}  ${requestId || ''}`)
       .setHtml(`<strong>Sent from API to ${toName} app</strong> ${requestId}`);
 
-    console.log('📧 Subject:', subject);
+    console.log('📧 [send-email] Subject:', subject);
 
     const sendFn = async () => {
       await mailerSend.email.send(emailParams);
