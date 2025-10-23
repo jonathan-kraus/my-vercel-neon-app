@@ -95,7 +95,7 @@ export async function sendConfirmationEmail(
 
     const result = await sendWithDedup({
       source: 'sendemail',
-      message: `Email to ${toEmail}`,
+      message: `Email : ${finalSubject}`,
       requestId,
       throttleMinutes: process.env.EMAIL_THROTTLE_MINUTES ? 15 : 0,
       sendFn,

@@ -101,7 +101,7 @@ const metadata = { action: 'fetch', timestamp: new Date().toISOString(), locatio
 
   if (minutesSinceLast >= 15) {
     try {
-      await triggerEmail("Weather", requestId);
+      await triggerEmail("Weather", requestId, location2 ?? 'Weather Location');
       console.log(`[${requestId}] 📧 Weather email triggered`);
       await db.weatherLog.create({
         data: {
