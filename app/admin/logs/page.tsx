@@ -13,6 +13,6 @@ export default async function LogsPage() {
     ...log,
     timestamp: log.timestamp.toISOString(), // ✅ Convert Date to string
   }));
-
+  console.log(`[logs/page] Fetched ${logs.length} logs from DB`);
   return <ClientLogs logs={logs} />;
 }
