@@ -39,7 +39,9 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
     const isNew = message.includes('New Post Created'); // allow immediate send for new post emails 
     if (!isNew && minutesSince < effectiveThrottle) {
       // Suppress
-      const suppressedMessage = `Email suppressed: ${message} (last sent ${Math.round(minutesSince)} minutes ago)`;
+      const suppressedMessage = `Email suppressed: ${message}
+      (last sent ${Math.round(minutesSince)} minutes ago
+        throttle: ${effectiveThrottle} mins)`;
       await db.log.create({
         data: {
           severity: 'info',
