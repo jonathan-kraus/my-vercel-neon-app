@@ -13,7 +13,7 @@ export async function sendConfirmationEmail(data: EmailData): Promise<{ success:
 
     if (typeof window === 'undefined' && !baseUrl) {
       const mod = await import('@/app/utils/sendemail');
-      const sent = await mod.sendConfirmationEmail(
+      const sent = await mod.sendEmailDirect(
         data.toEmail,
         data.toName,
         data.requestId,

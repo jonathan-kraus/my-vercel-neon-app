@@ -72,7 +72,7 @@ export async function logEvent(payload: LogPayload) {
 
 // ✅ Now your email function can call it
 
-export async function sendConfirmationEmail(
+export async function sendEmailDirect(
   toEmail: string,
   toName: string,
   requestId?: string,
@@ -80,7 +80,7 @@ export async function sendConfirmationEmail(
 ) {
   const recipients = [new Recipient(toEmail, toName)];
   const finalSubject = subject || `Mail Success Confirmation - ${toName}`;    
-  console.log(`[sendemail] sendConfirmationEmail triggered for ${toEmail} with requestId: ${requestId}`);    
+  console.log(`[sendemail] sendEmailDirect triggered for ${toEmail} with requestId: ${requestId}`);    
   const emailParams = new EmailParams()
     .setFrom(sentFrom)
     .setTo(recipients)
