@@ -60,7 +60,7 @@ export async function POST(request: Request) {
       .setReplyTo(sentFrom)
       .setSubject(subject)
       .setText(`Sent from API to ${toName} app message: ${message || ''}  ${requestId || ''}`)
-      .setHtml(`<strong>Sent from API to ${toName} app</strong> ${requestId}`);
+      .setHtml(`<strong>Sent from API to ${toName} app message: ${message}</strong> ${requestId}`);
 
     console.log('📧 [send-email] Subject:', subject);
 
