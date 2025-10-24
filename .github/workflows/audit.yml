@@ -1,0 +1,21 @@
+name: Audit Dependencies
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run audit
+        run: pnpm audit
+      - name: Upload audit report
+        uses: actions/upload-artifact@v3
