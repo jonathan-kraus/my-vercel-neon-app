@@ -18,8 +18,10 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
   } = opts;
 
   // Allow overriding default via environment variable
-  const envThrottle = typeof process !== 'undefined' && process.env.EMAIL_THROTTLE_MINUTES ? parseInt(process.env.EMAIL_THROTTLE_MINUTES, 10) : NaN;
-  const effectiveThrottle: number = throttleMinutes ?? (Number.isFinite(envThrottle) ? envThrottle : 15);
+  const envthrottle = process.env.EMAIL_THROTTLE_MINUTES;
+  const effectiveThrottle: number = envthrottle ? parseInt(envthrottle, 10) : 15;
+console.log(`[${requestId}] [sendWithDedup] effectiveThrottle set to ${effectiveThrottle} minutes`);    
+console.log(`[${requestId}] [sendWithDedup] throttleMinutes set to ${throttleMinutes} minutes`);    
 
   const now = new Date();
 
