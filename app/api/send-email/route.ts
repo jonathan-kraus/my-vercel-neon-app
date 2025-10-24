@@ -3,7 +3,6 @@ import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 // db is intentionally not used here; sendWithDedup handles logging
 import { sendWithDedup } from '@/app/lib/sendWithDedup';
 import { z } from 'zod';
-import { env } from 'process';
 console.log('[build] Generating /api/send-email');
 export async function OPTIONS() {
   return new Response(null, {
@@ -72,7 +71,6 @@ export async function POST(request: Request) {
       source: 'sendemail',
       message: `Email with subject ${subject}`,
       requestId,
-      throttleMinutes: env.EMAIL_THROTTLE_MINUTES,
       sendFn,
     });
 
