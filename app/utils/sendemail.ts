@@ -80,7 +80,7 @@ export async function sendConfirmationEmail(
 ) {
   const recipients = [new Recipient(toEmail, toName)];
   const finalSubject = subject || `Mail Success Confirmation - ${toName}`;    
-  console.log(`[email-client] sendConfirmationEmail triggered for ${toEmail} with requestId: ${requestId}`);    
+  console.log(`[sendemail] sendConfirmationEmail triggered for ${toEmail} with requestId: ${requestId}`);    
   const emailParams = new EmailParams()
     .setFrom(sentFrom)
     .setTo(recipients)

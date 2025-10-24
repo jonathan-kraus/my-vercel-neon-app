@@ -1,9 +1,9 @@
 // app/actions/createPost.ts
 'use server';
-
+import type { EmailData } from '@/app/lib/schemas/email';
 import { db } from '@/app/lib/db';
 import { redirect } from 'next/navigation';
-import { sendConfirmationEmail } from '@/app/utils/sendemail';
+import { sendConfirmationEmail } from '@/app/utils/email-client';
 console.log('[build] Generating createPost action');
 export async function createPost(formData: FormData) {
   const title = formData.get('title') as string;
@@ -34,12 +34,13 @@ console.log(`[createPost] [${requestId}] Post created by ${authorName}`);
 
 // Send confirmation email to the author
 const timestamp = new Date().toLocaleString('en-US', {timeZone: 'America/New_York',});
-await sendConfirmationEmail(
-  user.email,
-  user.name || 'Jonathan',
+await sendConfirmationEmail({
+  toEmail: user.email,
+  toName: user.name || 'Jonathan',
   requestId,
-  `📝 New Post Created: "${title}" at ${timestamp}`
-);
+  message: `Your post titled "${title}" has been successfully created on ${timestamp}.`,
+  subject: `📝 New Post Created: "${title}" at ${timestamp}`,
+});
 
     await db.log.create({
       data: {

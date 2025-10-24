@@ -2,8 +2,6 @@ export const dynamic = "force-dynamic";
 import { db } from "../lib/db";
 import PostCountBadge from '../components/PostCountBadge';
 
-//import { sendConfirmationEmail } from '../utils/sendemail';
-
 const requestId = crypto.randomUUID();
 type Author = {
   id: number;
@@ -17,7 +15,7 @@ const source = 'AuthorsPage';
 const message = `Authors page accessed`;
 const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
 try {
-  console.log('🚀 Starting logic');
+  console.log('🚀 [AuthorsPage] Starting logic');
     await db.log.create({
       data: {
         severity,
