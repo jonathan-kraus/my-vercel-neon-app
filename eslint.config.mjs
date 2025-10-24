@@ -1,6 +1,7 @@
 // eslint.config.mjs
 import js from '@eslint/js';
 import react from 'eslint-plugin-react';
+import next from 'eslint-plugin-next';
 
 export default [
   js.configs.recommended,
