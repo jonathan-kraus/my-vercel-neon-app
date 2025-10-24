@@ -1,6 +1,6 @@
 // app/actions/createPost.ts
 'use server';
-import type { EmailData } from '@/app/lib/schemas/email';
+
 import { db } from '@/app/lib/db';
 import { redirect } from 'next/navigation';
 import { sendConfirmationEmail } from '@/app/utils/email-client';
