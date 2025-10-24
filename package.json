@@ -20,11 +20,11 @@
     "chart.js": "^4.5.0",
     "dotenv": "^17.2.2",
     "mailersend": "^2.6.0",
-    "next": "^15.5.1-canary.20",
+    "next": "16.0.0",
     "node-fetch": "^3.3.2",
-    "react": "^19.0.0",
+    "react": "19.2.0",
     "react-chartjs-2": "^5.3.0",
-    "react-dom": "^19.0.0",
+    "react-dom": "19.2.0",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.8.2",
     "resend": "^6.0.2",
@@ -33,10 +33,10 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
     "eslint": "^9",
-    "eslint-config-next": "15.1.6",
+    "eslint-config-next": "16.0.0",
     "eslint-plugin-next": "^0.0.0",
     "postcss": "^8",
     "prisma": "6.18.0",
@@ -44,5 +44,11 @@
     "ts-node": "^10.9.2",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8"
+  "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.2",
+      "@types/react-dom": "19.2.2"
+    }
+  }
 }

@@ -71,7 +71,7 @@ export async function logEvent(payload: LogPayload) {
 }
 
 // ✅ Now your email function can call it
-
+console.log('[sendemail] sendEmailDirect function defined');
 export async function sendEmailDirect(
   toEmail: string,
   toName: string,
