@@ -41,9 +41,10 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const parsed = EmailSchema.safeParse(body);
-
-    if (!parsed.success) {
-      console.error('❌ Validation failed:', parsed.error.format());
+    if (parsed.success) {
+      console.log("[send-email] Validation passed:", parsed.data);
+    } else {
+      console.error("[send-email] Validation failed:", parsed.error.format());
       return new Response('Invalid payload', { status: 400 });
     }
 
