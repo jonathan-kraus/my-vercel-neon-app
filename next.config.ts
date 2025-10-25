@@ -9,8 +9,6 @@ import path from 'path';
 // };
 const nextConfig = {
   outputFileTracingRoot: path.resolve(__dirname),
-  experimental: {
-    turbopack: false,
-  },
+
 };
 export default nextConfig;
