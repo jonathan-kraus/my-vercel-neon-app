@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
   import { sendConfirmationEmail } from '@/app/utils/email-client';
 function getCookie(name: string): string | null {
-  const match = typeof document !== 'undefined' && document.cookie.match(new RegExp('(^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
+  const match = typeof document !== 'undefined' && document.cookie.match(new RegExp('(^|; )' + name.replace(/([$?*|{}\\^])/g, '\\$1') + '=([^;]*)'));
   return match ? decodeURIComponent(match[2]) : null;
 }
 console.log('🔧 [PostFormClient] Component loaded');

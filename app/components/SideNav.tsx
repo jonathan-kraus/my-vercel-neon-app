@@ -31,7 +31,7 @@ const calllog = async (message: string) => {
 calllog(`[SideNav] [${requestId}] component loaded`);
 
 function getCookie(name: string): string | null {
-  const match = document.cookie.match(new RegExp('(^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
+  const match = document.cookie.match(new RegExp('(^|; )' + name.replace(/([$?*|{}\\^])/g, '\\$1') + '=([^;]*)'));
   return match ? decodeURIComponent(match[2]) : null;
 }
 
@@ -280,5 +280,4 @@ export default function SideNav() {
       </div>
     </aside>
   );
-  return null;
 }

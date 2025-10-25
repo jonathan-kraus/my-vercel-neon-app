@@ -65,7 +65,7 @@ export default function BlogViewer() {
   }, []);
 
   useEffect(() => { // Fetch posts when selectedAuthor changes
-    setLoading(true);
+    queueMicrotask(() => setLoading(true));
     fetch(`/api/posts?author=${encodeURIComponent(selectedAuthor)}`)
       .then((res) => res.json())
       .then((data) => {

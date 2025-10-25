@@ -16,9 +16,11 @@ export default function CreatePostForm() {
 
     if (cookie) {
       const name = decodeURIComponent(cookie.split('=')[1] ?? '');
-      if (name) setAuthorizedUser(name);
-      return;
-    }
+      if (name) {
+      queueMicrotask(() => setAuthorizedUser(name));
+      }
+     }
+    }, []);
 
     // fallback: try /api/me (server session) to get user if cookies are HttpOnly
     (async () => {
@@ -32,7 +34,7 @@ export default function CreatePostForm() {
         // ignore
       }
     })();
-  }, []);
+
 
   // show toast when server indicates success (either via query param or helper cookie)
   useEffect(() => {

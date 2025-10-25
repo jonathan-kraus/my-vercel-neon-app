@@ -23,7 +23,8 @@ type WeatherType = {
 
 export default function WeatherCard() {
   const [weather, setWeather] = useState<WeatherType | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
 
   const fetchWeather = async () => {
     try {
