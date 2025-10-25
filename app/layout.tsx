@@ -5,7 +5,7 @@ import './globals.css';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
-      <body>
+      <body className="relative min-w-[320px] min-h-screen antialiased bg-blue-200 text-[#0C0D0D] dark:bg-black dark:text-white">
         <div className="layout">
           <SideNav />
           <main className="flex-1">{children}</main>
