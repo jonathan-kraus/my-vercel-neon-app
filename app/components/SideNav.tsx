@@ -246,7 +246,7 @@ export default function SideNav() {
 
           <button
             onClick={handleAuthorsClick}
-            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded"
+            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded transition-colors duration-200"
           >
             Authors
           </button>
@@ -259,13 +259,13 @@ export default function SideNav() {
           </Link>
           <button
             onClick={handleDbStatusClick}
-            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded"
+            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded transition-colors duration-200 "
           >
             DbStatus
           </button>
           <button
             onClick={handleWeatherClick}
-            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded"
+            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded transition-colors duration-200"
           >
             Weather
           </button>

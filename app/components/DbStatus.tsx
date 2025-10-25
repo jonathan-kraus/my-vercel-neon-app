@@ -111,10 +111,7 @@ export default function DbStatus() {
       <button onClick={notify}>Make me a toast!</button>
       <Toaster />
       {/* ✅ Tailwind test block */}
-      <div className="bg-red-500 text-white p-4 rounded shadow mt-4">Tailwind is working!</div>
-      <div style={{ backgroundColor: 'red', color: 'white', padding: '1rem' }}>
-        Inline styles working!
-      </div>
+
     </div>
   );
 }
