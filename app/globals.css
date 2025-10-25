@@ -6,7 +6,6 @@
 
 body {
   @apply relative min-w-[320px] min-h-screen antialiased;
-  @apply bg-blue-200 text-[#0C0D0D] dark:bg-black dark:text-white;
   -webkit-tap-highlight-color: transparent;
 }
 .layout {
