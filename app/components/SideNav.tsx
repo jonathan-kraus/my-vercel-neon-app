@@ -233,11 +233,11 @@ export default function SideNav() {
   return (
     //<aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
 <aside className="w-72 min-h-screen bg-blue-900 text-yellow-400 border-r border-blue-800 p-4 shadow-md"
-  style={{ minWidth: '18rem' }}>
-
+  //style={{ minWidth: '18rem' }}>
+>
 
       <div className="flex flex-col h-full">
-        <nav className="flex flex-col gap-3">
+        <nav className="flex flex-col gap-3 items-center text-center mb-4">
           <Link className="font-semibold text-lg" href="/">
             * Home *
           </Link>
@@ -246,7 +246,7 @@ export default function SideNav() {
 
           <button
             onClick={handleAuthorsClick}
-            className="text-left w-full px-2 py-1 rounded hover:bg-blue-800 hover:text-white"
+            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded"
           >
             Authors
           </button>
@@ -259,13 +259,13 @@ export default function SideNav() {
           </Link>
           <button
             onClick={handleDbStatusClick}
-            className="text-left w-full px-2 py-1 rounded hover:bg-blue-800 hover:text-white"
+            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded"
           >
             DbStatus
           </button>
           <button
             onClick={handleWeatherClick}
-            className="text-left w-full px-2 py-1 rounded hover:bg-blue-800 hover:text-white"
+            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded"
           >
             Weather
           </button>
@@ -275,7 +275,7 @@ export default function SideNav() {
 
         {/* User info + cookie checks pushed to bottom */}
         <div className="mt-auto pt-4 border-t">
-          <div className="mb-2">
+          <div className="mb-4">
             <div className="text-sm text-gray-600">User</div>
             <div className="font-medium">{username ?? 'Guest'}</div>
           </div>
@@ -290,7 +290,7 @@ export default function SideNav() {
           <div className="flex gap-2">
             <button
               onClick={handleShowCookies}
-              className="text-left w-full px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded"
+              className="text-left w-full px-2 py-1 bg-yellow-400 hover:bg-blue-200 rounded"
               title="Show cookie summary (sensitive values redacted)"
             >
               Show cookie info
