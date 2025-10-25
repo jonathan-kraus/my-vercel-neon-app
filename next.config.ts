@@ -8,6 +8,7 @@ import path from 'path';
 //   outputFileTracingRoot: path.resolve(__dirname),
 // };
 const nextConfig = {
+  outputFileTracingRoot: path.resolve(__dirname),
   experimental: {
     turbopack: false,
   },
