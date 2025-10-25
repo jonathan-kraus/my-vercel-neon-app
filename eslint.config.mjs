@@ -6,6 +6,7 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 const config = [
   {
     ignores: [
+      'postcss.config.js',
       'fixpost.js',
       'node_modules/**',
       '.next/**',
@@ -18,13 +19,13 @@ const config = [
   ...nextConfig,
   js.configs.recommended,
   {
-    files: ['**/*.{js,jsx,ts,tsx}'],
+    files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parser,
       parserOptions: {
+        project: './tsconfig.json',
         sourceType: 'module',
         ecmaVersion: 'latest',
-        project: './tsconfig.json',
       },
     },
     plugins: {
@@ -34,17 +35,19 @@ const config = [
       'react/react-in-jsx-scope': 'off',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-    },
-  },
-  {
-    files: ['**/*.{ts,tsx}'],
-    rules: {
       'no-undef': 'off',
     },
   },
   {
-    files: ['**/*.js'],
-    ignores: ['postcss.config.js'], // optional: ignore this file entirely
+    files: ['**/*.{js,jsx}'],
+    languageOptions: {
+      sourceType: 'module',
+      ecmaVersion: 'latest',
+    },
+    rules: {
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    },
   },
 ];
+
 export default config;
