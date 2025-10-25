@@ -5,12 +5,11 @@ import './globals.css';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
-      <body className="relative min-w-[320px] min-h-screen antialiased bg-blue-200 text-[#0C0D0D] dark:bg-black dark:text-white">
-        <div className="layout">
+      <body className="bg-blue-200 text-[#0C0D0D] dark:bg-black dark:text-white min-h-screen antialiased">
+        <div className="flex h-screen">
           <SideNav />
           <main className="flex-1">{children}</main>
         </div>
-        <div className="hidden bg-blue-200" />
         <ClientShell />
       </body>
     </html>
