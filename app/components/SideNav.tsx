@@ -232,7 +232,8 @@ export default function SideNav() {
 
   return (
     //<aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
-<aside className="w-72 min-h-screen bg-blue-900 text-yellow-400 border-r border-blue-800 p-4 shadow-md">
+<aside className="w-72 min-h-screen bg-blue-900 text-yellow-400 border-r border-blue-800 p-4 shadow-md"
+  style={{ minWidth: '18rem' }}>
 
 
       <div className="flex flex-col h-full">
