@@ -1,10 +1,10 @@
 // eslint.config.mjs
 import js from '@eslint/js';
-import react from 'eslint-plugin-react';
-import next from 'eslint-plugin-next';
+import nextConfig from 'eslint-config-next';
 
 export default [
-  js.configs.recommended,
+  ...nextConfig, // Next.js rules (includes React and TypeScript support)
+  js.configs.recommended, // Base JS rules
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     ignores: [
@@ -15,19 +15,15 @@ export default [
       'next-env.d.ts',
       'app/generated/prisma/**',
     ],
-    plugins: {
-      next,
-      react,
-    },
     languageOptions: {
       parserOptions: {
-        ecmaVersion: 'latest',
         sourceType: 'module',
+        ecmaVersion: 'latest',
       },
     },
     rules: {
       'react/react-in-jsx-scope': 'off', // Not needed in Next.js
-      // Add more rules here
     },
   },
 ];
+    

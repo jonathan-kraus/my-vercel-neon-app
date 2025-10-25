@@ -17,5 +17,8 @@ jobs:
         run: pnpm install
       - name: Run audit
         run: pnpm audit
-      - name: Upload audit report
+      - name: Upload logs
         uses: actions/upload-artifact@v4
+        with:
+          name: audit-logs
+          path: logs/audit.log
