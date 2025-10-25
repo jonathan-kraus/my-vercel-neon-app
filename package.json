@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "prisma generate --no-hints && next build",
+    "prettier:check": "prettier --check .",
+    "prettier:fix": "prettier --write .",
     "security": "pnpm audit",
     "start": "next start",
     "lint": "eslint .",

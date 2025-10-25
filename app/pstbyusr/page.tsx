@@ -23,31 +23,31 @@ type BlogPost = {
 //console.log('blobs:', blobs);
 // import * as vercelBlob from '@vercel/blob';
 // const abortController = new AbortController();
- 
+
 // try {
 //   const blobPromise = vercelBlob.put('hello.txt', 'Hello World!', {
 //     access: 'public',
 //     abortSignal: abortController.signal,
 //   });
- 
+
 //   const timeout = setTimeout(() => {
 //     // Abort the request after 1 second
 //     abortController.abort();
 //   }, 1000);
- 
+
 //   const blob = await blobPromise;
- 
+
 //   console.info('blob put request completed', blob);
- 
+
 //   clearTimeout(timeout);
- 
+
 //   //return blob.url;
 // } catch (error) {
 //   if (error instanceof vercelBlob.BlobRequestAbortedError) {
 //     // Handle the abort
 //     console.info('canceled put request');
 //   }
- 
+
 //   // Handle other errors
 // }
 export default function BlogViewer() {
@@ -58,13 +58,15 @@ export default function BlogViewer() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {  // Fetch authors on mount
+  useEffect(() => {
+    // Fetch authors on mount
     fetch('/api/authors')
       .then((res) => res.json())
       .then((data) => setAuthors(data));
   }, []);
 
-  useEffect(() => { // Fetch posts when selectedAuthor changes
+  useEffect(() => {
+    // Fetch posts when selectedAuthor changes
     queueMicrotask(() => setLoading(true));
     fetch(`/api/posts?author=${encodeURIComponent(selectedAuthor)}`)
       .then((res) => res.json())
@@ -77,7 +79,7 @@ export default function BlogViewer() {
   return (
     <div className="max-w-xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">
-      Blog Posts {selectedAuthor && `by ${selectedAuthor}`}
+        Blog Posts {selectedAuthor && `by ${selectedAuthor}`}
       </h2>
       <label htmlFor="author-select" className="block mb-2 font-medium">
         Filter by Author
@@ -107,36 +109,41 @@ export default function BlogViewer() {
         }
 
         @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
         }
       `}</style>
-{loading ? (
-  <div className="flex justify-center items-center h-24">
-    <div className="spinner" />
-  </div>
-) : posts.length === 0 ? (
-  <p>No posts found.</p>
+      {loading ? (
+        <div className="flex justify-center items-center h-24">
+          <div className="spinner" />
+        </div>
+      ) : posts.length === 0 ? (
+        <p>No posts found.</p>
       ) : (
         <ul className="space-y-4">
           {posts.map((post, index) => (
             <li
               key={post.id}
-              className={`border-b pb-2 ${
-                index % 2 === 0 ? 'bg-blue-500' : 'bg-fuchsia-500'
-              }`}
+              className={`border-b pb-2 ${index % 2 === 0 ? 'bg-blue-500' : 'bg-fuchsia-500'}`}
             >
               <span className="text-lg font-semibold">{post.title}</span>
               <p>{post.content}</p>
               <p className="text-sm text-gray-600">
                 By {post.author?.name || 'Unknown'}
-                <PostCountBadge count={authors.find((a) => a.id === post.author?.id)?._count?.posts ?? 0} />
-                 on {new Date(post.createdAt).toLocaleDateString(
-                'en-US',
-                { year: 'numeric', month: '2-digit', day: '2-digit' }
-              )}
+                <PostCountBadge
+                  count={authors.find((a) => a.id === post.author?.id)?._count?.posts ?? 0}
+                />
+                on{' '}
+                {new Date(post.createdAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                })}
               </p>
-              
             </li>
           ))}
         </ul>

@@ -29,8 +29,12 @@ export default function LogViewer() {
         logs.map((log) => (
           <div key={log.id} className="border p-4 rounded shadow">
             <h3 className="font-semibold">{log.source}</h3>
-            <p>{log.message} <span className="metadata">{JSON.stringify(log.metadata)}</span></p>
-            <p className="text-sm text-gray-500">Created: {new Date(log.timestamp).toLocaleString()}</p>
+            <p>
+              {log.message} <span className="metadata">{JSON.stringify(log.metadata)}</span>
+            </p>
+            <p className="text-sm text-gray-500">
+              Created: {new Date(log.timestamp).toLocaleString()}
+            </p>
           </div>
         ))
       )}

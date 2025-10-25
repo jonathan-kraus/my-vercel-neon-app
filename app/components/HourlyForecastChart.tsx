@@ -12,18 +12,10 @@ import {
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 } from 'chart.js';
 
-Chart.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 type ForecastPoint = {
   time: string;
@@ -46,17 +38,17 @@ export default function HourlyForecastChart() {
   if (!data.length) return <p>Loading chart...</p>;
 
   const chartData = {
-    labels: data.map(d => new Date(d.time).toLocaleTimeString()),
+    labels: data.map((d) => new Date(d.time).toLocaleTimeString()),
     datasets: [
       {
         label: 'Temperature (°F)',
-        data: data.map(d => d.temperature),
+        data: data.map((d) => d.temperature),
         borderColor: 'orange',
         fill: false,
       },
       {
         label: 'Precipitation (%)',
-        data: data.map(d => d.precipitation),
+        data: data.map((d) => d.precipitation),
         borderColor: 'blue',
         fill: false,
       },

@@ -1,6 +1,3 @@
-import "server-only";
-
-
-
+import 'server-only';
 
 export async function GET() {}

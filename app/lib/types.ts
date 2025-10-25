@@ -1,18 +1,18 @@
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client';
 
 // lib/types.ts
 export type LogEvent = {
-  severity: 'info' | 'warn' | 'error' | 'debug'
-  source: string
-  message: string
-  requestId?: string
-  metadata?: Prisma.JsonValue
-}
+  severity: 'info' | 'warn' | 'error' | 'debug';
+  source: string;
+  message: string;
+  requestId?: string;
+  metadata?: Prisma.JsonValue;
+};
 
 export type LogRow = LogEvent & {
-  id: string
-  timestamp: string
-}
+  id: string;
+  timestamp: string;
+};
 
 export type LogPayload = {
   severity: 'info' | 'warning' | 'error';

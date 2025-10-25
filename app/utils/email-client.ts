@@ -1,7 +1,9 @@
 import type { EmailData } from '@/app/lib/schemas/email';
 import { EmailSchema } from '@/app/lib/schemas/email';
 console.log('[email-client] sendConfirmationEmail function defined');
-export async function sendConfirmationEmail(data: EmailData): Promise<{ success: boolean; message: string }> {
+export async function sendConfirmationEmail(
+  data: EmailData
+): Promise<{ success: boolean; message: string }> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL;
     const parsed = EmailSchema.safeParse(data);

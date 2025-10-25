@@ -58,6 +58,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 ## Learn More
+
 To learn more about Neon, check out the Neon documentation:
 
 - [Neon Documentation](https://neon.tech/docs/introduction) - learn about Neon's features and SDKs.
@@ -78,6 +79,7 @@ Commit and push your code changes to your GitHub repository to automatically tri
 This project uses Next.js App Router + Prisma (Neon Postgres). The following notes document a few repository-specific patterns and the dev tools added to make one-off DB updates safe.
 
 Required env vars
+
 - `DATABASE_URL` — Postgres connection string used by Prisma.
 - `RESEND_API_KEY` — required by `app/utils/email.ts` if you use the email helpers.
 
@@ -113,6 +115,7 @@ node ./scripts/update-post.mjs --id=21 --title="New Title"
 Dev-only API and UI
 
 For convenience there's a guarded dev API and a small UI:
+
 - `POST /api/dev/update-post` — accepts JSON `{ id, title }` and updates a post. This route returns 403 when `NODE_ENV === 'production'` to prevent accidental production writes.
 - Dev UI at `/dev/update-post` — simple browser form that POSTs to the above API. The link is also available from the site-side navigation under "Dev → Update Post (dev)".
 
@@ -134,21 +137,20 @@ Prisma migration guidance
 
 - If you do not change `prisma/schema.prisma` you do not need to run a migration.
 - When schema changes are required:
+  - Create a migration in development:
 
-	- Create a migration in development:
+  ```powershell
+  npx prisma migrate dev --name add-thing
+  npx prisma generate
+  ```
 
-	```powershell
-	npx prisma migrate dev --name add-thing
-	npx prisma generate
-	```
+  - Commit the migration folder in `prisma/migrations/` and apply it in CI or production using:
 
-	- Commit the migration folder in `prisma/migrations/` and apply it in CI or production using:
+  ```powershell
+  npx prisma migrate deploy --schema=prisma/schema.prisma
+  ```
 
-	```powershell
-	npx prisma migrate deploy --schema=prisma/schema.prisma
-	```
-
-	- Never run `prisma migrate dev` directly against a production database.
+  - Never run `prisma migrate dev` directly against a production database.
 
 Publish / build notes
 
@@ -161,8 +163,3 @@ Security notes and optional hardening
 - Consider adding an ESLint rule to disallow top-level Prisma writes in `app/` files. If you'd like, I can add an example ESLint configuration that flags `await` or `prisma` usage in module scope.
 
 If you want these dev tools documented further (or prefer the dev updater to require a token), tell me which option you prefer and I will update the README and implement the guard.
-
-
-
-
-

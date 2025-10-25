@@ -6,7 +6,7 @@ export async function GET() {
   console.log(`[getWeather] API route started at ${new Date().toISOString()}`);
 
   try {
-    const weather = await fetchWeather( requestId );
+    const weather = await fetchWeather(requestId);
     return NextResponse.json({ ...weather, requestId });
   } catch (err) {
     console.error(`[getWeather] ❌ Error:`, err);

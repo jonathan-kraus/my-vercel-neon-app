@@ -14,11 +14,11 @@ export async function logEvent({
   requestId: string;
   metadata?: LogMetadata;
 }) {
-  console.log("log module loaded", {requestId});
+  console.log('log module loaded', { requestId });
   const baseUrl =
-  (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
-  'https://www.kraus.my.id';
+    (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
+    'https://www.kraus.my.id';
   try {
     await fetch(`${baseUrl}/api/log`, {
       method: 'POST',

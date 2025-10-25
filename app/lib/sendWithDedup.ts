@@ -9,17 +9,14 @@ export type SendWithDedupOptions = {
 };
 
 export async function sendWithDedup(opts: SendWithDedupOptions) {
-  const {
-    source,
-    message,
-    requestId,
-    sendFn,
-  } = opts;
+  const { source, message, requestId, sendFn } = opts;
 
   // Allow overriding default via environment variable
   const envthrottle = process.env.EMAIL_THROTTLE_MINUTES;
   const effectiveThrottle: number = envthrottle ? parseInt(envthrottle, 10) : 15;
-  console.log(`[${requestId}] [sendWithDedup] effectiveThrottle set to ${effectiveThrottle} minutes`);    
+  console.log(
+    `[${requestId}] [sendWithDedup] effectiveThrottle set to ${effectiveThrottle} minutes`
+  );
 
   const now = new Date();
 
@@ -29,14 +26,14 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
       where: {
         source,
         //message: { contains: message, mode: 'insensitive' }, // timer per component
-          message: { contains: 'email sent', mode: 'insensitive' },
+        message: { contains: 'email sent', mode: 'insensitive' },
       },
       orderBy: { timestamp: 'desc' },
     });
 
     const minutesSince = recent ? (now.getTime() - recent.timestamp.getTime()) / 60000 : Infinity;
-    console.log(`[${requestId}] [sendWithDedup] Minutes since last "${message}": ${minutesSince}`); 
-    const isNew = message.includes('New Post Created'); // allow immediate send for new post emails 
+    console.log(`[${requestId}] [sendWithDedup] Minutes since last "${message}": ${minutesSince}`);
+    const isNew = message.includes('New Post Created'); // allow immediate send for new post emails
     if (!isNew && minutesSince < effectiveThrottle) {
       // Suppress
       const suppressedMessage = `Email suppressed: ${message}

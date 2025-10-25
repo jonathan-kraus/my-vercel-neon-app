@@ -5,7 +5,7 @@ import { sendConfirmationEmail } from '../utils/email-client'; // Import the cli
 import { toast } from 'react-hot-toast';
 export default function ContactForm({ sendOnMount = true }: { sendOnMount?: boolean }) {
   const [loading, setLoading] = useState(false);
-  
+
   useEffect(() => {
     if (!sendOnMount) return;
     // Optionally send an email on mount if enabled (kept disabled by default)
@@ -17,7 +17,7 @@ export default function ContactForm({ sendOnMount = true }: { sendOnMount?: bool
     // };
     // sendConfirmationEmail(emailData).then(() => {}).catch(() => {});
   }, [sendOnMount]);
-  
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);

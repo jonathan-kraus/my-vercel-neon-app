@@ -5,7 +5,7 @@ import { logEvent } from '@/app/lib/log';
 function parseCookies(cookieHeader: string | null): Record<string, string> {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
-  cookieHeader.split(';').forEach(pair => {
+  cookieHeader.split(';').forEach((pair) => {
     const idx = pair.indexOf('=');
     if (idx > -1) {
       const key = pair.slice(0, idx).trim();

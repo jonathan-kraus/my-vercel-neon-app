@@ -2,6 +2,7 @@
 Repository-specific Copilot/AI instructions.
 Keep this short (20-50 lines). Focus on discoverable patterns, important files, and commands.
 -->
+
 # Copilot instructions for this repository
 
 This Next.js + Prisma + Neon demo app has a small, opinionated layout and a few patterns that matter when editing or adding code. Follow these concise, actionable rules so AI agents remain productive and consistent.

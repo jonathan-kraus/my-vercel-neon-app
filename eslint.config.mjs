@@ -36,11 +36,11 @@ const config = [
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
-{
-  files: ['**/*.{ts,tsx}'],
-  rules: {
-    'no-undef': 'off',
+  {
+    files: ['**/*.{ts,tsx}'],
+    rules: {
+      'no-undef': 'off',
+    },
   },
-}
 ];
 export default config;

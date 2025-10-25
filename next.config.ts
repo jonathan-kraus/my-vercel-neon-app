@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 import path from 'path';
 
 const nextConfig: NextConfig = {
@@ -6,7 +6,6 @@ const nextConfig: NextConfig = {
   // the project root which can emit a warning during build. Setting
   // `outputFileTracingRoot` explicitly avoids that warning.
   outputFileTracingRoot: path.resolve(__dirname),
-
 };
 
 export default nextConfig;

@@ -1,14 +1,14 @@
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
-import Image from "next/image";
-import Link from "next/link";
-import { db } from "./lib/db";
-import logo from "@/assets/logo.svg";
-import logoDark from "@/assets/logo-dark.svg";
-import arrow from "@/assets/arrow.svg";
-import discord from "@/assets/discord.svg";
-import docs from "@/assets/docs.svg";
-import CreatePostForm from "./components/CreatePostForm";
+import Image from 'next/image';
+import Link from 'next/link';
+import { db } from './lib/db';
+import logo from '@/assets/logo.svg';
+import logoDark from '@/assets/logo-dark.svg';
+import arrow from '@/assets/arrow.svg';
+import discord from '@/assets/discord.svg';
+import docs from '@/assets/docs.svg';
+import CreatePostForm from './components/CreatePostForm';
 import { DeleteButton } from '@/app/components/DeleteButton';
 // removed client-side duplicate form import (PostFormClient)
 // import PostFormClient from '@/app/components/PostFormClient';
@@ -16,18 +16,18 @@ import { DeleteButton } from '@/app/components/DeleteButton';
 
 const DATA = {
   title: "Jonathan's Blog",
-  description: "A blog showcasing posts with Neon.",
+  description: 'A blog showcasing posts with Neon.',
   button: {
-    text: "Posts by user",
-    href: "/pstbyusr/",
+    text: 'Posts by user',
+    href: '/pstbyusr/',
   },
   link: {
-    text: "View on GitHub",
-    href: "https://github.com/neondatabase-labs/vercel-marketplace-neon",
+    text: 'View on GitHub',
+    href: 'https://github.com/neondatabase-labs/vercel-marketplace-neon',
   },
   footerLinks: [
-    { text: "Docs", href: "https://neon.tech/docs/", icon: docs },
-    { text: "Discord", href: "https://discord.com/invite/92vNTzKDGp", icon: discord },
+    { text: 'Docs', href: 'https://neon.tech/docs/', icon: docs },
+    { text: 'Discord', href: 'https://discord.com/invite/92vNTzKDGp', icon: discord },
   ],
 };
 
@@ -40,9 +40,8 @@ type BlogPost = {
 };
 
 export default async function Home() {
-  
   const posts = await db.post.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
     where: { published: true },
     include: { author: true },
   });
@@ -65,23 +64,22 @@ export default async function Home() {
               {posts.map((post: BlogPost, index: number) => (
                 <li
                   key={post.id}
-                  className={`border-b pb-2 ${index % 2 === 0 ? "bg-sky-500" : "bg-blue-400"}`}
+                  className={`border-b pb-2 ${index % 2 === 0 ? 'bg-sky-500' : 'bg-blue-400'}`}
                 >
                   <div className="flex justify-between items-center">
                     <div>
                       <span className="text-lg font-semibold">{post.title}</span>
                       <p>{post.content}</p>
                       <p className="text-sm text-navy-600">
-                        By {post.author?.name || "Unknown"}{" "}
-                        
-                        {new Date(post.createdAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
+                        By {post.author?.name || 'Unknown'}{' '}
+                        {new Date(post.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
                         })}
                       </p>
                     </div>
-                      <DeleteButton postId={post.id} />
+                    <DeleteButton postId={post.id} />
                   </div>
                 </li>
               ))}
@@ -125,11 +123,7 @@ export default async function Home() {
             >
               {DATA.button.text}
             </Link>
-            <Link
-              className="group flex items-center gap-2"
-              href={DATA.link.href}
-              target="_blank"
-            >
+            <Link className="group flex items-center gap-2" href={DATA.link.href} target="_blank">
               {DATA.link.text}
               <Image
                 className="transition-transform group-hover:translate-x-1 dark:invert"

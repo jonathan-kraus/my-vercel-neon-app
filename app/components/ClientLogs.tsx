@@ -24,11 +24,12 @@ export default function ClientLogs({ logs: initialLogs }: { logs: LogEntry[] }) 
       .then((data) => setLogs(data));
   }, []);
 
-  const filteredLogs = logs.filter((log) =>
-    log.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    log.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    log.severity.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (log.requestId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
+  const filteredLogs = logs.filter(
+    (log) =>
+      log.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      log.severity.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (log.requestId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
   return (

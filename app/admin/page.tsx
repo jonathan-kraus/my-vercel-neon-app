@@ -9,7 +9,14 @@ export default function AdminPage() {
   const [userName, setUserName] = useState('');
 
   if (!authorized) {
-    return <NameLogin onSuccess={(name) => { setAuthorized(true); setUserName(name); }} />;
+    return (
+      <NameLogin
+        onSuccess={(name) => {
+          setAuthorized(true);
+          setUserName(name);
+        }}
+      />
+    );
   }
 
   return (

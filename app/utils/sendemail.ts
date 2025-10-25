@@ -10,12 +10,12 @@ const mailerSend = new MailerSend({
 
 const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
 export default async function logSendEmailModuleAccess() {
-const severity = 'info';
-const source = 'sendemail.ts';
-const message = `sendemail.ts module accessed`;
-const requestId = crypto.randomUUID();
-const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
-try {
+  const severity = 'info';
+  const source = 'sendemail.ts';
+  const message = `sendemail.ts module accessed`;
+  const requestId = crypto.randomUUID();
+  const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
+  try {
     const lasttime = await db.log.findFirst({
       where: { message: { contains: 'email sent', mode: 'insensitive' } },
       orderBy: { timestamp: 'desc' },
@@ -25,7 +25,7 @@ try {
   } catch (err) {
     console.error(`❌ ${requestId} [sendemail.ts] Error caught:`, err);
   }
-  
+
   try {
     console.log(`🚀 [${requestId}] sendemail.ts Starting logic`);
     await db.log.create({
@@ -37,10 +37,11 @@ try {
         metadata: metadata ?? {},
         timestamp: new Date(),
       },
-    })  
+    });
   } catch (err) {
     console.error(`❌ ${requestId} [sendemail.ts] Error caught:`, err);
-  }}
+  }
+}
 // ✅ Move type and logger OUTSIDE
 export type LogPayload = {
   severity: 'info' | 'warning' | 'error';
@@ -63,7 +64,6 @@ export async function logEvent(payload: LogPayload) {
   try {
     await logSendEmailModuleAccess();
 
-      
     console.log(`[logEvent] sent to ${logUrl}`);
   } catch (err) {
     console.error(`[logEvent] failed`, err);
@@ -76,11 +76,11 @@ export async function sendEmailDirect(
   toEmail: string,
   toName: string,
   requestId?: string,
-  subject?: string  
+  subject?: string
 ) {
   const recipients = [new Recipient(toEmail, toName)];
-  const finalSubject = subject || `Mail Success Confirmation - ${toName}`;    
-  console.log(`[sendemail] sendEmailDirect triggered for ${toEmail} with requestId: ${requestId}`);    
+  const finalSubject = subject || `Mail Success Confirmation - ${toName}`;
+  console.log(`[sendemail] sendEmailDirect triggered for ${toEmail} with requestId: ${requestId}`);
   const emailParams = new EmailParams()
     .setFrom(sentFrom)
     .setTo(recipients)
@@ -89,24 +89,24 @@ export async function sendEmailDirect(
     .setText(`Sent from utils ${toName} app`)
     .setHtml(`<strong>Sent from utils ${toName} app</strong> ${requestId}`);
 
-    const sendFn = async () => {
-      await mailerSend.email.send(emailParams);
-    };
+  const sendFn = async () => {
+    await mailerSend.email.send(emailParams);
+  };
 
-    const result = await sendWithDedup({
-      source: 'sendemail',
-      message: `Email : ${finalSubject}`,
-      requestId,
-      throttleMinutes: process.env.EMAIL_THROTTLE_MINUTES ? 15 : 0,
-      sendFn,
-    });
+  const result = await sendWithDedup({
+    source: 'sendemail',
+    message: `Email : ${finalSubject}`,
+    requestId,
+    throttleMinutes: process.env.EMAIL_THROTTLE_MINUTES ? 15 : 0,
+    sendFn,
+  });
 
-    if (result.sent) {
-      console.log('✅ Email from utils sent successfully to:', toEmail, toName);
-      return true;
-    }
+  if (result.sent) {
+    console.log('✅ Email from utils sent successfully to:', toEmail, toName);
+    return true;
+  }
 
-    console.log('ℹ️ Email skipped:', result.reason || 'throttled');
-    return false;
-
-} logSendEmailModuleAccess();
+  console.log('ℹ️ Email skipped:', result.reason || 'throttled');
+  return false;
+}
+logSendEmailModuleAccess();

@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import WeatherCard from "@/app/components/WeatherCard";
+import WeatherCard from '@/app/components/WeatherCard';
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
-import DailyForecastCard from "@/app/components/DailyForecastCard";
-import type { DailyForecastPoint } from "@/app/lib/GetDailyForecast";
+import DailyForecastCard from '@/app/components/DailyForecastCard';
+import type { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 
 export default function WeatherPage() {
   const [forecast, setForecast] = useState<DailyForecastPoint[]>([]);
-console.log('[build] Generating /admin/weather');
+  console.log('[build] Generating /admin/weather');
 
   useEffect(() => {
     const fetchForecast = async () => {

@@ -4,7 +4,7 @@ console.log('[build] Generating /api/me');
 function parseCookies(cookieHeader: string | null) {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
-  cookieHeader.split(';').forEach(pair => {
+  cookieHeader.split(';').forEach((pair) => {
     const idx = pair.indexOf('=');
     if (idx > -1) {
       const key = pair.slice(0, idx).trim();
@@ -55,7 +55,7 @@ export async function GET(req: Request) {
       if (typeof expRaw === 'number') expNum = expRaw;
       else if (typeof expRaw === 'string' && !Number.isNaN(Number(expRaw))) expNum = Number(expRaw);
 
-      username = (nameVal ?? usernameVal ?? subVal) ?? null;
+      username = nameVal ?? usernameVal ?? subVal ?? null;
       if (expNum) expiresAt = expNum * 1000;
     }
 

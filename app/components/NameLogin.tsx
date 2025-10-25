@@ -36,7 +36,9 @@ export default function NameLogin({ onSuccess }: NameLoginProps) {
         onChange={(e) => setUserName(e.target.value)}
         className="border p-2"
       />
-      <button type="submit" className="ml-2 px-4 py-2 bg-blue-500 text-white">Enter</button>
+      <button type="submit" className="ml-2 px-4 py-2 bg-blue-500 text-white">
+        Enter
+      </button>
       {error && <p className="text-red-500 mt-2">{error}</p>}
     </form>
   );

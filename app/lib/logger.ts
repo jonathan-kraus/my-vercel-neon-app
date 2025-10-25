@@ -1,9 +1,10 @@
 import { db } from '../lib/db';
 import { LogPayload } from '../lib/types';
-    const baseUrl =
+const baseUrl =
   (typeof window !== 'undefined' && window.location.origin) ||
   (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-  (process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || 'https://kraus.my.id');
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
+  'https://kraus.my.id';
 export async function logEvent(payload: LogPayload) {
   if (typeof window === 'undefined') {
     // ✅ Server-side: use Prisma

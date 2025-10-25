@@ -25,12 +25,12 @@ export async function getWeather(): Promise<WeatherResponse> {
   //const zip = '02445'; // Brookline, MA ZIP code
   const zip = process.env.JZIP || '02445'; // Default to Brookline, MA if not set
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=40.10520,-75.41404&units=imperial&apikey=${apiKey}`;
-console.log(`[getWeather] [${requestId}] Server function started at ${new Date().toISOString()}`);
-if (typeof window !== 'undefined') {
-  console.log(`[getWeather] [${requestId}] Running on the client zip: ${zip}`);
-} else {
-  console.log(`[getWeather] [${requestId}] Running on the server zip: ${zip}`);
-}
+  console.log(`[getWeather] [${requestId}] Server function started at ${new Date().toISOString()}`);
+  if (typeof window !== 'undefined') {
+    console.log(`[getWeather] [${requestId}] Running on the client zip: ${zip}`);
+  } else {
+    console.log(`[getWeather] [${requestId}] Running on the server zip: ${zip}`);
+  }
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch weather');
 
@@ -60,7 +60,7 @@ if (typeof window !== 'undefined') {
   if (hoursSinceLast > 2) {
     try {
       const subject = `Weather Update for ${data.location?.name ?? 'Unknown'}`;
-      await triggerEmail("Weather", latestLog ? latestLog.id.toString() : undefined, subject);
+      await triggerEmail('Weather', latestLog ? latestLog.id.toString() : undefined, subject);
 
       await db.weatherLog.create({
         data: {
@@ -73,19 +73,20 @@ if (typeof window !== 'undefined') {
           emailSent: true,
         },
       });
-            // update row 1 for last update time
+      // update row 1 for last update time
       await db.weatherLog.update({
-  where: { id: 1 },
-  data: {
-    temperature: data.temperature,
-    humidity: data.humidity,
-    windSpeed: data.windSpeed,
-    windGust: data.windGust,
-    precipitationProbability: data.precipitationProbability,
-    weatherCode: data.weatherCode,
-    //emailSent: false, // or preserve existing value
-    createdAt: new Date(), // 👈 this marks the last update
-  },});
+        where: { id: 1 },
+        data: {
+          temperature: data.temperature,
+          humidity: data.humidity,
+          windSpeed: data.windSpeed,
+          windGust: data.windGust,
+          precipitationProbability: data.precipitationProbability,
+          weatherCode: data.weatherCode,
+          //emailSent: false, // or preserve existing value
+          createdAt: new Date(), // 👈 this marks the last update
+        },
+      });
 
       emailSent = true;
       lastEmailTimestamp = now.toISOString();
@@ -97,28 +98,28 @@ if (typeof window !== 'undefined') {
   } else {
     console.log('⏱️ Email already sent within the last 24 hours');
   }
-const locationName = data.location?.name ?? 'Unknown';
-console.log(`Weather data fetched [${requestId}] for ${locationName}:`, values);
+  const locationName = data.location?.name ?? 'Unknown';
+  console.log(`Weather data fetched [${requestId}] for ${locationName}:`, values);
   console.log(`[getWeather] [${requestId}] Weather for ZIP ${zip} resolved to ${locationName}`);
-return {
-  temperature: values.temperature,
-  humidity: values.humidity,
-  windSpeed: values.windSpeed,
-  windGust: values.windGust,
-  precipitationProbability: values.precipitationProbability,
-  conditions: {
-    day: values.weatherCode ?? -1,
-    night: values.weatherCode ?? -1,
-  },
-  rainAccumulationAvg: values.rainAccumulationAvg,
-  rainAccumulationMax: values.rainAccumulationMax,
-  rainAccumulationMin: values.rainAccumulationMin,
-  rainAccumulationSum: values.rainAccumulationSum,
-  locationName, // ✅ Include it here
-  emailSent,
-  lastEmailTimestamp,
-  requestId,
-};
+  return {
+    temperature: values.temperature,
+    humidity: values.humidity,
+    windSpeed: values.windSpeed,
+    windGust: values.windGust,
+    precipitationProbability: values.precipitationProbability,
+    conditions: {
+      day: values.weatherCode ?? -1,
+      night: values.weatherCode ?? -1,
+    },
+    rainAccumulationAvg: values.rainAccumulationAvg,
+    rainAccumulationMax: values.rainAccumulationMax,
+    rainAccumulationMin: values.rainAccumulationMin,
+    rainAccumulationSum: values.rainAccumulationSum,
+    locationName, // ✅ Include it here
+    emailSent,
+    lastEmailTimestamp,
+    requestId,
+  };
 }
 type HourlyForecastEntry = {
   time: string;
@@ -141,7 +142,7 @@ export async function getHourlyForecast(): Promise<
   const data = await res.json();
   const hourly: HourlyForecastEntry[] = data.timelines.hourly;
 
-  return hourly.slice(0, 12).map(hour => ({
+  return hourly.slice(0, 12).map((hour) => ({
     time: hour.time,
     temperature: hour.values.temperature,
     precipitation: hour.values.precipitationProbability,

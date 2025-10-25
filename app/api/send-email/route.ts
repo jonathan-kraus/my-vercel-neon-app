@@ -42,14 +42,14 @@ export async function POST(request: Request) {
     const body = await request.json();
     const parsed = EmailSchema.safeParse(body);
     if (parsed.success) {
-      console.log("[send-email] Validation passed:", parsed.data);
+      console.log('[send-email] Validation passed:', parsed.data);
     } else {
-      console.error("[send-email] Validation failed:", parsed.error.format());
+      console.error('[send-email] Validation failed:', parsed.error.format());
       return new Response('Invalid payload', { status: 400 });
     }
 
     const { toEmail, toName, subject, message = '', requestId } = parsed.data;
-        // Proceed with sending email
+    // Proceed with sending email
     console.log('📨 Sending email to:', toEmail);
     // await mailerSend.email.send(...)
     const recipients = [new Recipient(toEmail, toName)];
@@ -76,36 +76,51 @@ export async function POST(request: Request) {
     });
 
     if (result.sent) {
-      return new Response(JSON.stringify({ status: 'success', message: 'Email sent', requestId: requestId || 'none' }), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-        },
-      });
+      return new Response(
+        JSON.stringify({
+          status: 'success',
+          message: 'Email sent',
+          requestId: requestId || 'none',
+        }),
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+          },
+        }
+      );
     }
 
-    return new Response(JSON.stringify({ status: 'skipped', reason: result.reason || 'throttled', requestId: requestId || 'none' }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-    });
-
+    return new Response(
+      JSON.stringify({
+        status: 'skipped',
+        reason: result.reason || 'throttled',
+        requestId: requestId || 'none',
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      }
+    );
   } catch (err) {
     console.error(`[send-email] ❌ Error sending email`, err);
 
-    return new Response(JSON.stringify({
-  status: 'error',
-  message: 'Internal server error',
-  requestId: 'none',
-}), {
-  status: 500,
-  headers: {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-  },
-});
-
+    return new Response(
+      JSON.stringify({
+        status: 'error',
+        message: 'Internal server error',
+        requestId: 'none',
+      }),
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    );
   }
 }

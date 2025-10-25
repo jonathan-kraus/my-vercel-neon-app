@@ -28,5 +28,3 @@ export async function createLog({
   console.log('📬 createLog called with:', { title, content, authorId });
   return log;
 }
-
-  

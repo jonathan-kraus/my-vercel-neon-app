@@ -20,7 +20,7 @@ export async function logEvent({
       process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
       'https://www.kraus.my.id';
 
-    await fetch(`${baseUrl}/api/log`, { 
+    await fetch(`${baseUrl}/api/log`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ severity, source, message, requestId, metadata }),

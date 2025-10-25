@@ -1,4 +1,3 @@
-
 import ClientLogs from '@/app/components/ClientLogs';
 import { db } from '@/app/lib/db';
 console.log('[build] Generating /logs');

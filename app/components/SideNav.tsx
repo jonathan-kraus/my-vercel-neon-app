@@ -10,7 +10,7 @@ const baseUrl =
     ? window.location.origin
     : process.env.NEXT_PUBLIC_SITE_URL || 'https://www.kraus.my.id';
 
-const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`; 
+const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 const calllog = async (message: string) => {
   try {
     await fetch(`${baseUrl}/api/log`, {
@@ -31,7 +31,9 @@ const calllog = async (message: string) => {
 calllog(`[SideNav] [${requestId}] component loaded`);
 
 function getCookie(name: string): string | null {
-  const match = document.cookie.match(new RegExp('(^|; )' + name.replace(/([$?*|{}\\^])/g, '\\$1') + '=([^;]*)'));
+  const match = document.cookie.match(
+    new RegExp('(^|; )' + name.replace(/([$?*|{}\\^])/g, '\\$1') + '=([^;]*)')
+  );
   return match ? decodeURIComponent(match[2]) : null;
 }
 
@@ -41,7 +43,12 @@ function parseJwt(token: string | null) {
     const parts = token.split('.');
     if (parts.length < 2) return null;
     const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-    const json = decodeURIComponent(atob(payload).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+    const json = decodeURIComponent(
+      atob(payload)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
     return JSON.parse(json);
   } catch {
     return null;
@@ -121,7 +128,9 @@ export default function SideNav() {
     };
 
     init();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -143,7 +152,7 @@ export default function SideNav() {
     // provide a short, safe summary to user
     const safeSummary = cookies
       .split('; ')
-      .map(c => {
+      .map((c) => {
         const [k, v] = c.split('=');
         if (!k) return '';
         if (/token|auth|session|password|api/i.test(k)) return `${k}=<redacted>`;
@@ -172,15 +181,14 @@ export default function SideNav() {
     }
 
     console.log(`Navigating to /authors ${requestId}`);
-      setTimeout(() => router.push('/authors'), 1500);
-
-};
+    setTimeout(() => router.push('/authors'), 1500);
+  };
 
   const handleDbStatusClick = async () => {
     console.log('handleDbStatusClick!');
-      console.log(`[DbStatus] Clicked, navigating to /DbStatus ${requestId}`);
-      setTimeout(() => router.push('/admin/db-status'), 1500);    
-    
+    console.log(`[DbStatus] Clicked, navigating to /DbStatus ${requestId}`);
+    setTimeout(() => router.push('/admin/db-status'), 1500);
+
     //endpoint: /admin/db-status
     try {
       await fetch(`${baseUrl}/api/log`, {
@@ -226,19 +234,30 @@ export default function SideNav() {
     <aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
       <div className="flex flex-col h-full">
         <nav className="flex flex-col gap-3">
-          <Link className="font-semibold text-lg" href="/">* Home *</Link>
+          <Link className="font-semibold text-lg" href="/">
+            * Home *
+          </Link>
           <Link href="/pstbyusr/">Posts by User</Link>
           <Link href="/admin/logs">Activity Logs</Link>
 
-          <button onClick={handleAuthorsClick} className="text-left w-full px-2 py-1 hover:bg-gray-100">
+          <button
+            onClick={handleAuthorsClick}
+            className="text-left w-full px-2 py-1 hover:bg-gray-100"
+          >
             Authors
           </button>
 
           <Link href="/logs">Logs</Link>
-          <button onClick={handleDbStatusClick} className="text-left w-full px-2 py-1 hover:bg-gray-100">
+          <button
+            onClick={handleDbStatusClick}
+            className="text-left w-full px-2 py-1 hover:bg-gray-100"
+          >
             DbStatus
           </button>
-          <button onClick={handleWeatherClick} className="text-left w-full px-2 py-1 hover:bg-gray-100">
+          <button
+            onClick={handleWeatherClick}
+            className="text-left w-full px-2 py-1 hover:bg-gray-100"
+          >
             Weather
           </button>
 
@@ -249,9 +268,7 @@ export default function SideNav() {
         <div className="mt-auto pt-4 border-t">
           <div className="mb-2">
             <div className="text-sm text-gray-600">User</div>
-            <div className="font-medium">
-              {username ?? 'Guest'}
-            </div>
+            <div className="font-medium">{username ?? 'Guest'}</div>
           </div>
 
           <div className="mb-2 text-sm text-gray-600">
