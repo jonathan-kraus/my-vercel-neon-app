@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ClientShell />
       </body>
       <body className="bg-blue-200 text-[#0C0D0D] dark:bg-black dark:text-white">
-      <p>Test body for Tailwind CSS</p>
+      <p>Test body for Tailwind CSS </p>
       </body>
 
     </html>
