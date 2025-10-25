@@ -232,7 +232,8 @@ export default function SideNav() {
 
   return (
     //<aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
-      <aside className="w-56 min-h-screen border-r p-4 bg-gray-100 border border-red-500">
+<aside className="w-72 min-h-screen bg-blue-900 text-yellow-400 border-r border-blue-800 p-4 shadow-md">
+
 
       <div className="flex flex-col h-full">
         <nav className="flex flex-col gap-3">
@@ -244,21 +245,26 @@ export default function SideNav() {
 
           <button
             onClick={handleAuthorsClick}
-            className="text-left w-full px-2 py-1 hover:bg-gray-100"
+            className="text-left w-full px-2 py-1 rounded hover:bg-blue-800 hover:text-white"
           >
             Authors
           </button>
 
-          <Link href="/logs">Logs</Link>
+          <Link 
+            href="/logs"
+            className="text-yellow-200 hover:text-yellow-400 hover:underline px-2 py-1"
+          >
+            Logs
+          </Link>
           <button
             onClick={handleDbStatusClick}
-            className="text-left w-full px-2 py-1 hover:bg-gray-100"
+            className="text-left w-full px-2 py-1 rounded hover:bg-blue-800 hover:text-white"
           >
             DbStatus
           </button>
           <button
             onClick={handleWeatherClick}
-            className="text-left w-full px-2 py-1 hover:bg-gray-100"
+            className="text-left w-full px-2 py-1 rounded hover:bg-blue-800 hover:text-white"
           >
             Weather
           </button>
