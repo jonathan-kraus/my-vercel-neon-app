@@ -231,7 +231,9 @@ export default function SideNav() {
   };
 
   return (
-    <aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
+    //<aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
+      <aside className="w-56 min-h-screen border-r p-4 bg-gray-100 border border-red-500">
+
       <div className="flex flex-col h-full">
         <nav className="flex flex-col gap-3">
           <Link className="font-semibold text-lg" href="/">
