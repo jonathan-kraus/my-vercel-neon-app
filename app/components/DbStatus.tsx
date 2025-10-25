@@ -20,7 +20,9 @@ function RegionBadge({ region }: { region: string }) {
     </span>
   );
 }
-
+export default function Page() {
+  return <div className="bg-red-500 text-white p-4 rounded shadow mt-4">Tailwind is working!</div>;
+}
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
 
@@ -98,7 +100,7 @@ export default function DbStatus() {
       <p>
         <strong>Total Posts:</strong> {status.postCount}
       </p>
-
+      <div className="bg-red-500 text-white p-4 rounded shadow mt-4">Tailwind is working!</div>
       <p>
         <strong>Latest Post:</strong>{' '}
         {status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
