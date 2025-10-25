@@ -42,5 +42,9 @@ const config = [
       'no-undef': 'off',
     },
   },
+  {
+    files: ['**/*.js'],
+    ignores: ['postcss.config.js'], // optional: ignore this file entirely
+  },
 ];
 export default config;
