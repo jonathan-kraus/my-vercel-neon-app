@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
+const navItemClass =
+  "w-full px-2 py-1 text-center rounded transition-all duration-200 ease-in-out hover:bg-blue-800 hover:text-yellow-400 hover:underline";
 
 const baseUrl =
   typeof window !== 'undefined'
@@ -238,39 +240,45 @@ export default function SideNav() {
 
       <div className="flex flex-col h-full">
         <nav className="flex flex-col gap-3 items-center text-center mb-4">
-          <Link className="font-semibold text-lg" href="/">
+          <Link className={navItemClass} href="/">
             * Home *
           </Link>
-          <Link href="/pstbyusr/">Posts by User</Link>
-          <Link href="/admin/logs">Activity Logs</Link>
+          <Link className={navItemClass} href="/pstbyusr/">
+            Posts by User
+          </Link>
+          <Link className={navItemClass} href="/admin/logs">
+            Activity Logs
+          </Link>
 
           <button
             onClick={handleAuthorsClick}
-            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded transition-colors duration-200"
+            className={navItemClass}  
           >
             Authors
           </button>
 
           <Link 
             href="/logs"
-            className="text-yellow-200 hover:text-yellow-400 hover:underline px-2 py-1"
+            className={navItemClass}
           >
             Logs
           </Link>
           <button
             onClick={handleDbStatusClick}
-            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded transition-colors duration-200 "
+            className={navItemClass}
           >
             DbStatus
           </button>
           <button
             onClick={handleWeatherClick}
-            className="w-full px-2 py-1 flex justify-center items-center gap-2 hover:bg-blue-800 hover:text-yellow-400 rounded transition-colors duration-200"
+            className={navItemClass}
           >
             Weather
           </button>
 
-          <Link href="/dev/update-post">Update Post</Link>
+          <Link className={navItemClass} href="/dev/update-post">
+            Update Post
+          </Link>
         </nav>
 
         {/* User info + cookie checks pushed to bottom */}
