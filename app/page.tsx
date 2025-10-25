@@ -67,6 +67,10 @@ export default async function Home() {
                   className={`border-b pb-2 ${index % 2 === 0 ? 'bg-sky-500' : 'bg-blue-400'}`}
                 >
                   <div className="flex justify-between items-center">
+                    <div className="bg-red-500 text-white p-4 rounded shadow">
+                    Tailwind is working!
+                    </div>
+
                     <div>
                       <span className="text-lg font-semibold">{post.title}</span>
                       <p>{post.content}</p>

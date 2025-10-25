@@ -1,0 +1,7 @@
+pnpm-lock.yaml
+.env*
+.npmrc
+.github/
+.next/
+app/generated/
+next-env.d.ts
