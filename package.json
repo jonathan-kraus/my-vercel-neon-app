@@ -4,7 +4,7 @@
   "private": true,
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
+      "eslint --no-color --fix",
       "prettier --write"
     ],
     "*.{json,css,md}": "prettier --write"
