@@ -300,7 +300,7 @@ export default function SideNav() {
 
             <Link
               href="/auth"
-              className="block bg-yellow-300 text-blue-950 p-3 rounded shadow text-center font-semibold"
+              className="block bg-yellow-300 text-blue-950 p-3 rounded shadow text-center font-semibold hover:animate-wiggle"
             >
               🍎 Apple
             </Link>
