@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { LogSearch } from './LogSearch';
+import { SessionCheck } from './SessionCheck';
 import type { Prisma } from '@prisma/client';
 
 type LogEntry = {
@@ -17,7 +18,7 @@ type LogEntry = {
 export default function ClientLogs({ logs: initialLogs }: { logs: LogEntry[] }) {
   const [logs, setLogs] = useState<LogEntry[]>(initialLogs);
   const [searchQuery, setSearchQuery] = useState('');
-
+  SessionCheck;
   useEffect(() => {
     fetch('/api/logs')
       .then((res) => res.json())
