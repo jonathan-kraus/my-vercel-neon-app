@@ -1,6 +1,7 @@
 import SideNav from './components/SideNav';
 import ClientShell from '@/app/components/ClientShell';
 import './globals.css';
+import './app.css';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

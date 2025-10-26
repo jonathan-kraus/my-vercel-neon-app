@@ -288,10 +288,10 @@ export default function SideNav() {
         <div className="flex-1 overflow-y-auto space-y-6">
           {/* Top section: user info + 🍎 box + cookie button */}
           <div className="space-y-4 px-2 pt-2">
-            <div className="text-sm text-gray-400">User</div>
+            <div className="text-sm text-yellow-400">User</div>
             <div className="font-medium text-yellow-300">{username ?? 'Guest'}</div>
 
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-yellow-400">
               Session:{' '}
               <span className="font-medium text-yellow-300">
                 {expiresAt ? (timeLeft === 'expired' ? 'expired' : `${timeLeft} left`) : 'unknown'}
@@ -300,7 +300,7 @@ export default function SideNav() {
 
             <Link
               href="/auth"
-              className="block bg-yellow-300 text-blue-950 p-3 rounded shadow text-center font-semibold hover:animate-wiggle"
+              className="block bg-red-300 text-blue-950 p-3 rounded shadow text-center font-semibold hover:animate-wiggle"
             >
               🍎 Apple
             </Link>
