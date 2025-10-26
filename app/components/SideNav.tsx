@@ -248,20 +248,19 @@ export default function SideNav() {
       className="w-72 min-h-screen bg-blue-900 text-yellow-400 border-r border-blue-800 p-4 shadow-md"
       //style={{ minWidth: '18rem' }}>
     >
-      <div className="flex flex-col h-full">
-        <nav className="flex flex-col gap-3 items-center text-center mb-4">
-          <NavItem href="/" label="* Home *" />
-          <NavItem href="/pstbyusr/" label="Posts by User" />
-          <NavItem href="/admin/logs" label="Activity Logs" />
-          <NavItem onClick={handleAuthorsClick} label="Authors" />
-          <NavItem href="/logs" label="Logs" />
-          <NavItem onClick={handleDbStatusClick} label="DbStatus" />
-          <NavItem onClick={handleWeatherClick} label="Weather" />
-          <NavItem href="/dev/update-post" label="Update Post" />
-        </nav>
+      <div className="flex flex-col h-full justify-between">
+        {/* Top section: user info + 🍎 box + cookie button */}
+        <div className="space-y-4 px-2">
+          <div className="text-sm text-gray-400">User</div>
+          <div className="font-medium text-yellow-300">{username ?? 'Guest'}</div>
 
-        {/* 🍎 Apple box and cookie button moved up */}
-        <div className="mb-6 px-4 space-y-3">
+          <div className="text-sm text-gray-400">
+            Session:{' '}
+            <span className="font-medium text-yellow-300">
+              {expiresAt ? (timeLeft === 'expired' ? 'expired' : `${timeLeft} left`) : 'unknown'}
+            </span>
+          </div>
+
           <Link
             href="/auth"
             className="block bg-yellow-300 text-blue-950 p-3 rounded shadow text-center font-semibold"
@@ -278,20 +277,23 @@ export default function SideNav() {
           </button>
         </div>
 
-        {/* User info + session timer stays at bottom */}
-        <div className="mt-auto pt-4 border-t px-4">
-          <div className="mb-2 text-sm text-gray-400">User</div>
-          <div className="font-medium text-yellow-300 mb-4">{username ?? 'Guest'}</div>
+        {/* Middle section: nav links */}
+        <nav className="flex flex-col gap-3 items-center text-center py-6">
+          <NavItem href="/" label="* Home *" />
+          <NavItem href="/pstbyusr/" label="Posts by User" />
+          <NavItem href="/admin/logs" label="Activity Logs" />
+          <NavItem onClick={handleAuthorsClick} label="Authors" />
+          <NavItem href="/logs" label="Logs" />
+          <NavItem onClick={handleDbStatusClick} label="DbStatus" />
+          <NavItem onClick={handleWeatherClick} label="Weather" />
+          <NavItem href="/dev/update-post" label="Update Post" />
+        </nav>
 
-          <div className="text-sm text-gray-400">
-            Session:{' '}
-            <span className="font-medium text-yellow-300">
-              {expiresAt ? (timeLeft === 'expired' ? 'expired' : `${timeLeft} left`) : 'unknown'}
-            </span>
-          </div>
+        {/* Bottom: toaster only */}
+        <div className="pt-4">
+          <Toaster />
         </div>
       </div>
-      <Toaster position="bottom-center" reverseOrder={false} />
     </aside>
   );
 }
