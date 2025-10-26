@@ -8,14 +8,14 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
 
   const handleClick = () => {
     startTransition(async () => {
-      const res = await fetch(`/api/posts/${postId}/complete`, {
+      const res = await fetch(`/api/posts/${postId}/unpublish`, {
         method: 'POST',
       });
 
       if (res.ok) {
-        toast.success('Post marked as complete');
+        toast.success('Post marked as unpublished');
       } else {
-        toast.error('Failed to mark complete');
+        toast.error('Failed to mark unpublished');
       }
     });
   };
