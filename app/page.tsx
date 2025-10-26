@@ -80,8 +80,10 @@ export default async function Home() {
                         })}
                       </p>
                     </div>
-                    <DeleteButton postId={post.id} />
-                    <MarkCompleteButton postId={post.id.toString()} />
+                    <div className="flex gap-2">
+                      <DeleteButton postId={post.id} />
+                      <MarkCompleteButton postId={post.id.toString()} />
+                    </div>
                   </div>
                 </li>
               ))}
