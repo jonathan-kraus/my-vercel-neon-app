@@ -28,6 +28,7 @@ export default function LogViewer() {
       ) : (
         logs.map((log) => (
           <div key={log.id} className="border p-4 rounded shadow">
+            <table className="w-full border-collapse table-fixed">...</table>
             <h3 className="font-semibold">{log.source}</h3>
             <p>
               {log.message} <span className="metadata">{JSON.stringify(log.metadata)}</span>
