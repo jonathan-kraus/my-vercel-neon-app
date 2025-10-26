@@ -29,6 +29,7 @@ export default function ClientLogs({ logs: initialLogs }: { logs: LogEntry[] }) 
       log.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
       log.severity.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      String(log.metadata)?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (log.requestId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
@@ -43,8 +44,8 @@ export default function ClientLogs({ logs: initialLogs }: { logs: LogEntry[] }) 
             <th className="border px-4 py-2 text-left">Severity</th>
             <th className="border px-4 py-2 text-left">Source</th>
             <th className="border px-4 py-2 text-left">Message</th>
-            <th className="border px-4 py-2 text-left">Request ID</th>
             <th className="border px-4 py-2 text-left">Metadata</th>
+            <th className="border px-4 py-2 text-left">Request ID</th>
           </tr>
         </thead>
         <tbody>
