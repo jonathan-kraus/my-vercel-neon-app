@@ -260,37 +260,38 @@ export default function SideNav() {
           <NavItem href="/dev/update-post" label="Update Post" />
         </nav>
 
-        {/* User info + cookie checks pushed to bottom */}
-        <div className="mt-auto pt-4 border-t">
-          <div className="mb-4">
-            <div className="text-sm text-gray-600">User</div>
-            <div className="font-medium">{username ?? 'Guest'}</div>
-          </div>
+        {/* 🍎 Apple box and cookie button moved up */}
+        <div className="mb-6 px-4 space-y-3">
+          <Link
+            href="/auth"
+            className="block bg-yellow-300 text-blue-950 p-3 rounded shadow text-center font-semibold"
+          >
+            🍎 Apple
+          </Link>
 
-          <div className="mb-2 text-sm text-gray-600">
+          <button
+            onClick={handleShowCookies}
+            className="w-full px-2 py-1 bg-blue-800 text-yellow-300 hover:bg-blue-700 rounded text-sm"
+            title="Show cookie summary (sensitive values redacted)"
+          >
+            Show cookie info
+          </button>
+        </div>
+
+        {/* User info + session timer stays at bottom */}
+        <div className="mt-auto pt-4 border-t px-4">
+          <div className="mb-2 text-sm text-gray-400">User</div>
+          <div className="font-medium text-yellow-300 mb-4">{username ?? 'Guest'}</div>
+
+          <div className="text-sm text-gray-400">
             Session:{' '}
-            <span className="font-medium">
+            <span className="font-medium text-yellow-300">
               {expiresAt ? (timeLeft === 'expired' ? 'expired' : `${timeLeft} left`) : 'unknown'}
             </span>
           </div>
-
-          <div className="max-w-full px-4">
-            <button
-              onClick={handleShowCookies}
-              className="text-left w-full px-2 py-1 bg-yellow-400 hover:bg-blue-200 rounded"
-              title="Show cookie summary (sensitive values redacted)"
-            >
-              Show cookie info
-            </button>
-
-            <Link href="/auth" className="bg-blue-950 text-yellow-300 p-4 rounded shadow">
-              🍎 Apple
-            </Link>
-          </div>
         </div>
-
-        <Toaster />
       </div>
+      <Toaster position="bottom-center" reverseOrder={false} />
     </aside>
   );
 }
