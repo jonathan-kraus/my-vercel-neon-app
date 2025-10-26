@@ -24,9 +24,10 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
     <button
       onClick={handleClick}
       disabled={isPending}
-      className="text-blue-400 hover:text-blue-600"
+      className="text-sm text-blue-600 hover:underline px-2 py-1"
+      title="Mark post as complete"
     >
-      Mark Complete
+      {isPending ? 'Marking…' : 'Mark Complete'}
     </button>
   );
 }

@@ -5,9 +5,9 @@ import { logger } from '@/app/lib/logger';
 
 export async function POST(req: Request) {
   const cookieStore = await cookies();
-  const user = cookieStore.get('authorizedUser')?.value;
+  const username = cookieStore.get('username')?.value;
 
-  if (!user) {
+  if (!username) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       source: 'entry.unpublish',
       message: `Entry ${id} marked as unpublished`,
       requestId: crypto.randomUUID(),
-      metadata: { user: user, entryId: id },
+      metadata: { user: username, entryId: id },
     });
 
     return NextResponse.json({ success: true });
