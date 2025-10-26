@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 const navItemClass =
-  "w-full px-2 py-1 text-center rounded transition-all duration-200 ease-in-out hover:bg-blue-800 hover:text-yellow-400 hover:underline";
+  'w-full px-2 py-1 text-center rounded transition-all duration-200 ease-in-out hover:bg-blue-800 hover:text-yellow-400 hover:underline';
 
 const baseUrl =
   typeof window !== 'undefined'
@@ -234,10 +234,10 @@ export default function SideNav() {
 
   return (
     //<aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
-<aside className="w-72 min-h-screen bg-blue-900 text-yellow-400 border-r border-blue-800 p-4 shadow-md"
-  //style={{ minWidth: '18rem' }}>
->
-
+    <aside
+      className="w-72 min-h-screen bg-blue-900 text-yellow-400 border-r border-blue-800 p-4 shadow-md"
+      //style={{ minWidth: '18rem' }}>
+    >
       <div className="flex flex-col h-full">
         <nav className="flex flex-col gap-3 items-center text-center mb-4">
           <Link className={navItemClass} href="/">
@@ -250,29 +250,17 @@ export default function SideNav() {
             Activity Logs
           </Link>
 
-          <button
-            onClick={handleAuthorsClick}
-            className={navItemClass}  
-          >
+          <button onClick={handleAuthorsClick} className={navItemClass}>
             Authors
           </button>
 
-          <Link 
-            href="/logs"
-            className={navItemClass}
-          >
+          <Link href="/logs" className={navItemClass}>
             Logs
           </Link>
-          <button
-            onClick={handleDbStatusClick}
-            className={navItemClass}
-          >
+          <button onClick={handleDbStatusClick} className={navItemClass}>
             DbStatus
           </button>
-          <button
-            onClick={handleWeatherClick}
-            className={navItemClass}
-          >
+          <button onClick={handleWeatherClick} className={navItemClass}>
             Weather
           </button>
 

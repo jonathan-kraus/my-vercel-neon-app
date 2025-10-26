@@ -111,7 +111,6 @@ export default function DbStatus() {
       <button onClick={notify}>Make me a toast!</button>
       <Toaster />
       {/* ✅ Tailwind test block */}
-
     </div>
   );
 }
