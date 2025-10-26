@@ -2,6 +2,13 @@
   "name": "vercel-marketplace-neon",
   "version": "0.1.0",
   "private": true,
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": "prettier --write"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "prisma generate --no-hints && next build",
