@@ -21,23 +21,36 @@ export default function LogViewer() {
   if (loading) return <p>Loading logs...</p>;
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold">Log Entries </h2>
+    <div className="max-w-full overflow-x-auto px-4">
+      <h2 className="text-xl font-bold mb-4">Log Entries</h2>
       {logs.length === 0 ? (
         <p>No logs found.</p>
       ) : (
-        logs.map((log) => (
-          <div key={log.id} className="border p-4 rounded shadow">
-            <table className="w-full border-collapse table-fixed">...</table>
-            <h3 className="font-semibold">{log.source}</h3>
-            <p>
-              {log.message} <span className="metadata">{JSON.stringify(log.metadata)}</span>
-            </p>
-            <p className="text-sm text-gray-500">
-              Created: {new Date(log.timestamp).toLocaleString()}
-            </p>
-          </div>
-        ))
+        <table className="w-full table-fixed border-collapse">
+          <thead>
+            <tr className="bg-blue-900 text-yellow-200">
+              <th className="w-1/5 px-2 py-2 text-left">Source</th>
+              <th className="w-3/5 px-2 py-2 text-left">Message</th>
+              <th className="w-1/5 px-2 py-2 text-left">Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            {logs.map((log) => (
+              <tr key={log.id} className="border-b hover:bg-blue-800 transition-colors">
+                <td className="px-2 py-2 font-semibold">{log.source}</td>
+                <td className="px-2 py-2">
+                  {log.message}{' '}
+                  <span className="text-xs text-gray-400">
+                    {log.metadata && JSON.stringify(log.metadata)}
+                  </span>
+                </td>
+                <td className="px-2 py-2 text-sm text-gray-500">
+                  {new Date(log.timestamp).toLocaleString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );
