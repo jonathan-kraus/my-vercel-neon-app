@@ -4,8 +4,26 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
+type NavItemProps =
+  | { href: string; label: string }
+  | { onClick: () => void; label: string };
 const navItemClass =
-  'w-full px-2 py-1 text-center rounded transition-all duration-200 ease-in-out hover:bg-blue-800 hover:text-yellow-400 hover:underline';
+  "w-full px-2 py-1 text-center rounded transition-all duration-200 ease-in-out hover:bg-blue-800 hover:text-yellow-400 hover:underline";
+export function NavItem(props: NavItemProps) {
+  if ('href' in props) {
+    return (
+      <Link href={props.href} className={navItemClass}>
+        {props.label}
+      </Link>
+    );
+  }
+
+  return (
+    <button onClick={props.onClick} className={navItemClass}>
+      {props.label}
+    </button>
+  );
+}
 
 const baseUrl =
   typeof window !== 'undefined'
@@ -183,14 +201,13 @@ export default function SideNav() {
     }
 
     console.log(`Navigating to /authors ${requestId}`);
-    setTimeout(() => router.push('/authors'), 1500);
+    <NavItem onClick={() => router.push('/authors')} label="Authors" />
   };
-
+<NavItem href="/logs" label="Logs" />
   const handleDbStatusClick = async () => {
     console.log('handleDbStatusClick!');
     console.log(`[DbStatus] Clicked, navigating to /DbStatus ${requestId}`);
-    setTimeout(() => router.push('/admin/db-status'), 1500);
-
+    <NavItem onClick={() => router.push('/admin/db-status')} label="DbStatus" />
     //endpoint: /admin/db-status
     try {
       await fetch(`${baseUrl}/api/log`, {
@@ -225,7 +242,7 @@ export default function SideNav() {
           metadata: { userAction: 'navigate' },
         }),
       });
-      setTimeout(() => router.push('/admin/weather'), 1500);
+      <NavItem onClick={() => router.push('/admin/weather')} label="Weather" />
     } catch (err) {
       console.error('Weather click failed:', err);
       toast.error('Action failed');
@@ -240,33 +257,16 @@ export default function SideNav() {
     >
       <div className="flex flex-col h-full">
         <nav className="flex flex-col gap-3 items-center text-center mb-4">
-          <Link className={navItemClass} href="/">
-            * Home *
-          </Link>
-          <Link className={navItemClass} href="/pstbyusr/">
-            Posts by User
-          </Link>
-          <Link className={navItemClass} href="/admin/logs">
-            Activity Logs
-          </Link>
+          <NavItem href="/" label="* Home *" />
+          <NavItem href="/pstbyusr/" label="Posts by User" />
+          <NavItem href="/admin/logs" label="Activity Logs" />
+          <NavItem onClick={handleAuthorsClick} label="Authors" />
+          <NavItem href="/logs" label="Logs" />
+          <NavItem onClick={handleDbStatusClick} label="DbStatus" />
+          <NavItem onClick={handleWeatherClick} label="Weather" />
 
-          <button onClick={handleAuthorsClick} className={navItemClass}>
-            Authors
-          </button>
-
-          <Link href="/logs" className={navItemClass}>
-            Logs
-          </Link>
-          <button onClick={handleDbStatusClick} className={navItemClass}>
-            DbStatus
-          </button>
-          <button onClick={handleWeatherClick} className={navItemClass}>
-            Weather
-          </button>
-
-          <Link className={navItemClass} href="/dev/update-post">
-            Update Post
-          </Link>
+          <NavItem href="/dev/update-post" label="Update Post" />
+          <NavItem href="/dev/create-post" label="Create Post" />
         </nav>
 
         {/* User info + cookie checks pushed to bottom */}
