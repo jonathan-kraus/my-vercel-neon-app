@@ -56,6 +56,7 @@ export default function ClientLogs({ logs: initialLogs }: { logs: LogEntry[] }) 
               <td className="px-4 py-2">{log.severity}</td>
               <td className="px-4 py-2">{log.source}</td>
               <td className="px-4 py-2">{log.message}</td>
+              <td className="px-4 py-2">{String(log.metadata)}</td>
               <td className="px-4 py-2">{log.requestId ?? '—'}</td>
             </tr>
           ))}
