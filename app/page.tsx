@@ -81,7 +81,7 @@ export default async function Home() {
                       </p>
                     </div>
                     <DeleteButton postId={post.id} />
-                    <MarkCompleteButton postId={post.id} />
+                    <MarkCompleteButton postId={post.id.toString()} />
                   </div>
                 </li>
               ))}
