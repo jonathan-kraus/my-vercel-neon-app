@@ -40,13 +40,11 @@ export default function LogViewer() {
                 <td className="px-2 py-2 font-semibold">{log.source}</td>
                 <td className="px-2 py-2">
                   {log.message}{' '}
-                  <span className="text-xs text-gray-400">
+                  <span className="transition-colors">
                     {log.metadata && JSON.stringify(log.metadata)}
                   </span>
                 </td>
-                <td className="px-2 py-2 text-sm text-gray-500">
-                  {new Date(log.timestamp).toLocaleString()}
-                </td>
+                <td className="transition-colors">{new Date(log.timestamp).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
