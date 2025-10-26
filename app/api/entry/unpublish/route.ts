@@ -5,13 +5,29 @@ import { logger } from '@/app/lib/logger';
 
 export async function POST(req: Request) {
   const cookieStore = await cookies();
+  console.log('[entry/unpublish] All cookies:');
+  for (const [name, cookie] of cookieStore.getAll().entries()) {
+    console.log(`- ${name}: ${cookie.value}`);
+  }
+
   const username = cookieStore.get('username')?.value;
+  console.log(`[entry/unpublish] Unpublish request received ${username}`);
+
+  // if (!username) {
+  //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  // }
+
+  const { id } = await req.json();
+  if (!id) {
+    return NextResponse.json({ error: 'Missing entry ID' }, { status: 400 });
+  }
+  //const username = cookieStore.get('username')?.value;
   console.log(`[entry/unpublish] Unpublish request received ${username}`);
   if (!username) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { id } = await req.json();
+  //const { id } = await req.json();
   if (!id) {
     return NextResponse.json({ error: 'Missing entry ID' }, { status: 400 });
   }
