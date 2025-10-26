@@ -11,6 +11,7 @@ export default async function DbStatusPage() {
       toEmail: 'jonathanckraus@gmail.com',
       toName: 'Jonathan',
       subject: `DbStatus Page Accessed - ${new Date().toISOString()}`,
+      message: `The /admin/db-status page was accessed at ${new Date().toISOString()}.`,
       requestId,
     });
     console.log(`[${requestId}] Email sent from DbStatusPage`);
