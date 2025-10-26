@@ -44,6 +44,7 @@ export default function ClientLogs({ logs: initialLogs }: { logs: LogEntry[] }) 
             <th className="border px-4 py-2 text-left">Source</th>
             <th className="border px-4 py-2 text-left">Message</th>
             <th className="border px-4 py-2 text-left">Request ID</th>
+            <th className="border px-4 py-2 text-left">Metadata</th>
           </tr>
         </thead>
         <tbody>
