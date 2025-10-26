@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
   try {
     await db.post.update({
-      where: { id },
+      where: { id: Number(id) },
       data: { published: false },
     });
 
