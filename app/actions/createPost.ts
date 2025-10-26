@@ -46,7 +46,7 @@ export async function createPost(formData: FormData) {
       await logger({
         severity: 'info',
         source: 'createPost.ts',
-        message: `Post created by ${user.name}: ${requestId}`,
+        message: `Post created by ${user.name}: ${title}  ${content}`,
         requestId,
         metadata: { userAction: 'create_post', postTitle: title },
       });
