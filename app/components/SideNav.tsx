@@ -165,20 +165,29 @@ export default function SideNav() {
   }, [expiresAt]);
 
   const handleShowCookies = () => {
-    // show cookie info in a non-sensitive way; avoid leaking tokens in UI
     const cookies = document.cookie || '';
-    console.log('document.cookie:', cookies);
-    // provide a short, safe summary to user
-    const safeSummary = cookies
+    const safePairs = cookies
       .split('; ')
       .map((c) => {
-        const [k, v] = c.split('=');
-        if (!k) return '';
-        if (/token|auth|session|password|api/i.test(k)) return `${k}=<redacted>`;
-        return `${k}=${decodeURIComponent(v ?? '')}`;
+        const [key, value] = c.split('=');
+        if (!key) return null;
+
+        // Only show meaningful keys
+        if (/username|expires_at|stack-is-https|__vercel_toolbar/.test(key)) {
+          return `${key}=${decodeURIComponent(value ?? '')}`;
+        }
+
+        // Redact sensitive keys
+        if (/token|auth|session|password|api/i.test(key)) {
+          return `${key}=<redacted>`;
+        }
+
+        return null;
       })
-      .join('; ');
-    toast.success(`Cookies (sensitive values redacted):\n${safeSummary}`);
+      .filter(Boolean);
+
+    const summary = safePairs.length > 0 ? safePairs.join('\n') : 'No readable cookies found.';
+    toast.success(`Cookie summary:\n${summary}`);
   };
 
   const handleAuthorsClick = async () => {
