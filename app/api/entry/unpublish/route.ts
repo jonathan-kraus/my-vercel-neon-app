@@ -6,7 +6,7 @@ import { logger } from '@/app/lib/logger';
 export async function POST(req: Request) {
   const cookieStore = await cookies();
   const username = cookieStore.get('username')?.value;
-
+  console.log(`[entry/unpublish] Unpublish request received ${username}`);
   if (!username) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
