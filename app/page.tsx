@@ -10,6 +10,7 @@ import discord from '@/assets/discord.svg';
 import docs from '@/assets/docs.svg';
 import CreatePostForm from './components/CreatePostForm';
 import { DeleteButton } from '@/app/components/DeleteButton';
+import { MarkCompleteButton } from './components/MarkCompleteButton';
 // removed client-side duplicate form import (PostFormClient)
 // import PostFormClient from '@/app/components/PostFormClient';
 //import { revalidatePath } from "next/cache";
@@ -80,6 +81,7 @@ export default async function Home() {
                       </p>
                     </div>
                     <DeleteButton postId={post.id} />
+                    <MarkCompleteButton postId={post.id} />
                   </div>
                 </li>
               ))}
