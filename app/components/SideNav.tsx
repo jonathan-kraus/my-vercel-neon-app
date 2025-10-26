@@ -5,11 +5,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { logger } from '../lib/logger';
-type NavItemProps =
-  | { href: string; label: string }
-  | { onClick: () => void; label: string };
+type NavItemProps = { href: string; label: string } | { onClick: () => void; label: string };
 const navItemClass =
-  "w-full px-2 py-1 text-center rounded transition-all duration-200 ease-in-out hover:bg-blue-800 hover:text-yellow-400 hover:underline";
+  'w-full px-2 py-1 text-center rounded transition-all duration-200 ease-in-out hover:bg-blue-800 hover:text-yellow-400 hover:underline';
 export function NavItem(props: NavItemProps) {
   if ('href' in props) {
     return (
@@ -185,23 +183,22 @@ export default function SideNav() {
 
   const handleAuthorsClick = async () => {
     console.log('handleAuthorsClick!');
-        try {
-          await logger({
-            severity: 'info',
-            source: 'SideNav with logger',
-            message: `Author SideNav component clicked`,
-            requestId,
-            metadata: { userAction: 'fetch' }
-          });
-
+    try {
+      await logger({
+        severity: 'info',
+        source: 'SideNav with logger',
+        message: `Author SideNav component clicked`,
+        requestId,
+        metadata: { userAction: 'fetch' },
+      });
     } catch (error) {
       console.error('[sidenav] [requestId] Failed to log event:', error);
     }
 
     console.log(`Navigating to /authors ${requestId}`);
-      setTimeout(() => router.push('/authors'), 100);
+    setTimeout(() => router.push('/authors'), 100);
   };
-<NavItem href="/logs" label="Logs" />
+  <NavItem href="/logs" label="Logs" />;
   const handleDbStatusClick = async () => {
     console.log('handleDbStatusClick!');
     console.log(`[DbStatus] Clicked, navigating to /DbStatus ${requestId}`);
@@ -261,7 +258,6 @@ export default function SideNav() {
           <NavItem onClick={handleDbStatusClick} label="DbStatus" />
           <NavItem onClick={handleWeatherClick} label="Weather" />
           <NavItem href="/dev/update-post" label="Update Post" />
-
         </nav>
 
         {/* User info + cookie checks pushed to bottom */}
@@ -278,7 +274,7 @@ export default function SideNav() {
             </span>
           </div>
 
-          <div className="flex gap-2">
+          <div className="max-w-full px-4">
             <button
               onClick={handleShowCookies}
               className="text-left w-full px-2 py-1 bg-yellow-400 hover:bg-blue-200 rounded"
@@ -287,7 +283,7 @@ export default function SideNav() {
               Show cookie info
             </button>
 
-            <Link href="/auth" className="text-blue-500 hover:underline px-2 py-1">
+            <Link href="/auth" className="bg-blue-950 text-yellow-300 p-4 rounded shadow">
               🍎 Apple
             </Link>
           </div>
