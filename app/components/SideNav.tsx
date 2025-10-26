@@ -221,7 +221,7 @@ export default function SideNav() {
           metadata: { userAction: 'fetch' },
         }),
       });
-      setTimeout(() => router.push('/admin/db-status'), 1500);
+      setTimeout(() => router.push('/admin/db-status'), 100);
     } catch (err) {
       console.error('DbStatus failed:', err);
       toast.error('Action failed');
@@ -242,7 +242,7 @@ export default function SideNav() {
           metadata: { userAction: 'navigate' },
         }),
       });
-      <NavItem onClick={() => router.push('/admin/weather')} label="Weather" />
+      setTimeout(() => router.push('/admin/weather'), 100);
     } catch (err) {
       console.error('Weather click failed:', err);
       toast.error('Action failed');
@@ -264,9 +264,8 @@ export default function SideNav() {
           <NavItem href="/logs" label="Logs" />
           <NavItem onClick={handleDbStatusClick} label="DbStatus" />
           <NavItem onClick={handleWeatherClick} label="Weather" />
-
           <NavItem href="/dev/update-post" label="Update Post" />
-          <NavItem href="/dev/create-post" label="Create Post" />
+
         </nav>
 
         {/* User info + cookie checks pushed to bottom */}
