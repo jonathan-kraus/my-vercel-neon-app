@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
+import { logger } from '../lib/logger';
 type NavItemProps =
   | { href: string; label: string }
   | { onClick: () => void; label: string };
@@ -184,31 +185,26 @@ export default function SideNav() {
 
   const handleAuthorsClick = async () => {
     console.log('handleAuthorsClick!');
-    try {
-      await fetch(`${baseUrl}/api/log`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          severity: 'info',
-          source: 'SideNav',
-          message: 'Author SideNav component clicked',
-          requestId,
-          metadata: { userAction: 'fetch' },
-        }),
-      });
+        try {
+          await logger({
+            severity: 'info',
+            source: 'SideNav with logger',
+            message: `Author SideNav component clicked`,
+            requestId,
+            metadata: { userAction: 'fetch' }
+          });
+
     } catch (error) {
-      console.error('Failed to log event:', error);
+      console.error('[sidenav] [requestId] Failed to log event:', error);
     }
 
     console.log(`Navigating to /authors ${requestId}`);
-    <NavItem onClick={() => router.push('/authors')} label="Authors" />
+      setTimeout(() => router.push('/authors'), 100);
   };
 <NavItem href="/logs" label="Logs" />
   const handleDbStatusClick = async () => {
     console.log('handleDbStatusClick!');
     console.log(`[DbStatus] Clicked, navigating to /DbStatus ${requestId}`);
-    <NavItem onClick={() => router.push('/admin/db-status')} label="DbStatus" />
-    //endpoint: /admin/db-status
     try {
       await fetch(`${baseUrl}/api/log`, {
         method: 'POST',
