@@ -76,7 +76,8 @@ export async function sendEmailDirect(
   toEmail: string,
   toName: string,
   requestId?: string,
-  subject?: string
+  subject?: string,
+  message?: string
 ) {
   const recipients = [new Recipient(toEmail, toName)];
   const finalSubject = subject || `Mail Success Confirmation - ${toName}`;
@@ -87,7 +88,7 @@ export async function sendEmailDirect(
     .setReplyTo(sentFrom)
     .setSubject(finalSubject)
     .setText(`Sent from utils ${toName} app`)
-    .setHtml(`<strong>Sent from utils ${toName} app</strong> ${requestId}`);
+    .setHtml(`<strong>Sent from utils ${toName} app ${message}</strong> ${requestId}`);
 
   const sendFn = async () => {
     await mailerSend.email.send(emailParams);
