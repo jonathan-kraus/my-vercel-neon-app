@@ -197,9 +197,27 @@ export default function SideNav() {
 
     const summary = safePairs.length > 0 ? safePairs.join('\n') : 'No readable cookies found.';
 
-    toast.success(`Cookie summary:\n${summary}`, {
-      duration: Infinity,
-    });
+    toast.custom((t) => (
+      <div
+        className={`bg-blue-950 text-yellow-300 p-4 rounded shadow max-w-md whitespace-pre-line ${
+          t.visible ? 'animate-enter' : 'animate-leave'
+        }`}
+      >
+        <div className="flex justify-between items-start gap-4">
+          <div>
+            <strong className="block mb-2">Cookie summary</strong>
+            <pre className="text-sm">{summary}</pre>
+          </div>
+          <button
+            onClick={() => toast.dismiss(t.id)}
+            className="text-yellow-300 hover:text-yellow-500 text-xl font-bold"
+            title="Dismiss"
+          >
+            ×
+          </button>
+        </div>
+      </div>
+    ));
   };
 
   const handleAuthorsClick = async () => {
