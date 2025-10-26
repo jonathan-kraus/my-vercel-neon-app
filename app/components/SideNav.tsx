@@ -243,53 +243,52 @@ export default function SideNav() {
   };
 
   return (
-    //<aside className="w-56 min-h-screen border-r p-4 hidden lg:block">
-    <aside
-      className="w-72 min-h-screen bg-blue-900 text-yellow-400 border-r border-blue-800 p-4 shadow-md"
-      //style={{ minWidth: '18rem' }}>
-    >
-      <div className="flex flex-col h-full justify-between">
-        {/* Top section: user info + 🍎 box + cookie button */}
-        <div className="space-y-4 px-2">
-          <div className="text-sm text-gray-400">User</div>
-          <div className="font-medium text-yellow-300">{username ?? 'Guest'}</div>
+    <aside className="w-72 bg-blue-900 text-yellow-400 border-r border-blue-800 p-4 shadow-md">
+      <div className="flex flex-col h-screen overflow-hidden">
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto space-y-6">
+          {/* Top section: user info + 🍎 box + cookie button */}
+          <div className="space-y-4 px-2 pt-2">
+            <div className="text-sm text-gray-400">User</div>
+            <div className="font-medium text-yellow-300">{username ?? 'Guest'}</div>
 
-          <div className="text-sm text-gray-400">
-            Session:{' '}
-            <span className="font-medium text-yellow-300">
-              {expiresAt ? (timeLeft === 'expired' ? 'expired' : `${timeLeft} left`) : 'unknown'}
-            </span>
+            <div className="text-sm text-gray-400">
+              Session:{' '}
+              <span className="font-medium text-yellow-300">
+                {expiresAt ? (timeLeft === 'expired' ? 'expired' : `${timeLeft} left`) : 'unknown'}
+              </span>
+            </div>
+
+            <Link
+              href="/auth"
+              className="block bg-yellow-300 text-blue-950 p-3 rounded shadow text-center font-semibold"
+            >
+              🍎 Apple
+            </Link>
+
+            <button
+              onClick={handleShowCookies}
+              className="w-full px-2 py-1 bg-blue-800 text-yellow-300 hover:bg-blue-700 rounded text-sm"
+              title="Show cookie summary (sensitive values redacted)"
+            >
+              Show cookie info
+            </button>
           </div>
 
-          <Link
-            href="/auth"
-            className="block bg-yellow-300 text-blue-950 p-3 rounded shadow text-center font-semibold"
-          >
-            🍎 Apple
-          </Link>
-
-          <button
-            onClick={handleShowCookies}
-            className="w-full px-2 py-1 bg-blue-800 text-yellow-300 hover:bg-blue-700 rounded text-sm"
-            title="Show cookie summary (sensitive values redacted)"
-          >
-            Show cookie info
-          </button>
+          {/* Nav links */}
+          <nav className="flex flex-col gap-3 items-center text-center px-2">
+            <NavItem href="/" label="* Home *" />
+            <NavItem href="/pstbyusr/" label="Posts by User" />
+            <NavItem href="/admin/logs" label="Activity Logs" />
+            <NavItem onClick={handleAuthorsClick} label="Authors" />
+            <NavItem href="/logs" label="Logs" />
+            <NavItem onClick={handleDbStatusClick} label="DbStatus" />
+            <NavItem onClick={handleWeatherClick} label="Weather" />
+            <NavItem href="/dev/update-post" label="Update Post" />
+          </nav>
         </div>
 
-        {/* Middle section: nav links */}
-        <nav className="flex flex-col gap-3 items-center text-center py-6">
-          <NavItem href="/" label="* Home *" />
-          <NavItem href="/pstbyusr/" label="Posts by User" />
-          <NavItem href="/admin/logs" label="Activity Logs" />
-          <NavItem onClick={handleAuthorsClick} label="Authors" />
-          <NavItem href="/logs" label="Logs" />
-          <NavItem onClick={handleDbStatusClick} label="DbStatus" />
-          <NavItem onClick={handleWeatherClick} label="Weather" />
-          <NavItem href="/dev/update-post" label="Update Post" />
-        </nav>
-
-        {/* Bottom: toaster only */}
+        {/* Toaster stays pinned at bottom */}
         <div className="pt-4">
           <Toaster />
         </div>

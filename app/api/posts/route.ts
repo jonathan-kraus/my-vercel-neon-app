@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
-import { logger } from '@/app/lib/logger'
+import { logger } from '@/app/lib/logger';
 import { Prisma } from '@prisma/client';
 console.log('[build] Generating /api/posts');
 function parseCookies(cookieHeader: string | null): Record<string, string> {
@@ -16,8 +16,6 @@ function parseCookies(cookieHeader: string | null): Record<string, string> {
   });
   return cookies;
 }
-
-
 
 function makeRequestId(): string {
   const hasRandomUUID = typeof crypto !== 'undefined' && 'randomUUID' in crypto;
@@ -60,7 +58,7 @@ export async function GET(request: Request) {
         source: 'Posts API',
         message: `Fetched posts${author ? ` by author="${author}"` : ''}`,
         requestId,
-        metadata: { userAction: 'fetch' }
+        metadata: { userAction: 'fetch' },
       });
     } catch {
       // non-fatal

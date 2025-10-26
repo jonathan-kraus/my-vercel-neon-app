@@ -4,7 +4,7 @@
 import { db } from '@/app/lib/db';
 import { redirect } from 'next/navigation';
 import { sendConfirmationEmail } from '@/app/utils/email-client';
-import {logger } from '../lib/logger';
+import { logger } from '../lib/logger';
 console.log('[build] Generating createPost action');
 export async function createPost(formData: FormData) {
   const title = formData.get('title') as string;
@@ -42,17 +42,17 @@ export async function createPost(formData: FormData) {
     message: `Your post titled "${title}" has been successfully created on ${timestamp}.`,
     subject: `📝 New Post Created: "${title}" at ${timestamp}`,
   });
-    try {
-      await logger({
-        severity: 'info',
-        source: 'createPost.ts',
-        message: `Post created by ${user.name}: ${title}  ${content}`,
-        requestId,
-        metadata: { userAction: 'create_post', postTitle: title },
-      });
-    } catch {
-      // non-fatal
-    }
+  try {
+    await logger({
+      severity: 'info',
+      source: 'createPost.ts',
+      message: `Post created by ${user.name}: ${title}  ${content}`,
+      requestId,
+      metadata: { userAction: 'create_post', postTitle: title },
+    });
+  } catch {
+    // non-fatal
+  }
   await db.log.create({
     data: {
       severity,
