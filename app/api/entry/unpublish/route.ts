@@ -13,9 +13,9 @@ export async function POST(req: Request) {
   const username = cookieStore.get('username')?.value;
   console.log(`[entry/unpublish] Unpublish request received ${username}`);
 
-  // if (!username) {
-  //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  // }
+  if (!username) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   const { id } = await req.json();
   if (!id) {

@@ -8,8 +8,12 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
 
   const handleClick = () => {
     startTransition(async () => {
-      const res = await fetch(`/api/entry/unpublish`, {
+      const res = await fetch('/api/entry/unpublish', {
         method: 'POST',
+        body: JSON.stringify({ id: postId }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
       if (res.ok) {
