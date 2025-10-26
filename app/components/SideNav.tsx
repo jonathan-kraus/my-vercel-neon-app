@@ -166,20 +166,29 @@ export default function SideNav() {
 
   const handleShowCookies = () => {
     const cookies = document.cookie || '';
+    const now = Date.now();
+
     const safePairs = cookies
       .split('; ')
       .map((c) => {
         const [key, value] = c.split('=');
         if (!key) return null;
 
-        // Only show meaningful keys
-        if (/username|expires_at|stack-is-https|__vercel_toolbar/.test(key)) {
-          return `${key}=${decodeURIComponent(value ?? '')}`;
+        if (/expires_at/.test(key)) {
+          const expMs = Number(decodeURIComponent(value));
+          if (!Number.isNaN(expMs)) {
+            const minutesLeft = Math.floor((expMs - now) / 1000 / 60);
+            return `expires_at: ${minutesLeft > 0 ? `${minutesLeft} min left` : 'expired'}`;
+          }
+          return `expires_at: invalid`;
         }
 
-        // Redact sensitive keys
+        if (/username|stack-is-https|__vercel_toolbar/.test(key)) {
+          return `${key}: ${decodeURIComponent(value ?? '')}`;
+        }
+
         if (/token|auth|session|password|api/i.test(key)) {
-          return `${key}=<redacted>`;
+          return `${key}: <redacted>`;
         }
 
         return null;
@@ -187,7 +196,10 @@ export default function SideNav() {
       .filter(Boolean);
 
     const summary = safePairs.length > 0 ? safePairs.join('\n') : 'No readable cookies found.';
-    toast.success(`Cookie summary:\n${summary}`);
+
+    toast.success(`Cookie summary:\n${summary}`, {
+      duration: Infinity,
+    });
   };
 
   const handleAuthorsClick = async () => {
