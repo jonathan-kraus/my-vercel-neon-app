@@ -24,7 +24,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
       source: 'post.complete',
       message: `Post ${id} marked as unpublished`,
       requestId: crypto.randomUUID(),
-      metadata: { session: session.value },
+      metadata: { user: user, action: 'mark_complete', postId: id },
     });
 
     return NextResponse.json({ success: true });
