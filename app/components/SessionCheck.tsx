@@ -8,14 +8,14 @@ const requestId = crypto.randomUUID();
 export function SessionCheck() {
   const [sessionExpired, setSessionExpired] = useState(false);
   let answer: string = 'A';
-
+  console.log('[SessionCheck] Session check response status: 1', answer);
   useEffect(() => {
     fetch('/api/me').then((res) => {
       if (res.status === 401) {
         setSessionExpired(true);
       }
       let answer: string = res.status.toString();
-      console.log('[SessionCheck] Session check response status:', answer);
+      console.log('[SessionCheck] Session check response status: 2', answer);
       try {
         void logger({
           severity: 'info',
