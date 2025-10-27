@@ -21,11 +21,18 @@ export async function sendConfirmationEmail(
         data.requestId,
         data.subject
       );
-      return sent
+
+      // ✅ FIX: Assign the resulting object to a variable first
+      const result = sent
         ? { success: true, message: 'sent (server util)' }
         : { success: false, message: 'skipped (server util)' };
-    }
 
+      // ✅ FIX: Log the variables from the 'result' object
+      console.log('[email-client] Sending email via API:', result.success, result.message);
+
+      // ✅ FIX: Now return the variable
+      return result;
+    }
     const url = `${baseUrl || 'https://www.kraus.my.id'}/api/send-email`;
     const response = await fetch(url, {
       method: 'POST',
