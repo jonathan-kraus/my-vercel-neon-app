@@ -15,27 +15,52 @@ type LogEntry = {
   timestamp: string;
 };
 
+// Utility to flatten metadata into a searchable string
+function flattenMetadata(meta: unknown): string {
+  if (typeof meta === 'string' || typeof meta === 'number' || typeof meta === 'boolean') {
+    return String(meta);
+  }
+
+  if (Array.isArray(meta)) {
+    return meta.map(flattenMetadata).join(' ');
+  }
+
+  if (typeof meta === 'object' && meta !== null) {
+    return Object.values(meta).map(flattenMetadata).join(' ');
+  }
+
+  return '';
+}
+
 export default function ClientLogs({ logs: initialLogs }: { logs: LogEntry[] }) {
   const [logs, setLogs] = useState<LogEntry[]>(initialLogs);
   const [searchQuery, setSearchQuery] = useState('');
-  SessionCheck;
+
   useEffect(() => {
     fetch('/api/logs')
       .then((res) => res.json())
       .then((data) => setLogs(data));
   }, []);
 
-  const filteredLogs = logs.filter(
-    (log) =>
-      log.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      log.severity.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      String(log.metadata)?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (log.requestId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
-  );
+  const matchesQuery = (log: LogEntry, query: string): boolean => {
+    const q = query.toLowerCase();
+    const metadataString = flattenMetadata(log.metadata).toLowerCase();
+
+    return (
+      (log.message?.toLowerCase().includes(q) ||
+        log.source?.toLowerCase().includes(q) ||
+        log.severity?.toLowerCase().includes(q) ||
+        metadataString.includes(q) ||
+        log.requestId?.toLowerCase().includes(q)) ??
+      false
+    );
+  };
+
+  const filteredLogs = logs.filter((log) => matchesQuery(log, searchQuery));
 
   return (
     <div className="p-6">
+      <SessionCheck />
       <h1 className="text-2xl font-bold mb-4">Recent Logs</h1>
       <LogSearch onSearch={setSearchQuery} />
       <table className="w-full border-collapse">
@@ -56,7 +81,7 @@ export default function ClientLogs({ logs: initialLogs }: { logs: LogEntry[] }) 
               <td className="px-4 py-2">{log.severity}</td>
               <td className="px-4 py-2">{log.source}</td>
               <td className="px-4 py-2">{log.message}</td>
-              <td className="px-4 py-2">{String(log.metadata)}</td>
+              <td className="px-4 py-2">{flattenMetadata(log.metadata)}</td>
               <td className="px-4 py-2">{log.requestId ?? '—'}</td>
             </tr>
           ))}
