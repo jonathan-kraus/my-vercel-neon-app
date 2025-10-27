@@ -57,7 +57,7 @@ export default function ClientLogs({ logs: initialLogs }: { logs: LogEntry[] }) 
   };
 
   const filteredLogs = logs.filter((log) => matchesQuery(log, searchQuery));
-
+  console.log('[client logs] perform session check:', logs.length, 'logs loaded.');
   return (
     <div className="p-6">
       <SessionCheck />

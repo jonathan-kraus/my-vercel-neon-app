@@ -15,7 +15,7 @@ export async function getDbStatus() {
     prisma.$queryRaw`SELECT version()`,
     prisma.post.count({ where: { authorId: { not: 1101 } } }),
     prisma.post.findFirst({ orderBy: { createdAt: 'desc' } }),
-    prisma.log.count(), // Uncomment if you want to include log count
+    prisma.log.count(),
     (start = Date.now()),
     prisma.$queryRaw`SELECT 1`,
     (latencyMs = Date.now() - start),
