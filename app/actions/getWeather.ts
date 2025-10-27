@@ -12,37 +12,25 @@ type WeatherResponse = {
   emailSent?: boolean;
   lastEmailTimestamp: string | null;
   requestId?: string;
-  locationName?: string;
+  locationName?: string; // ✅ Add this
   rainAccumulationAvg: number;
   rainAccumulationMax: number;
   rainAccumulationMin: number;
   rainAccumulationSum: number;
 };
 
-// =========================================================
-// 🎯 FIX 1: Define the check outside the main function
-// =========================================================
-const isBuilding = process.env.VERCEL_ENV === 'production' && process.env.VERCEL_URL === undefined;
-
 export async function getWeather(): Promise<WeatherResponse> {
   const requestId = crypto.randomUUID();
   const apiKey = process.env.TOMORROW_API_KEY;
-  const zip = process.env.JZIP || '02445';
-
+  //const zip = '02445'; // Brookline, MA ZIP code
+  const zip = process.env.JZIP || '02445'; // Default to Brookline, MA if not set
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=40.10520,-75.41404&units=imperial&apikey=${apiKey}`;
-
-  // Console logs are side effects, but generally safe to keep for debugging,
-  // though they should be commented out for production if verbose.
   console.log(`[getWeather] [${requestId}] Server function started at ${new Date().toISOString()}`);
   if (typeof window !== 'undefined') {
     console.log(`[getWeather] [${requestId}] Running on the client zip: ${zip}`);
   } else {
     console.log(`[getWeather] [${requestId}] Running on the server zip: ${zip}`);
   }
-
-  // =========================================================
-  // Data Fetching (MUST RUN during build to get data for page)
-  // =========================================================
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch weather');
 
@@ -53,93 +41,71 @@ export async function getWeather(): Promise<WeatherResponse> {
 
   let emailSent = false;
   let lastEmailTimestamp: string | null = null;
-  let hoursSinceLast = Infinity;
-  let latestLog: { createdAt: Date; id: number } | null = null;
 
-  // =========================================================
-  // 🎯 FIX 2: Conditionally run the DB/Email side-effect block
-  // =========================================================
-  if (!isBuilding) {
-    // This entire block of logic involves DB READS, DB WRITES, and EMAIL TRIGGERS,
-    // and MUST be conditional to prevent build-time side effects.
+  const latestLog = await db.weatherLog.findFirst({
+    where: { emailSent: true },
+    orderBy: { createdAt: 'desc' },
+  });
 
-    // DB READ
-    latestLog = await db.weatherLog.findFirst({
-      where: { emailSent: true },
-      orderBy: { createdAt: 'desc' },
-    });
+  const hoursSinceLast = latestLog
+    ? (now.getTime() - latestLog.createdAt.getTime()) / 3600000
+    : Infinity;
 
-    hoursSinceLast = latestLog
-      ? (now.getTime() - latestLog.createdAt.getTime()) / 3600000
-      : Infinity;
-
-    if (latestLog) {
-      lastEmailTimestamp = latestLog.createdAt.toISOString();
-    }
-
-    console.log('Hours since last email log:', hoursSinceLast);
-
-    if (hoursSinceLast > 2) {
-      try {
-        const subject = `Weather Update for ${data.location?.name ?? 'Unknown'}`;
-
-        // EMAIL SEND
-        await triggerEmail(
-          'Weather',
-          latestLog ? latestLog.id.toString() : undefined,
-          subject,
-          values.temperature
-        );
-
-        // DB WRITE (CREATE)
-        await db.weatherLog.create({
-          data: {
-            temperature: values.temperature,
-            humidity: values.humidity,
-            windSpeed: values.windSpeed,
-            windGust: values.windGust,
-            precipitationProbability: values.precipitationProbability,
-            weatherCode: values.weatherCode,
-            emailSent: true,
-          },
-        });
-
-        // DB WRITE (UPDATE)
-        await db.weatherLog.update({
-          where: { id: 1 },
-          data: {
-            temperature: data.temperature,
-            humidity: data.humidity,
-            windSpeed: data.windSpeed,
-            windGust: data.windGust,
-            precipitationProbability: data.precipitationProbability,
-            weatherCode: data.weatherCode,
-            createdAt: new Date(),
-          },
-        });
-
-        emailSent = true;
-        lastEmailTimestamp = now.toISOString();
-
-        console.log('✅ Weather email sent and log created');
-      } catch (err) {
-        console.error('❌ Email failed:', err);
-      }
-    } else {
-      console.log('⏱️ Email already sent within the last 24 hours');
-    }
-  } else {
-    // Log for clarity during build
-    console.log('--- DB/EMAIL Side effects skipped during Vercel build ---');
+  if (latestLog) {
+    lastEmailTimestamp = latestLog.createdAt.toISOString();
   }
 
-  // =========================================================
-  // Final Return (MUST RUN during build and runtime)
-  // =========================================================
+  console.log('Hours since last email log:', hoursSinceLast);
+
+  if (hoursSinceLast > 2) {
+    try {
+      const subject = `Weather Update for ${data.location?.name ?? 'Unknown'}`;
+      await triggerEmail(
+        'Weather',
+        latestLog ? latestLog.id.toString() : undefined,
+        subject,
+        values.temperature
+      );
+
+      await db.weatherLog.create({
+        data: {
+          temperature: values.temperature,
+          humidity: values.humidity,
+          windSpeed: values.windSpeed,
+          windGust: values.windGust,
+          precipitationProbability: values.precipitationProbability,
+          weatherCode: values.weatherCode,
+          emailSent: true,
+        },
+      });
+      // update row 1 for last update time
+      await db.weatherLog.update({
+        where: { id: 1 },
+        data: {
+          temperature: data.temperature,
+          humidity: data.humidity,
+          windSpeed: data.windSpeed,
+          windGust: data.windGust,
+          precipitationProbability: data.precipitationProbability,
+          weatherCode: data.weatherCode,
+          //emailSent: false, // or preserve existing value
+          createdAt: new Date(), // 👈 this marks the last update
+        },
+      });
+
+      emailSent = true;
+      lastEmailTimestamp = now.toISOString();
+
+      console.log('✅ Weather email sent and log created');
+    } catch (err) {
+      console.error('❌ Email failed:', err);
+    }
+  } else {
+    console.log('⏱️ Email already sent within the last 24 hours');
+  }
   const locationName = data.location?.name ?? 'Unknown';
   console.log(`Weather data fetched [${requestId}] for ${locationName}:`, values);
   console.log(`[getWeather] [${requestId}] Weather for ZIP ${zip} resolved to ${locationName}`);
-
   return {
     temperature: values.temperature,
     humidity: values.humidity,
@@ -154,11 +120,37 @@ export async function getWeather(): Promise<WeatherResponse> {
     rainAccumulationMax: values.rainAccumulationMax,
     rainAccumulationMin: values.rainAccumulationMin,
     rainAccumulationSum: values.rainAccumulationSum,
-    locationName,
+    locationName, // ✅ Include it here
     emailSent,
     lastEmailTimestamp,
     requestId,
   };
 }
+type HourlyForecastEntry = {
+  time: string;
+  values: {
+    temperature: number;
+    precipitationProbability: number;
+    windSpeed: number;
+  };
+};
 
-// ... (getHourlyForecast function remains unchanged as it has no side effects)
+export async function getHourlyForecast(): Promise<
+  { time: string; temperature: number; precipitation: number; windSpeed: number }[]
+> {
+  const apiKey = process.env.TOMORROW_API_KEY;
+  //const zip = '02445'; // Brookline, MA ZIP code
+  const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1h&units=imperial&apikey=${apiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch forecast');
+
+  const data = await res.json();
+  const hourly: HourlyForecastEntry[] = data.timelines.hourly;
+
+  return hourly.slice(0, 12).map((hour) => ({
+    time: hour.time,
+    temperature: hour.values.temperature,
+    precipitation: hour.values.precipitationProbability,
+    windSpeed: hour.values.windSpeed,
+  }));
+}
