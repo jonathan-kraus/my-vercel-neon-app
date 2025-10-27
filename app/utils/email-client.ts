@@ -47,7 +47,6 @@ export async function sendConfirmationEmail(
       const errorJson = JSON.parse(errorBodyAsText);
       throw new Error(errorJson.message);
     } catch (parseError) {
-      const text = await response.text();
       console.error('[email-client] Non-JSON response from API:', errorBodyAsText.slice(0, 200));
       throw new Error(errorBodyAsText);
     }
