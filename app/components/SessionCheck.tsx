@@ -15,7 +15,6 @@ export function SessionCheck() {
         setSessionExpired(true);
       }
       let answer: string = res.status.toString();
-      console.log('[SessionCheck] Session check response status:', answer);
       try {
         void logger({
           severity: 'info',

@@ -1,132 +1,167 @@
-'use server';
+//import { PrismaClient } from '@prisma/client';
+import { db } from './db';
+import { triggerEmail } from '@/app/components/actions';
 
-import { db } from '@/app/lib/db';
-import { triggerEmail } from '../components/actions';
+console.log(`[fetchWeather] Module loaded`);
+export async function fetchWeather(requestId?: string) {
+  if (!requestId) requestId = 'requestid-not-passed'; //crypto.randomUUID()
+  console.log(`[fetchWeather] [${requestId}] Server function started`);
 
-// Define the type for the weather response
-type WeatherResponse = {
-  temperature: number;
-  humidity: number;
-  windSpeed: number;
-  windGust: number;
-  precipitationProbability: number;
-  conditions: { day: number; night: number };
-  emailSent?: boolean;
-  lastEmailTimestamp: string | null;
-  requestId?: string;
-  locationName?: string;
-  rainAccumulationAvg: number;
-  rainAccumulationMax: number;
-  rainAccumulationMin: number;
-  rainAccumulationSum: number;
-};
+  //const prisma = new PrismaClient();
 
-// Define the build check flag once at the top
-const isBuilding = process.env.VERCEL_ENV === 'production' && process.env.VERCEL_URL === undefined;
-
-// =========================================================
-// SERVER ACTION 1: getWeather (Contains Conditional Side Effects)
-// =========================================================
-export async function getWeather(): Promise<WeatherResponse> {
-  const requestId = crypto.randomUUID();
   const apiKey = process.env.TOMORROW_API_KEY;
-  const zip = process.env.JZIP || '02445';
+  requestId = requestId ?? 'no-request-id';
+  if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
+  //const zip = '02245'; // Brookline, MA ZIP code
 
-  // **Data Fetching Setup (Runs Unconditionally)**
+  //const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=40.10520,-75.41404&units=imperial&apikey=${apiKey}`;
 
-  console.log(`[getWeather] [${requestId}] Server function started at ${new Date().toISOString()}`);
+  console.log(`[fetchWeather] [${requestId}] Fetching weather data from API: ${url}`);
 
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch weather');
 
   const data = await res.json();
   const values = data.data.values;
+  const location2 = data.location ?? 'Unknown2';
+
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: values`, values);
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location2`, location2);
+  const url2 = 'https://nominatim.openstreetmap.org/reverse?lat=40.10520&lon=-75.41404&format=json';
+  console.log(`[fetchWeather] [${requestId}] Fetching location data from API: ${url2}`);
+  try {
+    const res2 = await fetch(url2, {
+      headers: {
+        'User-Agent': 'my-vercel-neon-app/1.0 (jonathankraus@comcast.net)',
+      },
+    });
+    if (!res2.ok) throw new Error('Failed to fetch location data');
+
+    const data2 = await res2.json();
+    console.log(`[fetchWeather] [${requestId}] Location data fetch response: json`, data2);
+    const locationName =
+      data2.address?.city ??
+      data2.address?.town ??
+      data2.address?.village ??
+      data2.address?.hamlet ??
+      data2.address?.county ??
+      'Unknown Location';
+
+    console.log(
+      `[fetchWeather] [${requestId}] Location data fetched from API: locationName ${locationName}`
+    );
+    console.log(
+      `[fetchWeather] [${requestId}] Location data fetched from API: display_name ${data2.display_name}`
+    );
+  } catch (error) {
+    console.error(`[fetchWeather] [${requestId}] Error fetching location data:`, error);
+  }
+  console.log(`[fetchWeather] [${requestId}] Preparing to log event to external logging service`);
+
+  const severity = 'info';
+  const source = 'fetchWeather';
+  const message = `Weather data fetched successfully`;
+  const metadata = { action: 'fetch', timestamp: new Date().toISOString(), location: location2 };
+
+  await db.log.create({
+    data: {
+      severity,
+      source,
+      message,
+      requestId,
+      metadata: metadata ?? {},
+      timestamp: new Date(),
+    },
+  });
+
+  console.log(`[fetchWeather]  Weather data fetched for location2 `);
+
   const now = new Date();
-  console.log(`[getWeather] [${requestId}] Raw weather API response:`, data);
 
   let emailSent = false;
   let lastEmailTimestamp: string | null = null;
-  let hoursSinceLast = Infinity;
-  let latestLog: { createdAt: Date; id: number } | null = null;
 
-  // **Side Effects Block (CONDITIONAL EXECUTION)**
-  // Only runs if NOT currently in the Vercel build process.
-  if (!isBuilding) {
-    console.log('--- Checking for DB/Email side effects (RUNTIME ONLY) ---');
+  const latestLog = await db.weatherLog.findFirst({
+    where: { emailSent: true },
+    orderBy: { createdAt: 'desc' },
+  });
 
-    // DB READ
-    latestLog = await db.weatherLog.findFirst({
-      where: { emailSent: true },
-      orderBy: { createdAt: 'desc' },
-    });
+  // Calculate minutes since the last sent email and enforce a 15-minute throttle
+  const minutesSinceLast = latestLog
+    ? (now.getTime() - latestLog.createdAt.getTime()) / 60000
+    : Infinity;
 
-    hoursSinceLast = latestLog
-      ? (now.getTime() - latestLog.createdAt.getTime()) / 3600000
-      : Infinity;
-
-    if (latestLog) {
-      lastEmailTimestamp = latestLog.createdAt.toISOString();
-    }
-
-    console.log('Hours since last email log:', hoursSinceLast);
-
-    if (hoursSinceLast > 2) {
-      try {
-        const subject = `Weather Update for ${data.location?.name ?? 'Unknown'}`;
-
-        // EMAIL SEND
-        await triggerEmail(
-          'Weather',
-          latestLog ? latestLog.id.toString() : undefined,
-          subject,
-          values.temperature
-        );
-
-        // DB WRITE (CREATE)
-        await db.weatherLog.create({
-          data: {
-            temperature: values.temperature,
-            humidity: values.humidity,
-            windSpeed: values.windSpeed,
-            windGust: values.windGust,
-            precipitationProbability: values.precipitationProbability,
-            weatherCode: values.weatherCode,
-            emailSent: true,
-          },
-        });
-
-        // DB WRITE (UPDATE)
-        await db.weatherLog.update({
-          where: { id: 1 },
-          data: {
-            temperature: data.temperature,
-            humidity: data.humidity,
-            windSpeed: data.windSpeed,
-            windGust: data.windGust,
-            precipitationProbability: data.precipitationProbability,
-            weatherCode: data.weatherCode,
-            createdAt: new Date(),
-          },
-        });
-
-        emailSent = true;
-        lastEmailTimestamp = now.toISOString();
-
-        console.log('✅ Weather email sent and log created');
-      } catch (err) {
-        console.error('❌ Email failed:', err);
-      }
-    } else {
-      console.log('⏱️ Email already sent within the last 24 hours');
-    }
-  } else {
-    console.log('--- DB/EMAIL Side effects skipped during Vercel build ---');
+  if (latestLog) {
+    lastEmailTimestamp = latestLog.createdAt.toISOString();
   }
 
-  // **Final Return (Runs Unconditionally)**
-  const locationName = data.location?.name ?? 'Unknown';
-  console.log(`[getWeather] [${requestId}] Weather data fetched for ${locationName}:`, values);
+  console.log(`[${requestId}] Minutes since last email log: ${minutesSinceLast}`);
+
+  if (minutesSinceLast >= 15) {
+    try {
+      await triggerEmail('Weather', requestId, location2 ?? 'Weather Location', values.temperature);
+      console.log(`[${requestId}] 📧 Weather email triggered`);
+      await db.weatherLog.create({
+        data: {
+          temperature: values.temperature,
+          humidity: values.humidity,
+          windSpeed: values.windSpeed,
+          windGust: values.windGust,
+          precipitationProbability: values.precipitationProbability,
+          weatherCode: values.weatherCode,
+          emailSent: true,
+          requestId, // 👈 logged here
+        },
+      });
+      console.log(`[${requestId}] 📝 Weather log created in DB`);
+      await db.weatherLog.update({
+        where: { id: 1 },
+        data: {
+          temperature: values.temperature,
+          humidity: values.humidity,
+          windSpeed: values.windSpeed,
+          windGust: values.windGust,
+          precipitationProbability: values.precipitationProbability,
+          weatherCode: values.weatherCode,
+          createdAt: now,
+          requestId, // 👈 logged here
+        },
+      });
+      console.log(`[${requestId}] 📝 Weather log with ID 1 updated in DB`);
+      emailSent = true;
+      lastEmailTimestamp = now.toISOString();
+
+      console.log(`[${requestId}] ✅ Weather email sent and log created`);
+    } catch (err) {
+      console.error(`[${requestId}] ❌ Email failed:`, err);
+    }
+  } else {
+    // Suppress sending when within the throttle window and write a log entry
+    const suppressedMessage = `Email suppressed: last sent ${Math.round(
+      minutesSinceLast
+    )} minutes ago`;
+    const suppressedMetadata = {
+      action: 'throttle',
+      minutesSinceLast: Math.round(minutesSinceLast),
+    };
+    console.log(`[${requestId}] ⏱️ ${suppressedMessage}`);
+    try {
+      await db.log.create({
+        data: {
+          severity: 'info',
+          source: 'fetchWeather',
+          message: suppressedMessage,
+          requestId,
+          metadata: suppressedMetadata ?? {},
+          timestamp: new Date(),
+        },
+      });
+    } catch (err) {
+      // If logging fails, still continue without throwing so callers aren't impacted
+      console.error(`[${requestId}] ❌ Failed to write suppressed-email log:`, err);
+    }
+  }
 
   return {
     temperature: values.temperature,
@@ -138,46 +173,13 @@ export async function getWeather(): Promise<WeatherResponse> {
       day: values.weatherCode ?? -1,
       night: values.weatherCode ?? -1,
     },
-    rainAccumulationAvg: values.rainAccumulationAvg,
-    rainAccumulationMax: values.rainAccumulationMax,
-    rainAccumulationMin: values.rainAccumulationMin,
-    rainAccumulationSum: values.rainAccumulationSum,
-    locationName,
-    // Use the values from the block if run, otherwise defaults (false/null)
+    rainAccumulationAvg: values.rainAccumulationAvg ?? 0,
+    rainAccumulationMax: values.rainAccumulationMax ?? 0,
+    rainAccumulationMin: values.rainAccumulationMin ?? 0,
+    rainAccumulationSum: values.rainAccumulationSum ?? 0,
+    location: location2 ?? 'Unknown',
     emailSent,
     lastEmailTimestamp,
     requestId,
   };
-}
-
-// =========================================================
-// SERVER ACTION 2: getHourlyForecast (Exported to fix import error)
-// =========================================================
-type HourlyForecastEntry = {
-  time: string;
-  values: {
-    temperature: number;
-    precipitationProbability: number;
-    windSpeed: number;
-  };
-};
-
-export async function getHourlyForecast(): Promise<
-  { time: string; temperature: number; precipitation: number; windSpeed: number }[]
-> {
-  const apiKey = process.env.TOMORROW_API_KEY;
-  // This function currently has no side effects (only a read/fetch), so no build check is necessary.
-  const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1h&units=imperial&apikey=${apiKey}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Failed to fetch forecast');
-
-  const data = await res.json();
-  const hourly: HourlyForecastEntry[] = data.timelines.hourly;
-
-  return hourly.slice(0, 12).map((hour) => ({
-    time: hour.time,
-    temperature: hour.values.temperature,
-    precipitation: hour.values.precipitationProbability,
-    windSpeed: hour.values.windSpeed,
-  }));
 }
