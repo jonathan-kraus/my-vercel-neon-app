@@ -34,6 +34,9 @@ export async function sendConfirmationEmail(
       // ✅ FIX: Now return the variable
       return result;
     }
+    // This code assumes it is inside an async function like sendEmailClient(data, baseUrl)
+
+    // ... setup (url, fetch call) ...
     const url = `${baseUrl || 'https://www.kraus.my.id'}/api/send-email`;
     const response = await fetch(url, {
       method: 'POST',
@@ -41,17 +44,75 @@ export async function sendConfirmationEmail(
       body: JSON.stringify(data),
     });
 
-    let result: { message?: string } | null = null;
-    const errorBodyAsText = await response.text();
-    try {
-      const errorJson = JSON.parse(errorBodyAsText);
-      throw new Error(errorJson.message);
-    } catch (parseError) {
-      console.error('[email-client] Non-JSON response from API:', errorBodyAsText.slice(0, 200));
-      throw new Error(errorBodyAsText);
+    // Use a variable to store the ultimate result object
+    let result: { success: boolean; message: string };
+
+    // =========================================================
+    // ✅ FIX: SUCCESS PATH (The response status is 200-299)
+    // =========================================================
+    if (response.ok) {
+      // We expect a successful response body to be JSON
+      try {
+        // Read body ONCE (as JSON) for the success path
+        const successJson = await response.json();
+
+        // Assuming your API returns { status: 'success', message: 'Email sent' }
+        if (successJson.status === 'success' || successJson.status === 'skipped') {
+          result = { success: true, message: successJson.message || 'Email action completed.' };
+          console.log('[email-client] Success/Skipped response:', successJson);
+        } else {
+          // Handle unexpected 200 response structure
+          result = {
+            success: false,
+            message: successJson.message || 'Unexpected successful API response.',
+          };
+          console.warn('[email-client] Unexpected 200 JSON:', successJson);
+        }
+      } catch (e) {
+        // This catches cases where the API returns 200 but sends non-JSON (like your Vercel HTML, though less likely here)
+        result = {
+          success: false,
+          message: 'Received successful status, but response was not valid JSON.',
+        };
+        console.error('[email-client] 200 Status, but JSON parsing failed.', e);
+      }
+
+      // =========================================================
+      // ✅ FIX: ERROR PATH (The response status is 4xx or 5xx)
+      // =========================================================
+    } else {
+      // 1. Read the body ONCE as text for the error path
+      const errorBodyAsText = await response.text();
+
+      // Check for Vercel Security Checkpoint HTML
+      if (errorBodyAsText.includes('Vercel Security Checkpoint')) {
+        result = { success: false, message: 'Request blocked by Vercel Security Checkpoint.' };
+        console.error('[email-client] Vercel Security Blocked:', errorBodyAsText.slice(0, 200));
+      } else {
+        // Try to parse the error text as JSON to get a clean message
+        try {
+          const errorJson = JSON.parse(errorBodyAsText);
+          // Assuming your API error format is { message: '...' }
+          result = {
+            success: false,
+            message: errorJson.message || `API Error: ${response.status}`,
+          };
+        } catch (e) {
+          // If it fails to parse (generic text error), use a generic message
+          result = {
+            success: false,
+            message: `Server error (${response.status}): ${errorBodyAsText.slice(0, 50)}...`,
+          };
+        }
+        console.error('[email-client] API Error:', result.message);
+      }
     }
+
+    // Final Return
+    return result;
+    // } <-- close the async function
   } catch (error) {
-    console.error('[email-client] Network Error:', error);
-    return { success: false, message: 'A network error occurred' };
+    console.error('[email-client] Exception in sendConfirmationEmail:', error);
+    return { success: false, message: 'Exception occurred while sending email' };
   }
 }
