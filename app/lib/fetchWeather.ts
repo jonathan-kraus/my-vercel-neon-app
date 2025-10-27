@@ -100,7 +100,7 @@ export async function fetchWeather(requestId?: string) {
 
   if (minutesSinceLast >= 15) {
     try {
-      await triggerEmail('Weather', requestId, location2 ?? 'Weather Location');
+      await triggerEmail('Weather', requestId, location2 ?? 'Weather Location', values.temperature);
       console.log(`[${requestId}] 📧 Weather email triggered`);
       await db.weatherLog.create({
         data: {

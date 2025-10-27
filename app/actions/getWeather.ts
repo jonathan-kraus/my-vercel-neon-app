@@ -60,7 +60,12 @@ export async function getWeather(): Promise<WeatherResponse> {
   if (hoursSinceLast > 2) {
     try {
       const subject = `Weather Update for ${data.location?.name ?? 'Unknown'}`;
-      await triggerEmail('Weather', latestLog ? latestLog.id.toString() : undefined, subject);
+      await triggerEmail(
+        'Weather',
+        latestLog ? latestLog.id.toString() : undefined,
+        subject,
+        values.temperature
+      );
 
       await db.weatherLog.create({
         data: {
