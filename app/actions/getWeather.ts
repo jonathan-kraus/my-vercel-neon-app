@@ -127,10 +127,6 @@ export async function getWeather(): Promise<WeatherResponse> {
     };
   }
 }
-const location2 = data.location?.name ?? 'Unknown';
-console.log(`Weather data fetched [${requestId}] for ${location2}:`, values);
-console.log(`[getWeather] [${requestId}] Weather for ZIP ${zip} resolved to ${location2}`);
-
 type HourlyForecastEntry = {
   time: string;
   values: {
