@@ -39,7 +39,7 @@ Latency: ${latencyMs} ms`;
     version: (version as { version: string }[])[0].version,
     postCount,
     latestPostDate: latestPost?.createdAt || null,
-    logCount, // Uncomment if you want to include log count
+    logCount,
     latencyMs,
   };
 }

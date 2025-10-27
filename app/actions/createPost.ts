@@ -39,7 +39,7 @@ export async function createPost(formData: FormData) {
     toEmail: user.email,
     toName: user.name || 'Jonathan',
     requestId,
-    message: `Your post titled "${title}" has been successfully created on ${timestamp}.`,
+    message: `Your post titled "${title}" has been successfully created on ${timestamp} by ${user.name}`,
     subject: `📝 New Post Created: "${title}" at ${timestamp}`,
   });
   try {

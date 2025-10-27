@@ -5,7 +5,7 @@ console.log('[build] Generating /logs');
 export default async function LogsPage() {
   const rawLogs = await db.log.findMany({
     orderBy: { timestamp: 'desc' },
-    take: 100,
+    take: 200,
   });
 
   const logs = rawLogs.map((log) => ({
