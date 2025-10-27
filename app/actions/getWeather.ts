@@ -18,7 +18,7 @@ type WeatherResponse = {
   rainAccumulationMin: number;
   rainAccumulationSum: number;
 };
-
+const isBuilding = process.env.VERCEL_ENV === 'production' && process.env.VERCEL_URL === undefined;
 export async function getWeather(): Promise<WeatherResponse> {
   const requestId = crypto.randomUUID();
   const apiKey = process.env.TOMORROW_API_KEY;
@@ -54,78 +54,83 @@ export async function getWeather(): Promise<WeatherResponse> {
   if (latestLog) {
     lastEmailTimestamp = latestLog.createdAt.toISOString();
   }
+  if (!isBuilding) {
+    console.log('Hours since last email log:', hoursSinceLast);
 
-  console.log('Hours since last email log:', hoursSinceLast);
+    if (hoursSinceLast > 2) {
+      try {
+        const subject = `Weather Update for ${data.location?.name ?? 'Unknown'}`;
+        await triggerEmail(
+          'Weather',
+          latestLog ? latestLog.id.toString() : undefined,
+          subject,
+          values.temperature
+        );
 
-  if (hoursSinceLast > 2) {
-    try {
-      const subject = `Weather Update for ${data.location?.name ?? 'Unknown'}`;
-      await triggerEmail(
-        'Weather',
-        latestLog ? latestLog.id.toString() : undefined,
-        subject,
-        values.temperature
-      );
+        await db.weatherLog.create({
+          data: {
+            temperature: values.temperature,
+            humidity: values.humidity,
+            windSpeed: values.windSpeed,
+            windGust: values.windGust,
+            precipitationProbability: values.precipitationProbability,
+            weatherCode: values.weatherCode,
+            emailSent: true,
+          },
+        });
+        // update row 1 for last update time
+        await db.weatherLog.update({
+          where: { id: 1 },
+          data: {
+            temperature: data.temperature,
+            humidity: data.humidity,
+            windSpeed: data.windSpeed,
+            windGust: data.windGust,
+            precipitationProbability: data.precipitationProbability,
+            weatherCode: data.weatherCode,
+            //emailSent: false, // or preserve existing value
+            createdAt: new Date(), // 👈 this marks the last update
+          },
+        });
 
-      await db.weatherLog.create({
-        data: {
-          temperature: values.temperature,
-          humidity: values.humidity,
-          windSpeed: values.windSpeed,
-          windGust: values.windGust,
-          precipitationProbability: values.precipitationProbability,
-          weatherCode: values.weatherCode,
-          emailSent: true,
-        },
-      });
-      // update row 1 for last update time
-      await db.weatherLog.update({
-        where: { id: 1 },
-        data: {
-          temperature: data.temperature,
-          humidity: data.humidity,
-          windSpeed: data.windSpeed,
-          windGust: data.windGust,
-          precipitationProbability: data.precipitationProbability,
-          weatherCode: data.weatherCode,
-          //emailSent: false, // or preserve existing value
-          createdAt: new Date(), // 👈 this marks the last update
-        },
-      });
+        emailSent = true;
+        lastEmailTimestamp = now.toISOString();
 
-      emailSent = true;
-      lastEmailTimestamp = now.toISOString();
-
-      console.log('✅ Weather email sent and log created');
-    } catch (err) {
-      console.error('❌ Email failed:', err);
+        console.log('✅ Weather email sent and log created');
+      } catch (err) {
+        console.error('❌ Email failed:', err);
+      }
+    } else {
+      console.log('⏱️ Email already sent within the last 24 hours');
     }
-  } else {
-    console.log('⏱️ Email already sent within the last 24 hours');
+    const locationName = data.location?.name ?? 'Unknown';
+    console.log(`Weather data fetched [${requestId}] for ${locationName}:`, values);
+    console.log(`[getWeather] [${requestId}] Weather for ZIP ${zip} resolved to ${locationName}`);
+    return {
+      temperature: values.temperature,
+      humidity: values.humidity,
+      windSpeed: values.windSpeed,
+      windGust: values.windGust,
+      precipitationProbability: values.precipitationProbability,
+      conditions: {
+        day: values.weatherCode ?? -1,
+        night: values.weatherCode ?? -1,
+      },
+      rainAccumulationAvg: values.rainAccumulationAvg,
+      rainAccumulationMax: values.rainAccumulationMax,
+      rainAccumulationMin: values.rainAccumulationMin,
+      rainAccumulationSum: values.rainAccumulationSum,
+      locationName, // ✅ Include it here
+      emailSent,
+      lastEmailTimestamp,
+      requestId,
+    };
   }
-  const locationName = data.location?.name ?? 'Unknown';
-  console.log(`Weather data fetched [${requestId}] for ${locationName}:`, values);
-  console.log(`[getWeather] [${requestId}] Weather for ZIP ${zip} resolved to ${locationName}`);
-  return {
-    temperature: values.temperature,
-    humidity: values.humidity,
-    windSpeed: values.windSpeed,
-    windGust: values.windGust,
-    precipitationProbability: values.precipitationProbability,
-    conditions: {
-      day: values.weatherCode ?? -1,
-      night: values.weatherCode ?? -1,
-    },
-    rainAccumulationAvg: values.rainAccumulationAvg,
-    rainAccumulationMax: values.rainAccumulationMax,
-    rainAccumulationMin: values.rainAccumulationMin,
-    rainAccumulationSum: values.rainAccumulationSum,
-    locationName, // ✅ Include it here
-    emailSent,
-    lastEmailTimestamp,
-    requestId,
-  };
 }
+const location2 = data.location?.name ?? 'Unknown';
+console.log(`Weather data fetched [${requestId}] for ${location2}:`, values);
+console.log(`[getWeather] [${requestId}] Weather for ZIP ${zip} resolved to ${location2}`);
+
 type HourlyForecastEntry = {
   time: string;
   values: {
