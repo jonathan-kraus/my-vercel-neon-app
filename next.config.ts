@@ -1,6 +1,5 @@
 //import type { NextConfig } from 'next';
 //import path from 'path';
-import type { Configuration } from 'webpack';
 
 // const nextConfig: NextConfig = {
 //   // When the workspace contains multiple package-lock files Next.js tries to infer
