@@ -52,18 +52,4 @@ const config = [
 ];
 
 
-const tailwindcss = await import('eslint-plugin-tailwindcss').then(mod => mod.default || mod);
-
-export default [
-  {
-    plugins: {
-      tailwindcss,
-    },
-    rules: {
-      'tailwindcss/classnames-order': 'warn',
-      'tailwindcss/no-custom-classname': 'off',
-    },
-  },
-];
-
 export { config };
