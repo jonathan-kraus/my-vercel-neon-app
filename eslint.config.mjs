@@ -2,7 +2,7 @@ import js from '@eslint/js';
 import nextConfig from 'eslint-config-next';
 import parser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
-import tailwindcss from 'eslint-plugin-tailwindcss';
+
 
 const config = [
   {
@@ -52,7 +52,7 @@ const config = [
 ];
 
 
-
+const tailwindcss = await import('eslint-plugin-tailwindcss');
 export default [
   {
     plugins: {
