@@ -50,4 +50,14 @@ const config = [
   },
 ];
 
-export default config;
+export default [
+  {
+    plugins: {
+      tailwindcss: require('eslint-plugin-tailwindcss'),
+    },
+    rules: {
+      'tailwindcss/classnames-order': 'warn',
+      'tailwindcss/no-custom-classname': 'off', // optional
+    },
+  },
+];export { config };

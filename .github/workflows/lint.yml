@@ -31,5 +31,5 @@ jobs:
         run: pnpm run prettier:check
       - name: Run TypeScript type check
         run: pnpm run type-check
-      - name: Run stylelint
-        run: pnpm run stylelint
+      - name: Run Tailwind lint
+        run: exec eslint --ext .ts,.tsx app/

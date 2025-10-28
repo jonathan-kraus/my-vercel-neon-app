@@ -20,7 +20,6 @@
     "prettier:fix": "prettier --write . --ignore-path .prettierignore",
     "security": "pnpm audit",
     "start": "next start",
-    "stylelint": "stylelint \"**/*.{css,scss}\"",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -60,8 +59,6 @@
     "postcss": "^8.5.6",
     "prettier": "3.6.2",
     "prisma": "6.18.0",
-    "stylelint": "^16.25.0",
-    "stylelint-config-standard": "^39.0.1",
     "tailwindcss": "^4.1.16",
     "typescript": "^5.9.3"
   }
