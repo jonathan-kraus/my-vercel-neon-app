@@ -16,7 +16,7 @@ export async function GET() {
     await logger({
       severity: 'info',
       source: 'getDailyForecast/route.ts',
-      message: `Fetching daily forecast`,
+      message: `Fetching daily forecast ${baseUrl}`,
       requestId,
       metadata: { userAction: 'fetch', Component: 'getDailyForecast' },
     });

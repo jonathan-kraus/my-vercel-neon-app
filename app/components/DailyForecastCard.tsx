@@ -66,7 +66,7 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
         await logger({
           severity: 'info',
           source: 'DailyForecastCard.tsx',
-          message: `Fetching daily forecast`,
+          message: `Fetching daily forecast baseurl: ${baseUrl} `,
           requestId,
           metadata: { userAction: 'fetch', Component: 'DailyForecastCard' },
         });

@@ -1,7 +1,7 @@
 'use client';
 import toast, { Toaster } from 'react-hot-toast';
 import { logger } from '@/app/lib/logger';
-import { Component, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 
 type DbStatusType = {
@@ -36,7 +36,7 @@ export default function DbStatus() {
         await logger({
           severity: 'info',
           source: 'DbStatus.tsx',
-          message: `DbStatus invoked`,
+          message: `DbStatus invoked baseUrl: ${baseUrl}`,
           requestId,
           metadata: { userAction: 'fetch', Component: 'DbStatus' },
         });
