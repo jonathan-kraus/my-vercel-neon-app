@@ -1,5 +1,6 @@
 //import type { NextConfig } from 'next';
 //import path from 'path';
+import type { Configuration } from 'webpack';
 
 // const nextConfig: NextConfig = {
 //   // When the workspace contains multiple package-lock files Next.js tries to infer
@@ -12,7 +13,10 @@ const path = require('path');
 const nextConfig = {
   outputFileTracingRoot: path.resolve(__dirname),
 
-  webpack(config) {
+  webpack(config: Configuration) {
+    config.module = config.module || {};
+    config.module.rules = config.module.rules || [];
+
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import PostCountBadge from '../components/PostCountBadge';
+import Spinner from '../components/spinner';
 
 type Author = {
   id: number;
@@ -119,7 +120,7 @@ export default function BlogViewer() {
       `}</style>
       {loading ? (
         <div className="flex justify-center items-center h-24">
-          <div className="spinner" />
+          <Spinner />
         </div>
       ) : posts.length === 0 ? (
         <p>No posts found.</p>
