@@ -32,22 +32,17 @@ const baseUrl =
 const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 const calllog = async (message: string) => {
   try {
-    await fetch(`${baseUrl}/api/log`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        severity: 'info',
-        source: 'SideNav',
-        message,
-        requestId,
-        metadata: { userAction: 'fetch' },
-      }),
+    await logger({
+      severity: 'info',
+      source: 'sidenav with logger',
+      message: `[SideNav] [${requestId}] component loaded`,
+      requestId,
+      metadata: { userAction: 'load', Component: 'SideNav' },
     });
   } catch (error) {
-    console.error('Failed to log event:', error);
+    console.error('[SideNav] Failed to log event:', error);
   }
 };
-calllog(`[SideNav] [${requestId}] component loaded`);
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(
@@ -259,20 +254,16 @@ export default function SideNav() {
   const handleWeatherClick = async () => {
     console.log('handleWeatherClick!');
     try {
-      await fetch(`${baseUrl}/api/log`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          severity: 'info',
-          source: 'SideNav',
-          message: 'Weather SideNav component clicked',
-          requestId,
-          metadata: { userAction: 'navigate' },
-        }),
+      await logger({
+        severity: 'info',
+        source: 'sidenav with logger',
+        message: `Weather SideNav component clicked`,
+        requestId,
+        metadata: { userAction: 'fetch', Component: 'Weather' },
       });
       setTimeout(() => router.push('/admin/weather'), 100);
     } catch (err) {
-      console.error('Weather click failed:', err);
+      console.error('Weather failed:', err);
       toast.error('Action failed');
     }
   };
