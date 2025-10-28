@@ -23,6 +23,7 @@ export async function GET() {
       toName: 'Jonathan',
       subject: 'Authors Route Page Clicked',
       requestId: requestId,
+      message: `The /authors route was accessed at ${new Date().toISOString()}`,
     };
     const { success, message } = await sendConfirmationEmail(emailData);
     if (success) {
