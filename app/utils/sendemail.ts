@@ -110,7 +110,7 @@ export async function sendEmailDirect(
     return true;
   }
 
-  console.log('ℹ️ Email skipped:', result.reason || 'throttled');
+  console.log('ℹ️ Email skipped:', result.reason || 'Throttled');
   return false;
 }
 logSendEmailModuleAccess();
