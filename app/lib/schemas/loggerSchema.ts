@@ -7,3 +7,5 @@ export const LogPayloadSchema = z.object({
   requestId: z.string().nullable().optional(),
   metadata: z.record(z.string(), z.any()).optional(),
 });
+
+export type LogPayload = z.infer<typeof LogPayloadSchema>;

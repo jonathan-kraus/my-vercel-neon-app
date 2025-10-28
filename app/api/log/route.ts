@@ -30,28 +30,25 @@ export async function OPTIONS() {
   });
 }
 
+import { LogPayloadSchema } from '@/app/lib/schemas/loggerSchema';
+
 export async function POST(req: Request) {
   const body = await req.json();
-  const { severity = 'info', source, message = '', requestId, metadata } = body;
+  const parsed = LogPayloadSchema.safeParse(body);
 
-  // Guard against missing required fields
-  if (!source || !message) {
-    return NextResponse.json(
-      { status: 'error', error: 'Missing source or message' },
-      { status: 400 }
-    );
+  if (!parsed.success) {
+    console.error('[log] Invalid payload:', parsed.error.format());
+    return NextResponse.json({ status: 'error', error: 'Invalid log payload' }, { status: 400 });
   }
 
-  // Optional: skip logging during build/dev
+  const { severity, source, message, requestId, metadata } = parsed.data;
+
   if (process.env.VERCEL_ENV === 'development') {
     console.log('[log] Skipping log insert during build/dev');
     return NextResponse.json({ success: true });
   }
 
-  // Flatten metadata
   const normalizedMetadata = flattenMetadata(metadata ?? {});
-
-  // Optional: enrich with request context
   const headers = Object.fromEntries(req.headers.entries());
   const userAgent = headers['user-agent'] ?? '';
   const ip = headers['x-forwarded-for'] ?? req.headers.get('host') ?? '';
@@ -77,14 +74,6 @@ export async function POST(req: Request) {
         timestamp: new Date(),
       },
     });
-
-    // Optional: stream to external service
-    // await logtail.info(message, {
-    //   severity,
-    //   source,
-    //   requestId,
-    //   ...normalizedMetadata,
-    // });
 
     console.log(`[log] [${requestId}] Log event inserted successfully`);
     return NextResponse.json(
