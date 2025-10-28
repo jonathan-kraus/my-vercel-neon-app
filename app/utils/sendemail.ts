@@ -10,6 +10,9 @@ const mailerSend = new MailerSend({
 
 const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
 export default async function logSendEmailModuleAccess() {
+  if (process.env.NODE_ENV === 'production') {
+    return;
+  }
   const severity = 'info';
   const source = 'sendemail.ts';
   const message = `sendemail.ts module accessed`;
