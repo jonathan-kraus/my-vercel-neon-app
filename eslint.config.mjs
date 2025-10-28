@@ -52,7 +52,8 @@ const config = [
 ];
 
 
-const tailwindcss = await import('eslint-plugin-tailwindcss');
+const tailwindcss = await import('eslint-plugin-tailwindcss').then(mod => mod.default || mod);
+
 export default [
   {
     plugins: {
