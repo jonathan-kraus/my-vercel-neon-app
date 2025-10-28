@@ -1,6 +1,6 @@
 'use client';
 
-import { Component, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
@@ -231,7 +231,7 @@ export default function SideNav() {
         metadata: { userAction: 'fetch' },
       });
     } catch (error) {
-      console.error('[sidenav] [requestId] Failed to log event:', error);
+      console.error('[sidenav] [requestId] Failed to log event:', error, { Component: 'Authors' });
     }
 
     console.log(`Navigating to /authors ${requestId}`);
