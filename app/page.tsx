@@ -1,6 +1,5 @@
 export const dynamic = 'force-dynamic';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { db } from './lib/db';
 import CreatePostForm from './components/CreatePostForm';

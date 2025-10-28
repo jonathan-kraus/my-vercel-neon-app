@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import PostCountBadge from '../components/PostCountBadge';
-import Spinner from '../components/spinner';
 
 type Author = {
   id: number;
@@ -98,26 +97,7 @@ export default function BlogViewer() {
           </option>
         ))}
       </select>
-      <style jsx>{`
-        .spinner {
-          border: 4px solid #71277aff;
-          border-top: 4px solid #3498db;
-          border-radius: 50%;
-          width: 36px;
-          height: 36px;
-          animation: spin 0.8s linear infinite;
-          margin: auto;
-        }
 
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
       {loading ? (
         <div className="border-4 border-[#71277a] border-t-[#3498db] rounded-full w-9 h-9 animate-spin mx-auto" />
       ) : posts.length === 0 ? (
