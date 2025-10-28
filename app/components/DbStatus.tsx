@@ -1,7 +1,7 @@
 'use client';
 import toast, { Toaster } from 'react-hot-toast';
-
-import { useEffect, useState } from 'react';
+import { logger } from '@/app/lib/logger';
+import { Component, useEffect, useState } from 'react';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 
 type DbStatusType = {
@@ -33,16 +33,12 @@ export default function DbStatus() {
       'https://www.kraus.my.id';
     const logEvent = async () => {
       try {
-        await fetch(`${baseUrl}/api/log`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            severity: 'info',
-            source: 'DbStatus',
-            message: 'Retrieving database status',
-            requestId: requestId, // or generate dynamically
-            metadata: { userAction: 'fetch' },
-          }),
+        await logger({
+          severity: 'info',
+          source: 'DbStatus.tsx',
+          message: `DbStatus invoked`,
+          requestId,
+          metadata: { userAction: 'fetch', Component: 'DbStatus' },
         });
       } catch (error) {
         console.error('Failed to log event:', error);
@@ -110,7 +106,6 @@ export default function DbStatus() {
       </p>
       <button onClick={notify}>Make me a toast!</button>
       <Toaster />
-      {/* ✅ Tailwind test block */}
     </div>
   );
 }
