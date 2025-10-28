@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Component, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
@@ -242,16 +242,12 @@ export default function SideNav() {
     console.log('handleDbStatusClick!');
     console.log(`[DbStatus] Clicked, navigating to /DbStatus ${requestId}`);
     try {
-      await fetch(`${baseUrl}/api/log`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          severity: 'info',
-          source: 'SideNav',
-          message: 'DbStatus SideNav component clicked',
-          requestId,
-          metadata: { userAction: 'fetch' },
-        }),
+      await logger({
+        severity: 'info',
+        source: 'sidenav with logger',
+        message: `DbStatus SideNav component clicked`,
+        requestId,
+        metadata: { userAction: 'fetch', Component: 'DbStatus' },
       });
       setTimeout(() => router.push('/admin/db-status'), 100);
     } catch (err) {
