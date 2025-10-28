@@ -3,11 +3,6 @@ export const dynamic = 'force-dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { db } from './lib/db';
-import logo from '@/assets/logo.svg';
-import logoDark from '@/assets/logo-dark.svg';
-import arrow from '@/assets/arrow.svg';
-import discord from '@/assets/discord.svg';
-import docs from '@/assets/docs.svg';
 import CreatePostForm from './components/CreatePostForm';
 import { DeleteButton } from '@/app/components/DeleteButton';
 import { MarkCompleteButton } from './components/MarkCompleteButton';
@@ -26,10 +21,6 @@ const DATA = {
     text: 'View on GitHub',
     href: 'https://github.com/neondatabase-labs/vercel-marketplace-neon',
   },
-  footerLinks: [
-    { text: 'Docs', href: 'https://neon.tech/docs/', icon: docs },
-    { text: 'Discord', href: 'https://discord.com/invite/92vNTzKDGp', icon: discord },
-  ],
 };
 
 type BlogPost = {
@@ -93,24 +84,7 @@ export default async function Home() {
 
         {/* Branding & CTA */}
         <main className="flex flex-1 flex-col justify-center">
-          <div className="mb-6 md:mb-7">
-            <Image
-              className="lg:h-7 lg:w-auto dark:hidden"
-              src={logo}
-              alt="Neon logo"
-              width={88}
-              height={24}
-              priority
-            />
-            <Image
-              className="hidden lg:h-7 lg:w-auto dark:block"
-              src={logoDark}
-              alt="Neon logo"
-              width={88}
-              height={24}
-              priority
-            />
-          </div>
+          <div className="mb-6 md:mb-7"></div>
           <h1
             className="text-3xl font-semibold leading-none tracking-tighter md:text-4xl lg:text-5xl"
             dangerouslySetInnerHTML={{ __html: DATA.title }}
@@ -129,41 +103,9 @@ export default async function Home() {
             </Link>
             <Link className="group flex items-center gap-2" href={DATA.link.href} target="_blank">
               {DATA.link.text}
-              <Image
-                className="transition-transform group-hover:translate-x-1 dark:invert"
-                src={arrow}
-                alt="arrow"
-                width={16}
-                height={10}
-                priority
-              />
             </Link>
           </div>
         </main>
-
-        {/* Footer */}
-        <footer className="flex flex-wrap items-center justify-between gap-3 border-t py-5 dark:border-[#303236]">
-          <ul className="flex items-center gap-4">
-            {DATA.footerLinks.map((link) => (
-              <Link
-                key={link.text}
-                href={link.href}
-                target="_blank"
-                className="flex items-center gap-2 opacity-70 hover:opacity-100"
-              >
-                <Image
-                  className="dark:invert"
-                  src={link.icon}
-                  alt={link.text}
-                  width={16}
-                  height={16}
-                  priority
-                />
-                <span className="text-sm">{link.text}</span>
-              </Link>
-            ))}
-          </ul>
-        </footer>
       </div>
     </div>
   );

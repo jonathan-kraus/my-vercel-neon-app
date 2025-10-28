@@ -119,9 +119,7 @@ export default function BlogViewer() {
         }
       `}</style>
       {loading ? (
-        <div className="flex justify-center items-center h-24">
-          <Spinner />
-        </div>
+        <div className="border-4 border-[#71277a] border-t-[#3498db] rounded-full w-9 h-9 animate-spin mx-auto" />
       ) : posts.length === 0 ? (
         <p>No posts found.</p>
       ) : (
