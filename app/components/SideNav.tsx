@@ -24,25 +24,19 @@ export function NavItem(props: NavItemProps) {
   );
 }
 
-const baseUrl =
-  typeof window !== 'undefined'
-    ? window.location.origin
-    : process.env.NEXT_PUBLIC_SITE_URL || 'https://www.kraus.my.id';
-
 const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
-const calllog = async (message: string) => {
-  try {
-    await logger({
-      severity: 'info',
-      source: 'sidenav with logger',
-      message: `[SideNav] [${requestId}] component loaded`,
-      requestId,
-      metadata: { userAction: 'load', Component: 'SideNav' },
-    });
-  } catch (error) {
-    console.error('[SideNav] Failed to log event:', error);
-  }
-};
+// log component load
+try {
+  await logger({
+    severity: 'info',
+    source: 'sidenav with logger',
+    message: `[SideNav] [${requestId}] component loaded`,
+    requestId,
+    metadata: { userAction: 'load', Component: 'SideNav' },
+  });
+} catch (error) {
+  console.error('[SideNav] Failed to log event:', error);
+}
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(
