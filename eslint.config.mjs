@@ -2,6 +2,7 @@ import js from '@eslint/js';
 import nextConfig from 'eslint-config-next';
 import parser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
+import tailwindcss from 'eslint-plugin-tailwindcss';
 
 const config = [
   {
@@ -50,14 +51,18 @@ const config = [
   },
 ];
 
+
+
 export default [
   {
     plugins: {
-      tailwindcss: require('eslint-plugin-tailwindcss'),
+      tailwindcss,
     },
     rules: {
       'tailwindcss/classnames-order': 'warn',
-      'tailwindcss/no-custom-classname': 'off', // optional
+      'tailwindcss/no-custom-classname': 'off',
     },
   },
-];export { config };
+];
+
+export { config };
