@@ -3,7 +3,6 @@ import nextConfig from 'eslint-config-next';
 import parser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 
-
 const config = [
   {
     ignores: [
@@ -50,6 +49,5 @@ const config = [
     },
   },
 ];
-
 
 export { config };
