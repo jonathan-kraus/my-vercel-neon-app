@@ -211,6 +211,7 @@ export default function SideNav() {
 
   const handleAuthorsClick = async () => {
     console.log('handleAuthorsClick!');
+
     try {
       await logger({
         severity: 'info',
@@ -226,6 +227,7 @@ export default function SideNav() {
     console.log(`Navigating to /authors ${requestId}`);
     setTimeout(() => router.push('/authors'), 100);
   };
+
   <NavItem href="/logs" label="Logs" />;
   const handleDbStatusClick = async () => {
     console.log('handleDbStatusClick!');
