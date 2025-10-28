@@ -53,15 +53,6 @@ export async function createPost(formData: FormData) {
   } catch {
     // non-fatal
   }
-  await db.log.create({
-    data: {
-      severity,
-      source,
-      message,
-      requestId,
-      metadata: metadata ?? {},
-      timestamp: new Date(),
-    },
-  });
+  console.log(`[createPost] [${requestId}] Confirmation email sent to ${user.email}`);
   redirect('/'); // ✅ Send them back to the homepage
 }
