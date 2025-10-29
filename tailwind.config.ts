@@ -2,6 +2,8 @@ import { type Config } from 'tailwindcss';
 
 const config: Config = {
   content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
+  safelist: ['border-border', 'outline-ring/50'],
+
   theme: {
     extend: {
       fontFamily: {
@@ -16,7 +18,6 @@ const config: Config = {
       },
     },
   },
-  plugins: [animate],
 };
 
 export default config;
