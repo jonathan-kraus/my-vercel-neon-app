@@ -92,7 +92,7 @@ export default async function AdminLogsPage({
       SELECT * FROM logs 
       WHERE level = ${level}
       ORDER BY created_at DESC 
-      LIMIT ${limit} OFFSET ${offset}
+      LIMIT ${limit} OFFSET ${offset} as unknown as Log[]
     `;
     const count = await sql`SELECT COUNT(*) as count FROM logs WHERE level = ${level}`;
     totalCount = Number(count[0].count);
