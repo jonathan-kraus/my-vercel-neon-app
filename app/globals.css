@@ -104,7 +104,4 @@
   * {
     @apply border-slate-400 bg-white text-black;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
 }
