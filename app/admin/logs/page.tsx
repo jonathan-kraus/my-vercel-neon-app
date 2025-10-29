@@ -13,8 +13,6 @@ const LogSchema = z.object({
   timestamp: z.coerce.date(), // or z.string() if not parsed yet
 });
 
-const logs = LogSchema.array().parse(logsRaw);
-
 export default async function AdminLogsPage({
   searchParams,
 }: {
@@ -33,11 +31,12 @@ export default async function AdminLogsPage({
   SELECT id, severity, source, message, request_id, metadata, timestamp
   FROM logs
   ORDER BY created_at DESC
-  LIMIT ${limit} OFFSET ${offset}
+  LIMIT ${limit} OFFSET ${offset} as unknown as Log[]
 `;
-
+  //const logs = LogSchema.array().parse(logsRaw);
+  let logs: Log[];
   // Build query based on filters
-  let logs;
+  //let logs;
   let totalCount;
 
   if (level && module && requestId) {
