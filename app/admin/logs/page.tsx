@@ -87,15 +87,6 @@ export default async function AdminLogsPage({
       WHERE module = ${module} AND request_id = ${requestId}
     `;
     totalCount = Number(count[0].count);
-  } else if (level) {
-    logs = await sql`
-      SELECT * FROM logs 
-      WHERE level = ${level}
-      ORDER BY created_at DESC 
-      LIMIT ${limit} OFFSET ${offset} as unknown as Log[]
-    `;
-    const count = await sql`SELECT COUNT(*) as count FROM logs WHERE level = ${level}`;
-    totalCount = Number(count[0].count);
   } else if (module) {
     logs = (await sql`
       SELECT * FROM logs 
