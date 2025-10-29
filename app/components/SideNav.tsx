@@ -139,7 +139,6 @@ export default function SideNav() {
     return () => {
       mounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // separate effect to update countdown when expiresAt changes
