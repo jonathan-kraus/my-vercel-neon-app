@@ -1,6 +1,19 @@
 import { LogsTable } from '@/app/components/logs-table';
 import { neon } from '@neondatabase/serverless';
 import { type Log } from '@prisma/client';
+import { z } from 'zod';
+
+const LogSchema = z.object({
+  id: z.string(),
+  severity: z.string(),
+  source: z.string(),
+  message: z.string(),
+  requestId: z.string().nullable(),
+  metadata: z.any(),
+  timestamp: z.coerce.date(), // or z.string() if not parsed yet
+});
+
+const logs = LogSchema.array().parse(logsRaw);
 
 export default async function AdminLogsPage({
   searchParams,
@@ -16,6 +29,12 @@ export default async function AdminLogsPage({
   const offset = (page - 1) * limit;
 
   const sql = neon(process.env.DATABASE_URL!);
+  const logsRaw = await sql`
+  SELECT id, severity, source, message, request_id, metadata, timestamp
+  FROM logs
+  ORDER BY created_at DESC
+  LIMIT ${limit} OFFSET ${offset}
+`;
 
   // Build query based on filters
   let logs;
@@ -102,7 +121,7 @@ export default async function AdminLogsPage({
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
     `) as unknown as Log[];
-    const count = await sql`SELECT COUNT(*) as count FROM logs`;
+    const count = await sql`SELECT COUNT(*) as count FROM logs as unknown as Log[]`;
     totalCount = Number(count[0].count);
   }
 
