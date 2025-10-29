@@ -1,5 +1,6 @@
 import { LogsTable } from '@/app/components/logs-table';
 import { neon } from '@neondatabase/serverless';
+import { type Log } from '@prisma/client';
 
 export default async function AdminLogsPage({
   searchParams,
@@ -21,48 +22,48 @@ export default async function AdminLogsPage({
   let totalCount;
 
   if (level && module && requestId) {
-    logs = await sql`
+    logs = (await sql`
       SELECT * FROM logs 
       WHERE level = ${level} AND module = ${module} AND request_id = ${requestId}
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
-    `;
+    `) as unknown as Log[];
     const count = await sql`
       SELECT COUNT(*) as count FROM logs 
       WHERE level = ${level} AND module = ${module} AND request_id = ${requestId}
     `;
     totalCount = Number(count[0].count);
   } else if (level && module) {
-    logs = await sql`
+    logs = (await sql`
       SELECT * FROM logs 
       WHERE level = ${level} AND module = ${module}
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
-    `;
+    `) as unknown as Log[];
     const count = await sql`
       SELECT COUNT(*) as count FROM logs 
       WHERE level = ${level} AND module = ${module}
     `;
     totalCount = Number(count[0].count);
   } else if (level && requestId) {
-    logs = await sql`
+    logs = (await sql`
       SELECT * FROM logs 
       WHERE level = ${level} AND request_id = ${requestId}
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
-    `;
+    `) as unknown as Log[];
     const count = await sql`
       SELECT COUNT(*) as count FROM logs 
       WHERE level = ${level} AND request_id = ${requestId}
     `;
     totalCount = Number(count[0].count);
   } else if (module && requestId) {
-    logs = await sql`
+    logs = (await sql`
       SELECT * FROM logs 
       WHERE module = ${module} AND request_id = ${requestId}
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
-    `;
+    `) as unknown as Log[];
     const count = await sql`
       SELECT COUNT(*) as count FROM logs 
       WHERE module = ${module} AND request_id = ${requestId}
@@ -78,29 +79,29 @@ export default async function AdminLogsPage({
     const count = await sql`SELECT COUNT(*) as count FROM logs WHERE level = ${level}`;
     totalCount = Number(count[0].count);
   } else if (module) {
-    logs = await sql`
+    logs = (await sql`
       SELECT * FROM logs 
       WHERE module = ${module}
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
-    `;
+    `) as unknown as Log[];
     const count = await sql`SELECT COUNT(*) as count FROM logs WHERE module = ${module}`;
     totalCount = Number(count[0].count);
   } else if (requestId) {
-    logs = await sql`
+    logs = (await sql`
       SELECT * FROM logs 
       WHERE request_id = ${requestId}
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
-    `;
+    `) as unknown as Log[];
     const count = await sql`SELECT COUNT(*) as count FROM logs WHERE request_id = ${requestId}`;
     totalCount = Number(count[0].count);
   } else {
-    logs = await sql`
+    logs = (await sql`
       SELECT * FROM logs 
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
-    `;
+    `) as unknown as Log[];
     const count = await sql`SELECT COUNT(*) as count FROM logs`;
     totalCount = Number(count[0].count);
   }
