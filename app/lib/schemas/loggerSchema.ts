@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-export const LogPayloadSchema = z.object({
-  severity: z.enum(['info', 'warn', 'error', 'debug']).default('info'),
+export const LoggerSchema = z.object({
+  severity: z.enum(['info', 'warn', 'error']),
   source: z.string(),
   message: z.string(),
-  requestId: z.string().nullable().optional(),
-  metadata: z.record(z.string(), z.any()).optional(),
+  requestId: z.string().optional(),
+  metadata: z.any().optional(),
 });
 
-export type LogPayload = z.infer<typeof LogPayloadSchema>;
+export type LoggerData = z.infer<typeof LoggerSchema>;

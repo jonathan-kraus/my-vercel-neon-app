@@ -1,67 +1,56 @@
-// app/actions/createPost.ts
 'use server';
 
-import { db } from '@/app/lib/db';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { sendConfirmationEmail } from '@/app/utils/email-client';
+import { db } from '../lib/db';
 import { logger } from '../lib/logger';
-console.log('[build] Generating createPost action');
+import { cookies } from 'next/headers';
+
 export async function createPost(formData: FormData) {
-  const title = formData.get('title') as string;
-  const content = formData.get('content') as string;
-  const authorName = formData.get('authorName') as string;
+  const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 
-  const user = await db.user.findFirst({
-    where: { name: { equals: authorName, mode: 'insensitive' } },
-  });
-
-  if (!user) throw new Error('User not found');
-
-  await db.post.create({
-    data: {
-      title,
-      content,
-      authorId: user.id,
-      published: true,
-      createdAt: new Date(),
-    },
-  });
-  const severity = 'info';
-  const source = 'createPost';
-  const message = `Post created successfully: ${content}`;
-  const metadata = { action: 'create', timestamp: new Date().toISOString(), authorId: user.id };
-  const requestId = crypto.randomUUID();
-  console.log(`[createPost] [${requestId}] Post created by ${authorName}`);
-
-  // Send confirmation email to the author
-  const timestamp = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-  await sendConfirmationEmail({
-    toEmail: user.email,
-    toName: user.name || 'Jonathan',
-    requestId,
-    message: `Your post titled "${title}" has been successfully created on ${timestamp} by ${user.name}`,
-    subject: `📝 New Post Created: "${title}" at ${timestamp}`,
-  });
   try {
-    await logger({
-      severity: 'info',
-      source: 'createPost.ts',
-      message: `Post created by ${user.name}: ${title}  ${content}`,
-      requestId,
-      metadata: { userAction: 'create_post', postTitle: title },
+    const title = formData.get('title') as string;
+    const content = formData.get('content') as string;
+    const authorName = formData.get('authorName') as string;
+
+    if (!title || !content || !authorName) {
+      throw new Error('Title, content, and author name are required');
+    }
+
+    // Ensure user exists
+    let user = await db.user.findFirst({ where: { name: authorName } });
+    if (!user) {
+      user = await db.user.create({
+        data: { name: authorName, email: `${authorName}@example.local` },
+      });
+    }
+
+    const post = await db.post.create({
+      data: {
+        title,
+        content,
+        published: true,
+        author: { connect: { id: user.id } },
+      },
     });
-  } catch {
-    // non-fatal
+
+    try {
+      await logger({
+        severity: 'info',
+        source: 'CreatePost Action',
+        message: `Post created by ${authorName}: ${requestId}`,
+        requestId,
+        metadata: { userAction: 'create_post', postTitle: post.title },
+      });
+    } catch {
+      // non-fatal
+    }
+
+    revalidatePath('/');
+    redirect('/?posted=1');
+  } catch (err) {
+    console.error('CreatePost action error:', err);
+    redirect('/?error=1');
   }
-  await db.log.create({
-    data: {
-      severity,
-      source,
-      message,
-      requestId,
-      metadata: metadata ?? {},
-      timestamp: new Date(),
-    },
-  });
-  redirect('/'); // ✅ Send them back to the homepage
 }
