@@ -10,7 +10,7 @@ type NavItemProps =
   | { onClick: () => void; label: string };
 const navItemClass =
   'w-full px-2 py-1 text-center rounded transition-all duration-200 ease-in-out hover:bg-blue-800 hover:text-yellow-400 hover:underline';
-const activeItemClass = 'bg-blue-800 text-yellow-300 underline';
+const activeItemClass = 'bg-green-700 text-white font-semibold border-2 border-green-400';
 
 function normalizePath(p: string) {
   if (!p) return '/';
@@ -22,7 +22,7 @@ export function NavItem(props: NavItemProps) {
   if ('href' in props) {
     const hrefNorm = normalizePath(props.href);
     const currNorm = normalizePath(props.currentPath ?? '');
-    const isActive = hrefNorm === currNorm || (hrefNorm !== '/' && currNorm.startsWith(hrefNorm));
+    const isActive = hrefNorm === currNorm;
     return (
       <Link
         href={props.href}
