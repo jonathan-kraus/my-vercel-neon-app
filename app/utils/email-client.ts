@@ -1,6 +1,6 @@
 import type { EmailData } from '@/app/lib/schemas/email';
 import { EmailSchema } from '@/app/lib/schemas/email';
-
+import { parse } from 'path';
 console.log('[email-client] sendConfirmationEmail function defined');
 export async function sendConfirmationEmail(
   data: EmailData
@@ -98,8 +98,7 @@ export async function sendConfirmationEmail(
             message: errorJson.message || `API Error: ${response.status}`,
           };
         } catch (e) {
-          console.error('[email-client] Error response JSON parsing failed:', e);
-          // Fallback if error body is not JSON
+          // If it fails to parse (generic text error), use a generic message
           result = {
             success: false,
             message: `Server error (${response.status}): ${errorBodyAsText.slice(0, 50)}...`,

@@ -1,3 +1,4 @@
+//import { PrismaClient } from '@prisma/client';
 import { db } from './db';
 import { triggerEmail } from '@/app/components/actions';
 
@@ -5,6 +6,8 @@ console.log(`[fetchWeather] Module loaded`);
 export async function fetchWeather(requestId?: string) {
   if (!requestId) requestId = 'requestid-not-passed'; //crypto.randomUUID()
   console.log(`[fetchWeather] [${requestId}] Server function started`);
+
+  //const prisma = new PrismaClient();
 
   const apiKey = process.env.TOMORROW_API_KEY;
   requestId = requestId ?? 'no-request-id';

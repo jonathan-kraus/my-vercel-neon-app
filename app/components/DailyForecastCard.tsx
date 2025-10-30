@@ -4,7 +4,6 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useMemo } from 'react';
 import type { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
-import { logger } from '../lib/logger';
 
 const requestId = crypto.randomUUID();
 console.log(`[DailyForecastCard] [${requestId}] DailyForecastCard loaded`);
@@ -63,12 +62,16 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
         process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
         'https://www.kraus.my.id';
       try {
-        await logger({
-          severity: 'info',
-          source: 'DailyForecastCard.tsx',
-          message: `Fetching daily forecast baseurl: ${baseUrl} `,
-          requestId,
-          metadata: { userAction: 'fetch', Component: 'DailyForecastCard' },
+        await fetch(`${baseUrl}/api/log`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            severity: 'info',
+            source: 'DailyForecastCard',
+            message: 'Retrieving daily forecast',
+            requestId: requestId, // or generate dynamically
+            metadata: { forecast },
+          }),
         });
       } catch (error) {
         console.error(`[${requestId}] Failed to log event:`, error);

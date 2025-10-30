@@ -1,161 +1,17 @@
-import { LogsTable } from '@/app/components/logs-table';
-import { neon } from '@neondatabase/serverless';
-import { type Log } from '@prisma/client';
-import { z } from 'zod';
+import ClientLogs from '@/app/components/ClientLogs';
+import { db } from '@/app/lib/db';
+console.log('[build] Generating /logs');
 
-const LogSchema = z.object({
-  id: z.string(),
-  severity: z.string(),
-  source: z.string(),
-  message: z.string(),
-  requestId: z.string().nullable(),
-  metadata: z.any(),
-  timestamp: z.coerce.date(), // or z.string() if not parsed yet
-});
+export default async function LogsPage() {
+  const rawLogs = await db.log.findMany({
+    orderBy: { timestamp: 'desc' },
+    take: 200,
+  });
 
-export default async function AdminLogsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const params = await searchParams;
-  const page = Number(params.page) || 1;
-  const limit = Number(params.limit) || 50;
-  const level = params.level as string | undefined;
-  const module = params.module as string | undefined;
-  const requestId = params.requestId as string | undefined;
-  const offset = (page - 1) * limit;
-  //
-  const sql = neon(process.env.DATABASE_URL!);
-  const logsRaw = (await sql`
-  SELECT id, severity, source, message, "requestId", metadata, timestamp
-  FROM "Log"
-  ORDER BY timestamp DESC
-  LIMIT ${limit} OFFSET ${offset}
-`) as unknown as Log[];
-  //const logs = LogSchema.array().parse(logsRaw);
-  let logs: Log[];
-  // Build query based on filters
-  //let logs;
-  let totalCount;
-
-  if (level && module && requestId) {
-    console.log('Filtering by level, module, and requestId is not implemented yet.');
-    logs = [];
-    totalCount = 0;
-    // logs = (await sql`
-    //   SELECT * FROM Logs
-    //   WHERE level = ${level} AND module = ${module} AND request_id = ${requestId}
-    //   ORDER BY created_at DESC
-    //   LIMIT ${limit} OFFSET ${offset}
-    // `) as unknown as Log[];
-    // const count = await sql`
-    //   SELECT COUNT(*) as count FROM Logs
-    //   WHERE level = ${level} AND module = ${module} AND request_id = ${requestId}
-    // `;
-    // totalCount = Number(count[0].count);
-  } else if (level && module) {
-    console.log('Filtering by level and module is not implemented yet.');
-    logs = [];
-    totalCount = 0;
-    // logs = (await sql`
-    //   SELECT * FROM Logs
-    //   WHERE level = ${level} AND module = ${module}
-    //   ORDER BY created_at DESC
-    //   LIMIT ${limit} OFFSET ${offset}
-    // `) as unknown as Log[];
-    // const count = await sql`
-    //   SELECT COUNT(*) as count FROM Logs
-    //   WHERE level = ${level} AND module = ${module}
-    // `;
-    // totalCount = Number(count[0].count);
-  } else if (level && requestId) {
-    // logs = (await sql`
-    //   SELECT * FROM Logs
-    //   WHERE level = ${level} AND request_id = ${requestId}
-    //   ORDER BY created_at DESC
-    //   LIMIT ${limit} OFFSET ${offset}
-    // `) as unknown as Log[];
-    // const count = await sql`
-    //   SELECT COUNT(*) as count FROM Logs
-    //   WHERE level = ${level} AND request_id = ${requestId}
-    // `;
-    // totalCount = Number(count[0].count);
-    console.log('Filtering by level and requestId is not implemented yet.');
-    logs = [];
-    totalCount = 0;
-  } else if (module && requestId) {
-    // logs = (await sql`
-    //   SELECT * FROM Logs
-    //   WHERE module = ${module} AND request_id = ${requestId}
-    //   ORDER BY created_at DESC
-    //   LIMIT ${limit} OFFSET ${offset}
-    // `) as unknown as Log[];
-    // const count = await sql`
-    //   SELECT COUNT(*) as count FROM Logs
-    //   WHERE module = ${module} AND request_id = ${requestId}
-    // `;
-    // totalCount = Number(count[0].count);
-    console.log('Filtering by module and requestId is not implemented yet.');
-    logs = [];
-    totalCount = 0;
-    // } else if (module) {
-    //   logs = (await sql`
-    //     SELECT * FROM Logs
-    //     WHERE module = ${module}
-    //     ORDER BY created_at DESC
-    //     LIMIT ${limit} OFFSET ${offset}
-    //   `) as unknown as Log[];
-    //   const count = await sql`SELECT COUNT(*) as count FROM Logs WHERE module = ${module}`;
-    //   totalCount = Number(count[0].count);
-  } else if (requestId) {
-    logs = (await sql`
-      SELECT * FROM "Log"
-      WHERE request_id = ${requestId}
-      ORDER BY created_at DESC 
-      LIMIT ${limit} OFFSET ${offset}
-    `) as unknown as Log[];
-    const count = await sql`SELECT COUNT(*) as count FROM "Log" WHERE request_id = ${requestId}`;
-    totalCount = Number(count[0].count);
-  } else {
-    logs = (await sql`
-      SELECT * FROM "Log"
-      ORDER BY timestamp DESC
-      LIMIT ${limit} OFFSET ${offset}
-    `) as unknown as Log[];
-    const count = await sql`SELECT COUNT(*) as count FROM "Log"`;
-    totalCount = Number(count[0].count);
-  }
-
-  // Get unique modules and levels for filters
-  // const modules =
-  //   await sql`SELECT DISTINCT module FROM "Log" WHERE module IS NOT NULL ORDER BY module`;
-  // const levels = await sql`SELECT DISTINCT level FROM "Log" ORDER BY level`;
-
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b border-slate-400">
-        <div className="container mx-auto px-6 py-4">
-          <h1 className="text-2xl font-semibold text-foreground">Application Logs</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Monitor and debug your application with detailed log entries
-          </p>
-        </div>
-      </div>
-
-      <div className="container mx-auto px-6 py-6">
-        <LogsTable
-          logs={logs}
-          totalCount={totalCount}
-          currentPage={page}
-          limit={limit}
-          modules={'m' as unknown as string[]}
-          levels={'l' as unknown as string[]}
-          currentLevel={level}
-          currentModule={module}
-          currentRequestId={requestId}
-        />
-      </div>
-    </div>
-  );
+  const logs = rawLogs.map((log) => ({
+    ...log,
+    timestamp: log.timestamp.toISOString(), // ✅ Convert Date to string
+  }));
+  console.log(`[logs/page] Fetched ${logs.length} logs from DB`);
+  return <ClientLogs logs={logs} />;
 }

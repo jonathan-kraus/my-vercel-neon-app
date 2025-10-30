@@ -10,9 +10,6 @@ const mailerSend = new MailerSend({
 
 const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
 export default async function logSendEmailModuleAccess() {
-  if (process.env.NODE_ENV === 'production') {
-    return;
-  }
   const severity = 'info';
   const source = 'sendemail.ts';
   const message = `sendemail.ts module accessed`;
@@ -110,7 +107,7 @@ export async function sendEmailDirect(
     return true;
   }
 
-  console.log('ℹ️ Email skipped:', result.reason || 'Throttled');
+  console.log('ℹ️ Email skipped:', result.reason || 'throttled');
   return false;
 }
 logSendEmailModuleAccess();

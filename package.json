@@ -4,23 +4,23 @@
   "private": true,
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --no-color --fix --quiet",
+      "eslint --no-color --fix",
       "prettier --write"
     ],
     "*.{json,css,md}": "prettier --write"
   },
   "scripts": {
-    "audit": "node scripts/audit.js > logs/audit.log",
-    "build": "prisma generate --no-hints && next build",
     "dev": "next dev --turbopack",
-    "lint": "eslint .",
-    "postinstall": "prisma generate",
-    "prepare": "husky install",
+    "build": "prisma generate --no-hints && next build",
     "prettier:check": "prettier --check . --ignore-path .prettierignore",
     "prettier:fix": "prettier --write . --ignore-path .prettierignore",
     "security": "pnpm audit",
+    "type-check": "tsc --noEmit",
     "start": "next start",
-    "type-check": "tsc --noEmit"
+    "audit": "node scripts/audit.js > logs/audit.log",
+    "lint": "eslint .",
+    "postinstall": "prisma generate",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
@@ -29,9 +29,7 @@
     "@vercel/blob": "^2.0.0",
     "@vercel/speed-insights": "^1.2.0",
     "chart.js": "^4.5.1",
-    "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
-    "lucide-react": "^0.548.0",
     "mailersend": "^2.6.0",
     "next": "16.0.0",
     "react": "19.2.0",
@@ -48,7 +46,6 @@
     "@types/node": "^24.9.1",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
-    "@types/webpack": "^5.28.5",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
     "autoprefixer": "^10.4.21",
@@ -56,8 +53,6 @@
     "eslint-config-next": "16.0.0",
     "eslint-plugin-next": "^0.0.0",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-tailwindcss": "4.0.0-beta.0",
     "husky": "^8.0.0",
     "lint-staged": "^16.2.6",
     "postcss": "^8.5.6",
@@ -65,5 +60,12 @@
     "prisma": "6.18.0",
     "tailwindcss": "^4.1.16",
     "typescript": "^5.9.3"
+  },
+  "packageManager": "pnpm@10.19.0+sha512.c9fc7236e92adf5c8af42fd5bf1612df99c2ceb62f27047032f4720b33f8eacdde311865e91c411f2774f618d82f320808ecb51718bfa82c060c4ba7c76a32b8",
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.2",
+      "@types/react-dom": "19.2.2"
+    }
   }
 }

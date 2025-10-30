@@ -1,54 +1,53 @@
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-
+import js from '@eslint/js';
+import nextConfig from 'eslint-config-next';
 import parser from '@typescript-eslint/parser';
-import plugin from '@typescript-eslint/eslint-plugin';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
-// import tailwindcss from 'eslint-plugin-tailwindcss';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 
-// const tailwindPath = require.resolve('tailwindcss');
-
-export default [
+const config = [
   {
-    files: ['app/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}'],
-ignores: [
-  '**/node_modules/**',
-  '**/.next/**',
-  '**/.next/**/*',
-  '**/.next/**/static/**',
-  '**/.next/**/static/chunks/**',
-  '**/.next/**/server/**',
-  '**/.next/**/server/chunks/**',
-  '**/dist/**',
-  '**/build/**',
-  '**/public/**',
-  '**/coverage/**',
-  '**/app/generated/**',
-],
+    ignores: [
+      'postcss.config.js',
+      'fixpost.js',
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'build/**',
+      'next-env.d.ts',
+      'app/generated/prisma/**',
+    ],
+  },
+  ...nextConfig,
+  js.configs.recommended,
+  {
+    files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parser,
       parserOptions: {
         project: './tsconfig.json',
         sourceType: 'module',
+        ecmaVersion: 'latest',
       },
     },
     plugins: {
-      '@typescript-eslint': plugin,
-
-      react,
-      'react-hooks': reactHooks,
-      // tailwindcss, ← disable for now due to plugin crash
-    },
-    settings: {
-      // tailwindcss: {
-      //   config: './tailwind.config.ts',
-      // },
+      '@typescript-eslint': tsPlugin,
     },
     rules: {
       'react/react-in-jsx-scope': 'off',
-      // 'tailwindcss/classnames-order': 'warn',
-      // 'tailwindcss/no-custom-classname': 'off',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-undef': 'off',
+    },
+  },
+  {
+    files: ['**/*.{js,jsx}'],
+    languageOptions: {
+      sourceType: 'module',
+      ecmaVersion: 'latest',
+    },
+    rules: {
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
 ];
+
+export default config;
