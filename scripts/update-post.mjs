@@ -6,9 +6,7 @@
   Prisma post update. Do not run this in production unless you know what
   you're doing and have appropriate backups.
 */
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { db } from '@/app/lib/db';
 
 function parseArgs() {
   const args = {};
@@ -30,7 +28,7 @@ async function main() {
   }
 
   try {
-    const updated = await prisma.post.update({
+    const updated = await db.post.update({
       where: { id },
       data: { title },
     });
@@ -39,7 +37,7 @@ async function main() {
     console.error('Error updating post:', err);
     process.exitCode = 1;
   } finally {
-    await prisma.$disconnect();
+    await db.$disconnect();
   }
 }
 
