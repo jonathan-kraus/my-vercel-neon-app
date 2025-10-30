@@ -96,7 +96,13 @@ export default function WeatherCard() {
   const notify = () => toast(`Temperature: ${weather?.temperature} °F`);
   const isWindy = typeof weather?.windSpeed === 'number' && weather.windSpeed > 10;
 
-  if (!weather) return <p>Loading weather...</p>;
+  if (!weather)
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+        <span className="ml-2 text-gray-600">Loading weather...</span>
+      </div>
+    );
 
   const nextEmailInHours = weather.lastEmailTimestamp
     ? 4 - (Date.now() - new Date(weather.lastEmailTimestamp).getTime()) / 3600000

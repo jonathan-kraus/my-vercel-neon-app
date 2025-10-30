@@ -78,7 +78,13 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
 
     logEvent();
   }, [requestId, forecast]);
-  if (!forecast.length) return <p>Loading daily forecast...</p>;
+  if (!forecast.length)
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+        <span className="ml-2 text-gray-600">Loading daily forecast...</span>
+      </div>
+    );
 
   return (
     <div className="space-y-4">

@@ -70,7 +70,13 @@ export default function DbStatus() {
 
   const notify = () => toast('DbStatus toast!');
 
-  if (!status) return <p>Loading DB status...</p>;
+  if (!status)
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <span className="ml-2 text-gray-600">Loading DB status...</span>
+      </div>
+    );
 
   const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
 

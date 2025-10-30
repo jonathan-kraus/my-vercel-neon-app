@@ -113,10 +113,12 @@ export default function SideNav() {
   const [username, setUsername] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
+  const [sessionLoading, setSessionLoading] = useState<boolean>(true);
 
   // Read cookies and/or server session. Re-run on route changes and window focus.
   async function refreshSession(mountedRef: { current: boolean }) {
     try {
+      setSessionLoading(true);
       let foundName: string | null = getCookie('username') ?? null;
       if (foundName && mountedRef.current) setUsername(foundName);
 
@@ -166,6 +168,10 @@ export default function SideNav() {
       }
     } catch (err) {
       console.error('SideNav refreshSession error', err);
+    } finally {
+      if (mountedRef.current) {
+        setSessionLoading(false);
+      }
     }
   }
 
@@ -314,7 +320,16 @@ export default function SideNav() {
           {/* Top section: user info + 🍎 box + cookie button */}
           <div className="space-y-4 px-2 pt-2">
             <div className="text-sm text-yellow-400">User</div>
-            <div className="font-medium text-yellow-300">{username ?? 'Guest'}</div>
+            <div className="font-medium text-yellow-300 flex items-center gap-2">
+              {sessionLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-400"></div>
+                  <span>Loading...</span>
+                </>
+              ) : (
+                (username ?? 'Guest')
+              )}
+            </div>
 
             <div className="text-sm text-yellow-400">
               Session:{' '}
