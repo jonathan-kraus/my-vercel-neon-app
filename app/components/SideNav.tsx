@@ -5,20 +5,39 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { logger } from '../lib/logger';
-type NavItemProps = { href: string; label: string } | { onClick: () => void; label: string };
+type NavItemProps =
+  | { href: string; label: string; currentPath?: string; onHoverPrefetch?: (href: string) => void }
+  | { onClick: () => void; label: string };
 const navItemClass =
   'w-full px-2 py-1 text-center rounded transition-all duration-200 ease-in-out hover:bg-blue-800 hover:text-yellow-400 hover:underline';
+const activeItemClass = 'bg-blue-800 text-yellow-300 underline';
+
+function normalizePath(p: string) {
+  if (!p) return '/';
+  if (p === '/') return '/';
+  return p.endsWith('/') ? p.slice(0, -1) : p;
+}
+
 export function NavItem(props: NavItemProps) {
   if ('href' in props) {
+    const hrefNorm = normalizePath(props.href);
+    const currNorm = normalizePath(props.currentPath ?? '');
+    const isActive = hrefNorm === currNorm || (hrefNorm !== '/' && currNorm.startsWith(hrefNorm));
     return (
-      <Link href={props.href} className={navItemClass}>
+      <Link
+        href={props.href}
+        prefetch
+        className={`${navItemClass} ${isActive ? activeItemClass : ''}`}
+        aria-current={isActive ? 'page' : undefined}
+        onMouseEnter={() => props.onHoverPrefetch?.(props.href)}
+      >
         {props.label}
       </Link>
     );
   }
 
   return (
-    <button onClick={props.onClick} className={navItemClass}>
+    <button type="button" onClick={props.onClick} className={navItemClass}>
       {props.label}
     </button>
   );
@@ -161,6 +180,7 @@ export default function SideNav() {
     return () => {
       mountedRef.current = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   // Re-check on window focus (user may have signed in/out elsewhere)
@@ -172,23 +192,62 @@ export default function SideNav() {
       window.removeEventListener('focus', onFocus);
       mountedRef.current = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // separate effect to update countdown when expiresAt changes
+  // Effect: precise expiry boundary + lightweight minute updates
   useEffect(() => {
     if (!expiresAt) return;
     // Defer initial update to avoid synchronous state updates inside effect body
     const initId = setTimeout(() => {
       setTimeLeft(formatTimeLeft(expiresAt - Date.now()));
     }, 0);
-    const iv = setInterval(() => {
+
+    // Flip to "expired" exactly when it expires
+    const msRemaining = Math.max(0, expiresAt - Date.now());
+    const expireId = setTimeout(() => {
+      setTimeLeft('expired');
+    }, msRemaining);
+
+    // Update the visible countdown once per minute until expiry
+    const minuteIv = setInterval(() => {
+      if (Date.now() >= expiresAt) return; // expireId will handle the flip
       setTimeLeft(formatTimeLeft(expiresAt - Date.now()));
-    }, 30_000);
+    }, 60_000);
     return () => {
       clearTimeout(initId);
-      clearInterval(iv);
+      clearTimeout(expireId);
+      clearInterval(minuteIv);
     };
   }, [expiresAt]);
+
+  // Prefetch key routes on mount (best-effort)
+  useEffect(() => {
+    const targets = [
+      '/',
+      '/authors',
+      '/pstbyusr/',
+      '/admin/logs/viewer',
+      '/admin/db-status',
+      '/admin/weather',
+      '/dev/update-post',
+    ];
+    for (const t of targets) {
+      try {
+        (router as any).prefetch?.(t);
+      } catch (e) {
+        // prefetch not supported in this environment; safe to ignore
+      }
+    }
+  }, [router]);
+
+  const handleHoverPrefetch = (href: string) => {
+    try {
+      (router as any).prefetch?.(href);
+    } catch (e) {
+      // ignore prefetch errors
+    }
+  };
 
   const handleShowCookies = () => {
     const cookies = document.cookie || '';
@@ -337,15 +396,35 @@ export default function SideNav() {
           </div>
 
           {/* Nav links */}
-          <nav className="flex flex-col gap-3 items-center text-center px-2">
-            <NavItem href="/" label="* Home *" />
-            <NavItem href="/pstbyusr/" label="Posts by User" />
-            <NavItem href="/admin/logs/viewer" label="Activity Logs" />
+          <nav className="flex flex-col gap-3 items-center text-center px-2" aria-label="Primary">
+            <NavItem
+              href="/"
+              label="* Home *"
+              currentPath={pathname}
+              onHoverPrefetch={handleHoverPrefetch}
+            />
+            <NavItem
+              href="/pstbyusr/"
+              label="Posts by User"
+              currentPath={pathname}
+              onHoverPrefetch={handleHoverPrefetch}
+            />
+            <NavItem
+              href="/admin/logs/viewer"
+              label="Activity Logs"
+              currentPath={pathname}
+              onHoverPrefetch={handleHoverPrefetch}
+            />
             <NavItem onClick={handleAuthorsClick} label="Authors" />
 
             <NavItem onClick={handleDbStatusClick} label="DbStatus" />
             <NavItem onClick={handleWeatherClick} label="Weather" />
-            <NavItem href="/dev/update-post" label="Update Post" />
+            <NavItem
+              href="/dev/update-post"
+              label="Update Post"
+              currentPath={pathname}
+              onHoverPrefetch={handleHoverPrefetch}
+            />
           </nav>
         </div>
 
