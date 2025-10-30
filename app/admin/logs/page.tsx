@@ -110,27 +110,27 @@ export default async function AdminLogsPage({
     //   totalCount = Number(count[0].count);
   } else if (requestId) {
     logs = (await sql`
-      SELECT * FROM Log  
+      SELECT * FROM "Log"
       WHERE request_id = ${requestId}
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
     `) as unknown as Log[];
-    const count = await sql`SELECT COUNT(*) as count FROM Logs WHERE request_id = ${requestId}`;
+    const count = await sql`SELECT COUNT(*) as count FROM "Log" WHERE request_id = ${requestId}`;
     totalCount = Number(count[0].count);
   } else {
     logs = (await sql`
-      SELECT * FROM Log
-      ORDER BY created_at DESC 
+      SELECT * FROM "Log"
+      ORDER BY created_at DESC
       LIMIT ${limit} OFFSET ${offset}
     `) as unknown as Log[];
-    const count = await sql`SELECT COUNT(*) as count FROM Logs as unknown as Log[]`;
+    const count = await sql`SELECT COUNT(*) as count FROM "Log" as unknown as Log[]`;
     totalCount = Number(count[0].count);
   }
 
   // Get unique modules and levels for filters
   const modules =
-    await sql`SELECT DISTINCT module FROM Logs WHERE module IS NOT NULL ORDER BY module`;
-  const levels = await sql`SELECT DISTINCT level FROM Log ORDER BY level`;
+    await sql`SELECT DISTINCT module FROM "Log" WHERE module IS NOT NULL ORDER BY module`;
+  const levels = await sql`SELECT DISTINCT level FROM "Log" ORDER BY level`;
 
   return (
     <div className="min-h-screen bg-background">
