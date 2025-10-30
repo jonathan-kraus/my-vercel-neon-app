@@ -29,7 +29,7 @@ export default async function AdminLogsPage({
   const sql = neon(process.env.DATABASE_URL!);
   const logsRaw = (await sql`
   SELECT id, severity, source, message, request_id, metadata, timestamp
-  FROM log
+  FROM Log
   ORDER BY created_at DESC
   LIMIT ${limit} OFFSET ${offset}
 `) as unknown as Log[];
@@ -44,13 +44,13 @@ export default async function AdminLogsPage({
     logs = [];
     totalCount = 0;
     // logs = (await sql`
-    //   SELECT * FROM logs
+    //   SELECT * FROM Logs
     //   WHERE level = ${level} AND module = ${module} AND request_id = ${requestId}
     //   ORDER BY created_at DESC
     //   LIMIT ${limit} OFFSET ${offset}
     // `) as unknown as Log[];
     // const count = await sql`
-    //   SELECT COUNT(*) as count FROM logs
+    //   SELECT COUNT(*) as count FROM Logs
     //   WHERE level = ${level} AND module = ${module} AND request_id = ${requestId}
     // `;
     // totalCount = Number(count[0].count);
@@ -59,25 +59,25 @@ export default async function AdminLogsPage({
     logs = [];
     totalCount = 0;
     // logs = (await sql`
-    //   SELECT * FROM logs
+    //   SELECT * FROM Logs
     //   WHERE level = ${level} AND module = ${module}
     //   ORDER BY created_at DESC
     //   LIMIT ${limit} OFFSET ${offset}
     // `) as unknown as Log[];
     // const count = await sql`
-    //   SELECT COUNT(*) as count FROM logs
+    //   SELECT COUNT(*) as count FROM Logs
     //   WHERE level = ${level} AND module = ${module}
     // `;
     // totalCount = Number(count[0].count);
   } else if (level && requestId) {
     // logs = (await sql`
-    //   SELECT * FROM logs
+    //   SELECT * FROM Logs
     //   WHERE level = ${level} AND request_id = ${requestId}
     //   ORDER BY created_at DESC
     //   LIMIT ${limit} OFFSET ${offset}
     // `) as unknown as Log[];
     // const count = await sql`
-    //   SELECT COUNT(*) as count FROM logs
+    //   SELECT COUNT(*) as count FROM Logs
     //   WHERE level = ${level} AND request_id = ${requestId}
     // `;
     // totalCount = Number(count[0].count);
@@ -86,13 +86,13 @@ export default async function AdminLogsPage({
     totalCount = 0;
   } else if (module && requestId) {
     // logs = (await sql`
-    //   SELECT * FROM logs
+    //   SELECT * FROM Logs
     //   WHERE module = ${module} AND request_id = ${requestId}
     //   ORDER BY created_at DESC
     //   LIMIT ${limit} OFFSET ${offset}
     // `) as unknown as Log[];
     // const count = await sql`
-    //   SELECT COUNT(*) as count FROM logs
+    //   SELECT COUNT(*) as count FROM Logs
     //   WHERE module = ${module} AND request_id = ${requestId}
     // `;
     // totalCount = Number(count[0].count);
@@ -101,36 +101,36 @@ export default async function AdminLogsPage({
     totalCount = 0;
     // } else if (module) {
     //   logs = (await sql`
-    //     SELECT * FROM logs
+    //     SELECT * FROM Logs
     //     WHERE module = ${module}
     //     ORDER BY created_at DESC
     //     LIMIT ${limit} OFFSET ${offset}
     //   `) as unknown as Log[];
-    //   const count = await sql`SELECT COUNT(*) as count FROM logs WHERE module = ${module}`;
+    //   const count = await sql`SELECT COUNT(*) as count FROM Logs WHERE module = ${module}`;
     //   totalCount = Number(count[0].count);
   } else if (requestId) {
     logs = (await sql`
-      SELECT * FROM log  
+      SELECT * FROM Log  
       WHERE request_id = ${requestId}
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
     `) as unknown as Log[];
-    const count = await sql`SELECT COUNT(*) as count FROM logs WHERE request_id = ${requestId}`;
+    const count = await sql`SELECT COUNT(*) as count FROM Logs WHERE request_id = ${requestId}`;
     totalCount = Number(count[0].count);
   } else {
     logs = (await sql`
-      SELECT * FROM log
+      SELECT * FROM Log
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
     `) as unknown as Log[];
-    const count = await sql`SELECT COUNT(*) as count FROM logs as unknown as Log[]`;
+    const count = await sql`SELECT COUNT(*) as count FROM Logs as unknown as Log[]`;
     totalCount = Number(count[0].count);
   }
 
   // Get unique modules and levels for filters
   const modules =
-    await sql`SELECT DISTINCT module FROM logs WHERE module IS NOT NULL ORDER BY module`;
-  const levels = await sql`SELECT DISTINCT level FROM log ORDER BY level`;
+    await sql`SELECT DISTINCT module FROM Logs WHERE module IS NOT NULL ORDER BY module`;
+  const levels = await sql`SELECT DISTINCT level FROM Log ORDER BY level`;
 
   return (
     <div className="min-h-screen bg-background">
