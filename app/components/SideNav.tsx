@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { logger } from '../lib/logger';
 type NavItemProps = { href: string; label: string } | { onClick: () => void; label: string };
@@ -88,80 +88,106 @@ function formatTimeLeft(ms: number) {
 
 export default function SideNav() {
   const router = useRouter();
+  const pathname = usePathname();
 
   const [username, setUsername] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
 
-  // read cookie(s) on mount, fallback to server session endpoint if cookies are HttpOnly
-  useEffect(() => {
-    let mounted = true;
-    const init = async () => {
-      try {
-        let foundName: string | null = getCookie('username') ?? null;
-        if (foundName && mounted) setUsername(foundName);
+  // Read cookies and/or server session. Re-run on route changes and window focus.
+  async function refreshSession(mountedRef: { current: boolean }) {
+    try {
+      let foundName: string | null = getCookie('username') ?? null;
+      if (foundName && mountedRef.current) setUsername(foundName);
 
-        const token = getCookie('token') ?? getCookie('auth') ?? getCookie('session');
-        const payload = parseJwt(token);
-        if (payload) {
-          if (!foundName && (payload.name || payload.username || payload.sub)) {
-            foundName = payload.name ?? payload.username ?? payload.sub;
-            if (mounted) setUsername(foundName);
-          }
-          if (payload.exp && mounted) {
-            const expMs = payload.exp * 1000;
-            setExpiresAt(expMs);
-            setTimeLeft(formatTimeLeft(expMs - Date.now()));
-          }
+      const token = getCookie('token') ?? getCookie('auth') ?? getCookie('session');
+      const payload = parseJwt(token);
+      if (payload) {
+        if (
+          !foundName &&
+          ((payload as any).name || (payload as any).username || (payload as any).sub)
+        ) {
+          const nm = (payload as any).name ?? (payload as any).username ?? (payload as any).sub;
+          foundName = nm;
+          if (mountedRef.current) setUsername(foundName);
         }
-
-        const expiresStr = getCookie('expires_at');
-        if (expiresStr && mounted && !expiresAt) {
-          const parsed = Number(expiresStr);
-          if (!Number.isNaN(parsed)) {
-            setExpiresAt(parsed);
-            setTimeLeft(formatTimeLeft(parsed - Date.now()));
-          }
+        if ((payload as any).exp && mountedRef.current) {
+          const expMs = (payload as any).exp * 1000;
+          setExpiresAt(expMs);
+          setTimeLeft(formatTimeLeft(expMs - Date.now()));
         }
-
-        // If we still don't have a username (likely because auth cookie is HttpOnly),
-        // attempt to fetch a server-side session endpoint that returns user info.
-        if (!foundName) {
-          try {
-            const res = await fetch('/api/me');
-            if (res.ok) {
-              const json = await res.json();
-              if (mounted && json?.username) setUsername(json.username);
-              if (mounted && json?.expiresAt) {
-                setExpiresAt(Number(json.expiresAt));
-                setTimeLeft(formatTimeLeft(Number(json.expiresAt) - Date.now()));
-              }
-            }
-          } catch {
-            // ignore failed fetch; leaves UI as Guest
-          }
-        }
-      } catch (err) {
-        console.error('SideNav init error', err);
       }
-    };
 
-    init();
+      const expiresStr = getCookie('expires_at');
+      if (expiresStr && mountedRef.current && !expiresAt) {
+        const parsed = Number(expiresStr);
+        if (!Number.isNaN(parsed)) {
+          setExpiresAt(parsed);
+          setTimeLeft(formatTimeLeft(parsed - Date.now()));
+        }
+      }
+
+      // If we still don't have a username (likely because auth cookie is HttpOnly), fetch server session
+      if (!foundName) {
+        try {
+          const res = await fetch('/api/me', { cache: 'no-store' });
+          if (res.ok) {
+            const json = await res.json();
+            if (mountedRef.current && json?.username) setUsername(json.username);
+            if (mountedRef.current && json?.expiresAt) {
+              const exp = Number(json.expiresAt);
+              setExpiresAt(exp);
+              setTimeLeft(formatTimeLeft(exp - Date.now()));
+            }
+          }
+        } catch {
+          // ignore failed fetch; leaves UI as Guest
+        }
+      }
+    } catch (err) {
+      console.error('SideNav refreshSession error', err);
+    }
+  }
+
+  // Initial load and on route change
+  useEffect(() => {
+    const mountedRef = { current: true };
+    // Defer to next tick to avoid synchronous state updates inside effect body
+    setTimeout(() => {
+      if (mountedRef.current) {
+        void refreshSession(mountedRef);
+      }
+    }, 0);
     return () => {
-      mounted = false;
+      mountedRef.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // Re-check on window focus (user may have signed in/out elsewhere)
+  useEffect(() => {
+    const mountedRef = { current: true };
+    const onFocus = () => refreshSession(mountedRef);
+    window.addEventListener('focus', onFocus);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      mountedRef.current = false;
+    };
   }, []);
 
   // separate effect to update countdown when expiresAt changes
   useEffect(() => {
     if (!expiresAt) return;
-    // set immediate value
-    setTimeLeft(formatTimeLeft(expiresAt - Date.now()));
+    // Defer initial update to avoid synchronous state updates inside effect body
+    const initId = setTimeout(() => {
+      setTimeLeft(formatTimeLeft(expiresAt - Date.now()));
+    }, 0);
     const iv = setInterval(() => {
       setTimeLeft(formatTimeLeft(expiresAt - Date.now()));
     }, 30_000);
-    return () => clearInterval(iv);
+    return () => {
+      clearTimeout(initId);
+      clearInterval(iv);
+    };
   }, [expiresAt]);
 
   const handleShowCookies = () => {
