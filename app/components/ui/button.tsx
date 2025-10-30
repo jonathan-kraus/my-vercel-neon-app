@@ -1,5 +1,3 @@
-import { cn } from '@/app/lib/authUtils';
-
 export function Button({
   children,
   variant = 'default',
@@ -23,9 +21,5 @@ export function Button({
     icon: 'p-2 w-9 h-9',
   };
 
-  return (
-    <button className={cn(base, variants[variant], sizes[size], className)} {...props}>
-      {children}
-    </button>
-  );
+  return <button>{children}</button>;
 }
