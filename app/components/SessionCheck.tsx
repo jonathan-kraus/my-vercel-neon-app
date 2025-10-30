@@ -19,7 +19,7 @@ export function SessionCheck() {
       try {
         void logger({
           severity: 'info',
-          source: 'SessionCheck.ts',
+          source: 'Session Check.ts',
           message: `Session check performed`,
           requestId,
           metadata: { userAction: 'session_check', answer: 'answer ' + answer },

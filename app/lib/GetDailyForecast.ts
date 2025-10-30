@@ -75,12 +75,17 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
 
   console.log(`[GetDailyForecast] [${requestId}] Forecast response:`, data);
   const daily: RawDailyEntry[] = data.timelines?.daily;
-  //const daily = data.timelines?.daily ?? [];
+
   console.log(
     `[${requestId}] Raw daily forecastvalues:`,
     daily.map((d) => d.values)
   );
-  console.log(`[${requestId}] JJJ daily entries:`, daily);
+  const maxRainAccumulation = Math.max(
+    ...daily.map((d) => d.values.rainAccumulationSum).filter((val) => typeof val === 'number')
+  );
+  console.log(`[getDailyForecast] [${requestId}] Max rainAccumulationSum:`, maxRainAccumulation);
+
+  console.log(`[getDailyForecast] [${requestId}] JJJ daily entries:`, daily);
   return daily.slice(0, 7).map(
     (day): DailyForecastPoint => ({
       requestId,
