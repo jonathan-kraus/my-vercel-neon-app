@@ -314,7 +314,7 @@ export default function SideNav() {
           <nav className="flex flex-col gap-3 items-center text-center px-2">
             <NavItem href="/" label="* Home *" />
             <NavItem href="/pstbyusr/" label="Posts by User" />
-            <NavItem href="/admin/logs" label="Activity Logs" />
+            <NavItem href="/admin/logs/viewer" label="Activity Logs" />
             <NavItem onClick={handleAuthorsClick} label="Authors" />
             <NavItem href="/logs" label="Logs" />
             <NavItem onClick={handleDbStatusClick} label="DbStatus" />

@@ -1,17 +1,9 @@
-import ClientLogs from '@/app/components/ClientLogs';
-import { db } from '@/app/lib/db';
-console.log('[build] Generating /logs');
+import { redirect } from 'next/navigation';
 
-export default async function LogsPage() {
-  const rawLogs = await db.log.findMany({
-    orderBy: { timestamp: 'desc' },
-    take: 200,
-  });
+export const dynamic = 'force-dynamic';
 
-  const logs = rawLogs.map((log) => ({
-    ...log,
-    timestamp: log.timestamp.toISOString(), // ✅ Convert Date to string
-  }));
-  console.log(`[logs/page] Fetched ${logs.length} logs from DB`);
-  return <ClientLogs logs={logs} />;
+export default function LogsPage() {
+  // This page is deprecated in favor of /admin/logs/viewer
+  // Redirect immediately to the new viewer
+  redirect('/admin/logs/viewer');
 }
