@@ -26,17 +26,23 @@ export function NavItem(props: NavItemProps) {
 
 const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 // log component load
-try {
-  await logger({
-    severity: 'info',
-    source: 'sidenav with logger',
-    message: `[SideNav] [${requestId}] component loaded`,
-    requestId,
-    metadata: { userAction: 'load', Component: 'SideNav' },
-  });
-} catch (error) {
-  console.error('[SideNav] Failed to log event:', error);
-}
+// useEffect(() => {
+//   const logLoad = async () => {
+//     try {
+//       await logger({
+//         severity: 'info',
+//         source: 'sidenav with logger',
+//         message: `[SideNav] [${requestId}] component loaded`,
+//         requestId,
+//         metadata: { userAction: 'load', Component: 'SideNav' },
+//       });
+//     } catch (error) {
+//       console.error('[SideNav] Failed to log event:', error);
+//     }
+//   };
+
+//   logLoad();
+// }, []);
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(
