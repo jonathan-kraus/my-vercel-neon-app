@@ -29,7 +29,7 @@ export default async function AdminLogsPage({
   const sql = neon(process.env.DATABASE_URL!);
   const logsRaw = (await sql`
   SELECT id, severity, source, message, request_id, metadata, timestamp
-  FROM logs
+  FROM log
   ORDER BY created_at DESC
   LIMIT ${limit} OFFSET ${offset}
 `) as unknown as Log[];
@@ -110,7 +110,7 @@ export default async function AdminLogsPage({
     //   totalCount = Number(count[0].count);
   } else if (requestId) {
     logs = (await sql`
-      SELECT * FROM logs 
+      SELECT * FROM log  
       WHERE request_id = ${requestId}
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
@@ -119,7 +119,7 @@ export default async function AdminLogsPage({
     totalCount = Number(count[0].count);
   } else {
     logs = (await sql`
-      SELECT * FROM logs 
+      SELECT * FROM log
       ORDER BY created_at DESC 
       LIMIT ${limit} OFFSET ${offset}
     `) as unknown as Log[];
@@ -130,7 +130,7 @@ export default async function AdminLogsPage({
   // Get unique modules and levels for filters
   const modules =
     await sql`SELECT DISTINCT module FROM logs WHERE module IS NOT NULL ORDER BY module`;
-  const levels = await sql`SELECT DISTINCT level FROM logs ORDER BY level`;
+  const levels = await sql`SELECT DISTINCT level FROM log ORDER BY level`;
 
   return (
     <div className="min-h-screen bg-background">
