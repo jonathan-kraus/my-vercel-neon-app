@@ -99,16 +99,16 @@ export function LogsTable({
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    }).format(date);
-  };
+  // const formatDate = (dateString: string) => {
+  //   const date = new Date(dateString);
+  //   return new Intl.DateTimeFormat('en-US', {
+  //     month: 'short',
+  //     day: 'numeric',
+  //     hour: '2-digit',
+  //     minute: '2-digit',
+  //     second: '2-digit',
+  //   }).format(date);
+  // };
 
   const hasActiveFilters = currentLevel || currentModule || currentRequestId;
 
@@ -143,11 +143,6 @@ export function LogsTable({
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All levels</option>
-              {levels.map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
             </select>
           </div>
 
@@ -161,11 +156,6 @@ export function LogsTable({
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All levels</option>
-              {levels.map((level) => (
-                <option key={level} value={level}>
-                  {level}
-                </option>
-              ))}
             </select>
           </div>
 
@@ -216,7 +206,7 @@ export function LogsTable({
                     </Badge> */}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground font-mono">
-                    {formatDate(log.source)}
+                    {log.source}
                   </TableCell>
                   <TableCell className="max-w-md">
                     <div className="truncate text-sm">{log.message}</div>

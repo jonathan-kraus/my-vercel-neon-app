@@ -28,9 +28,9 @@ export default async function AdminLogsPage({
   //
   const sql = neon(process.env.DATABASE_URL!);
   const logsRaw = (await sql`
-  SELECT id, severity, source, message, request_id, metadata, timestamp
-  FROM Log
-  ORDER BY created_at DESC
+  SELECT id, severity, source, message, "requestId", metadata, timestamp
+  FROM "Log"
+  ORDER BY timestamp DESC
   LIMIT ${limit} OFFSET ${offset}
 `) as unknown as Log[];
   //const logs = LogSchema.array().parse(logsRaw);
@@ -120,17 +120,17 @@ export default async function AdminLogsPage({
   } else {
     logs = (await sql`
       SELECT * FROM "Log"
-      ORDER BY created_at DESC
+      ORDER BY timestamp DESC
       LIMIT ${limit} OFFSET ${offset}
     `) as unknown as Log[];
-    const count = await sql`SELECT COUNT(*) as count FROM "Log" as unknown as Log[]`;
+    const count = await sql`SELECT COUNT(*) as count FROM "Log"`;
     totalCount = Number(count[0].count);
   }
 
   // Get unique modules and levels for filters
-  const modules =
-    await sql`SELECT DISTINCT module FROM "Log" WHERE module IS NOT NULL ORDER BY module`;
-  const levels = await sql`SELECT DISTINCT level FROM "Log" ORDER BY level`;
+  // const modules =
+  //   await sql`SELECT DISTINCT module FROM "Log" WHERE module IS NOT NULL ORDER BY module`;
+  // const levels = await sql`SELECT DISTINCT level FROM "Log" ORDER BY level`;
 
   return (
     <div className="min-h-screen bg-background">
@@ -149,8 +149,8 @@ export default async function AdminLogsPage({
           totalCount={totalCount}
           currentPage={page}
           limit={limit}
-          modules={modules.map((m) => m.module)}
-          levels={levels.map((l) => l.level)}
+          modules={'m' as unknown as string[]}
+          levels={'l' as unknown as string[]}
           currentLevel={level}
           currentModule={module}
           currentRequestId={requestId}
