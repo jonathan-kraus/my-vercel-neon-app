@@ -16,6 +16,11 @@ export type DailyForecastPoint = {
   rainAccumulationMin: number;
   rainAccumulationSum: number;
 };
+
+export type DailyForecastResult = {
+  forecast: DailyForecastPoint[];
+  maxRainAccumulation: number;
+};
 type RawDailyEntry = {
   time: string;
   values: {
@@ -31,7 +36,7 @@ type RawDailyEntry = {
   };
 };
 
-export async function getDailyForecast(requestId?: string): Promise<DailyForecastPoint[]> {
+export async function getDailyForecast(requestId?: string): Promise<DailyForecastResult> {
   console.log(`[getDailyForecast] [${requestId}] Function started`);
   const apiKey = process.env.TOMORROW_API_KEY;
   if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
@@ -45,14 +50,14 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   const res = await fetch(url);
   if (!res.ok) {
     console.error(`[Tomorrow.io] ❌ HTTP error: ${res.status}`);
-    return []; // Return empty array to avoid frontend crash
+    return { forecast: [], maxRainAccumulation: 0 };
   }
 
   const data = await res.json();
 
   if (!data || !data.timelines || !Array.isArray(data.timelines.daily)) {
     console.warn(`[Tomorrow.io] ⚠️ Unexpected response format`, data);
-    return []; // Defensive fallback
+    return { forecast: [], maxRainAccumulation: 0 };
   }
   try {
     const emailData = {
@@ -86,7 +91,7 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   console.log(`[getDailyForecast] [${requestId}] Max rainAccumulationSum:`, maxRainAccumulation);
 
   console.log(`[getDailyForecast] [${requestId}] JJJ daily entries:`, daily);
-  return daily.slice(0, 7).map(
+  const forecast = daily.slice(0, 7).map(
     (day): DailyForecastPoint => ({
       requestId,
       time: day.time,
@@ -103,4 +108,6 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
       rainAccumulationSum: day.values?.rainAccumulationSum ?? 0,
     })
   );
+
+  return { forecast, maxRainAccumulation };
 }

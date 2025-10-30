@@ -28,8 +28,8 @@ export async function GET() {
   }
 
   try {
-    const forecast = await getDailyForecast(requestId);
-    return NextResponse.json({ forecast, requestId });
+    const result = await getDailyForecast(requestId);
+    return NextResponse.json({ ...result, requestId });
   } catch (err) {
     console.error(`[getDailyForecast] ❌ Error:`, err);
     return NextResponse.json({ error: 'Failed to fetch daily forecast' }, { status: 500 });
