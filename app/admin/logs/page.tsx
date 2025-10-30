@@ -25,7 +25,7 @@ export default async function AdminLogsPage({
   const module = params.module as string | undefined;
   const requestId = params.requestId as string | undefined;
   const offset = (page - 1) * limit;
-
+  //
   const sql = neon(process.env.DATABASE_URL!);
   const logsRaw = (await sql`
   SELECT id, severity, source, message, request_id, metadata, timestamp
