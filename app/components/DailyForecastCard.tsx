@@ -58,14 +58,10 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
   );
   useEffect(() => {
     const logEvent = async () => {
-      const baseUrl =
-        (typeof window !== 'undefined' && window.location.origin) ||
-        (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-        process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
-        'https://www.kraus.my.id';
       try {
-        await fetch(`${baseUrl}/api/log`, {
+        await fetch(`/api/log`, {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             severity: 'info',

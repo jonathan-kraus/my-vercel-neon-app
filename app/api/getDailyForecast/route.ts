@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDailyForecast } from '@/app/lib/GetDailyForecast';
+import { db } from '@/app/lib/db';
 //import { logEvent } from '@/app/lib/log';
 console.log('[build] Generating /getDailyForecast');
 export async function GET() {
@@ -11,15 +12,16 @@ export async function GET() {
   const source = 'getDailyForecast';
   const message = 'Fetching daily forecast';
   const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
-  const baseUrl =
-    (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
-    'https://www.kraus.my.id';
   try {
-    await fetch(`${baseUrl}/api/log`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ severity, source, message, requestId, metadata }),
+    await db.log.create({
+      data: {
+        severity: severity as any,
+        source,
+        message,
+        requestId,
+        metadata,
+        timestamp: new Date(),
+      },
     });
   } catch (err) {
     console.error(`[getDailyForecast] ❌ logEvent failed:`, err);

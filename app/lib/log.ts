@@ -1,4 +1,5 @@
 // lib/log.ts
+import { db } from '@/app/lib/db';
 type LogMetadata = Record<string, unknown>;
 
 export async function logEvent({
@@ -15,16 +16,17 @@ export async function logEvent({
   metadata?: LogMetadata;
 }) {
   console.log('log module loaded', { requestId });
-  const baseUrl =
-    (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
-    'https://www.kraus.my.id';
   try {
-    await fetch(`${baseUrl}/api/log`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ severity, source, message, requestId, metadata }),
-    });
+    if (typeof window === 'undefined') {
+      await db.log.create({ data: { severity, source, message, requestId, metadata } as any });
+    } else {
+      await fetch(`/api/log`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ severity, source, message, requestId, metadata }),
+      });
+    }
   } catch (err) {
     console.error(`[${source}] [${requestId}] Failed to log event:`, err);
   }

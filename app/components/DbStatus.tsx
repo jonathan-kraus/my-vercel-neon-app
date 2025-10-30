@@ -27,14 +27,11 @@ export default function DbStatus() {
   useEffect(() => {
     const requestId = crypto.randomUUID();
 
-    const baseUrl =
-      (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-      process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
-      'https://www.kraus.my.id';
     const logEvent = async () => {
       try {
-        await fetch(`${baseUrl}/api/log`, {
+        await fetch(`/api/log`, {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             severity: 'info',
