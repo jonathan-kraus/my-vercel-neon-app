@@ -40,7 +40,9 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
   useEffect(() => {
     const fetch = async () => {
       try {
-        console.log(`[DailyForecastCard] [${requestId}] Fetching forecast for ZIP code 02245...`);
+        console.log(
+          `[DailyForecastCard] [${requestId}] Fetching forecast for ZIP code ${process.env.ZIP_CODE}...`
+        );
         const data = await fetchDailyForecast();
         console.log(`[DailyForecastCard] [${requestId}] Forecast data:`, data);
         //setForecast(data);
