@@ -306,64 +306,6 @@ export default function SideNav() {
     ));
   };
 
-  const handleAuthorsClick = async () => {
-    console.log('handleAuthorsClick!');
-    try {
-      await logger({
-        severity: 'info',
-        source: 'SideNav with logger',
-        message: `Author SideNav component clicked`,
-        requestId,
-        metadata: { userAction: 'fetch' },
-      });
-    } catch (error) {
-      console.error('[sidenav] [requestId] Failed to log event:', error);
-    }
-
-    console.log(`Navigating to /authors ${requestId}`);
-    setTimeout(() => router.push('/authors'), 100);
-  };
-
-  const handleDbStatusClick = async () => {
-    console.log('handleDbStatusClick!');
-    console.log(`[DbStatus] Clicked, navigating to /DbStatus ${requestId}`);
-    try {
-      await logger({
-        severity: 'info',
-        source: 'sidenav with logger',
-        message: `DbStatus SideNav component clicked`,
-        requestId,
-        metadata: { userAction: 'fetch', Component: 'DbStatus' },
-      });
-      setTimeout(() => router.push('/admin/db-status'), 100);
-    } catch (err) {
-      console.error('DbStatus failed:', err);
-      toast.error('Action failed');
-    }
-  };
-
-  const handleWeatherClick = async () => {
-    console.log('handleWeatherClick!');
-    try {
-      await fetch(`/api/log`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          severity: 'info',
-          source: 'SideNav',
-          message: 'Weather SideNav component clicked',
-          requestId,
-          metadata: { userAction: 'navigate' },
-        }),
-      });
-      setTimeout(() => router.push('/admin/weather'), 100);
-    } catch (err) {
-      console.error('Weather click failed:', err);
-      toast.error('Action failed');
-    }
-  };
-
   return (
     <aside className="w-72 bg-blue-900 text-yellow-400 border-r border-blue-800 p-4 shadow-md">
       <div className="flex flex-col h-screen overflow-hidden">
@@ -417,10 +359,24 @@ export default function SideNav() {
               currentPath={pathname}
               onHoverPrefetch={handleHoverPrefetch}
             />
-            <NavItem onClick={handleAuthorsClick} label="Authors" />
-
-            <NavItem onClick={handleDbStatusClick} label="DbStatus" />
-            <NavItem onClick={handleWeatherClick} label="Weather" />
+            <NavItem
+              href="/authors"
+              label="Authors"
+              currentPath={pathname}
+              onHoverPrefetch={handleHoverPrefetch}
+            />
+            <NavItem
+              href="/admin/db-status"
+              label="DbStatus"
+              currentPath={pathname}
+              onHoverPrefetch={handleHoverPrefetch}
+            />
+            <NavItem
+              href="/admin/weather"
+              label="Weather"
+              currentPath={pathname}
+              onHoverPrefetch={handleHoverPrefetch}
+            />
             <NavItem
               href="/dev/update-post"
               label="Update Post"
