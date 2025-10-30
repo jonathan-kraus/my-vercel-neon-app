@@ -237,7 +237,7 @@ export default function SideNav() {
     console.log(`Navigating to /authors ${requestId}`);
     setTimeout(() => router.push('/authors'), 100);
   };
-  <NavItem href="/logs" label="Logs" />;
+
   const handleDbStatusClick = async () => {
     console.log('handleDbStatusClick!');
     console.log(`[DbStatus] Clicked, navigating to /DbStatus ${requestId}`);
@@ -316,7 +316,7 @@ export default function SideNav() {
             <NavItem href="/pstbyusr/" label="Posts by User" />
             <NavItem href="/admin/logs/viewer" label="Activity Logs" />
             <NavItem onClick={handleAuthorsClick} label="Authors" />
-            <NavItem href="/logs" label="Logs" />
+
             <NavItem onClick={handleDbStatusClick} label="DbStatus" />
             <NavItem onClick={handleWeatherClick} label="Weather" />
             <NavItem href="/dev/update-post" label="Update Post" />
