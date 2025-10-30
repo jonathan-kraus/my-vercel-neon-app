@@ -27,12 +27,12 @@ export default async function AdminLogsPage({
   const offset = (page - 1) * limit;
 
   const sql = neon(process.env.DATABASE_URL!);
-  const logsRaw = await sql`
+  const logsRaw = (await sql`
   SELECT id, severity, source, message, request_id, metadata, timestamp
   FROM logs
   ORDER BY created_at DESC
-  LIMIT ${limit} OFFSET ${offset} as unknown as Log[]
-`;
+  LIMIT ${limit} OFFSET ${offset}
+`) as unknown as Log[];
   //const logs = LogSchema.array().parse(logsRaw);
   let logs: Log[];
   // Build query based on filters
@@ -40,62 +40,74 @@ export default async function AdminLogsPage({
   let totalCount;
 
   if (level && module && requestId) {
-    logs = (await sql`
-      SELECT * FROM logs 
-      WHERE level = ${level} AND module = ${module} AND request_id = ${requestId}
-      ORDER BY created_at DESC 
-      LIMIT ${limit} OFFSET ${offset}
-    `) as unknown as Log[];
-    const count = await sql`
-      SELECT COUNT(*) as count FROM logs 
-      WHERE level = ${level} AND module = ${module} AND request_id = ${requestId}
-    `;
-    totalCount = Number(count[0].count);
+    console.log('Filtering by level, module, and requestId is not implemented yet.');
+    logs = [];
+    totalCount = 0;
+    // logs = (await sql`
+    //   SELECT * FROM logs
+    //   WHERE level = ${level} AND module = ${module} AND request_id = ${requestId}
+    //   ORDER BY created_at DESC
+    //   LIMIT ${limit} OFFSET ${offset}
+    // `) as unknown as Log[];
+    // const count = await sql`
+    //   SELECT COUNT(*) as count FROM logs
+    //   WHERE level = ${level} AND module = ${module} AND request_id = ${requestId}
+    // `;
+    // totalCount = Number(count[0].count);
   } else if (level && module) {
-    logs = (await sql`
-      SELECT * FROM logs 
-      WHERE level = ${level} AND module = ${module}
-      ORDER BY created_at DESC 
-      LIMIT ${limit} OFFSET ${offset}
-    `) as unknown as Log[];
-    const count = await sql`
-      SELECT COUNT(*) as count FROM logs 
-      WHERE level = ${level} AND module = ${module}
-    `;
-    totalCount = Number(count[0].count);
+    console.log('Filtering by level and module is not implemented yet.');
+    logs = [];
+    totalCount = 0;
+    // logs = (await sql`
+    //   SELECT * FROM logs
+    //   WHERE level = ${level} AND module = ${module}
+    //   ORDER BY created_at DESC
+    //   LIMIT ${limit} OFFSET ${offset}
+    // `) as unknown as Log[];
+    // const count = await sql`
+    //   SELECT COUNT(*) as count FROM logs
+    //   WHERE level = ${level} AND module = ${module}
+    // `;
+    // totalCount = Number(count[0].count);
   } else if (level && requestId) {
-    logs = (await sql`
-      SELECT * FROM logs 
-      WHERE level = ${level} AND request_id = ${requestId}
-      ORDER BY created_at DESC 
-      LIMIT ${limit} OFFSET ${offset}
-    `) as unknown as Log[];
-    const count = await sql`
-      SELECT COUNT(*) as count FROM logs 
-      WHERE level = ${level} AND request_id = ${requestId}
-    `;
-    totalCount = Number(count[0].count);
+    // logs = (await sql`
+    //   SELECT * FROM logs
+    //   WHERE level = ${level} AND request_id = ${requestId}
+    //   ORDER BY created_at DESC
+    //   LIMIT ${limit} OFFSET ${offset}
+    // `) as unknown as Log[];
+    // const count = await sql`
+    //   SELECT COUNT(*) as count FROM logs
+    //   WHERE level = ${level} AND request_id = ${requestId}
+    // `;
+    // totalCount = Number(count[0].count);
+    console.log('Filtering by level and requestId is not implemented yet.');
+    logs = [];
+    totalCount = 0;
   } else if (module && requestId) {
-    logs = (await sql`
-      SELECT * FROM logs 
-      WHERE module = ${module} AND request_id = ${requestId}
-      ORDER BY created_at DESC 
-      LIMIT ${limit} OFFSET ${offset}
-    `) as unknown as Log[];
-    const count = await sql`
-      SELECT COUNT(*) as count FROM logs 
-      WHERE module = ${module} AND request_id = ${requestId}
-    `;
-    totalCount = Number(count[0].count);
-  } else if (module) {
-    logs = (await sql`
-      SELECT * FROM logs 
-      WHERE module = ${module}
-      ORDER BY created_at DESC 
-      LIMIT ${limit} OFFSET ${offset}
-    `) as unknown as Log[];
-    const count = await sql`SELECT COUNT(*) as count FROM logs WHERE module = ${module}`;
-    totalCount = Number(count[0].count);
+    // logs = (await sql`
+    //   SELECT * FROM logs
+    //   WHERE module = ${module} AND request_id = ${requestId}
+    //   ORDER BY created_at DESC
+    //   LIMIT ${limit} OFFSET ${offset}
+    // `) as unknown as Log[];
+    // const count = await sql`
+    //   SELECT COUNT(*) as count FROM logs
+    //   WHERE module = ${module} AND request_id = ${requestId}
+    // `;
+    // totalCount = Number(count[0].count);
+    console.log('Filtering by module and requestId is not implemented yet.');
+    logs = [];
+    totalCount = 0;
+    // } else if (module) {
+    //   logs = (await sql`
+    //     SELECT * FROM logs
+    //     WHERE module = ${module}
+    //     ORDER BY created_at DESC
+    //     LIMIT ${limit} OFFSET ${offset}
+    //   `) as unknown as Log[];
+    //   const count = await sql`SELECT COUNT(*) as count FROM logs WHERE module = ${module}`;
+    //   totalCount = Number(count[0].count);
   } else if (requestId) {
     logs = (await sql`
       SELECT * FROM logs 
