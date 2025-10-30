@@ -110,4 +110,5 @@ export async function sendEmailDirect(
   console.log('ℹ️ Email skipped:', result.reason || 'throttled');
   return false;
 }
-logSendEmailModuleAccess();
+// Avoid top-level side effects during build/runtime module evaluation
+// Call logSendEmailModuleAccess() explicitly from a safe place if needed

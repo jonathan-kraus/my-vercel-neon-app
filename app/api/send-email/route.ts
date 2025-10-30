@@ -38,6 +38,7 @@ const EmailSchema = z.object({
 });
 // Route Handlers use standard Web API Request/Response objects
 export async function POST(request: Request) {
+  console.log('📥 [API] Received email request');
   try {
     const body = await request.json();
     const parsed = EmailSchema.safeParse(body);

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import DbStatus from '@/app/components/DbStatus';
 import Email from '@/app/components/email';
 console.log('[build] Generating /admin/db-status page');
