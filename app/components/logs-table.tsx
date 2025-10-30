@@ -16,7 +16,7 @@ import { Badge } from '@/app/components/ui/badge';
 import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 import { Card } from '@/app/components/ui/card';
 
-interface Log {
+interface LogRow {
   id: number;
   level: string;
   message: string;
@@ -30,7 +30,7 @@ interface Log {
 }
 
 interface LogsTableProps {
-  logs: Log[];
+  logs: LogRow[];
   totalCount: number;
   currentPage: number;
   limit: number;
