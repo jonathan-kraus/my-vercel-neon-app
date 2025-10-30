@@ -1,5 +1,6 @@
 import SideNav from './components/SideNav';
 import ClientShell from '@/app/components/ClientShell';
+import '../app/globals.css';
 import './globals.css';
 import './app.css';
 
