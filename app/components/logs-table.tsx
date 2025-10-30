@@ -15,7 +15,7 @@ import { Input } from '@/app/components/ui/input';
 import { Badge } from '@/app/components/ui/badge';
 import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 import { Card } from '@/app/components/ui/card';
-
+import { type Log } from '@prisma/client';
 interface LogRow {
   id: number;
   level: string;
@@ -30,7 +30,7 @@ interface LogRow {
 }
 
 interface LogsTableProps {
-  logs: LogRow[];
+  logs: Log[];
   totalCount: number;
   currentPage: number;
   limit: number;
@@ -211,29 +211,24 @@ export function LogsTable({
               logs.map((log) => (
                 <TableRow key={log.id} className="group">
                   <TableCell>
-                    <Badge variant={getLevelColor(log.level)} className="font-mono text-xs">
+                    {/* <Badge variant={getLevelColor(log.level)} className="font-mono text-xs">
                       {log.level}
-                    </Badge>
+                    </Badge> */}
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground font-mono">
-                    {formatDate(log.created_at)}
+                    {formatDate(log.source)}
                   </TableCell>
                   <TableCell className="max-w-md">
                     <div className="truncate text-sm">{log.message}</div>
-                    {log.context && Object.keys(log.context).length > 0 && (
-                      <div className="text-xs text-muted-foreground mt-1 font-mono">
-                        {JSON.stringify(log.context)}
-                      </div>
-                    )}
                   </TableCell>
-                  <TableCell className="text-sm font-mono">{log.module || '-'}</TableCell>
+                  <TableCell className="text-sm font-mono">{log.source || '-'}</TableCell>
                   <TableCell className="text-xs font-mono text-muted-foreground">
-                    {log.request_id ? (
+                    {log.source ? (
                       <button
-                        onClick={() => updateFilters('requestId', log.request_id)}
+                        onClick={() => updateFilters('requestId', log.source)}
                         className="hover:text-foreground transition-colors"
                       >
-                        {log.request_id.slice(0, 12)}...
+                        {log.source.slice(0, 12)}...
                       </button>
                     ) : (
                       '-'
