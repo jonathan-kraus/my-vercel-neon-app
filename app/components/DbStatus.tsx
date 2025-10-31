@@ -70,7 +70,38 @@ export default function DbStatus() {
     fetchStatus();
   }, []);
 
-  const notify = () => toast('DbStatus toast!');
+  const sendStatusEmail = async () => {
+    try {
+      const requestId = crypto.randomUUID();
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          toEmail: 'jonathanckraus@gmail.com',
+          toName: 'Jonathan',
+          subject: `DbStatus Report - ${new Date().toISOString()}`,
+          message: `Database Status Report:
+- Neon Region: ${region}
+- PostgreSQL Version: ${status.version}
+- Total Posts: ${status.postCount}
+- Latest Post: ${status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
+- Total Logs: ${status.logCount}
+- Latency: ${status.latencyMs} ms
+- Generated at: ${new Date().toISOString()}`,
+          requestId,
+        }),
+      });
+      const result = await response.json();
+      if (result.status === 'success') {
+        toast.success('Status report email sent!');
+      } else {
+        toast.error(`Failed to send email: ${result.message}`);
+      }
+    } catch (err) {
+      console.error('Failed to send status email:', err);
+      toast.error('Failed to send status email');
+    }
+  };
 
   if (!status)
     return (
@@ -114,7 +145,12 @@ export default function DbStatus() {
         <strong>Latency:</strong> {status.latencyMs} ms
       </p>
       <button onClick={notify}>Make me a toast!</button>
-      {/* ✅ Tailwind test block */}
+      <button
+        onClick={sendStatusEmail}
+        className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Send Status Report Email
+      </button>
     </div>
   );
 }
