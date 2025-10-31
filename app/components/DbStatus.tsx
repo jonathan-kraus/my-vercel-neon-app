@@ -1,5 +1,6 @@
 'use client';
-import toast from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
+
 import { useEffect, useState } from 'react';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 
@@ -24,16 +25,16 @@ export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
 
   useEffect(() => {
-    // Skip logging during build to prevent errors
-    if (process.env.NEXT_PHASE === 'phase-production-build') return;
-
     const requestId = crypto.randomUUID();
 
+    const baseUrl =
+      (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
+      process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
+      'https://www.kraus.my.id';
     const logEvent = async () => {
       try {
-        await fetch(`/api/log`, {
+        await fetch(`${baseUrl}/api/log`, {
           method: 'POST',
-          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             severity: 'info',
@@ -70,46 +71,9 @@ export default function DbStatus() {
     fetchStatus();
   }, []);
 
-  const sendStatusEmail = async () => {
-    try {
-      const requestId = crypto.randomUUID();
-      const response = await fetch('/api/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          toEmail: 'jonathanckraus@gmail.com',
-          toName: 'Jonathan',
-          subject: `DbStatus Report - ${new Date().toISOString()}`,
-          message: `Database Status Report:
-- Neon Region: ${region}
-- PostgreSQL Version: ${status.version}
-- Total Posts: ${status.postCount}
-- Latest Post: ${status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
-- Total Logs: ${status.logCount}
-- Latency: ${status.latencyMs} ms
-- Generated at: ${new Date().toISOString()}`,
-          requestId,
-        }),
-      });
-      const result = await response.json();
-      if (result.status === 'success') {
-        toast.success('Status report email sent!');
-      } else {
-        toast.error(`Failed to send email: ${result.message}`);
-      }
-    } catch (err) {
-      console.error('Failed to send status email:', err);
-      toast.error('Failed to send status email');
-    }
-  };
+  const notify = () => toast('DbStatus toast!');
 
-  if (!status)
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        <span className="ml-2 text-gray-600">Loading DB status...</span>
-      </div>
-    );
+  if (!status) return <p>Loading DB status...</p>;
 
   const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
 
@@ -145,12 +109,8 @@ export default function DbStatus() {
         <strong>Latency:</strong> {status.latencyMs} ms
       </p>
       <button onClick={notify}>Make me a toast!</button>
-      <button
-        onClick={sendStatusEmail}
-        className="ml-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Send Status Report Email
-      </button>
+      <Toaster />
+      {/* ✅ Tailwind test block */}
     </div>
   );
 }
