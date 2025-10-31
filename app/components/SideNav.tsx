@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 type NavItemProps =
   | { href: string; label: string; currentPath?: string; onHoverPrefetch?: (href: string) => void }
   | { onClick: () => void; label: string };
@@ -395,10 +395,7 @@ export default function SideNav() {
           </nav>
         </div>
 
-        {/* Toaster stays pinned at bottom */}
-        <div className="pt-4">
-          <Toaster />
-        </div>
+        {/* Toaster is provided once at the app root (ClientShell) to avoid duplicate containers */}
       </div>
     </aside>
   );

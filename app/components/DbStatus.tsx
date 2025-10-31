@@ -1,6 +1,5 @@
 'use client';
-import toast, { Toaster } from 'react-hot-toast';
-
+import toast from 'react-hot-toast';
 import { useEffect, useState } from 'react';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 
@@ -112,7 +111,6 @@ export default function DbStatus() {
         <strong>Latency:</strong> {status.latencyMs} ms
       </p>
       <button onClick={notify}>Make me a toast!</button>
-      <Toaster />
       {/* ✅ Tailwind test block */}
     </div>
   );

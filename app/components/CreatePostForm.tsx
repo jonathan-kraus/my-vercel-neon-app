@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPost } from '@/app/actions/createPost';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 console.log('[build] Generating CreatePostForm component');
 export default function CreatePostForm() {
   const [authorizedUser, setAuthorizedUser] = useState<string | null>(null);
@@ -88,7 +88,6 @@ export default function CreatePostForm() {
           Submit Post
         </button>
       </form>
-      <Toaster />
     </>
   );
 }
