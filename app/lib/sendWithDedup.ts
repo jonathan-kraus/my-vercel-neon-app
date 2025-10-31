@@ -80,7 +80,7 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
     console.log(
       `[${requestId}] [sendWithDedup] Minutes since last "${safeMessage}": ${minutesSince}`
     );
-    const isNew = safeMessage.includes('New Post Created'); // allow immediate send for new post emails
+    const isNew = safeMessage.includes('Post:'); // allow immediate send for new post emails
     if (!isNew && minutesSince < effectiveThrottle) {
       // Suppress
       const suppressedMessage = `Email suppressed: ${safeMessage}
