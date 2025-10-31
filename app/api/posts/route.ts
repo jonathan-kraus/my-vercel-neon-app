@@ -2,7 +2,13 @@ import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
 import { logger } from '@/app/lib/logger';
 import { Prisma } from '@prisma/client';
-console.log('[build] Generating /api/posts');
+import { z } from 'zod';
+
+const CreatePostSchema = z.object({
+  title: z.string().min(1),
+  body: z.string().min(1),
+});
+
 function parseCookies(cookieHeader: string | null): Record<string, string> {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
@@ -75,10 +81,14 @@ export async function POST(req: Request) {
   const requestId = makeRequestId();
   try {
     const payload = await req.json();
-    const { title, body: content } = payload || {};
-    if (!title || !content) {
-      return NextResponse.json({ error: 'title and body required' }, { status: 400 });
+    const parsed = CreatePostSchema.safeParse(payload);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Invalid payload', details: parsed.error.format() },
+        { status: 400 }
+      );
     }
+    const { title, body: content } = parsed.data;
 
     const cookieHeader = req.headers.get('cookie');
     const cookies = parseCookies(cookieHeader);
