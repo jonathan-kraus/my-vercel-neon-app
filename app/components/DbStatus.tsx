@@ -72,7 +72,39 @@ export default function DbStatus() {
   }, []);
 
   const notify = () => toast('DbStatus toast!');
-
+  const sendStatusEmail = async () => {
+    try {
+      const requestId = crypto.randomUUID();
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          toEmail: 'jonathan@kraus.me.id',
+          toName: 'Jonathan',
+          subject: `DbStatus Report - ${new Date().toISOString()}`,
+          message: `Database Status Report:
+- Neon Region: ${region}
+- PostgreSQL Version: ${status!.version}
+- Total Posts: ${status!.postCount}
+- Latest Post: ${status!.latestPostDate ? new Date(status!.latestPostDate).toLocaleString() : 'N/A'}
+- Total Logs: ${status!.logCount}
+- Latency: ${status!.latencyMs} ms
+- Generated at: ${new Date().toISOString()}`,
+          requestId,
+        }),
+      });
+      const result = await response.json();
+      if (result.status === 'success') {
+        toast.success('Status report email sent!');
+      } else {
+        toast.error(`Failed to send email: ${result.message}`);
+      }
+    } catch (err) {
+      console.error('Failed to send status email:', err);
+      toast.error('Failed to send status email');
+    }
+  };
+  sendStatusEmail();
   if (!status) return <p>Loading DB status...</p>;
 
   const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
