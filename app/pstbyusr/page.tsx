@@ -97,7 +97,7 @@ export default function BlogViewer() {
           </option>
         ))}
       </select>
-      <style jsx>{`
+      <style>{`
         .spinner {
           border: 4px solid #71277aff;
           border-top: 4px solid #3498db;

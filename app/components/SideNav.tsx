@@ -236,7 +236,7 @@ export default function SideNav() {
     for (const t of targets) {
       try {
         (router as any).prefetch?.(t);
-      } catch (e) {
+      } catch {
         // prefetch not supported in this environment; safe to ignore
       }
     }
@@ -245,7 +245,7 @@ export default function SideNav() {
   const handleHoverPrefetch = (href: string) => {
     try {
       (router as any).prefetch?.(href);
-    } catch (e) {
+    } catch {
       // ignore prefetch errors
     }
   };

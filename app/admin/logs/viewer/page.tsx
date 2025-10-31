@@ -27,11 +27,7 @@ export default function LogViewerPage() {
   const [from, setFrom] = useState<string>('');
   const [to, setTo] = useState<string>('');
 
-  useEffect(() => {
-    fetchPage();
-  }, [page, pageSize]);
-
-  async function fetchPage() {
+  const fetchPage = React.useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
     params.set('page', String(page));
@@ -56,7 +52,11 @@ export default function LogViewerPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [page, pageSize, severity, source, message, requestId, from, to]);
+
+  useEffect(() => {
+    fetchPage();
+  }, [fetchPage]);
 
   function onFilterApply() {
     setPage(1);
