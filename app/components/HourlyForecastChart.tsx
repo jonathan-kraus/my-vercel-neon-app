@@ -35,7 +35,13 @@ export default function HourlyForecastChart() {
     fetch();
   }, []);
 
-  if (!data.length) return <p>Loading chart...</p>;
+  if (!data.length)
+    return (
+      <div className="flex items-center justify-center py-8">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+        <span className="ml-2 text-gray-600">Loading chart...</span>
+      </div>
+    );
 
   const chartData = {
     labels: data.map((d) => new Date(d.time).toLocaleTimeString()),
