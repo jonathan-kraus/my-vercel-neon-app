@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import toast from 'react-hot-toast';
+import { showCookieSummaryToast } from './ToastSpinner';
 type NavItemProps =
   | { href: string; label: string; currentPath?: string; onHoverPrefetch?: (href: string) => void }
   | { onClick: () => void; label: string };
@@ -282,28 +282,7 @@ export default function SideNav() {
       .filter(Boolean);
 
     const summary = safePairs.length > 0 ? safePairs.join('\n') : 'No readable cookies found.';
-
-    toast.custom((t) => (
-      <div
-        className={`bg-blue-950 text-yellow-300 p-4 rounded shadow max-w-md whitespace-pre-line ${
-          t.visible ? 'animate-enter' : 'animate-leave'
-        }`}
-      >
-        <div className="flex justify-between items-start gap-4">
-          <div>
-            <strong className="block mb-2">Cookie summary</strong>
-            <pre className="text-sm">{summary}</pre>
-          </div>
-          <button
-            onClick={() => toast.dismiss(t.id)}
-            className="text-yellow-300 hover:text-yellow-500 text-xl font-bold"
-            title="Dismiss"
-          >
-            ×
-          </button>
-        </div>
-      </div>
-    ));
+    showCookieSummaryToast(summary);
   };
 
   return (
