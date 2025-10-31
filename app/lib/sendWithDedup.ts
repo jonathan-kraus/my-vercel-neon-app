@@ -2,7 +2,7 @@ import { db } from './db';
 
 export type SendWithDedupOptions = {
   source: string; // module name
-  message: string; // human message for the log
+  message: string | number | Record<string, unknown>; // human message for the log
   requestId?: string;
   throttleMinutes?: number; // minutes to suppress duplicate sends
   sendFn: () => Promise<unknown>; // function that actually sends the email
@@ -20,6 +20,51 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
 
   const now = new Date();
 
+  function safeSerialize(obj: unknown) {
+    // If it's an Error, capture useful fields.
+    if (obj instanceof Error) {
+      const errorObj: any = { name: obj.name, message: obj.message, stack: obj.stack };
+      // Add additional diagnostics if available
+      if ('code' in obj && obj.code) errorObj.code = obj.code;
+      if ('status' in obj && obj.status) errorObj.status = obj.status;
+      if ('statusText' in obj && obj.statusText) errorObj.statusText = obj.statusText;
+      if ('response' in obj && obj.response) {
+        // For HTTP errors (e.g., from axios or similar), serialize the response
+        try {
+          errorObj.response = safeSerialize(obj.response);
+        } catch {
+          errorObj.response = '[Error serializing response]';
+        }
+      }
+      return errorObj;
+    }
+
+    // Try JSON-safe serialization with circular protection.
+    const seen = new Set<any>();
+    try {
+      return JSON.parse(
+        JSON.stringify(obj, (_key, value) => {
+          if (typeof value === 'bigint') return String(value);
+          if (typeof value === 'function') return `[Function: ${value.name || 'anonymous'}]`;
+          if (value && typeof value === 'object') {
+            if (seen.has(value)) return '[Circular]';
+            seen.add(value);
+          }
+          return value;
+        })
+      );
+    } catch {
+      // Fallback to string representation
+      try {
+        return String(obj);
+      } catch {
+        return '[Unserializable]';
+      }
+    }
+  }
+
+  const safeMessage = String(message);
+
   try {
     // Find the most recent 'email sent' log for this source and message
     const recent = await db.log.findFirst({
@@ -32,11 +77,13 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
     });
 
     const minutesSince = recent ? (now.getTime() - recent.timestamp.getTime()) / 60000 : Infinity;
-    console.log(`[${requestId}] [sendWithDedup] Minutes since last "${message}": ${minutesSince}`);
-    const isNew = message.includes('New Post Created'); // allow immediate send for new post emails
+    console.log(
+      `[${requestId}] [sendWithDedup] Minutes since last "${safeMessage}": ${minutesSince}`
+    );
+    const isNew = safeMessage.includes('New Post Created'); // allow immediate send for new post emails
     if (!isNew && minutesSince < effectiveThrottle) {
       // Suppress
-      const suppressedMessage = `Email suppressed: ${message}
+      const suppressedMessage = `Email suppressed: ${safeMessage}
       (last sent ${Math.round(minutesSince)} minutes ago
         throttle: ${effectiveThrottle} mins)`;
       await db.log.create({
@@ -57,7 +104,7 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
     await sendFn();
 
     // record sent
-    const sentMessage = `${message} - email sent`;
+    const sentMessage = `${safeMessage} - email sent`;
     await db.log.create({
       data: {
         severity: 'info',
@@ -77,9 +124,9 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
         data: {
           severity: 'error',
           source,
-          message: `Email send failure: ${message}`,
+          message: `Email send failure: ${safeMessage}`,
           requestId,
-          metadata: { action: 'error', error: (err as Error)?.message ?? String(err) },
+          metadata: { action: 'error', error: safeSerialize(err) },
           timestamp: new Date(),
         },
       });
@@ -88,6 +135,6 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
       console.error('Failed to write error log for sendWithDedup:', logErr);
     }
 
-    return { sent: false, reason: 'error', error: (err as Error)?.message ?? String(err) };
+    return { sent: false, reason: 'error', error: safeSerialize(err) };
   }
 }

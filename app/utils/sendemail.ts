@@ -76,11 +76,11 @@ export async function sendEmailDirect(
   toEmail: string,
   toName: string,
   requestId?: string,
-  subject?: string,
-  message?: string
+  subject?: string | number | Record<string, unknown>,
+  message?: string | number | Record<string, unknown>
 ) {
   const recipients = [new Recipient(toEmail, toName)];
-  const finalSubject = subject || `Mail Success Confirmation - ${toName}`;
+  const finalSubject = subject ? String(subject) : `Mail Success Confirmation - ${toName}`;
   console.log(`[sendemail] sendEmailDirect triggered for ${toEmail} with requestId: ${requestId}`);
   const emailParams = new EmailParams()
     .setFrom(sentFrom)
@@ -88,7 +88,9 @@ export async function sendEmailDirect(
     .setReplyTo(sentFrom)
     .setSubject(finalSubject)
     .setText(`Sent from utils ${toName} app`)
-    .setHtml(`<strong>Sent from utils ${toName} app ${message}</strong> ${requestId}`);
+    .setHtml(
+      `<strong>Sent from utils ${toName} app ${String(message ?? '')}</strong> ${requestId}`
+    );
 
   const sendFn = async () => {
     await mailerSend.email.send(emailParams);
