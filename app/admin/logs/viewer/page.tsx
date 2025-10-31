@@ -59,18 +59,29 @@ export default function LogViewerPage() {
   }, [fetchPage]);
 
   function onFilterApply() {
+    // trigger the page reset — useEffect will call fetchPage()
     setPage(1);
-    fetchPage();
   }
 
-  // Function to highlight search terms in text
+  // Function to highlight search terms in text (HTML-escaped to avoid XSS)
   function highlightText(text: string, searchTerms: string[]): string {
-    if (!searchTerms.length || !text) return text;
+    if (!text) return '';
 
-    let highlightedText = text;
+    const escapeHtml = (unsafe: string) =>
+      unsafe
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+
+    const escaped = escapeHtml(text);
+    if (!searchTerms.length) return escaped;
+
+    let highlightedText = escaped;
     searchTerms.forEach((term) => {
       if (!term.trim()) return;
-      const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')})`, 'gi');
       highlightedText = highlightedText.replace(
         regex,
         '<mark class="bg-yellow-200 text-black px-1 rounded">$1</mark>'
@@ -142,8 +153,8 @@ export default function LogViewerPage() {
               setRequestId('');
               setFrom('');
               setTo('');
+              // reset to first page; useEffect will trigger fetch
               setPage(1);
-              fetchPage();
             }}
             className="btn"
           >
@@ -172,7 +183,30 @@ export default function LogViewerPage() {
             {loading ? (
               <tr>
                 <td colSpan={6} className="p-4">
-                  Loading…
+                  <div className="flex items-center gap-2">
+                    <svg
+                      className="animate-spin h-5 w-5 text-gray-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      aria-hidden
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      />
+                    </svg>
+                    <span>Loading…</span>
+                  </div>
                 </td>
               </tr>
             ) : items.length === 0 ? (
