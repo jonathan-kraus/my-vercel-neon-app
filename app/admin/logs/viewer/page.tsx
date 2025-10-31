@@ -63,6 +63,26 @@ export default function LogViewerPage() {
     fetchPage();
   }
 
+  // Function to highlight search terms in text
+  function highlightText(text: string, searchTerms: string[]): string {
+    if (!searchTerms.length || !text) return text;
+
+    let highlightedText = text;
+    searchTerms.forEach((term) => {
+      if (!term.trim()) return;
+      const regex = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      highlightedText = highlightedText.replace(
+        regex,
+        '<mark class="bg-yellow-200 text-black px-1 rounded">$1</mark>'
+      );
+    });
+
+    return highlightedText;
+  }
+
+  // Get active search terms (excluding requestId as requested)
+  const searchTerms = [severity, source, message].filter((term) => term.trim());
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Log Viewer</h1>
@@ -165,10 +185,21 @@ export default function LogViewerPage() {
               items.map((it) => (
                 <tr key={it.id} className="border-t">
                   <td className="p-2 align-top">{new Date(it.timestamp).toLocaleString()}</td>
-                  <td className="p-2 align-top">{it.severity}</td>
-                  <td className="p-2 align-top">{it.source}</td>
                   <td className="p-2 align-top">
-                    <pre className="whitespace-pre-wrap">{it.message}</pre>
+                    <span
+                      dangerouslySetInnerHTML={{ __html: highlightText(it.severity, searchTerms) }}
+                    />
+                  </td>
+                  <td className="p-2 align-top">
+                    <span
+                      dangerouslySetInnerHTML={{ __html: highlightText(it.source, searchTerms) }}
+                    />
+                  </td>
+                  <td className="p-2 align-top">
+                    <pre
+                      className="whitespace-pre-wrap"
+                      dangerouslySetInnerHTML={{ __html: highlightText(it.message, searchTerms) }}
+                    />
                   </td>
                   <td className="p-2 align-top">{it.requestId}</td>
                   <td className="p-2 align-top">
