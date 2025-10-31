@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
-import { logger } from '../lib/logger';
 type NavItemProps =
   | { href: string; label: string; currentPath?: string; onHoverPrefetch?: (href: string) => void }
   | { onClick: () => void; label: string };
@@ -42,11 +41,6 @@ export function NavItem(props: NavItemProps) {
     </button>
   );
 }
-
-const baseUrl =
-  typeof window !== 'undefined'
-    ? ''
-    : process.env.NEXT_PUBLIC_SITE_URL || 'https://www.kraus.my.id';
 
 const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 const calllog = async (message: string) => {

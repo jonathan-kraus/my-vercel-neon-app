@@ -20,20 +20,20 @@ export default function CreatePostForm() {
         queueMicrotask(() => setAuthorizedUser(name));
       }
     }
-  }, []);
 
-  // fallback: try /api/me (server session) to get user if cookies are HttpOnly
-  (async () => {
-    try {
-      const res = await fetch('/api/me');
-      if (res.ok) {
-        const json = await res.json();
-        if (json?.username) setAuthorizedUser(json.username);
+    // fallback: try /api/me (server session) to get user if cookies are HttpOnly
+    (async () => {
+      try {
+        const res = await fetch('/api/me');
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.username) setAuthorizedUser(json.username);
+        }
+      } catch {
+        // ignore
       }
-    } catch {
-      // ignore
-    }
-  })();
+    })();
+  }, []);
 
   // show toast when server indicates success (either via query param or helper cookie)
   useEffect(() => {

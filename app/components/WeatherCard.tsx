@@ -48,6 +48,19 @@ export default function WeatherCard() {
     }
   };
 
+  const fetchDailyForecast = async () => {
+    try {
+      const res = await fetch('/api/getDailyForecast');
+      if (!res.ok) throw new Error('Forecast API failed');
+      const { forecast, requestId: forecastRequestId } = await res.json();
+
+      console.log(`[WeatherCard] Forecast received [${forecastRequestId}]:`, forecast);
+      //setForecast(forecast); // assuming you have a state for this
+    } catch (err) {
+      console.error(`[WeatherCard] ❌ Forecast fetch error:`, err);
+    }
+  };
+
   console.log(`[WeatherCard] [${requestId}] WeatherCard rendered`);
 
   useEffect(() => {
@@ -64,18 +77,7 @@ export default function WeatherCard() {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
-  const fetchDailyForecast = async () => {
-    try {
-      const res = await fetch('/api/getDailyForecast');
-      if (!res.ok) throw new Error('Forecast API failed');
-      const { forecast, requestId } = await res.json();
 
-      console.log(`[WeatherCard] Forecast received [${requestId}]:`, forecast);
-      //setForecast(forecast); // assuming you have a state for this
-    } catch (err) {
-      console.error(`[WeatherCard] ❌ Forecast fetch error:`, err);
-    }
-  };
   useEffect(() => {
     const fetchForecast = async () => {
       const data = await fetchDailyForecast();
