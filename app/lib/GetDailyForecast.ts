@@ -78,7 +78,10 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
     console.error(`[Email failed: ${requestId}]`, err);
   }
 
-  console.log(`[GetDailyForecast] [${requestId}] Forecast response:`, data);
+  console.log(
+    `[GetDailyForecast] [${requestId}] Forecast response:`,
+    JSON.stringify(data, null, 2)
+  );
   const daily: RawDailyEntry[] = data.timelines?.daily;
 
   console.log(
