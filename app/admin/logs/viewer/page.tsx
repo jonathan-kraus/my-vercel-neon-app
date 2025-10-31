@@ -15,7 +15,7 @@ type LogItem = {
 export default function LogViewerPage() {
   const [items, setItems] = useState<LogItem[]>([]);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(25);
+  const [pageSize, setPageSize] = useState(75);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -271,10 +271,10 @@ export default function LogViewerPage() {
           }}
           className="input"
         >
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
+          <option value="75">75</option>
+          <option value="125">125</option>
+          <option value="250">250</option>
+          <option value="500">500</option>
         </select>
         <div className="text-sm text-muted">
           Showing {(page - 1) * pageSize + 1} - {Math.min(page * pageSize, total)}

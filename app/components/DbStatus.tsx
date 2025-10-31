@@ -40,7 +40,7 @@ export default function DbStatus() {
             severity: 'info',
             source: 'DbStatus',
             message: 'Retrieving database status',
-            requestId: requestId, // or generate dynamically
+            requestId: requestId,
             metadata: { userAction: 'fetch' },
           }),
         });
@@ -110,7 +110,6 @@ export default function DbStatus() {
       </p>
       <button onClick={notify}>Make me a toast!</button>
       <Toaster />
-      {/* ✅ Tailwind test block */}
     </div>
   );
 }
