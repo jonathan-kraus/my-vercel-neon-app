@@ -17,7 +17,6 @@
     "security": "pnpm audit",
     "type-check": "tsc --noEmit",
     "start": "next start",
-    "audit": "node scripts/audit.js > logs/audit.log",
     "lint": "eslint .",
     "postinstall": "prisma generate",
     "prepare": "husky install"
