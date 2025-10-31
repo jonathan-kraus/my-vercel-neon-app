@@ -24,6 +24,9 @@ export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
 
   useEffect(() => {
+    // Skip logging during build to prevent errors
+    if (process.env.NEXT_PHASE === 'phase-production-build') return;
+
     const requestId = crypto.randomUUID();
 
     const logEvent = async () => {

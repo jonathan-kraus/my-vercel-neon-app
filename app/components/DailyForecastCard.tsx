@@ -57,6 +57,9 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
     forecast.map((f) => f.conditions)
   );
   useEffect(() => {
+    // Skip logging during build to prevent errors
+    if (process.env.NEXT_PHASE === 'phase-production-build') return;
+
     const logEvent = async () => {
       try {
         await fetch(`/api/log`, {

@@ -44,8 +44,11 @@ export function NavItem(props: NavItemProps) {
 
 const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
 const calllog = async (message: string) => {
+  // Skip logging during build to prevent errors
+  if (process.env.NEXT_PHASE === 'phase-production-build') return;
+
   try {
-    await fetch(`/api/log`, {
+    await fetch('/api/log', {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
