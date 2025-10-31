@@ -41,7 +41,7 @@ export async function createPost(formData: FormData) {
         'New Post Created',
         requestId,
         `Post: ${post.title}`,
-        `Created by ${authorName}`
+        `Created by ${authorName}\n\n${post.content}`
       );
     } catch (emailErr) {
       console.error('Failed to send post creation email:', emailErr);
