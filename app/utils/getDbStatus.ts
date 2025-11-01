@@ -32,7 +32,7 @@ Latency: ${latencyMs} ms`;
     requestId,
     metadata: { userAction: 'fetch' },
   });
-  await triggerEmail('JDB Status', requestId, `Database Status Update`, message);
+  //await triggerEmail('JDB Status', requestId, `Database Status Update`, message);
 
   console.log(`[getDbStatus] [${requestId}] Database status logged.`);
   return {
