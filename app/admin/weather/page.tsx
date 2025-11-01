@@ -81,14 +81,13 @@ export default function WeatherPage() {
 
   return (
     <div className="space-y-4 animate-fade-in">
-      <h2 className="text-xl font-bold">7-Day Forecast (Email + Logs)</h2>
-
-      <DailyForecastCard forecast={forecast.forecast} />
+      <h2 className="text-xl center font-bold">Weather</h2>
 
       <WeatherCard />
 
       <HourlyForecastChart />
 
+      <DailyForecastCard forecast={forecast.forecast} />
       <SendForecastEmailButton
         forecast={forecast.forecast}
         requestId={requestId}
