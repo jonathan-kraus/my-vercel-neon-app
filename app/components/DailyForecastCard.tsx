@@ -1,93 +1,21 @@
 'use client';
-export const dynamic = 'force-dynamic';
 
-import { useEffect, useMemo } from 'react';
 import type { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 
-const requestId = crypto.randomUUID();
-console.log(`[DailyForecastCard] [${requestId}] DailyForecastCard loaded`);
-
-// const weatherIcons: Record<string, string> = {
-//   rain: '🌧️',
-//   snow: '❄️',
-//   clear: '☀️',
-//   cloudy: '☁️',
-//   fog: '🌫️',
-//   wind: '💨',
-//   thunderstorm: '⛈️',
-//   drizzle: '🌦️',
-//   unknown: '❓',
-// };
-
-const fetchDailyForecast = async () => {
-  try {
-    const res = await fetch('/api/getDailyForecast');
-    if (!res.ok) throw new Error('Forecast API failed');
-    const { forecast, requestId } = await res.json();
-
-    console.log(`[DailyForecastCard] Forecast received [${requestId}]:`, forecast);
-    //setForecast(forecast); // assuming you have a state for this
-  } catch (err) {
-    console.error(`[DailyForecastCard] ❌ Forecast fetch error:`, err);
-  }
+type DailyForecastCardProps = {
+  forecast: DailyForecastPoint[];
 };
 
-export default function DailyForecastCard({ forecast }: { forecast: DailyForecastPoint[] }) {
-  //const [forecast] = useState<DailyForecastPoint[]>([]);
-  const requestId = useMemo(() => crypto.randomUUID(), []);
-
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        console.log(
-          `[DailyForecastCard] [${requestId}] Fetching forecast for ZIP code ${process.env.ZIP_CODE}...`
-        );
-        const data = await fetchDailyForecast();
-        console.log(`[DailyForecastCard] [${requestId}] Forecast data:`, data);
-        //setForecast(data);
-      } catch (err) {
-        console.error(`[DailyForecastCard] [${requestId}] Forecast fetch failed:`, err);
-      }
-    };
-    fetch();
-  }, [requestId]);
-  console.log(
-    `[DailyForecastCard] [${requestId}] Weather codes:`,
-    forecast.map((f) => f.conditions)
-  );
-  useEffect(() => {
-    // Skip logging during build to prevent errors
-    if (process.env.NEXT_PHASE === 'phase-production-build') return;
-
-    const logEvent = async () => {
-      try {
-        await fetch(`/api/log`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            severity: 'info',
-            source: 'DailyForecastCard',
-            message: 'Retrieving daily forecast',
-            requestId: requestId,
-            metadata: { forecast },
-          }),
-        });
-      } catch (error) {
-        console.error(`[${requestId}] Failed to log event:`, error);
-      }
-    };
-
-    logEvent();
-  }, [requestId, forecast]);
-  if (!forecast.length)
+export default function DailyForecastCard({ forecast }: DailyForecastCardProps) {
+  if (!forecast || forecast.length === 0) {
     return (
       <div className="flex items-center justify-center py-8">
         <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
         <span className="ml-2 text-gray-600">Loading daily forecast...</span>
       </div>
     );
+  }
 
   return (
     <div className="space-y-4">
