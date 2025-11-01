@@ -1,32 +1,29 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import type { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
+import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
 
-type ForecastStatusProps = {
+type ForecastResult = {
   forecast: DailyForecastPoint[];
+  maxRainAccumulation: number;
 };
 
-export default function ForecastStatus({ forecast }: ForecastStatusProps) {
+export default function WeatherPage() {
+  const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const emailSentRef = useRef(false);
   const requestIdRef = useRef<string>(crypto.randomUUID());
-
-  const baseUrl =
-    (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
-    'http://localhost:3000';
 
   const logEvent = useCallback(
     async (severity: 'info' | 'error', message: string, metadata: Record<string, any> = {}) => {
       try {
-        await fetch(`${baseUrl}/api/log`, {
+        await fetch('/api/log', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             severity,
-            source: 'ForecastStatus',
+            source: 'WeatherPage',
             message,
             requestId: requestIdRef.current,
             metadata,
@@ -36,20 +33,20 @@ export default function ForecastStatus({ forecast }: ForecastStatusProps) {
         console.error('Failed to log event:', err);
       }
     },
-    [baseUrl]
+    []
   );
 
   const handleSendEmail = useCallback(async () => {
-    if (!forecast || forecast.length === 0) {
+    if (!forecast || forecast.forecast.length === 0) {
       toast.error('Forecast not loaded yet');
       return;
     }
 
     try {
-      await sendForecastEmail(forecast, requestIdRef.current);
+      await sendForecastEmail(forecast.forecast, requestIdRef.current);
       toast.success('Forecast email sent!');
       await logEvent('info', 'Forecast email sent successfully', {
-        forecastLength: forecast.length,
+        forecastLength: forecast.forecast.length,
       });
     } catch (err) {
       console.error('Failed to send forecast email:', err);
@@ -58,22 +55,41 @@ export default function ForecastStatus({ forecast }: ForecastStatusProps) {
     }
   }, [forecast, logEvent]);
 
+  // Fetch forecast on mount
+  useEffect(() => {
+    const fetchForecast = async () => {
+      try {
+        const result = await getDailyForecast(requestIdRef.current);
+        setForecast(result);
+        await logEvent('info', 'Forecast fetched successfully', {
+          forecastLength: result.forecast.length,
+          maxRainAccumulation: result.maxRainAccumulation,
+        });
+      } catch (err) {
+        console.error('Failed to fetch forecast:', err);
+        toast.error('Failed to fetch forecast');
+        await logEvent('error', 'Forecast fetch failed', { error: String(err) });
+      }
+    };
+    fetchForecast();
+  }, [logEvent]);
+
   // Auto-send once after forecast loads
   useEffect(() => {
-    if (forecast && forecast.length > 0 && !emailSentRef.current) {
+    if (forecast && forecast.forecast.length > 0 && !emailSentRef.current) {
       emailSentRef.current = true;
       handleSendEmail();
     }
   }, [forecast, handleSendEmail]);
 
-  if (!forecast || forecast.length === 0) return <p>Loading forecast...</p>;
+  if (!forecast || forecast.forecast.length === 0) return <p>Loading forecast...</p>;
 
   return (
     <div className="space-y-4 animate-fade-in">
       <h2 className="text-xl font-bold">7-Day Forecast (Email + Logs)</h2>
 
       <ul className="space-y-2">
-        {forecast.map((day) => (
+        {forecast.forecast.map((day) => (
           <li key={day.time} className="border p-2 rounded">
             <strong>{new Date(day.time).toLocaleDateString()}</strong> — High: {day.temperatureMax}
             °F, Low: {day.temperatureMin}°F, Rain: {day.rainAccumulationSum} in
