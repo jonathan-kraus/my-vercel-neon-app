@@ -89,7 +89,7 @@ export default function DbStatus() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          toEmail: 'jonathan@kraus.me.id',
+          toEmail: 'jonathan@kraus.my.id',
           toName: 'Jonathan',
           subject: `DbStatus Report - ${new Date().toISOString()}`,
           message: `Database Status Report:
