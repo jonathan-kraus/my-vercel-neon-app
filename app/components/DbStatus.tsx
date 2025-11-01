@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 
@@ -24,6 +24,7 @@ function RegionBadge({ region }: { region: string }) {
 
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
+  const emailSentRef = useRef(false);
 
   const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
 
@@ -116,6 +117,14 @@ export default function DbStatus() {
       toast.error('Failed to send status email');
     }
   };
+
+  // Auto-send once after status loads
+  useEffect(() => {
+    if (status && !emailSentRef.current) {
+      emailSentRef.current = true;
+      sendStatusEmail();
+    }
+  }, [status]);
 
   if (!status) return <p>Loading DB status...</p>;
 
