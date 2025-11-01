@@ -1,5 +1,4 @@
 'use server';
-import { sendConfirmationEmail } from '../utils/email-client';
 
 export type DailyForecastPoint = {
   requestId?: string;
@@ -44,7 +43,7 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
 
   if (!requestId) requestId = 'requestid-not-passed'; //crypto.randomUUID();
   console.log(`[getDailyForecast] [${requestId}] getDailyForecast started`);
-  //const zip = '02445'; // Brookline, MA ZIP code
+
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1d&units=imperial&apikey=${apiKey}`;
 
   const res = await fetch(url);
@@ -59,24 +58,7 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
     console.warn(`[Tomorrow.io] ⚠️ Unexpected response format`, data);
     return { forecast: [], maxRainAccumulation: 0 };
   }
-  try {
-    const emailData = {
-      toEmail: 'jonathanckraus@gmail.com',
-      toName: 'Jonathan',
-      subject: 'Get Daily Forecast Page Clicked',
-      requestId: requestId,
-    };
-    const { success, message } = await sendConfirmationEmail(emailData);
-
-    if (success) {
-      console.log(`[${requestId}] Success! ${message}`);
-    } else {
-      console.log(`[${requestId}] Error: ${message}`);
-    }
-    console.log(`Email sent, GDF ${requestId}`);
-  } catch (err) {
-    console.error(`[Email failed: ${requestId}]`, err);
-  }
+  console.log(`[getDailyForecast] [${requestId}] Data fetched from API:`, data);
 
   console.log(
     `[GetDailyForecast] [${requestId}] Forecast response:`,

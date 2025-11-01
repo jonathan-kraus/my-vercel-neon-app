@@ -70,7 +70,7 @@ export default function DailyForecastCard({ forecast }: { forecast: DailyForecas
             severity: 'info',
             source: 'DailyForecastCard',
             message: 'Retrieving daily forecast',
-            requestId: requestId, // or generate dynamically
+            requestId: requestId,
             metadata: { forecast },
           }),
         });
