@@ -1,7 +1,6 @@
 'use client';
+import { useEffect, useRef, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-
-import { useEffect, useState } from 'react';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 
 type DbStatusType = {
@@ -12,7 +11,9 @@ type DbStatusType = {
   region?: string;
   latencyMs?: number;
 };
+
 console.log('[DbStatus] DbStatus component loaded');
+
 function RegionBadge({ region }: { region: string }) {
   return (
     <span className="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded">
@@ -23,14 +24,18 @@ function RegionBadge({ region }: { region: string }) {
 
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
+  const emailSentRef = useRef(false);
 
+  const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
+
+  // Log event once on mount
   useEffect(() => {
     const requestId = crypto.randomUUID();
-
     const baseUrl =
       (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
       process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
       'https://www.kraus.my.id';
+
     const logEvent = async () => {
       try {
         await fetch(`${baseUrl}/api/log`, {
@@ -40,7 +45,7 @@ export default function DbStatus() {
             severity: 'info',
             source: 'DbStatus',
             message: 'Retrieving database status',
-            requestId: requestId,
+            requestId,
             metadata: { userAction: 'fetch' },
           }),
         });
@@ -52,11 +57,11 @@ export default function DbStatus() {
     logEvent();
   }, []);
 
+  // Fetch DB status
   useEffect(() => {
     const fetchStatus = async () => {
       try {
         const data = await getDbStatus();
-
         const formattedData: DbStatusType = {
           ...data,
           latestPostDate: data.latestPostDate ? data.latestPostDate.toISOString() : null,
@@ -71,8 +76,13 @@ export default function DbStatus() {
     fetchStatus();
   }, []);
 
-  const notify = () => toast('DbStatus toast!');
+  // Email sender
   const sendStatusEmail = async () => {
+    if (!status) {
+      toast.error('Status not loaded yet');
+      return;
+    }
+
     try {
       const requestId = crypto.randomUUID();
       const response = await fetch('/api/send-email', {
@@ -84,34 +94,42 @@ export default function DbStatus() {
           subject: `DbStatus Report - ${new Date().toISOString()}`,
           message: `Database Status Report:
 - Neon Region: ${region}
-- PostgreSQL Version: ${status!.version}
-- Total Posts: ${status!.postCount}
-- Latest Post: ${status!.latestPostDate ? new Date(status!.latestPostDate).toLocaleString() : 'N/A'}
-- Total Logs: ${status!.logCount}
-- Latency: ${status!.latencyMs} ms
+- PostgreSQL Version: ${status.version}
+- Total Posts: ${status.postCount}
+- Latest Post: ${status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
+- Total Logs: ${status.logCount}
+- Latency: ${status.latencyMs} ms
 - Generated at: ${new Date().toISOString()}`,
           requestId,
         }),
       });
-      const result = await response.json();
-      if (result.status === 'success') {
-        toast.success('Status report email sent!');
-      } else {
-        toast.error(`Failed to send email: ${result.message}`);
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP ${response.status}: ${text}`);
       }
+
+      const result = await response.json();
+      toast.success('Status report email sent!');
+      console.log('Email API result:', result);
     } catch (err) {
       console.error('Failed to send status email:', err);
       toast.error('Failed to send status email');
     }
   };
-  sendStatusEmail();
+
+  // Auto-send once after status loads
+  useEffect(() => {
+    if (status && !emailSentRef.current) {
+      emailSentRef.current = true;
+      sendStatusEmail();
+    }
+  }, [status]);
+
   if (!status) return <p>Loading DB status...</p>;
 
-  const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
-
-  console.log('region:', region);
   return (
-    <div className={'space-y-4 animate-fade-in delay-[index * 100]'}>
+    <div className="space-y-4 animate-fade-in delay-[index * 100]">
       <h2 className="text-xl font-bold">Database Status</h2>
 
       <p className="flex items-center gap-2">
@@ -140,7 +158,16 @@ export default function DbStatus() {
       <p>
         <strong>Latency:</strong> {status.latencyMs} ms
       </p>
-      <button onClick={notify}>Make me a toast!</button>
+
+      <div className="flex gap-4">
+        <button onClick={() => toast('DbStatus toast!')} className="px-3 py-1 bg-gray-200 rounded">
+          Make me a toast!
+        </button>
+        <button onClick={sendStatusEmail} className="px-3 py-1 bg-blue-500 text-white rounded">
+          Send Status Email
+        </button>
+      </div>
+
       <Toaster />
     </div>
   );
