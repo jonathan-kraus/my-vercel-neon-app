@@ -6,6 +6,8 @@ import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast
 import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
 import DailyForecastCard from '@/app/components/DailyForecastCard';
 import SendForecastEmailButton from '@/app/components/SendForecastEmailButton';
+import WeatherCard from '@/app/components/WeatherCard';
+import HourlyForecastChart from '@/app/components/HourlyForecastChart';
 
 type ForecastResult = {
   forecast: DailyForecastPoint[];
@@ -82,6 +84,10 @@ export default function WeatherPage() {
       <h2 className="text-xl font-bold">7-Day Forecast (Email + Logs)</h2>
 
       <DailyForecastCard forecast={forecast.forecast} />
+
+      <WeatherCard />
+
+      <HourlyForecastChart />
 
       <SendForecastEmailButton
         forecast={forecast.forecast}
