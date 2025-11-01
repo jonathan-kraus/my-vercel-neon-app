@@ -16,16 +16,6 @@ export default async function AuthorsPage() {
   const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
   try {
     console.log('🚀 [AuthorsPage] Starting logic');
-    await db.log.create({
-      data: {
-        severity,
-        source,
-        message,
-        requestId,
-        metadata: metadata ?? {},
-        timestamp: new Date(),
-      },
-    });
   } catch (err) {
     console.error(`❌ ${requestId} [AuthorsPage] Error caught:`, err);
   }
@@ -36,6 +26,16 @@ export default async function AuthorsPage() {
   if (authors.length === 0) {
     console.log(`[AuthorsPage] No authors found.`);
   } else {
+    await db.log.create({
+      data: {
+        severity,
+        source,
+        message,
+        requestId,
+        metadata: metadata ?? {},
+        timestamp: new Date(),
+      },
+    });
     console.log(`[AuthorsPage] Fetched ${authors.length} authors.`);
   }
   return (
