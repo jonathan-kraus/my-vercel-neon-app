@@ -2,24 +2,20 @@
 
 import { db } from '@/app/lib/db';
 import { logEvent } from '../lib/abslog';
-import { triggerEmail } from '@/app/components/actions';
 
-let start: number;
-let latencyMs: number;
 const prisma = db; // For clarity in this file
 const requestId = crypto.randomUUID();
 export async function getDbStatus() {
   console.log(`[getDbStatus] [${requestId}] Checking database status...`);
 
+  const start = Date.now();
   const [version, postCount, latestPost, logCount] = await Promise.all([
     prisma.$queryRaw`SELECT version()`,
     prisma.post.count({ where: { authorId: { not: 1101 } } }),
     prisma.post.findFirst({ orderBy: { createdAt: 'desc' } }),
     prisma.log.count(),
-    (start = Date.now()),
-    prisma.$queryRaw`SELECT 1`,
-    (latencyMs = Date.now() - start),
   ]);
+  const latencyMs = Date.now() - start;
   console.log(`[getDbStatus] [${requestId}] Start logging database status...`);
   const message = `Database Version: ${(version as { version: string }[])[0].version}
 Total Posts (excluding authorId 1101): ${postCount}

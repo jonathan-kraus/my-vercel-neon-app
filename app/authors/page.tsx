@@ -33,7 +33,11 @@ export default async function AuthorsPage() {
     orderBy: { name: 'asc' },
     select: { id: true, name: true, _count: { select: { posts: true } } },
   });
-
+  if (authors.length === 0) {
+    console.log(`[AuthorsPage] No authors found.`);
+  } else {
+    console.log(`[AuthorsPage] Fetched ${authors.length} authors.`);
+  }
   return (
     <div className="max-w-xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Authors</h1>
