@@ -98,7 +98,7 @@ export default function DbStatus() {
 - Neon Region: ${region}
 - PostgreSQL Version: ${status.version}
 - Total Posts: ${status.postCount}
-- Latest Post: ${status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
+- Latest Post Date: ${status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
 - Latest Post Title: ${status.latestPostTitle}
 - Latest Post Content: ${status.latestPostContent}
 - Total Logs: ${status.logCount}
