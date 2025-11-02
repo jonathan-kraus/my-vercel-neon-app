@@ -1,3 +1,4 @@
+//app/admin/weather/page.tsx
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -8,7 +9,10 @@ import DailyForecastCard from '@/app/components/DailyForecastCard';
 import SendForecastEmailButton from '@/app/components/SendForecastEmailButton';
 import WeatherCard from '@/app/components/WeatherCard';
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
+import { logInfoFactory, logErrorFactory } from '@/app/utils/logger';
 
+const logInfo = logInfoFactory('app/admin/weather/page.tsx');
+const logError = logErrorFactory('app/admin/weather/page.tsx');
 type ForecastResult = {
   forecast: DailyForecastPoint[];
   maxRainAccumulation: number;
@@ -19,45 +23,21 @@ export default function WeatherPage() {
   const [requestId] = useState<string>(crypto.randomUUID());
   const emailSentRef = useRef(false);
 
-  const logEvent = useCallback(
-    async (severity: 'info' | 'error', message: string, metadata: Record<string, any> = {}) => {
-      try {
-        await fetch('/api/log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            severity,
-            source: 'WeatherPage',
-            message,
-            requestId,
-            metadata,
-          }),
-        });
-      } catch (err) {
-        console.error('Failed to log event:', err);
-      }
-    },
-    [requestId]
-  );
-
   // Fetch forecast on mount
   useEffect(() => {
     const fetchForecast = async () => {
       try {
         const result = await getDailyForecast(requestId);
         setForecast(result);
-        await logEvent('info', 'Forecast fetched successfully', {
-          forecastLength: result.forecast.length,
-          maxRainAccumulation: result.maxRainAccumulation,
-        });
+        logInfo('Fetched forecast', { forecastLength: result.forecast.length });
       } catch (err) {
         console.error('Failed to fetch forecast:', err);
         toast.error('Failed to fetch forecast');
-        await logEvent('error', 'Forecast fetch failed', { error: String(err) });
+        await logError('Forecast fetch failed');
       }
     };
     fetchForecast();
-  }, [logEvent, requestId]);
+  }, [logInfo, requestId]);
 
   // Auto-send once after forecast loads
   useEffect(() => {
@@ -66,16 +46,16 @@ export default function WeatherPage() {
       // Auto-send email
       sendForecastEmail(forecast.forecast, requestId)
         .then(() => {
-          logEvent('info', 'Success: Forecast auto send email', {
+          logInfo('Success: Forecast auto send email', {
             forecastLength: forecast.forecast.length,
           });
         })
         .catch((err) => {
           console.error('Failed to send forecast email:', err);
-          logEvent('error', 'Forecast email failed', { error: String(err) });
+          logError('Forecast email failed', { error: String(err) });
         });
     }
-  }, [forecast, requestId, logEvent]);
+  }, [forecast, requestId, logInfo, logError]);
 
   if (!forecast || forecast.forecast.length === 0) return <p>Loading forecast...</p>;
 
@@ -110,11 +90,6 @@ export default function WeatherPage() {
       <HourlyForecastChart />
 
       <DailyForecastCard forecast={forecast.forecast} />
-      <SendForecastEmailButton
-        forecast={forecast.forecast}
-        requestId={requestId}
-        onLog={logEvent}
-      />
     </div>
   );
 }
