@@ -50,6 +50,9 @@ export async function POST(request: Request) {
     }
 
     const { toEmail, toName, subject, message = '', requestId } = parsed.data;
+    // Format message for HTML (convert newlines to <br>)
+    const htmlMessage = message.replace(/\n/g, '<br>');
+
     // Proceed with sending email
     console.log('📨 Sending email to:', toEmail);
     // await mailerSend.email.send(...)
@@ -61,7 +64,9 @@ export async function POST(request: Request) {
       .setReplyTo(sentFrom)
       .setSubject(subject)
       .setText(`Sent from API to ${toName} app message: ${message || ''}  ${requestId || ''}`)
-      .setHtml(`<strong>Sent from API to ${toName} app message: ${message}</strong> ${requestId}`);
+      .setHtml(
+        `<strong>Sent from API to ${toName} app message:</strong><br>${htmlMessage} ${requestId}`
+      );
 
     console.log('📧 [send-email] Subject:', subject);
 
