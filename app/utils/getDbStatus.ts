@@ -30,6 +30,8 @@ export async function getDbStatus() {
     version: (version as { version: string }[])[0].version,
     postCount,
     latestPostDate: latestPost?.createdAt || null,
+    latestPostTitle: latestPost?.title || 'No Title',
+    latestPostContent: latestPost?.content || 'No Content',
     logCount,
     latencyMs,
   };

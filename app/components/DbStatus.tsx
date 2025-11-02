@@ -7,6 +7,8 @@ type DbStatusType = {
   version: string;
   postCount: number;
   latestPostDate: string | null;
+  latestPostTitle?: string;
+  latestPostContent?: string;
   logCount: number;
   region?: string;
   latencyMs?: number;
@@ -97,6 +99,8 @@ export default function DbStatus() {
 - PostgreSQL Version: ${status.version}
 - Total Posts: ${status.postCount}
 - Latest Post: ${status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
+- Latest Post Title: ${status.latestPostTitle}
+- Latest Post Content: ${status.latestPostContent}
 - Total Logs: ${status.logCount}
 - Latency: ${status.latencyMs} ms
 - Generated at: ${new Date().toISOString()}`,
