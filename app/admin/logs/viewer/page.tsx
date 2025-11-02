@@ -72,6 +72,24 @@ export default function LogViewerPage() {
     // trigger the page reset — useEffect will call fetchPage()
     setPage(1);
   }
+  function SeverityBadge({ severity, searchTerms }: { severity: string; searchTerms: string[] }) {
+    const colors: Record<string, string> = {
+      info: 'bg-blue-100 text-blue-800',
+      warning: 'bg-yellow-100 text-yellow-800',
+      error: 'bg-red-100 text-red-800',
+    };
+    const color = colors[severity] || 'bg-gray-100 text-gray-800';
+
+    // Reuse your highlightText function
+    const highlighted = highlightText(severity, searchTerms);
+
+    return (
+      <span
+        className={`px-2 py-0.5 rounded text-xs font-semibold ${color}`}
+        dangerouslySetInnerHTML={{ __html: highlighted }}
+      />
+    );
+  }
 
   // Function to highlight search terms in text (HTML-escaped to avoid XSS)
   function highlightText(text: string, searchTerms: string[]): string {
@@ -170,7 +188,16 @@ export default function LogViewerPage() {
           >
             Clear
           </button>
-          <button onClick={() => setLive((v) => !v)} className="btn">
+          <button
+            onClick={() => setLive((v) => !v)}
+            className={`x-3 py-1 rounded font-medium transition
+            ${
+              live
+                ? 'bg-red-600 text-white hover:bg-red-700'
+                : 'bg-green-600 text-white hover:bg-green-700'
+            }
+            `}
+          >
             {live ? 'Stop Live' : 'Start Live'}
           </button>
         </div>
@@ -233,10 +260,9 @@ export default function LogViewerPage() {
                 <tr key={it.id} className="border-t">
                   <td className="p-2 align-top">{new Date(it.timestamp).toLocaleString()}</td>
                   <td className="p-2 align-top">
-                    <span
-                      dangerouslySetInnerHTML={{ __html: highlightText(it.severity, searchTerms) }}
-                    />
+                    <SeverityBadge severity={it.severity} searchTerms={searchTerms} />
                   </td>
+
                   <td className="p-2 align-top">
                     <span
                       dangerouslySetInnerHTML={{ __html: highlightText(it.source, searchTerms) }}
