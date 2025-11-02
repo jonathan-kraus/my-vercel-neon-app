@@ -50,19 +50,6 @@ const config = [
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
-  {
-    files: ['app/admin/logs/viewer/page.tsx'],
-    rules: {
-      'react-hooks/exhaustive-deps': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-    },
-  },
-  {
-    files: ['middleware.ts'],
-    rules: {
-      '@typescript-eslint/no-unused-vars': 'off',
-    },
-  },
 ];
 
 export default config;

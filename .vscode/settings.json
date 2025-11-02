@@ -1,0 +1,13 @@
+{
+  "eslint.options": {
+    "overrideConfigFile": "eslint.config.mjs"
+  },
+  "eslint.workingDirectories": ["."],
+  "eslint.codeAction.disableRuleComment": {
+    "enable": true,
+    "location": "separateLine"
+  },
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  }
+}

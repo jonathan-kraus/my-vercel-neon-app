@@ -4,6 +4,7 @@ import type { NextRequest } from 'next/server';
 import { v7 as uuidv7 } from 'uuid';
 
 export function middleware(req: NextRequest) {
+  // eslint-disable-line @typescript-eslint/no-unused-vars
   const requestId = uuidv7();
 
   // Clone the response so we can attach headers

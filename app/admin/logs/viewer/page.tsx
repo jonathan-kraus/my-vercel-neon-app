@@ -88,7 +88,7 @@ export default function LogViewerPage() {
   useEffect(() => {
     fetchPage();
   }, [fetchPage]);
-  const [newIds, setNewIds] = useState<Set<string>>(new Set());
+  const [newIds, setNewIds] = useState<Set<string>>(new Set()); // eslint-disable-line @typescript-eslint/no-unused-vars
 
   function onFilterApply() {
     // trigger the page reset — useEffect will call fetchPage()
