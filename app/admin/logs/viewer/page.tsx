@@ -60,13 +60,12 @@ export default function LogViewerPage() {
               newItemIds.forEach((id) => copy.delete(id));
               return copy;
             });
-          }, 3000);
+          }, 5000); // increased from 3000 to 5000ms
         }
 
         return data.items || [];
       });
 
-      setItems(data.items || []);
       setTotal(data.total || 0);
     } catch (err) {
       console.error('Failed to load logs', err);
@@ -279,7 +278,14 @@ export default function LogViewerPage() {
               </tr>
             ) : (
               items.map((it) => (
-                <tr key={it.id} className="border-t">
+                <tr
+                  key={it.id}
+                  className={`border-t transition-all duration-500 ${
+                    newIds.has(it.id)
+                      ? 'bg-yellow-200 shadow-md ring-2 ring-yellow-400 animate-pulse'
+                      : ''
+                  }`}
+                >
                   <td className="p-2 align-top">{new Date(it.timestamp).toLocaleString()}</td>
                   <td className="p-2 align-top">
                     <SeverityBadge severity={it.severity} searchTerms={searchTerms} />

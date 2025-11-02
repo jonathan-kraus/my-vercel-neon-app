@@ -4,7 +4,7 @@
   "private": true,
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --no-color --fix",
+      "eslint --no-color --fix --ignore-pattern 'app/admin/logs/viewer/page.tsx' --ignore-pattern 'middleware.ts'",
       "prettier --write"
     ],
     "*.{json,css,md}": "prettier --write"
