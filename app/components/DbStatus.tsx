@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 
@@ -77,7 +77,7 @@ export default function DbStatus() {
   }, []);
 
   // Email sender
-  const sendStatusEmail = async () => {
+  const sendStatusEmail = useCallback(async () => {
     if (!status) {
       toast.error('Status not loaded yet');
       return;
@@ -116,7 +116,7 @@ export default function DbStatus() {
       console.error('Failed to send status email:', err);
       toast.error('Failed to send status email');
     }
-  };
+  }, [status, region]);
 
   // Auto-send once after status loads
   useEffect(() => {
@@ -124,7 +124,7 @@ export default function DbStatus() {
       emailSentRef.current = true;
       sendStatusEmail();
     }
-  }, [status]);
+  }, [status, sendStatusEmail]);
 
   if (!status) return <p>Loading DB status...</p>;
 

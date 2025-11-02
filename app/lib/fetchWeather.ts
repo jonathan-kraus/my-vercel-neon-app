@@ -1,4 +1,3 @@
-//import { PrismaClient } from '@prisma/client';
 import { db } from './db';
 import { triggerEmail } from '@/app/components/actions';
 
@@ -7,13 +6,9 @@ export async function fetchWeather(requestId?: string) {
   if (!requestId) requestId = 'requestid-not-passed'; //crypto.randomUUID()
   console.log(`[fetchWeather] [${requestId}] Server function started`);
 
-  //const prisma = new PrismaClient();
-
   const apiKey = process.env.TOMORROW_API_KEY;
   requestId = requestId ?? 'no-request-id';
   if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
-  //const zip = '02245'; // Brookline, MA ZIP code
-
   //const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=40.10520,-75.41404&units=imperial&apikey=${apiKey}`;
 
@@ -111,20 +106,6 @@ export async function fetchWeather(requestId?: string) {
           precipitationProbability: values.precipitationProbability,
           weatherCode: values.weatherCode,
           emailSent: true,
-          requestId, // 👈 logged here
-        },
-      });
-      console.log(`[${requestId}] 📝 Weather log created in DB`);
-      await db.weatherLog.update({
-        where: { id: 1 },
-        data: {
-          temperature: values.temperature,
-          humidity: values.humidity,
-          windSpeed: values.windSpeed,
-          windGust: values.windGust,
-          precipitationProbability: values.precipitationProbability,
-          weatherCode: values.weatherCode,
-          createdAt: now,
           requestId, // 👈 logged here
         },
       });
