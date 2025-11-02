@@ -47,21 +47,24 @@ export default function LogViewerPage() {
       const data = await res.json();
 
       // detect new IDs compared to current items
-      const newItemIds: string[] = data.items
-        .filter((it: LogItem) => !items.find((old) => old.id === it.id))
-        .map((it: LogItem) => it.id);
+      setItems((prev) => {
+        const newItemIds: string[] = data.items
+          .filter((it: LogItem) => !prev.find((old) => old.id === it.id))
+          .map((it: LogItem) => it.id);
 
-      if (newItemIds.length > 0) {
-        setNewIds((prev) => new Set([...prev, ...newItemIds]));
-        // clear highlight after 3s
-        setTimeout(() => {
-          setNewIds((prev) => {
-            const copy = new Set(prev);
-            newItemIds.forEach((id) => copy.delete(id));
-            return copy;
-          });
-        }, 3000);
-      }
+        if (newItemIds.length > 0) {
+          setNewIds((prevIds) => new Set([...prevIds, ...newItemIds]));
+          setTimeout(() => {
+            setNewIds((prevIds) => {
+              const copy = new Set(prevIds);
+              newItemIds.forEach((id) => copy.delete(id));
+              return copy;
+            });
+          }, 3000);
+        }
+
+        return data.items || [];
+      });
 
       setItems(data.items || []);
       setTotal(data.total || 0);

@@ -3,6 +3,8 @@ import nextConfig from 'eslint-config-next';
 import parser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 
+// ESLint configuration updated to disable specific rules for problematic files
+
 const config = [
   {
     ignores: [
@@ -14,8 +16,6 @@ const config = [
       'build/**',
       'next-env.d.ts',
       'app/generated/prisma/**',
-      'app/admin/logs/viewer/page.tsx',
-      'middleware.ts',
     ],
   },
   ...nextConfig,
@@ -48,6 +48,19 @@ const config = [
     },
     rules: {
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    },
+  },
+  {
+    files: ['app/admin/logs/viewer/page.tsx'],
+    rules: {
+      'react-hooks/exhaustive-deps': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+  {
+    files: ['middleware.ts'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   },
 ];
