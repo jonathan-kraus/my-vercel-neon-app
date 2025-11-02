@@ -80,6 +80,12 @@ export default function DbStatus() {
 
   // Email sender
   const sendStatusEmail = useCallback(async () => {
+    // Only send emails in browser environment
+    if (typeof window === 'undefined') {
+      console.log('Skipping email send during build/static generation');
+      return;
+    }
+
     if (!status) {
       toast.error('Status not loaded yet');
       return;
@@ -122,9 +128,9 @@ export default function DbStatus() {
     }
   }, [status, region]);
 
-  // Auto-send once after status loads
+  // Auto-send once after status loads (only in browser, not during build)
   useEffect(() => {
-    if (status && !emailSentRef.current) {
+    if (status && !emailSentRef.current && typeof window !== 'undefined') {
       emailSentRef.current = true;
       sendStatusEmail();
     }
