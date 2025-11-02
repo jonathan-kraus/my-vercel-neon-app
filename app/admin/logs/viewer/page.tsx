@@ -45,6 +45,24 @@ export default function LogViewerPage() {
       const res = await fetch(`/api/logs/search?${params.toString()}`);
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
+
+      // detect new IDs compared to current items
+      const newItemIds: string[] = data.items
+        .filter((it: LogItem) => !items.find((old) => old.id === it.id))
+        .map((it: LogItem) => it.id);
+
+      if (newItemIds.length > 0) {
+        setNewIds((prev) => new Set([...prev, ...newItemIds]));
+        // clear highlight after 3s
+        setTimeout(() => {
+          setNewIds((prev) => {
+            const copy = new Set(prev);
+            newItemIds.forEach((id) => copy.delete(id));
+            return copy;
+          });
+        }, 3000);
+      }
+
       setItems(data.items || []);
       setTotal(data.total || 0);
     } catch (err) {
@@ -67,6 +85,7 @@ export default function LogViewerPage() {
   useEffect(() => {
     fetchPage();
   }, [fetchPage]);
+  const [newIds, setNewIds] = useState<Set<string>>(new Set());
 
   function onFilterApply() {
     // trigger the page reset — useEffect will call fetchPage()
