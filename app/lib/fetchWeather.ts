@@ -98,7 +98,7 @@ export async function fetchWeather(requestId?: string) {
 
   console.log(`[${requestId}] Minutes since last email log: ${minutesSinceLast}`);
 
-  if (minutesSinceLast >= 15) {
+  if (minutesSinceLast >= Number(process.env.EMAIL_THROTTLE_MINUTES)) {
     try {
       await triggerEmail('Weather', requestId, location2 ?? 'Weather Location', values.temperature);
       console.log(`[${requestId}] 📧 Weather email triggered`);
