@@ -80,7 +80,19 @@ export async function sendEmailDirect(
   message?: string | number | Record<string, unknown>
 ) {
   const recipients = [new Recipient(toEmail, toName)];
-  const finalSubject = subject ? String(subject) : `Mail Success Confirmation - ${toName}`;
+
+  let finalSubject: string;
+  if (typeof subject === 'string') {
+    finalSubject = subject;
+  } else if (typeof subject === 'number') {
+    finalSubject = subject.toString();
+  } else if (subject && typeof subject === 'object') {
+    // If it's an object, try to extract a meaningful subject
+    finalSubject = `Weather Forecast - ${new Date().toLocaleDateString()}`;
+  } else {
+    finalSubject = `Mail Success Confirmation - ${toName}`;
+  }
+
   console.log(`[sendemail] sendEmailDirect triggered for ${toEmail} with requestId: ${requestId}`);
   const emailParams = new EmailParams()
     .setFrom(sentFrom)
