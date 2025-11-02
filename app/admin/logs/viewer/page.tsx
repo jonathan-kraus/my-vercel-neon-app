@@ -19,6 +19,8 @@ export default function LogViewerPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  const [live, setLive] = useState(false);
+
   // Filters
   const [severity, setSeverity] = useState<string>('');
   const [source, setSource] = useState<string>('');
@@ -53,7 +55,15 @@ export default function LogViewerPage() {
       setLoading(false);
     }
   }, [page, pageSize, severity, source, message, requestId, from, to]);
+  useEffect(() => {
+    if (!live) return;
 
+    const interval = setInterval(() => {
+      fetchPage();
+    }, 11000); // every 11 seconds
+
+    return () => clearInterval(interval);
+  }, [live, fetchPage]);
   useEffect(() => {
     fetchPage();
   }, [fetchPage]);
@@ -159,6 +169,9 @@ export default function LogViewerPage() {
             className="btn"
           >
             Clear
+          </button>
+          <button onClick={() => setLive((v) => !v)} className="btn">
+            {live ? 'Stop Live' : 'Start Live'}
           </button>
         </div>
       </section>
