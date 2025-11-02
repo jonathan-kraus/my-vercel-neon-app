@@ -110,7 +110,7 @@ export default function DbStatus() {
       }
 
       const result = await response.json();
-      toast.success('Status report email sent!');
+      toast.success('Status report email success!');
       console.log('Email API result:', result);
     } catch (err) {
       console.error('Failed to send status email:', err);

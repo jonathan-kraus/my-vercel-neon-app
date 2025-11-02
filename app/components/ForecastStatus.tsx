@@ -45,8 +45,8 @@ export default function ForecastStatus() {
     }
     try {
       await sendForecastEmail(forecast.forecast, requestIdRef.current);
-      toast.success('Forecast email sent!');
-      await logEvent('info', 'Forecast email sent successfully', {
+      toast.success('Forecast email success!');
+      await logEvent('info', 'Success: Forecast auto send email', {
         forecastLength: forecast.forecast.length,
       });
     } catch (err) {

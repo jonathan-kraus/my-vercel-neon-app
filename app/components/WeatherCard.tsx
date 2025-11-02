@@ -38,7 +38,7 @@ export default function WeatherCard() {
       );
 
       if (data.emailSent) {
-        toast.success(`[${data.requestId}] 📧 Weather email sent!`);
+        toast.success(`[${data.requestId}] 📧 Weather email success!`);
       } else {
         toast(`[${data.requestId}] ⏱️ Email already sent today`, { icon: '⏳' });
       }
@@ -158,7 +158,7 @@ export default function WeatherCard() {
 
       {weather.lastEmailTimestamp && (
         <p className="text-sm text-gray-500">
-          📧 Last email sent: {new Date(weather.lastEmailTimestamp).toLocaleString()}
+          📧 Last email: {new Date(weather.lastEmailTimestamp).toLocaleString()}
         </p>
       )}
 
@@ -168,7 +168,7 @@ export default function WeatherCard() {
 
       {weather.emailSent ? (
         <span className="inline-block px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded">
-          Email sent ✅
+          Email success ✅
         </span>
       ) : (
         <span className="inline-block px-2 py-1 text-xs font-semibold bg-yellow-100 text-yellow-800 rounded">

@@ -66,7 +66,7 @@ export default function WeatherPage() {
       // Auto-send email
       sendForecastEmail(forecast.forecast, requestId)
         .then(() => {
-          logEvent('info', 'Forecast email sent successfully', {
+          logEvent('info', 'Success: Forecast auto send email', {
             forecastLength: forecast.forecast.length,
           });
         })

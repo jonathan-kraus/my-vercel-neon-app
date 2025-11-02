@@ -28,8 +28,8 @@ export default function SendForecastEmailButton({
 
     try {
       await sendForecastEmail(forecast, requestId);
-      toast.success('Forecast email sent!');
-      await onLog('info', 'Forecast email sent successfully', {
+      toast.success('Forecast email success!');
+      await onLog('info', 'Success: Forecast auto send email', {
         forecastLength: forecast.length,
       });
     } catch (err) {
