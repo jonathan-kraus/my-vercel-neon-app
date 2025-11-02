@@ -1,3 +1,4 @@
+import { da } from 'zod/v4/locales';
 import { db } from './db';
 import { triggerEmail } from '@/app/components/actions';
 
@@ -42,6 +43,22 @@ export async function fetchWeather(requestId?: string) {
       data2.address?.hamlet ??
       data2.address?.county ??
       'Unknown Location';
+    console.log(
+      `[fetchWeather] [${requestId}] Location data fetched from API: city`,
+      data2.address.city
+    );
+    console.log(
+      `[fetchWeather] [${requestId}] Location data fetched from API: town ${data2.address.town}`
+    );
+    console.log(
+      `[fetchWeather] [${requestId}] Location data fetched from API: village ${data2.address.village}`
+    );
+    console.log(
+      `[fetchWeather] [${requestId}] Location data fetched from API: hamlet ${data2.address.hamlet}`
+    );
+    console.log(
+      `[fetchWeather] [${requestId}] Location data fetched from API: county ${data2.address.county}`
+    );
 
     console.log(
       `[fetchWeather] [${requestId}] Location data fetched from API: locationName ${locationName}`
@@ -72,76 +89,32 @@ export async function fetchWeather(requestId?: string) {
 
   console.log(`[fetchWeather]  Weather data fetched for location2 `);
 
-  const now = new Date();
-
+  // Always send email without throttling
   let emailSent = false;
-  let lastEmailTimestamp: string | null = null;
+  let lastEmailTimestamp = null;
+  const now = new Date();
+  try {
+    await triggerEmail('Weather', requestId, location2 ?? 'Weather Location', values.temperature);
+    console.log(`[${requestId}] 📧 Weather email triggered`);
+    await db.weatherLog.create({
+      data: {
+        temperature: values.temperature,
+        humidity: values.humidity,
+        windSpeed: values.windSpeed,
+        windGust: values.windGust,
+        precipitationProbability: values.precipitationProbability,
+        weatherCode: values.weatherCode,
+        emailSent: true,
+        requestId, // 👈 logged here
+      },
+    });
+    console.log(`[${requestId}] 📝 Weather log with ID 1 updated in DB`);
+    emailSent = true;
+    lastEmailTimestamp = now.toISOString();
 
-  const latestLog = await db.weatherLog.findFirst({
-    where: { emailSent: true },
-    orderBy: { createdAt: 'desc' },
-  });
-
-  // Calculate minutes since the last sent email and enforce a 15-minute throttle
-  const minutesSinceLast = latestLog
-    ? (now.getTime() - latestLog.createdAt.getTime()) / 60000
-    : Infinity;
-
-  if (latestLog) {
-    lastEmailTimestamp = latestLog.createdAt.toISOString();
-  }
-
-  console.log(`[${requestId}] Minutes since last email log: ${minutesSinceLast}`);
-
-  if (minutesSinceLast >= Number(process.env.EMAIL_THROTTLE_MINUTES)) {
-    try {
-      await triggerEmail('Weather', requestId, location2 ?? 'Weather Location', values.temperature);
-      console.log(`[${requestId}] 📧 Weather email triggered`);
-      await db.weatherLog.create({
-        data: {
-          temperature: values.temperature,
-          humidity: values.humidity,
-          windSpeed: values.windSpeed,
-          windGust: values.windGust,
-          precipitationProbability: values.precipitationProbability,
-          weatherCode: values.weatherCode,
-          emailSent: true,
-          requestId, // 👈 logged here
-        },
-      });
-      console.log(`[${requestId}] 📝 Weather log with ID 1 updated in DB`);
-      emailSent = true;
-      lastEmailTimestamp = now.toISOString();
-
-      console.log(`[${requestId}] ✅ Weather email sent and log created`);
-    } catch (err) {
-      console.error(`[${requestId}] ❌ Email failed:`, err);
-    }
-  } else {
-    // Suppress sending when within the throttle window and write a log entry
-    const suppressedMessage = `Email suppressed: last sent ${Math.round(
-      minutesSinceLast
-    )} minutes ago`;
-    const suppressedMetadata = {
-      action: 'throttle',
-      minutesSinceLast: Math.round(minutesSinceLast),
-    };
-    console.log(`[${requestId}] ⏱️ ${suppressedMessage}`);
-    try {
-      await db.log.create({
-        data: {
-          severity: 'info',
-          source: 'fetchWeather',
-          message: suppressedMessage,
-          requestId,
-          metadata: suppressedMetadata ?? {},
-          timestamp: new Date(),
-        },
-      });
-    } catch (err) {
-      // If logging fails, still continue without throwing so callers aren't impacted
-      console.error(`[${requestId}] ❌ Failed to write suppressed-email log:`, err);
-    }
+    console.log(`[${requestId}] ✅ Weather email sent and log created`);
+  } catch (err) {
+    console.error(`[${requestId}] ❌ Email failed:`, err);
   }
 
   return {
