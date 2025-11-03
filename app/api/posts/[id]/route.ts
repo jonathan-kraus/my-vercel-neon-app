@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
-import { logEvent } from '@/app/lib/log';
+import { logInfoFactory } from '@/app/utils/logger';
+const logInfo = logInfoFactory('app/api/posts/[id]/route.ts');
 
 function parseCookies(cookieHeader: string | null): Record<string, string> {
   const cookies: Record<string, string> = {};
@@ -45,15 +46,10 @@ export async function DELETE(req: Request) {
     await db.post.delete({ where: { id } });
 
     try {
-      await logEvent({
-        source: 'Posts API',
-        message: `Post deleted by ${username}: ${requestId}`,
-        requestId,
-        metadata: { userAction: 'delete_post', postId: id },
-      });
+      await logInfo(`Post ${id} deleted by ${username}`, { user: username, postId: id }, requestId);
     } catch (e: unknown) {
-      if (e instanceof Error) console.error('logEvent failed in DELETE /api/posts/[id]', e.message);
-      else console.error('logEvent failed in DELETE /api/posts/[id]', e);
+      if (e instanceof Error) console.error('logInfo failed in DELETE /api/posts/[id]', e.message);
+      else console.error('logInfo failed in DELETE /api/posts/[id]', e);
     }
 
     return NextResponse.json({ success: true }, { status: 200 });

@@ -2,7 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { logEvent } from '@/app/lib/log';
+import { logInfoFactory } from '@/app/utils/logger';
+
+const logInfo = logInfoFactory('app/auth/page.tsx');
 
 export default function AuthPage() {
   const [name, setName] = useState('');
@@ -17,12 +19,11 @@ export default function AuthPage() {
 
     try {
       // non-fatal logging
-      await logEvent({
-        source: 'AuthPage',
-        message: `User login attempted for ${name}`,
-        requestId,
-        metadata: { userAction: 'login' },
-      });
+      await logInfo(
+        `User login attempted for ${name}`,
+        { userAction: 'login', user: name },
+        requestId
+      );
     } catch {
       // ignore logging failures
     }
@@ -49,7 +50,11 @@ export default function AuthPage() {
         // helper cookie with expiry timestamp (ms) for client countdown UI
         const expiresAt = Date.now() + maxAge * 1000;
         document.cookie = `expires_at=${expiresAt}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
-
+        await logInfo(
+          `User login successful for ${name}`,
+          { userAction: 'login', user: name },
+          requestId
+        );
         router.push('/');
       } else {
         setError('Invalid credentials');
