@@ -171,8 +171,14 @@ export default function DbStatus() {
         <strong>Total Posts:</strong> {status.postCount}
       </p>
       <p>
-        <strong>Latest Post:</strong>{' '}
+        <strong>Latest Post Date:</strong>{' '}
         {status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
+      </p>
+      <p>
+        <strong>Latest Post Title:</strong> {status.latestPostTitle}
+      </p>
+      <p>
+        <strong>Latest Post Content:</strong> {status.latestPostContent}
       </p>
       <p>
         <strong>Total Logs:</strong> {status.logCount}
