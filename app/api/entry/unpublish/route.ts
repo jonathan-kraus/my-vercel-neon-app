@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
-import { logger } from '@/app/lib/logger';
+import { logInfoFactory } from '@/app/utils/logger';
+const logInfo = logInfoFactory('app/api/entry/unpublish/route.ts');
 
 export async function POST(req: Request) {
   const cookieStore = await cookies();
@@ -32,23 +33,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing entry ID' }, { status: 400 });
   }
 
-  try {
+  async function GET(req: Request) {
+    const requestId = req.headers.get('x-request-id') ?? undefined;
+
     await db.post.update({
       where: { id: Number(id) },
       data: { published: false },
     });
 
-    await logger({
-      severity: 'info',
-      source: 'entry.unpublish',
-      message: `Entry ${id} marked as unpublished`,
-      requestId: crypto.randomUUID(),
-      metadata: { user: username, entryId: id },
-    });
+    await logInfo(`Entry ${id} marked as unpublished`, { user: username, entryId: id }, requestId);
 
     return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error('Failed to unpublish entry:', err);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }
