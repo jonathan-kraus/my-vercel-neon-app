@@ -13,10 +13,6 @@ type Author = {
 
 export default async function AuthorsPage() {
   toast.success('Authors Connected!');
-  const severity = 'info';
-  const source = 'AuthorsPage';
-  const message = `Authors page accessed`;
-  const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
   try {
     console.log('🚀 [AuthorsPage] Starting logic');
   } catch (err) {
