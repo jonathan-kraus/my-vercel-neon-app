@@ -302,7 +302,22 @@ export default function LogViewerPage() {
                       dangerouslySetInnerHTML={{ __html: highlightText(it.message, searchTerms) }}
                     />
                   </td>
-                  <td className="p-2 align-top">{it.requestId}</td>
+                  <td className="p-2 align-top">
+                    {it.requestId ? (
+                      <button
+                        onClick={() => {
+                          setRequestId(it.requestId!);
+                          setPage(1);
+                        }}
+                        className="text-blue-600 hover:text-blue-800 underline font-mono text-sm"
+                        title={`Click to search for requestId: ${it.requestId}`}
+                      >
+                        {it.requestId}
+                      </button>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
                   <td className="p-2 align-top">
                     <pre className="whitespace-pre-wrap">
                       {JSON.stringify(it.metadata || {}, null, 2)}
