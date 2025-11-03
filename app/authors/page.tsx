@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic';
 import { db } from '../lib/db';
 import PostCountBadge from '../components/PostCountBadge';
 import { logEvent } from '../lib/log';
+import { generateUUID } from '../../uuidj';
 type Author = {
   id: number;
   name: string | null;
@@ -9,7 +10,7 @@ type Author = {
 };
 
 export default async function AuthorsPage() {
-  const requestId = crypto.randomUUID();
+  const requestId = generateUUID();
   let authors: Author[] = [];
   let hasError = false;
   let errorMessage = '';

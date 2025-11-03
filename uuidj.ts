@@ -3,8 +3,13 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { v7 as uuidv7 } from 'uuid';
 
+// Utility function to generate UUIDs for app use
+export function generateUUID(): string {
+  return uuidv7();
+}
+
 export function uuidj(req: NextRequest) {
-  const requestId = uuidv7();
+  const requestId = generateUUID();
 
   // Clone the request and add the header
   const requestHeaders = new Headers(req.headers);
