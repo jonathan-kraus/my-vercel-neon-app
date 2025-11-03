@@ -8,10 +8,6 @@ type Author = {
   name: string | null;
   _count?: { posts: number };
 };
-const currentFile = __filename;
-let result = currentFile.split('.next/server/app')[1];
-result = result.substring(0, result.lastIndexOf('/'));
-console.log('[app/authors] result', result);
 
 export default async function AuthorsPage() {
   const severity = 'info';
@@ -30,19 +26,18 @@ export default async function AuthorsPage() {
   if (authors.length === 0) {
     console.log(`[ AuthorsPage] No authors found.`);
   } else {
-    if (result.includes('auth')) {
-      await db.log.create({
-        data: {
-          severity,
-          source,
-          message,
-          requestId,
-          metadata: metadata ?? {},
-          timestamp: new Date(),
-        },
-      });
-      console.log(`[AuthorsPage] Fetched ${authors.length} authors.`);
-    }
+    // Log access to authors page
+    await db.log.create({
+      data: {
+        severity,
+        source,
+        message,
+        requestId,
+        metadata: metadata ?? {},
+        timestamp: new Date(),
+      },
+    });
+    console.log(`[AuthorsPage] Fetched ${authors.length} authors.`);
     return (
       <div className="max-w-xl mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Authors</h1>
