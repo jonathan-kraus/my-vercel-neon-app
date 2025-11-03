@@ -24,7 +24,7 @@ export default async function AuthorsPage() {
     select: { id: true, name: true, _count: { select: { posts: true } } },
   });
   if (authors.length === 0) {
-    console.log(`[ AuthorsPage] No authors found.`);
+    console.log(`[ AuthorsPage ] No authors found.`);
   } else {
     // Log access to authors page
     await db.log.create({
