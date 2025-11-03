@@ -12,6 +12,13 @@ type DbStatusType = {
   logCount: number;
   region?: string;
   latencyMs?: number;
+  lastActivity?: {
+    activeConnections: number;
+    lastActivity: Date | null;
+    lastVacuum: Date | null;
+    lastAutoVacuum: Date | null;
+    totalOperations: number;
+  };
 };
 
 console.log('[DbStatus] DbStatus component loaded');
@@ -109,6 +116,11 @@ export default function DbStatus() {
 - Latest Post Content: ${status.latestPostContent}
 - Total Logs: ${status.logCount}
 - Latency: ${status.latencyMs} ms
+- Active Connections: ${status.lastActivity?.activeConnections || 0}
+- Last Database Activity: ${status.lastActivity?.lastActivity ? new Date(status.lastActivity.lastActivity).toLocaleString() : 'No recent activity detected'}
+- Last Vacuum: ${status.lastActivity?.lastVacuum ? new Date(status.lastActivity.lastVacuum).toLocaleString() : 'Never'}
+- Last Auto-Vacuum: ${status.lastActivity?.lastAutoVacuum ? new Date(status.lastActivity.lastAutoVacuum).toLocaleString() : 'Never'}
+- Total Table Operations: ${status.lastActivity?.totalOperations || 0}
 - Generated at: ${new Date().toISOString()}`,
           requestId,
         }),
@@ -167,6 +179,30 @@ export default function DbStatus() {
       </p>
       <p>
         <strong>Latency:</strong> {status.latencyMs} ms
+      </p>
+      <p>
+        <strong>Active Connections:</strong> {status.lastActivity?.activeConnections || 0}
+      </p>
+      <p>
+        <strong>Last Database Activity:</strong>{' '}
+        {status.lastActivity?.lastActivity
+          ? new Date(status.lastActivity.lastActivity).toLocaleString()
+          : 'No recent activity detected'}
+      </p>
+      <p>
+        <strong>Last Vacuum:</strong>{' '}
+        {status.lastActivity?.lastVacuum
+          ? new Date(status.lastActivity.lastVacuum).toLocaleString()
+          : 'Never'}
+      </p>
+      <p>
+        <strong>Last Auto-Vacuum:</strong>{' '}
+        {status.lastActivity?.lastAutoVacuum
+          ? new Date(status.lastActivity.lastAutoVacuum).toLocaleString()
+          : 'Never'}
+      </p>
+      <p>
+        <strong>Total Table Operations:</strong> {status.lastActivity?.totalOperations || 0}
       </p>
 
       <div className="flex gap-4">
