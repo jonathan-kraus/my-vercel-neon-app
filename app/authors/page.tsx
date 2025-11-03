@@ -2,7 +2,6 @@ export const dynamic = 'force-dynamic';
 import { db } from '../lib/db';
 import PostCountBadge from '../components/PostCountBadge';
 import { logInfoFactory } from '@/app/utils/logger';
-import toast from 'react-hot-toast';
 const logInfo = logInfoFactory('app/authors/page.tsx');
 const requestId = crypto.randomUUID();
 type Author = {
@@ -12,7 +11,6 @@ type Author = {
 };
 
 export default async function AuthorsPage() {
-  toast.success('Authors Connected!');
   try {
     console.log('🚀 [AuthorsPage] Starting logic');
   } catch (err) {
