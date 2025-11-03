@@ -16,8 +16,7 @@ const config = [
       'build/**',
       'next-env.d.ts',
       'app/generated/prisma/**',
-      'app/admin/logs/viewer/page.tsx',
-      'middleware.ts',
+
     ],
   },
   ...nextConfig,

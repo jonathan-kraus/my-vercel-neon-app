@@ -1,12 +1,11 @@
 //app/admin/weather/page.tsx
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
 import DailyForecastCard from '@/app/components/DailyForecastCard';
-import SendForecastEmailButton from '@/app/components/SendForecastEmailButton';
 import WeatherCard from '@/app/components/WeatherCard';
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
 import { logInfoFactory, logErrorFactory } from '@/app/utils/logger';
@@ -37,7 +36,7 @@ export default function WeatherPage() {
       }
     };
     fetchForecast();
-  }, [logInfo, requestId]);
+  }, [requestId]);
 
   // Auto-send once after forecast loads
   useEffect(() => {
@@ -55,7 +54,7 @@ export default function WeatherPage() {
           logError('Forecast email failed', { error: String(err) });
         });
     }
-  }, [forecast, requestId, logInfo, logError]);
+  }, [forecast, requestId]);
 
   if (!forecast || forecast.forecast.length === 0) return <p>Loading forecast...</p>;
 

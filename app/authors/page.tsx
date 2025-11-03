@@ -1,13 +1,17 @@
 export const dynamic = 'force-dynamic';
 import { db } from '../lib/db';
 import PostCountBadge from '../components/PostCountBadge';
-import router from 'next/router';
+
 const requestId = crypto.randomUUID();
 type Author = {
   id: number;
   name: string | null;
   _count?: { posts: number };
 };
+const currentFile = __filename;
+let result = currentFile.split('.next/server/app')[1];
+result = result.substring(0, result.lastIndexOf('/'));
+console.log('[app/authors] result', result);
 
 export default async function AuthorsPage() {
   const severity = 'info';
@@ -24,9 +28,9 @@ export default async function AuthorsPage() {
     select: { id: true, name: true, _count: { select: { posts: true } } },
   });
   if (authors.length === 0) {
-    console.log(`[AuthorsPage] No authors found.`);
+    console.log(`[ AuthorsPage] No authors found.`);
   } else {
-    if (router.isReady && router.pathname) {
+    if (result.includes('auth')) {
       await db.log.create({
         data: {
           severity,

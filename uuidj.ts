@@ -1,9 +1,9 @@
-// middleware.ts
+// uuidj.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { v7 as uuidv7 } from 'uuid';
 
-export function middleware(req: NextRequest) {
+export function uuidj(req: NextRequest) {
   const requestId = uuidv7();
 
   // Clone the request and add the header
