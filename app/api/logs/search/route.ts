@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { logInfoFactory } from '@/app/utils/logger';
+import { db } from '@/app/lib/db';
+import { generateUUID } from '@/uuidj';
+const logInfo = logInfoFactory('app/api/logs/search/route');
 
-const prisma = new PrismaClient();
+(logInfo('Initialized log search route'),
+  { action: 'init', timestamp: new Date().toISOString() },
+  generateUUID());
 
 export async function GET(req: Request) {
   try {
@@ -38,13 +43,13 @@ export async function GET(req: Request) {
     const skip = (page - 1) * pageSize;
 
     const [items, total] = await Promise.all([
-      prisma.log.findMany({
+      db.log.findMany({
         where,
         orderBy: { timestamp: 'desc' },
         skip,
         take: pageSize,
       }),
-      prisma.log.count({ where }),
+      db.log.count({ where }),
     ]);
 
     return NextResponse.json({ items, total, page, pageSize });
