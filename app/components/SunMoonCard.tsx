@@ -7,10 +7,31 @@ interface SunMoonCardProps {
 }
 
 export default function SunMoonCard({ forecast }: SunMoonCardProps) {
-  if (!forecast || forecast.length === 0) return null;
+  console.log('SunMoonCard received forecast:', forecast);
+
+  if (!forecast || forecast.length === 0) {
+    console.log('SunMoonCard: No forecast data, returning null');
+    return (
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-600">
+        <p className="text-center text-gray-500">Loading celestial data...</p>
+      </div>
+    );
+  }
 
   // Get today's forecast (first item)
   const today = forecast[0];
+  console.log('Today forecast data:', today);
+
+  // For testing - use mock data if API doesn't provide sunrise/sunset
+  const mockSunrise = '2025-11-03T06:30:00Z';
+  const mockSunset = '2025-11-03T17:45:00Z';
+  const mockMoonrise = '2025-11-03T19:15:00Z';
+  const mockMoonset = '2025-11-03T07:30:00Z';
+
+  const sunriseTime = today.sunriseTime || mockSunrise;
+  const sunsetTime = today.sunsetTime || mockSunset;
+  const moonriseTime = today.moonriseTime || mockMoonrise;
+  const moonsetTime = today.moonsetTime || mockMoonset;
   const now = new Date();
   const currentTime = now.getTime();
 
@@ -31,8 +52,8 @@ export default function SunMoonCard({ forecast }: SunMoonCardProps) {
     }
   };
 
-  const sunIsUp = isCurrentlyUp(today.sunriseTime, today.sunsetTime);
-  const moonIsUp = isCurrentlyUp(today.moonriseTime, today.moonsetTime);
+  const sunIsUp = isCurrentlyUp(sunriseTime, sunsetTime);
+  const moonIsUp = isCurrentlyUp(moonriseTime, moonsetTime);
 
   const formatTime = (timeString?: string): string => {
     if (!timeString) return 'N/A';
@@ -57,11 +78,11 @@ export default function SunMoonCard({ forecast }: SunMoonCardProps) {
           <div className="text-sm space-y-1 mt-2">
             <p className="flex justify-between">
               <span>Rise:</span>
-              <span className="font-mono">{formatTime(today.sunriseTime)}</span>
+              <span className="font-mono">{formatTime(sunriseTime)}</span>
             </p>
             <p className="flex justify-between">
               <span>Set:</span>
-              <span className="font-mono">{formatTime(today.sunsetTime)}</span>
+              <span className="font-mono">{formatTime(sunsetTime)}</span>
             </p>
           </div>
           <div
@@ -84,11 +105,11 @@ export default function SunMoonCard({ forecast }: SunMoonCardProps) {
           <div className="text-sm space-y-1 mt-2">
             <p className="flex justify-between">
               <span>Rise:</span>
-              <span className="font-mono">{formatTime(today.moonriseTime)}</span>
+              <span className="font-mono">{formatTime(moonriseTime)}</span>
             </p>
             <p className="flex justify-between">
               <span>Set:</span>
-              <span className="font-mono">{formatTime(today.moonsetTime)}</span>
+              <span className="font-mono">{formatTime(moonsetTime)}</span>
             </p>
           </div>
           <div

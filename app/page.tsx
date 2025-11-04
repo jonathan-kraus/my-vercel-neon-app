@@ -49,7 +49,14 @@ export default async function Home() {
     include: { author: true },
   });
 
-  const forecastResult = await getDailyForecast();
+  let forecastResult;
+  try {
+    forecastResult = await getDailyForecast();
+    console.log('Home page forecast result:', forecastResult);
+  } catch (error) {
+    console.error('Error fetching forecast:', error);
+    forecastResult = { forecast: [] };
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
