@@ -1,6 +1,5 @@
 import { db } from './db';
 import { triggerEmail } from '@/app/components/actions';
-import { generateUUID } from '../../uuidj';
 
 console.log(`[fetchWeather] Module loaded`);
 export async function fetchWeather(requestId?: string) {

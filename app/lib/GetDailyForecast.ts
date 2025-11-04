@@ -1,7 +1,5 @@
 'use server';
 
-import { generateUUID } from '../../uuidj';
-
 export type DailyForecastPoint = {
   requestId?: string;
   time: string;
