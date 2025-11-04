@@ -4,8 +4,8 @@ import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
 const logInfo = logInfoFactory('app/api/logs/search/route');
 const requestId = generateUUID();
-(logInfo('Initialized log search route'),
-  { action: 'init', timestamp: new Date().toISOString() },
+(logInfo(`Initialized log search route${requestId}`),
+  { action: `init ${requestId}`, timestamp: new Date().toISOString() },
   requestId);
 export async function GET(req: Request) {
   try {
