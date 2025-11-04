@@ -9,7 +9,7 @@ import arrow from '@/assets/arrow.svg';
 import discord from '@/assets/discord.svg';
 import docs from '@/assets/docs.svg';
 import CreatePostForm from './components/CreatePostForm';
-import { DeleteButton } from '@/app/components/DeleteButton';
+import { CompleteButton } from '@/app/components/CompleteButton';
 import { MarkCompleteButton } from './components/MarkCompleteButton';
 import SunMoonCard from './components/SunMoonCard';
 import { getDailyForecast } from './lib/GetDailyForecast';
@@ -102,7 +102,7 @@ export default async function Home() {
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      <DeleteButton postId={post.id} />
+                      <CompleteButton postId={post.id} />
                       <MarkCompleteButton postId={post.id.toString()} />
                     </div>
                   </div>

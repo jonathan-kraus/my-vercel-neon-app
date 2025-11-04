@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 
 import Link from 'next/link';
 import { db } from '../lib/db';
-import { DeleteButton } from '@/app/components/DeleteButton';
+import { CompleteButton } from '@/app/components/CompleteButton';
 
 type FollowUpPost = {
   id: number;
@@ -179,7 +179,7 @@ function FollowUpCard({ post }: { post: FollowUpPost }) {
         </div>
 
         <div className="flex gap-2 ml-4">
-          <DeleteButton postId={post.id} />
+          <CompleteButton postId={post.id} />
         </div>
       </div>
     </div>
