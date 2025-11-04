@@ -6,6 +6,7 @@ const logInfo = logInfoFactory('app/api/logs/search/route');
 
 export async function GET(req: Request) {
   try {
+    const JKID = generateUUID();
     const url = new URL(req.url);
     const params = url.searchParams;
     const page = Math.max(1, parseInt(params.get('page') || '1', 10));
@@ -13,7 +14,7 @@ export async function GET(req: Request) {
     const severity = params.get('severity') || undefined;
     const source = params.get('source') || undefined;
     const message = params.get('message') || undefined;
-    const requestId = params.get('requestId') || generateUUID();
+    const requestId = params.get('requestId') || JKID;
     const from = params.get('from') || undefined;
     const to = params.get('to') || undefined;
     (logInfo(`Initialized log search route${requestId}`),
