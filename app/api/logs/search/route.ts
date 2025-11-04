@@ -1,18 +1,15 @@
 import { NextResponse } from 'next/server';
 import { logInfoFactory } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
-import { createLogger } from '@/app/utils/logger';
+import { generateUUID } from '@/uuidj';
 const logInfo = logInfoFactory('app/api/logs/search/route');
-export async function POST(req: Request) {
-  const requestId = req.headers.get('x-request-id') ?? undefined;
-
-  const log = createLogger('app/api/logSearch', requestId);
-
-  log.info('Initialized log search route', {
-    userAction: 'init',
-    timestamp: new Date().toISOString(),
-  });
-
+const requestId = generateUUID();
+logInfo(
+  `Initialized log search route${requestId}`,
+  { action: `init ${requestId}`, timestamp: new Date().toISOString() },
+  requestId
+);
+export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const params = url.searchParams;
@@ -53,7 +50,6 @@ export async function POST(req: Request) {
         skip,
         take: pageSize,
       }),
-
       db.log.count({ where }),
     ]);
 
