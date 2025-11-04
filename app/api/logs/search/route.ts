@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     const severity = params.get('severity') || undefined;
     const source = params.get('source') || undefined;
     const message = params.get('message') || undefined;
-    const requestId = params.get('requestId') || undefined;
+    const requestId = params.get('requestId') || generateUUID();
     const from = params.get('from') || undefined;
     const to = params.get('to') || undefined;
     (logInfo(`Initialized log search route${requestId}`),
