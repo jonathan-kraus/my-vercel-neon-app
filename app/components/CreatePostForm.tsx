@@ -84,6 +84,28 @@ export default function CreatePostForm() {
           </label>
           <textarea name="content" id="content" className="w-full border p-2" required />
         </div>
+        <div>
+          <label htmlFor="followUpDate" className="block text-sm font-medium text-gray-700">
+            Follow-up Date (optional)
+          </label>
+          <input
+            type="datetime-local"
+            name="followUpDate"
+            id="followUpDate"
+            className="w-full border p-2"
+          />
+        </div>
+        <div>
+          <label htmlFor="followUpNotes" className="block text-sm font-medium text-gray-700">
+            Follow-up Notes (optional)
+          </label>
+          <textarea
+            name="followUpNotes"
+            id="followUpNotes"
+            className="w-full border p-2"
+            placeholder="What needs to be done?"
+          />
+        </div>
         <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
           Submit Post
         </button>

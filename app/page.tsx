@@ -49,6 +49,13 @@ export default async function Home() {
     include: { author: true },
   });
 
+  // Check for posts that need follow-up
+  const followUpPosts = await db.post.findMany({
+    where: { needsFollowUp: true },
+    include: { author: true },
+    orderBy: { followUpDate: 'asc' },
+  });
+
   const forecastResult = await getDailyForecast();
 
   return (
@@ -57,7 +64,17 @@ export default async function Home() {
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 md:max-w-lg md:px-0 lg:max-w-xl">
         {/* Post Creation + List */}
         <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Blog Posts</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">Blog Posts</h2>
+            {followUpPosts.length > 0 && (
+              <Link
+                href="/follow-ups"
+                className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold flex items-center gap-2"
+              >
+                🔔 {followUpPosts.length} Follow-up{followUpPosts.length !== 1 ? 's' : ''}
+              </Link>
+            )}
+          </div>
 
           {/* Server-side form component */}
           <CreatePostForm />

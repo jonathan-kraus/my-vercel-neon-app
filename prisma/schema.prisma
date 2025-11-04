@@ -28,6 +28,9 @@ model Post {
   createdAt DateTime @default(now())
   authorId  Int
   author    User     @relation(fields: [authorId], references: [id])
+  needsFollowUp Boolean @default(false)
+  followUpDate DateTime?
+  followUpNotes String?
 }
 
 model WeatherLog {

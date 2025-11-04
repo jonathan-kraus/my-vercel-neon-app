@@ -13,6 +13,8 @@ export async function createPost(formData: FormData) {
     const title = formData.get('title') as string;
     const content = formData.get('content') as string;
     const authorName = formData.get('authorName') as string;
+    const followUpDate = formData.get('followUpDate') as string;
+    const followUpNotes = formData.get('followUpNotes') as string;
 
     if (!title || !content || !authorName) {
       throw new Error('Title, content, and author name are required');
@@ -26,13 +28,24 @@ export async function createPost(formData: FormData) {
       });
     }
 
+    const postData: any = {
+      title,
+      content,
+      published: !followUpDate, // If follow-up date is set, don't publish automatically
+      needsFollowUp: !!followUpDate || !!followUpNotes, // Set needsFollowUp if any follow-up fields are provided
+      author: { connect: { id: user.id } },
+    };
+
+    if (followUpDate) {
+      postData.followUpDate = new Date(followUpDate);
+    }
+
+    if (followUpNotes) {
+      postData.followUpNotes = followUpNotes;
+    }
+
     const post = await db.post.create({
-      data: {
-        title,
-        content,
-        published: true,
-        author: { connect: { id: user.id } },
-      },
+      data: postData,
     });
 
     // Send email notification for new post (bypasses throttle)
