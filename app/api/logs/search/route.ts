@@ -53,6 +53,7 @@ export async function POST(req: Request) {
         skip,
         take: pageSize,
       }),
+
       db.log.count({ where }),
     ]);
 
