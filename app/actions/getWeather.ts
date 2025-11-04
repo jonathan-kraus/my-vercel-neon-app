@@ -2,8 +2,8 @@
 
 import { fetchWeather } from '../lib/fetchWeather';
 
-export async function getWeather() {
-  return await fetchWeather();
+export async function getWeather(requestId?: string) {
+  return await fetchWeather(requestId);
 }
 
 export async function getHourlyForecast() {

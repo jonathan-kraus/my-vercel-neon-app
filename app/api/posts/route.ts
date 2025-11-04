@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
-import { logger } from '@/app/lib/logger';
+import { logInfoFactory } from '@/app/utils/logger';
 import { Prisma } from '@prisma/client';
 import { z } from 'zod';
 
@@ -8,7 +8,7 @@ const CreatePostSchema = z.object({
   title: z.string().min(1),
   body: z.string().min(1),
 });
-
+const logInfo = logInfoFactory('api/posts');
 function parseCookies(cookieHeader: string | null): Record<string, string> {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
@@ -59,13 +59,7 @@ export async function GET(request: Request) {
     });
 
     try {
-      await logger({
-        severity: 'info',
-        source: 'Posts API',
-        message: `Fetched posts${author ? ` by author="${author}"` : ''}`,
-        requestId,
-        metadata: { userAction: 'fetch' },
-      });
+      await logInfo('Fetched posts', { postCount: posts.length }, requestId);
     } catch {
       // non-fatal
     }
@@ -114,13 +108,11 @@ export async function POST(req: Request) {
     });
 
     try {
-      await logger({
-        severity: 'info',
-        source: 'Posts API',
-        message: `Post created by ${username}: ${requestId}`,
-        requestId,
-        metadata: { userAction: 'create_post', postTitle: post.title },
-      });
+      await logInfo(
+        `Post created by ${username} `,
+        { userAction: 'create_post', postTitle: post.title },
+        requestId
+      );
     } catch {
       // non-fatal
     }

@@ -3,6 +3,7 @@ import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 // db is intentionally not used here; sendWithDedup handles logging
 import { sendWithDedup } from '@/app/lib/sendWithDedup';
 import { z } from 'zod';
+import { generateUUID } from '../../../uuidj';
 console.log('[build] Generating /api/send-email');
 export async function OPTIONS() {
   return new Response(null, {
@@ -49,7 +50,8 @@ export async function POST(request: Request) {
       return new Response('Invalid payload', { status: 400 });
     }
 
-    const { toEmail, toName, subject, message = '', requestId } = parsed.data;
+    const { toEmail, toName, subject, message = '', requestId: providedRequestId } = parsed.data;
+    const requestId = providedRequestId || generateUUID();
     // Format message for HTML (convert newlines to <br>)
     const htmlMessage = message.replace(/\n/g, '<br>');
 
@@ -86,7 +88,7 @@ export async function POST(request: Request) {
         JSON.stringify({
           status: 'success',
           message: 'Email sent',
-          requestId: requestId || 'none',
+          requestId,
         }),
         {
           status: 200,
@@ -104,7 +106,7 @@ export async function POST(request: Request) {
       JSON.stringify({
         status: 'skipped',
         reason: result.reason || 'throttled',
-        requestId: requestId || 'none',
+        requestId,
       }),
       {
         status: 200,
@@ -118,7 +120,7 @@ export async function POST(request: Request) {
       JSON.stringify({
         status: 'error',
         message: 'Internal server error',
-        requestId: 'none',
+        requestId: generateUUID(),
       }),
       {
         status: 500,
