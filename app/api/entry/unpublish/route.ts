@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
 import { logInfoFactory } from '@/app/utils/logger';
+import { generateUUID } from '../../../../uuidj';
 
 const logInfo = logInfoFactory('app/api/entry/unpublish/route.ts');
 
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing entry ID' }, { status: 400 });
   }
 
-  const requestId = req.headers.get('x-request-id') ?? undefined;
+  const requestId = req.headers.get('x-request-id') ?? generateUUID();
 
   await db.post.update({
     where: { id: Number(id) },

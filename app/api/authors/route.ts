@@ -1,9 +1,10 @@
 import { db } from '@/app/lib/db';
 import { sendConfirmationEmail } from '@/app/utils/email-client';
 import { NextResponse } from 'next/server';
+import { generateUUID } from '../../../uuidj';
 console.log('[build] Generating /authors');
 export async function GET(req: Request) {
-  const requestId = req.headers.get('x-request-id') ?? undefined;
+  const requestId = req.headers.get('x-request-id') ?? generateUUID();
   try {
     // Include a posts count for each user so clients can render badges without extra queries
     const authors = await db.user.findMany({

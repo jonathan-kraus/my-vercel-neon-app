@@ -2,7 +2,7 @@
 import { DailyForecastPoint } from './GetDailyForecast';
 export async function sendForecastEmail(forecast: DailyForecastPoint[], requestId: string) {
   if (!forecast || forecast.length === 0) return;
-
+  console.log(`[${requestId}] 📧 Sending forecast email with ${forecast.length} entries`);
   const baseUrl =
     (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '');
