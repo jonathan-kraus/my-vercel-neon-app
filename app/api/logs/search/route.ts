@@ -17,9 +17,9 @@ export async function GET(req: Request) {
     const requestId = params.get('requestId') || JKID;
     const from = params.get('from') || undefined;
     const to = params.get('to') || undefined;
-    (logInfo(`Initialized log search route${requestId}`),
-      { action: `init ${requestId}`, timestamp: new Date().toISOString() },
-      requestId);
+    // (logInfo(`Initialized log search route${requestId}`),
+    //   { action: `init ${requestId}`, timestamp: new Date().toISOString() },
+    //   requestId);
     const where: any = {};
     if (severity) where.severity = severity;
     if (source) where.source = source;
