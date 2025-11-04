@@ -52,7 +52,7 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   }
   console.log(`[getDailyForecast] [${requestId}] Using API key: ${apiKey.slice(0, 4)}...`);
 
-  if (!requestId) requestId = 'requestid-not-passed';
+  if (!requestId) return { forecast: [], maxRainAccumulation: 0 };
 
   try {
     const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1d&units=imperial&apikey=${apiKey}`;
