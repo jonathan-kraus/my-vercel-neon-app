@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { fetchWeather } from '@/app/lib/fetchWeather';
-import { generateUUID } from '../../../uuidj';
+import { generateUUID } from '@/uuidj';
 console.log('[build] Generating /getWeather');
 export async function GET() {
   const requestId = generateUUID();
