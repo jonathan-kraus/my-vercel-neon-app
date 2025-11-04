@@ -59,3 +59,16 @@ export const logErrorFactory = (source: string) => {
   return (message: string, metadata?: Record<string, any>, requestId?: string) =>
     logger({ severity: 'error', source, message, requestId, metadata });
 };
+
+export const createLogger = (source: string, requestId?: string) => {
+  return {
+    info: (message: string, metadata?: Record<string, any>) =>
+      logger({ severity: 'info', source, message, requestId, metadata }),
+
+    warn: (message: string, metadata?: Record<string, any>) =>
+      logger({ severity: 'warning', source, message, requestId, metadata }),
+
+    error: (message: string, metadata?: Record<string, any>) =>
+      logger({ severity: 'error', source, message, requestId, metadata }),
+  };
+};
