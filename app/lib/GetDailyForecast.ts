@@ -16,6 +16,10 @@ export type DailyForecastPoint = {
   rainAccumulationMax: number;
   rainAccumulationMin: number;
   rainAccumulationSum: number;
+  sunriseTime?: string;
+  sunsetTime?: string;
+  moonriseTime?: string;
+  moonsetTime?: string;
 };
 
 export type DailyForecastResult = {
@@ -34,6 +38,10 @@ type RawDailyEntry = {
     rainAccumulationMax: number;
     rainAccumulationMin: number;
     rainAccumulationSum: number;
+    sunriseTime?: string;
+    sunsetTime?: string;
+    moonriseTime?: string;
+    moonsetTime?: string;
   };
 };
 
@@ -46,7 +54,7 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   if (!requestId) requestId = 'requestid-not-passed'; //generateUUID();
   console.log(`[getDailyForecast] [${requestId}] getDailyForecast started`);
 
-  const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1d&units=imperial&apikey=${apiKey}`;
+  const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1d&units=imperial&fields=temperatureMax,temperatureMin,precipitationProbability,weatherCodeMax,weatherCodeMin,rainAccumulationAvg,rainAccumulationMax,rainAccumulationMin,rainAccumulationSum,sunriseTime,sunsetTime,moonriseTime,moonsetTime&apikey=${apiKey}`;
 
   const res = await fetch(url);
   if (!res.ok) {
@@ -93,6 +101,10 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
       rainAccumulationMax: day.values?.rainAccumulationMax ?? 0,
       rainAccumulationMin: day.values?.rainAccumulationMin ?? 0,
       rainAccumulationSum: day.values?.rainAccumulationSum ?? 0,
+      sunriseTime: day.values?.sunriseTime,
+      sunsetTime: day.values?.sunsetTime,
+      moonriseTime: day.values?.moonriseTime,
+      moonsetTime: day.values?.moonsetTime,
     })
   );
 

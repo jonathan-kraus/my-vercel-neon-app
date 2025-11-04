@@ -8,6 +8,7 @@ import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
 import DailyForecastCard from '@/app/components/DailyForecastCard';
 import WeatherCard from '@/app/components/WeatherCard';
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
+import SunMoonCard from '@/app/components/SunMoonCard';
 import { logInfoFactory, logErrorFactory } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 
@@ -86,6 +87,8 @@ export default function WeatherPage() {
       )}
 
       <WeatherCard />
+
+      <SunMoonCard forecast={forecast.forecast} />
 
       <HourlyForecastChart />
 

@@ -11,6 +11,8 @@ import docs from '@/assets/docs.svg';
 import CreatePostForm from './components/CreatePostForm';
 import { DeleteButton } from '@/app/components/DeleteButton';
 import { MarkCompleteButton } from './components/MarkCompleteButton';
+import SunMoonCard from './components/SunMoonCard';
+import { getDailyForecast } from './lib/GetDailyForecast';
 // removed client-side duplicate form import (PostFormClient)
 // import PostFormClient from '@/app/components/PostFormClient';
 //import { revalidatePath } from "next/cache";
@@ -46,6 +48,8 @@ export default async function Home() {
     where: { published: true },
     include: { author: true },
   });
+
+  const forecastResult = await getDailyForecast();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -89,6 +93,11 @@ export default async function Home() {
               ))}
             </ul>
           )}
+        </section>
+
+        {/* Sun & Moon Information */}
+        <section className="mb-8">
+          <SunMoonCard forecast={forecastResult.forecast} />
         </section>
 
         {/* Branding & CTA */}
