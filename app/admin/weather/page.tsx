@@ -29,7 +29,7 @@ export default function WeatherPage() {
       try {
         const result = await getDailyForecast(requestId);
         setForecast(result);
-        logInfo('Fetched forecast', { forecastLength: result.forecast.length });
+        logInfo('Fetched forecast', { forecastLength: result.forecast.length }, requestId);
       } catch (err) {
         console.error('Failed to fetch forecast:', err);
         toast.error('Failed to fetch forecast');
