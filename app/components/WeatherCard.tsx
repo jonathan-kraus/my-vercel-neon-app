@@ -170,27 +170,27 @@ export default function WeatherCard() {
           <div className="grid grid-cols-2 gap-2 text-sm">
             {weather.locationDetails.city && (
               <p>
-                <strong>City:</strong> {weather.locationDetails.city}
+                🏙️ <strong>City:</strong> {weather.locationDetails.city}
               </p>
             )}
             {weather.locationDetails.town && (
               <p>
-                <strong>Town:</strong> {weather.locationDetails.town}
+                🏘️ <strong>Town:</strong> {weather.locationDetails.town}
               </p>
             )}
             {weather.locationDetails.village && (
               <p>
-                <strong>Village:</strong> {weather.locationDetails.village}
+                🏘️ <strong>Village:</strong> {weather.locationDetails.village}
               </p>
             )}
             {weather.locationDetails.hamlet && (
               <p>
-                <strong>Hamlet:</strong> {weather.locationDetails.hamlet}
+                🏘️ <strong>Hamlet:</strong> {weather.locationDetails.hamlet}
               </p>
             )}
             {weather.locationDetails.county && (
               <p>
-                <strong>County:</strong> {weather.locationDetails.county}
+                🏛️ <strong>County:</strong> {weather.locationDetails.county}
               </p>
             )}
           </div>
