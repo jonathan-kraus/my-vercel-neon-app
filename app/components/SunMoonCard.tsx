@@ -7,10 +7,7 @@ interface SunMoonCardProps {
 }
 
 export default function SunMoonCard({ forecast }: SunMoonCardProps) {
-  console.log('SunMoonCard received forecast:', forecast);
-
   if (!forecast || forecast.length === 0) {
-    console.log('SunMoonCard: No forecast data, returning null');
     return (
       <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-600">
         <p className="text-center text-gray-500">Loading celestial data...</p>
@@ -20,7 +17,6 @@ export default function SunMoonCard({ forecast }: SunMoonCardProps) {
 
   // Get today's forecast (first item)
   const today = forecast[0];
-  console.log('Today forecast data:', today);
 
   // For testing - use mock data if API doesn't provide sunrise/sunset
   const mockSunrise = '2025-11-03T06:30:00Z';
