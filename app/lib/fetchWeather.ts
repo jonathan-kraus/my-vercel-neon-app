@@ -1,5 +1,4 @@
 import { db } from './db';
-import { triggerEmail } from '@/app/components/actions';
 
 console.log(`[fetchWeather] Module loaded`);
 export async function fetchWeather(requestId?: string) {
@@ -88,33 +87,20 @@ export async function fetchWeather(requestId?: string) {
 
   console.log(`[fetchWeather]  Weather data fetched for location2 `);
 
-  // Always send email without throttling
-  let emailSent = false;
-  let lastEmailTimestamp = null;
-  const now = new Date();
-  try {
-    await triggerEmail('Weather', requestId, location2 ?? 'Weather Location', values.temperature);
-    console.log(`[${requestId}] 📧 Weather email triggered`);
-    await db.weatherLog.create({
-      data: {
-        temperature: values.temperature,
-        humidity: values.humidity,
-        windSpeed: values.windSpeed,
-        windGust: values.windGust,
-        precipitationProbability: values.precipitationProbability,
-        weatherCode: values.weatherCode,
-        emailSent: true,
-        requestId, // 👈 logged here
-      },
-    });
-    console.log(`[${requestId}] 📝 Weather log with ID 1 updated in DB`);
-    emailSent = true;
-    lastEmailTimestamp = now.toISOString();
-
-    console.log(`[${requestId}] ✅ Weather email sent and log created`);
-  } catch (err) {
-    console.error(`[${requestId}] ❌ Email failed:`, err);
-  }
+  // Weather logging (no automatic email sending)
+  await db.weatherLog.create({
+    data: {
+      temperature: values.temperature,
+      humidity: values.humidity,
+      windSpeed: values.windSpeed,
+      windGust: values.windGust,
+      precipitationProbability: values.precipitationProbability,
+      weatherCode: values.weatherCode,
+      emailSent: false, // No automatic email
+      requestId,
+    },
+  });
+  console.log(`[${requestId}] 📝 Weather log created in DB`);
 
   return {
     temperature: values.temperature,
@@ -131,8 +117,8 @@ export async function fetchWeather(requestId?: string) {
     rainAccumulationMin: values.rainAccumulationMin ?? 0,
     rainAccumulationSum: values.rainAccumulationSum ?? 0,
     location: location2 ?? 'Unknown',
-    emailSent,
-    lastEmailTimestamp,
+    emailSent: false, // No automatic email
+    lastEmailTimestamp: null, // No automatic email
     requestId,
   };
 }
