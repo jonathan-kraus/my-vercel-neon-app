@@ -48,65 +48,72 @@ type RawDailyEntry = {
 export async function getDailyForecast(requestId?: string): Promise<DailyForecastResult> {
   console.log(`[getDailyForecast] [${requestId}] Function started`);
   const apiKey = process.env.TOMORROW_API_KEY;
-  if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
+  if (!apiKey) {
+    console.error('[getDailyForecast] TOMORROW_API_KEY not set');
+    return { forecast: [], maxRainAccumulation: 0 };
+  }
   console.log(`[getDailyForecast] [${requestId}] Using API key: ${apiKey.slice(0, 4)}...`);
 
-  if (!requestId) requestId = 'requestid-not-passed'; //generateUUID();
-  console.log(`[getDailyForecast] [${requestId}] getDailyForecast started`);
+  if (!requestId) requestId = 'requestid-not-passed';
 
-  const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1d&units=imperial&apikey=${apiKey}`;
+  try {
+    const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1d&units=imperial&apikey=${apiKey}`;
 
-  const res = await fetch(url);
-  if (!res.ok) {
-    console.error(`[Tomorrow.io] ❌ HTTP error: ${res.status}`);
+    console.log(
+      `[getDailyForecast] [${requestId}] Fetching from URL: ${url.replace(apiKey, '***')}`
+    );
+
+    const res = await fetch(url);
+    if (!res.ok) {
+      console.error(`[Tomorrow.io] ❌ HTTP error: ${res.status} ${res.statusText}`);
+      return { forecast: [], maxRainAccumulation: 0 };
+    }
+
+    const data = await res.json();
+    console.log(`[getDailyForecast] [${requestId}] API response received`);
+
+    if (!data || !data.timelines || !Array.isArray(data.timelines.daily)) {
+      console.warn(`[Tomorrow.io] ⚠️ Unexpected response format`, data);
+      return { forecast: [], maxRainAccumulation: 0 };
+    }
+
+    const daily: RawDailyEntry[] = data.timelines.daily;
+    console.log(`[getDailyForecast] [${requestId}] Processing ${daily.length} daily entries`);
+
+    const maxRainAccumulation = Math.max(
+      ...daily
+        .map((d) => d.values?.rainAccumulationSum || 0)
+        .filter((val) => typeof val === 'number')
+    );
+
+    const forecast = daily.slice(0, 7).map(
+      (day): DailyForecastPoint => ({
+        requestId,
+        time: day.time,
+        temperatureMax: day.values?.temperatureMax ?? 0,
+        temperatureMin: day.values?.temperatureMin ?? 0,
+        precipitation: day.values?.precipitationProbability ?? 0,
+        conditions: {
+          day: day.values?.weatherCodeMax ?? -1,
+          night: day.values?.weatherCodeMin ?? -1,
+        },
+        rainAccumulationAvg: day.values?.rainAccumulationAvg ?? 0,
+        rainAccumulationMax: day.values?.rainAccumulationMax ?? 0,
+        rainAccumulationMin: day.values?.rainAccumulationMin ?? 0,
+        rainAccumulationSum: day.values?.rainAccumulationSum ?? 0,
+        sunriseTime: day.values?.sunriseTime,
+        sunsetTime: day.values?.sunsetTime,
+        moonriseTime: day.values?.moonriseTime,
+        moonsetTime: day.values?.moonsetTime,
+      })
+    );
+
+    console.log(
+      `[getDailyForecast] [${requestId}] Successfully processed ${forecast.length} forecast entries`
+    );
+    return { forecast, maxRainAccumulation };
+  } catch (error) {
+    console.error(`[getDailyForecast] [${requestId}] Error:`, error);
     return { forecast: [], maxRainAccumulation: 0 };
   }
-
-  const data = await res.json();
-
-  if (!data || !data.timelines || !Array.isArray(data.timelines.daily)) {
-    console.warn(`[Tomorrow.io] ⚠️ Unexpected response format`, data);
-    return { forecast: [], maxRainAccumulation: 0 };
-  }
-  console.log(`[getDailyForecast] [${requestId}] Data fetched from API:`, data);
-
-  console.log(
-    `[GetDailyForecast] [${requestId}] Forecast response:`,
-    JSON.stringify(data, null, 2)
-  );
-  const daily: RawDailyEntry[] = data.timelines?.daily;
-
-  console.log(
-    `[${requestId}] Raw daily forecastvalues:`,
-    daily.map((d) => d.values)
-  );
-  const maxRainAccumulation = Math.max(
-    ...daily.map((d) => d.values.rainAccumulationSum).filter((val) => typeof val === 'number')
-  );
-  console.log(`[getDailyForecast] [${requestId}] Max rainAccumulationSum:`, maxRainAccumulation);
-
-  console.log(`[getDailyForecast] [${requestId}] JJJ daily entries:`, daily);
-  const forecast = daily.slice(0, 7).map(
-    (day): DailyForecastPoint => ({
-      requestId,
-      time: day.time,
-      temperatureMax: day.values?.temperatureMax ?? 0,
-      temperatureMin: day.values?.temperatureMin ?? 0,
-      precipitation: day.values?.precipitationProbability ?? 0,
-      conditions: {
-        day: day.values.weatherCodeMax ?? -1,
-        night: day.values.weatherCodeMin ?? -1,
-      },
-      rainAccumulationAvg: day.values?.rainAccumulationAvg ?? 0,
-      rainAccumulationMax: day.values?.rainAccumulationMax ?? 0,
-      rainAccumulationMin: day.values?.rainAccumulationMin ?? 0,
-      rainAccumulationSum: day.values?.rainAccumulationSum ?? 0,
-      sunriseTime: day.values?.sunriseTime,
-      sunsetTime: day.values?.sunsetTime,
-      moonriseTime: day.values?.moonriseTime,
-      moonsetTime: day.values?.moonsetTime,
-    })
-  );
-
-  return { forecast, maxRainAccumulation };
 }
