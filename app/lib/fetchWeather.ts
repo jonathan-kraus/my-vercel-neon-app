@@ -24,7 +24,8 @@ export async function fetchWeather(requestId?: string) {
 
   console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: values`, values);
   console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location2`, location2);
-  const url2 = 'https://nominatim.openstreetmap.org/reverse?lat=40.10520&lon=-75.41404&format=json';
+  //const url2 = 'https://nominatim.openstreetmap.org/reverse?lat=40.10520&lon=-75.41404&format=json';
+  const url2 = 'https://nominatim.openstreetmap.org/reverse?lat=42.19520&lon=-71.07184&format=json';
   console.log(`[fetchWeather] [${requestId}] Fetching location data from API: ${url2}`);
   let locationDetails = {
     city: undefined as string | undefined,
