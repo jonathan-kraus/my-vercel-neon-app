@@ -3,11 +3,10 @@ import { logInfoFactory } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
 const logInfo = logInfoFactory('app/api/logs/search/route');
-
+const requestId = generateUUID();
 (logInfo('Initialized log search route'),
   { action: 'init', timestamp: new Date().toISOString() },
-  generateUUID());
-
+  requestId);
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
