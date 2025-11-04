@@ -18,9 +18,9 @@ type ForecastResult = {
   maxRainAccumulation: number;
 };
 
-export default function WeatherPage(req: Request) {
+export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
-  const requestId = req.headers.get('x-request-id') ?? 'weatheruid';
+  const [requestId] = useState(() => generateUUID());
   const emailSentRef = useRef(false);
 
   // Fetch forecast on mount
