@@ -26,6 +26,15 @@ export async function fetchWeather(requestId?: string) {
   console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location2`, location2);
   const url2 = 'https://nominatim.openstreetmap.org/reverse?lat=40.10520&lon=-75.41404&format=json';
   console.log(`[fetchWeather] [${requestId}] Fetching location data from API: ${url2}`);
+  let locationDetails = {
+    city: undefined as string | undefined,
+    town: undefined as string | undefined,
+    village: undefined as string | undefined,
+    hamlet: undefined as string | undefined,
+    county: undefined as string | undefined,
+    displayName: undefined as string | undefined,
+  };
+
   try {
     const res2 = await fetch(url2, {
       headers: {
@@ -36,35 +45,46 @@ export async function fetchWeather(requestId?: string) {
 
     const data2 = await res2.json();
     console.log(`[fetchWeather] [${requestId}] Location data fetch response: json`, data2);
+
+    locationDetails = {
+      city: data2.address?.city,
+      town: data2.address?.town,
+      village: data2.address?.village,
+      hamlet: data2.address?.hamlet,
+      county: data2.address?.county,
+      displayName: data2.display_name,
+    };
+
     const locationName =
-      data2.address?.city ??
-      data2.address?.town ??
-      data2.address?.village ??
-      data2.address?.hamlet ??
-      data2.address?.county ??
+      locationDetails.city ??
+      locationDetails.town ??
+      locationDetails.village ??
+      locationDetails.hamlet ??
+      locationDetails.county ??
       'Unknown Location';
+
     console.log(
       `[fetchWeather] [${requestId}] Location data fetched from API: city`,
-      data2.address.city
+      locationDetails.city
     );
     console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: town ${data2.address.town}`
+      `[fetchWeather] [${requestId}] Location data fetched from API: town ${locationDetails.town}`
     );
     console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: village ${data2.address.village}`
+      `[fetchWeather] [${requestId}] Location data fetched from API: village ${locationDetails.village}`
     );
     console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: hamlet ${data2.address.hamlet}`
+      `[fetchWeather] [${requestId}] Location data fetched from API: hamlet ${locationDetails.hamlet}`
     );
     console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: county ${data2.address.county}`
+      `[fetchWeather] [${requestId}] Location data fetched from API: county ${locationDetails.county}`
     );
 
     console.log(
       `[fetchWeather] [${requestId}] Location data fetched from API: locationName ${locationName}`
     );
     console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: display_name ${data2.display_name}`
+      `[fetchWeather] [${requestId}] Location data fetched from API: display_name ${locationDetails.displayName}`
     );
   } catch (error) {
     console.error(`[fetchWeather] [${requestId}] Error fetching location data:`, error);
@@ -119,6 +139,7 @@ export async function fetchWeather(requestId?: string) {
     rainAccumulationMin: values.rainAccumulationMin ?? 0,
     rainAccumulationSum: values.rainAccumulationSum ?? 0,
     location: location2 ?? 'Unknown',
+    locationDetails, // Add detailed location info
     emailSent: false, // No automatic email
     lastEmailTimestamp: null, // No automatic email
     requestId,

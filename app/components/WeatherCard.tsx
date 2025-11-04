@@ -15,11 +15,19 @@ type WeatherType = {
   emailSent?: boolean;
   lastEmailTimestamp: string | null;
   requestId?: string;
-  locationName?: string; // ✅ Add this
+  locationName?: string;
   rainAccumulationAvg: number;
   rainAccumulationMax: number;
   rainAccumulationMin: number;
   rainAccumulationSum: number;
+  locationDetails?: {
+    city?: string;
+    town?: string;
+    village?: string;
+    hamlet?: string;
+    county?: string;
+    displayName?: string;
+  };
 };
 
 export default function WeatherCard() {
@@ -154,6 +162,45 @@ export default function WeatherCard() {
       <p>
         Night: {getIcon(weather.conditions.night)} {getLabel(weather.conditions.night)}
       </p>
+
+      {/* Location Details */}
+      {weather.locationDetails && (
+        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+          <h3 className="font-semibold text-sm mb-2">Location Details</h3>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            {weather.locationDetails.city && (
+              <p>
+                <strong>City:</strong> {weather.locationDetails.city}
+              </p>
+            )}
+            {weather.locationDetails.town && (
+              <p>
+                <strong>Town:</strong> {weather.locationDetails.town}
+              </p>
+            )}
+            {weather.locationDetails.village && (
+              <p>
+                <strong>Village:</strong> {weather.locationDetails.village}
+              </p>
+            )}
+            {weather.locationDetails.hamlet && (
+              <p>
+                <strong>Hamlet:</strong> {weather.locationDetails.hamlet}
+              </p>
+            )}
+            {weather.locationDetails.county && (
+              <p>
+                <strong>County:</strong> {weather.locationDetails.county}
+              </p>
+            )}
+          </div>
+          {weather.locationDetails.displayName && (
+            <p className="text-xs text-gray-600 mt-2">
+              <strong>Full Address:</strong> {weather.locationDetails.displayName}
+            </p>
+          )}
+        </div>
+      )}
 
       <button onClick={notify}>Temperature!</button>
 
