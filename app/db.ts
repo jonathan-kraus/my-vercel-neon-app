@@ -1,9 +1,10 @@
 import { neon } from '@neondatabase/serverless';
 import { logEvent } from './lib/abslog';
+import { generateUUID } from '../uuidj';
 
 console.log('DB module loaded');
 export async function checkDbConnection() {
-  const requestId = crypto.randomUUID();
+  const requestId = generateUUID();
   if (!process.env.DATABASE_URL) {
     return 'No DATABASE_URL environment variable';
   }

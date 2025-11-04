@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { logInfoFactory } from '@/app/utils/logger';
+import { generateUUID } from '../../uuidj';
 
 const logInfo = logInfoFactory('app/auth/page.tsx');
 
@@ -11,7 +12,7 @@ export default function AuthPage() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const requestId = crypto.randomUUID();
+  const requestId = generateUUID();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

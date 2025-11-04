@@ -2,9 +2,10 @@
 
 import { db } from '@/app/lib/db';
 import { logEvent } from '../lib/abslog';
+import { generateUUID } from '../../uuidj';
 
 const prisma = db; // For clarity in this file
-const requestId = crypto.randomUUID();
+const requestId = generateUUID();
 
 async function getLastDatabaseActivity() {
   try {

@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
+import { generateUUID } from '../../uuidj';
 
 type DbStatusType = {
   version: string;
@@ -39,7 +40,7 @@ export default function DbStatus() {
 
   // Log event once on mount
   useEffect(() => {
-    const requestId = crypto.randomUUID();
+    const requestId = generateUUID();
     const baseUrl =
       (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
       process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
@@ -99,7 +100,7 @@ export default function DbStatus() {
     }
 
     try {
-      const requestId = crypto.randomUUID();
+      const requestId = generateUUID();
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

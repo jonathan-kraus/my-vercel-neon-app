@@ -1,5 +1,7 @@
 'use server';
 
+import { generateUUID } from '../../uuidj';
+
 export type DailyForecastPoint = {
   requestId?: string;
   time: string;
@@ -41,7 +43,7 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
   console.log(`[getDailyForecast] [${requestId}] Using API key: ${apiKey.slice(0, 4)}...`);
 
-  if (!requestId) requestId = 'requestid-not-passed'; //crypto.randomUUID();
+  if (!requestId) requestId = 'requestid-not-passed'; //generateUUID();
   console.log(`[getDailyForecast] [${requestId}] getDailyForecast started`);
 
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1d&units=imperial&apikey=${apiKey}`;

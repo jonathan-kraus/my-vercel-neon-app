@@ -9,6 +9,7 @@ import DailyForecastCard from '@/app/components/DailyForecastCard';
 import WeatherCard from '@/app/components/WeatherCard';
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
 import { logInfoFactory, logErrorFactory } from '@/app/utils/logger';
+import { generateUUID } from '../../../uuidj';
 
 const logInfo = logInfoFactory('app/admin/weather/page.tsx');
 const logError = logErrorFactory('app/admin/weather/page.tsx');
@@ -19,7 +20,7 @@ type ForecastResult = {
 
 export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
-  const [requestId] = useState<string>(crypto.randomUUID());
+  const [requestId] = useState<string>(generateUUID());
   const emailSentRef = useRef(false);
 
   // Fetch forecast on mount

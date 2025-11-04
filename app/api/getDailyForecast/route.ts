@@ -2,9 +2,10 @@
 import { NextResponse } from 'next/server';
 import { getDailyForecast } from '@/app/lib/GetDailyForecast';
 import { logger } from '@/app/utils/logger';
+import { generateUUID } from '../../../uuidj';
 
 export async function GET(req: Request) {
-  const requestId = req.headers.get('x-request-id') ?? crypto.randomUUID();
+  const requestId = req.headers.get('x-request-id') ?? generateUUID();
   const source = 'getDailyForecast';
   console.log('[getDailyForecast] New logger follows', `${requestId}`);
   await logger({

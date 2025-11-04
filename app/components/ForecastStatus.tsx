@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
+import { generateUUID } from '../../uuidj';
 
 type ForecastResult = {
   forecast: DailyForecastPoint[];
@@ -13,7 +14,7 @@ type ForecastResult = {
 export default function ForecastStatus() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const emailSentRef = useRef(false);
-  const requestIdRef = useRef<string>(crypto.randomUUID());
+  const requestIdRef = useRef<string>(generateUUID());
 
   // define logEvent first
   const logEvent = useCallback(

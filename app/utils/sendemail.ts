@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { db } from '../lib/db';
 import { sendWithDedup } from '@/app/lib/sendWithDedup';
+import { generateUUID } from '../../uuidj';
 console.log('📦 sendemail.ts loaded');
 
 const mailerSend = new MailerSend({
@@ -13,7 +14,7 @@ export default async function logSendEmailModuleAccess() {
   const severity = 'info';
   const source = 'sendemail.ts';
   const message = `sendemail.ts module accessed`;
-  const requestId = crypto.randomUUID();
+  const requestId = generateUUID();
   const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
   try {
     const lasttime = await db.log.findFirst({

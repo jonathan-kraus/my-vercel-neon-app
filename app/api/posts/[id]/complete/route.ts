@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { db } from '@/app/lib/db';
 import { logger } from '@/app/lib/logger';
+import { generateUUID } from '../../../../../uuidj';
 
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
       severity: 'info',
       source: 'post.complete',
       message: `Post ${id} marked as unpublished`,
-      requestId: crypto.randomUUID(),
+      requestId: generateUUID(),
       metadata: { user: user, action: 'mark_complete', postId: id },
     });
 

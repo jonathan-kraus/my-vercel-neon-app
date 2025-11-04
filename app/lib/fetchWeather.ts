@@ -1,9 +1,10 @@
 import { db } from './db';
 import { triggerEmail } from '@/app/components/actions';
+import { generateUUID } from '../../uuidj';
 
 console.log(`[fetchWeather] Module loaded`);
 export async function fetchWeather(requestId?: string) {
-  if (!requestId) requestId = 'requestid-not-passed'; //crypto.randomUUID()
+  if (!requestId) requestId = 'requestid-not-passed'; //generateUUID()
   console.log(`[fetchWeather] [${requestId}] Server function started`);
 
   const apiKey = process.env.TOMORROW_API_KEY;

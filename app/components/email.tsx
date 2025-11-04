@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { sendConfirmationEmail } from '../utils/email-client'; // Import the client utility
 import { toast } from 'react-hot-toast';
+import { generateUUID } from '../../uuidj';
 export default function ContactForm({ sendOnMount = true }: { sendOnMount?: boolean }) {
   const [loading, setLoading] = useState(false);
 
@@ -13,7 +14,7 @@ export default function ContactForm({ sendOnMount = true }: { sendOnMount?: bool
     //   toEmail: 'jonathanckraus@gmail.com',
     //   toName: 'Jonathan',
     //   subject: 'Auto Email from Client Component',
-    //   requestId: crypto.randomUUID(),
+    //   requestId: generateUUID(),
     // };
     // sendConfirmationEmail(emailData).then(() => {}).catch(() => {});
   }, [sendOnMount]);
@@ -26,7 +27,7 @@ export default function ContactForm({ sendOnMount = true }: { sendOnMount?: bool
       toEmail: 'jonathanckraus@gmail.com',
       toName: 'Jonathan',
       subject: 'Test Email from Client Component',
-      requestId: crypto.randomUUID(),
+      requestId: generateUUID(),
     };
 
     const { success, message } = await sendConfirmationEmail(emailData);

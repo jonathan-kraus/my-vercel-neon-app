@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { fetchWeather } from '@/app/lib/fetchWeather';
+import { generateUUID } from '../../../uuidj';
 console.log('[build] Generating /getWeather');
 export async function GET() {
-  const requestId = crypto.randomUUID();
+  const requestId = generateUUID();
   console.log(`[getWeather] API route started at ${new Date().toISOString()}`);
 
   try {

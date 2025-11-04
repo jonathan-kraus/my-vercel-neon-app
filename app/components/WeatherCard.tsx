@@ -2,8 +2,9 @@
 import { useEffect, useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
+import { generateUUID } from '../../uuidj';
 
-const requestId = crypto.randomUUID();
+const requestId = generateUUID();
 type WeatherType = {
   temperature: number;
   humidity: number;

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { logEvent } from '../lib/log';
+import { generateUUID } from '../../uuidj';
 
 export function DeleteButton({ postId }: { postId: number }) {
   const router = useRouter();
@@ -11,7 +12,7 @@ export function DeleteButton({ postId }: { postId: number }) {
 
   const handleDelete = async () => {
     setLoading(true);
-    const requestId = crypto.randomUUID();
+    const requestId = generateUUID();
 
     try {
       await logEvent({
