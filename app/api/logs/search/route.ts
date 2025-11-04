@@ -3,27 +3,22 @@ import { logInfoFactory } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
 const logInfo = logInfoFactory('app/api/logs/search/route');
-const requestId = generateUUID();
-logInfo(
-  `Initialized log search route${requestId}`,
-  { action: `init ${requestId}`, timestamp: new Date().toISOString() },
-  requestId
-);
+
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
     const params = url.searchParams;
-
     const page = Math.max(1, parseInt(params.get('page') || '1', 10));
     const pageSize = Math.min(200, Math.max(1, parseInt(params.get('pageSize') || '25', 10)));
-
     const severity = params.get('severity') || undefined;
     const source = params.get('source') || undefined;
     const message = params.get('message') || undefined;
     const requestId = params.get('requestId') || undefined;
     const from = params.get('from') || undefined;
     const to = params.get('to') || undefined;
-
+    (logInfo(`Initialized log search route${requestId}`),
+      { action: `init ${requestId}`, timestamp: new Date().toISOString() },
+      requestId);
     const where: any = {};
     if (severity) where.severity = severity;
     if (source) where.source = source;
