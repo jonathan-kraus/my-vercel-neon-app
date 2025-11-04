@@ -11,7 +11,9 @@ export async function fetchWeather(requestId?: string) {
   //const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=40.10520,-75.41404&units=imperial&apikey=${apiKey}`;
 
-  console.log(`[fetchWeather] [${requestId}] Fetching weather data from API: ${url}`);
+  console.log(
+    `[fetchWeather] [${requestId}] Fetching weather data from API: ${url.replace(apiKey, '***')}`
+  );
 
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch weather');
