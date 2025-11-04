@@ -49,6 +49,7 @@ export default function WeatherPage() {
         .then(() => {
           logInfo('Success: Forecast auto send email', {
             forecastLength: forecast.forecast.length,
+            requestId,
           });
         })
         .catch((err) => {
