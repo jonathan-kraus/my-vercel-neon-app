@@ -29,10 +29,13 @@ export default async function AuthorsPage() {
       console.log(`[ AuthorsPage ] No authors found.`);
     } else {
       // Log successful fetch
-      await logInfo(`Fetched ${authors.length} authors`, {
-        authorsCount: authors.length,
-        requestId,
-      });
+      await logInfo(
+        `Fetched ${authors.length} authors`,
+        {
+          authorsCount: authors.length,
+        },
+        requestId
+      );
     }
 
     console.log(`[AuthorsPage] Fetched ${authors.length} authors.`);
