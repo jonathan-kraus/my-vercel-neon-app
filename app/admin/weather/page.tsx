@@ -47,10 +47,11 @@ export default function WeatherPage() {
       // Auto-send email
       sendForecastEmail(forecast.forecast, requestId)
         .then(() => {
-          logInfo('Success: Forecast auto send email', {
-            forecastLength: forecast.forecast.length,
-            requestId,
-          });
+          logInfo(
+            'Success: Forecast auto send email',
+            { forecastLength: forecast.forecast.length },
+            requestId
+          );
         })
         .catch((err) => {
           console.error('Failed to send forecast email:', err);
