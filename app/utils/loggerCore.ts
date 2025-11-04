@@ -21,7 +21,12 @@ export async function logger(payload: LogPayload) {
     return;
   }
 
-  await fetch('/api/log', {
+  const baseUrl =
+    (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
+    (typeof window !== 'undefined' && window.location.origin) ||
+    'http://localhost:3000';
+
+  await fetch(`${baseUrl}/api/log`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(enriched),

@@ -19,7 +19,12 @@ export async function logEvent({
     if (typeof window === 'undefined') {
       await db.log.create({ data: { severity, source, message, requestId, metadata } as any });
     } else {
-      await fetch(`/api/log`, {
+      const baseUrl =
+        (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
+        (typeof window !== 'undefined' && window.location.origin) ||
+        'http://localhost:3000';
+
+      await fetch(`${baseUrl}/api/log`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
