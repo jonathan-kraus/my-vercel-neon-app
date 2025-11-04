@@ -32,7 +32,7 @@ export default async function AuthorsPage() {
       await logInfo(
         `Fetched ${authors.length} authors`,
         {
-          authorsCount: authors.length,
+          authors,
         },
         requestId
       );

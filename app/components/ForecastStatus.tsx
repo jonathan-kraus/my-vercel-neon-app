@@ -5,6 +5,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
 import { generateUUID } from '../../uuidj';
+import { logInfoFactory } from '@/app/utils/logger';
+const logInfo = logInfoFactory('app/components/ForecastStatus.tsx');
 
 type ForecastResult = {
   forecast: DailyForecastPoint[];
@@ -16,29 +18,6 @@ export default function ForecastStatus() {
   const emailSentRef = useRef(false);
   const requestIdRef = useRef<string>(generateUUID());
 
-  // define logEvent first
-  const logEvent = useCallback(
-    async (severity: 'info' | 'error', message: string, metadata: Record<string, any> = {}) => {
-      try {
-        await fetch('/api/log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            severity,
-            source: 'ForecastStatus',
-            message,
-            requestId: requestIdRef.current,
-            metadata,
-          }),
-        });
-      } catch (err) {
-        console.error('Failed to log event:', err);
-      }
-    },
-    []
-  );
-
-  // then define handleSendEmail
   const handleSendEmail = useCallback(async () => {
     if (!forecast) {
       toast.error('Forecast not loaded yet');
@@ -47,15 +26,16 @@ export default function ForecastStatus() {
     try {
       await sendForecastEmail(forecast.forecast, requestIdRef.current);
       toast.success('Forecast email success!');
-      await logEvent('info', 'Success: Forecast auto send email', {
-        forecastLength: forecast.forecast.length,
-      });
+      await logInfo(
+        'Success: Forecast auto send email',
+        { forecastLength: forecast.forecast.length },
+        requestIdRef.current
+      );
     } catch (err) {
       console.error('Failed to send forecast email:', err);
       toast.error('Failed to send forecast email');
-      await logEvent('error', 'Forecast email failed', { error: String(err) });
     }
-  }, [forecast, logEvent]);
+  }, [forecast]);
 
   // now effects can safely use them
   useEffect(() => {
@@ -63,18 +43,21 @@ export default function ForecastStatus() {
       try {
         const result = await getDailyForecast(requestIdRef.current);
         setForecast(result);
-        await logEvent('info', 'Forecast fetched successfully', {
-          forecastLength: result.forecast.length,
-          maxRainAccumulation: result.maxRainAccumulation,
-        });
+        await logInfo(
+          'Forecast fetched successfully',
+          {
+            forecastLength: result.forecast.length,
+            maxRainAccumulation: result.maxRainAccumulation,
+          },
+          requestIdRef.current
+        );
       } catch (err) {
         console.error('Failed to fetch forecast:', err);
         toast.error('Failed to fetch forecast');
-        await logEvent('error', 'Forecast fetch failed', { error: String(err) });
       }
     };
     fetchForecast();
-  }, [logEvent]);
+  }, [logInfo]);
 
   useEffect(() => {
     if (forecast && !emailSentRef.current) {
