@@ -4,7 +4,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
-import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
 import DailyForecastCard from '@/app/components/DailyForecastCard';
 import DailyForecastCardNew from '@/app/components/DailyForecastCardNew';
 import WeatherCard from '@/app/components/WeatherCard';
@@ -30,7 +29,6 @@ export default function WeatherPage() {
   const [requestId] = useState(() => generateUUID());
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(getActiveLocation());
   const [useNewUI, setUseNewUI] = useState(false);
-  const emailSentRef = useRef(false);
   
   useEffect(() => {
     setUseNewUI(isFeatureEnabled('NEW_UI_COMPONENTS'));
@@ -89,25 +87,7 @@ export default function WeatherPage() {
     fetchForecast();
   }, [requestId]);
 
-  // Auto-send once after forecast loads
-  useEffect(() => {
-    if (forecast && forecast.forecast.length > 0 && !emailSentRef.current) {
-      emailSentRef.current = true;
-      // Auto-send email
-      sendForecastEmail(forecast.forecast, requestId)
-        .then(() => {
-          logInfo(
-            'Success: Forecast auto send email',
-            { forecastLength: forecast.forecast.length },
-            requestId
-          );
-        })
-        .catch((err) => {
-          console.error('Failed to send forecast email:', err);
-          logError('Forecast email failed', { error: String(err) });
-        });
-    }
-  }, [forecast, requestId]);
+  // Auto-send removed - use manual SendForecastEmailButton instead to avoid rate limiting
 
   if (!forecast || forecast.forecast.length === 0) return <p>Loading forecast...</p>;
 
