@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import SunMoonCard from './SunMoonCard';
 import LocationSelector from './LocationSelector';
 import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
-import { Location, getActiveLocation } from '@/app/utils/locations';
+import { Location } from '@/app/utils/locations';
 import { generateUUID } from '@/uuidj';
 import toast from 'react-hot-toast';
 
@@ -14,15 +14,8 @@ interface WeatherSectionProps {
 
 export default function WeatherSection({ initialForecast }: WeatherSectionProps) {
   const [forecast, setForecast] = useState<DailyForecastPoint[]>(initialForecast);
-  const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
-
-  useEffect(() => {
-    setCurrentLocation(getActiveLocation());
-  }, []);
 
   const handleLocationChange = async (location: Location) => {
-    setCurrentLocation(location);
-
     try {
       const result = await getDailyForecast(generateUUID());
       setForecast(result.forecast);

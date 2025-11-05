@@ -58,7 +58,9 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   // Get the active location from feature flags
   const activeLocation = getActiveLocation();
   const locationParam = formatLocationForTomorrowIO(activeLocation);
-  console.log(`[getDailyForecast] [${requestId}] Using location: ${activeLocation.displayName} (${locationParam})`);
+  console.log(
+    `[getDailyForecast] [${requestId}] Using location: ${activeLocation.displayName} (${locationParam})`
+  );
 
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${locationParam}&timesteps=1d&units=imperial&fields=temperatureMax,temperatureMin,precipitationProbability,weatherCodeMax,weatherCodeMin,rainAccumulationAvg,rainAccumulationMax,rainAccumulationMin,rainAccumulationSum,sunriseTime,sunsetTime,moonriseTime,moonsetTime&apikey=${apiKey}`;
 

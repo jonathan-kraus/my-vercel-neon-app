@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { getAvailableLocations, getActiveLocation, Location } from '@/app/utils/locations';
 
 interface LocationSelectorProps {
@@ -8,14 +8,8 @@ interface LocationSelectorProps {
 }
 
 export default function LocationSelector({ onLocationChange }: LocationSelectorProps) {
-  const [availableLocations, setAvailableLocations] = useState<Location[]>([]);
-  const [activeLocation, setActiveLocation] = useState<Location | null>(null);
-
-  useEffect(() => {
-    const locations = getAvailableLocations();
-    setAvailableLocations(locations);
-    setActiveLocation(getActiveLocation());
-  }, []);
+  const [availableLocations] = useState<Location[]>(() => getAvailableLocations());
+  const [activeLocation, setActiveLocation] = useState<Location | null>(() => getActiveLocation());
 
   const handleLocationSelect = (location: Location) => {
     setActiveLocation(location);

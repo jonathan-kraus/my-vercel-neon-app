@@ -24,25 +24,30 @@ type ForecastResult = {
 export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const [requestId] = useState(() => generateUUID());
-  const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
   const emailSentRef = useRef(false);
 
   const handleLocationChange = async (location: Location) => {
-    setCurrentLocation(location);
     setForecast(null); // Clear current forecast while loading
     emailSentRef.current = false; // Reset email sent flag for new location
 
     try {
       const result = await getDailyForecast(generateUUID());
       setForecast(result);
-      logInfo('Fetched forecast for new location', {
-        location: location.displayName,
-        forecastLength: result.forecast.length
-      }, requestId);
+      logInfo(
+        'Fetched forecast for new location',
+        {
+          location: location.displayName,
+          forecastLength: result.forecast.length,
+        },
+        requestId
+      );
     } catch (err) {
       console.error('Failed to fetch forecast for new location:', err);
       toast.error(`Failed to fetch forecast for ${location.displayName}`);
-      await logError('Forecast fetch failed for new location', { error: String(err), location: location.displayName });
+      await logError('Forecast fetch failed for new location', {
+        error: String(err),
+        location: location.displayName,
+      });
     }
   };
 

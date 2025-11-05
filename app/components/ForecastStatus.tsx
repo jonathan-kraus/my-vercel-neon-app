@@ -57,7 +57,7 @@ export default function ForecastStatus() {
       }
     };
     fetchForecast();
-  }, [logInfo]);
+  }, []);
 
   useEffect(() => {
     if (forecast && !emailSentRef.current) {

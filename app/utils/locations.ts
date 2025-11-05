@@ -12,7 +12,7 @@ export interface Location {
 export const LOCATIONS: Record<string, Location> = {
   philadelphia: {
     name: 'philadelphia',
-    lat: 40.1052,
+    lat: 40.1042,
     lon: -75.414,
     displayName: 'Philadelphia, PA',
     flag: 'LOCATION_PHILADELPHIA',
@@ -44,9 +44,7 @@ export const LOCATIONS: Record<string, Location> = {
  * Get all available locations
  */
 export function getAvailableLocations(): Location[] {
-  return Object.values(LOCATIONS).filter((location) =>
-    isFeatureEnabled(location.flag as any)
-  );
+  return Object.values(LOCATIONS).filter((location) => isFeatureEnabled(location.flag as any));
 }
 
 /**

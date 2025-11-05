@@ -1,12 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  FEATURE_FLAGS,
-  FeatureFlag,
-  getEnabledFeatures,
-  getAllFeatureFlags,
-} from '@/app/utils/featureFlags';
+import { FEATURE_FLAGS, FeatureFlag, getEnabledFeatures } from '@/app/utils/featureFlags';
 
 export default function FeatureFlagsPage() {
   const [enabledCount] = useState(getEnabledFeatures().length);
@@ -20,8 +15,6 @@ export default function FeatureFlagsPage() {
       `In production, this would update the ${flag} environment variable.\n\nFor now, you can manually set FEATURE_${flag}=${!currentValue ? 'true' : 'false'} in your .env file.`
     );
   };
-
-  const allFlags = getAllFeatureFlags();
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
