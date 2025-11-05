@@ -1,21 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { FEATURE_FLAGS, FeatureFlag, isFeatureEnabled, getEnabledFeatures, getAllFeatureFlags } from '@/app/utils/featureFlags';
+import { useState } from 'react';
+import {
+  FEATURE_FLAGS,
+  FeatureFlag,
+  getEnabledFeatures,
+  getAllFeatureFlags,
+} from '@/app/utils/featureFlags';
 
 export default function FeatureFlagsPage() {
-  const [flags, setFlags] = useState<Record<FeatureFlag, boolean>>(FEATURE_FLAGS);
-  const [enabledCount, setEnabledCount] = useState(0);
-
-  useEffect(() => {
-    setEnabledCount(getEnabledFeatures().length);
-  }, [flags]);
+  const [enabledCount] = useState(getEnabledFeatures().length);
 
   const toggleFlag = (flag: FeatureFlag) => {
     // In a real app, this would update environment variables or a database
     // For demo purposes, we'll just show the concept
-    console.log(`Feature flag ${flag} would be toggled to ${!flags[flag]}`);
-    alert(`In production, this would update the ${flag} environment variable.\n\nFor now, you can manually set FEATURE_${flag}=${!flags[flag] ? 'true' : 'false'} in your .env file.`);
+    const currentValue = FEATURE_FLAGS[flag];
+    console.log(`Feature flag ${flag} would be toggled to ${!currentValue}`);
+    alert(
+      `In production, this would update the ${flag} environment variable.\n\nFor now, you can manually set FEATURE_${flag}=${!currentValue ? 'true' : 'false'} in your .env file.`
+    );
   };
 
   const allFlags = getAllFeatureFlags();
@@ -25,12 +28,13 @@ export default function FeatureFlagsPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Feature Flags</h1>
         <p className="text-gray-600">
-          Control application features without code deployments. Currently {enabledCount} of {Object.keys(allFlags).length} features are enabled.
+          Control application features without code deployments. Currently {enabledCount} of{' '}
+          {Object.keys(FEATURE_FLAGS).length} features are enabled.
         </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {Object.entries(allFlags).map(([flag, enabled]) => (
+        {Object.entries(FEATURE_FLAGS).map(([flag, enabled]) => (
           <div key={flag} className="border rounded-lg p-4 bg-white shadow-sm">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-lg">{flag.replace(/_/g, ' ')}</h3>
@@ -45,9 +49,7 @@ export default function FeatureFlagsPage() {
                 {enabled ? 'Enabled' : 'Disabled'}
               </button>
             </div>
-            <p className="text-sm text-gray-600 mb-3">
-              {getFlagDescription(flag as FeatureFlag)}
-            </p>
+            <p className="text-sm text-gray-600 mb-3">{getFlagDescription(flag as FeatureFlag)}</p>
             <div className="text-xs text-gray-500">
               Environment variable: <code className="bg-gray-100 px-1 rounded">FEATURE_{flag}</code>
             </div>
@@ -58,17 +60,21 @@ export default function FeatureFlagsPage() {
       <div className="mt-8 p-4 bg-blue-50 rounded-lg">
         <h2 className="font-semibold mb-2">How to Use Feature Flags</h2>
         <div className="text-sm space-y-2">
-          <p><strong>In your code:</strong></p>
+          <p>
+            <strong>In your code:</strong>
+          </p>
           <pre className="bg-white p-2 rounded text-xs overflow-x-auto">
-{`import { isFeatureEnabled } from '@/app/utils/featureFlags';
+            {`import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
 if (isFeatureEnabled('WEATHER_AUTO_REFRESH')) {
   // Enable auto-refresh logic
 }`}
           </pre>
-          <p><strong>In your .env file:</strong></p>
+          <p>
+            <strong>In your .env file:</strong>
+          </p>
           <pre className="bg-white p-2 rounded text-xs">
-{`FEATURE_WEATHER_AUTO_REFRESH=true
+            {`FEATURE_WEATHER_AUTO_REFRESH=true
 FEATURE_VERBOSE_LOGGING=false
 FEATURE_ADMIN_TOOLS=true`}
           </pre>
