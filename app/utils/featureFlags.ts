@@ -1,4 +1,47 @@
 // utils/featureFlags.ts
+const FEATURE_FLAG_STORAGE_KEY = 'feature-flag-overrides';
+
+/**
+ * Get feature flag overrides from localStorage
+ */
+function getFeatureFlagOverrides(): Record<string, boolean> {
+  if (typeof window === 'undefined') return {};
+  
+  try {
+    const stored = localStorage.getItem(FEATURE_FLAG_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * Set a feature flag override in localStorage
+ */
+export function setFeatureFlagOverride(flag: FeatureFlag, enabled: boolean): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const overrides = getFeatureFlagOverrides();
+    overrides[flag] = enabled;
+    localStorage.setItem(FEATURE_FLAG_STORAGE_KEY, JSON.stringify(overrides));
+  } catch (error) {
+    console.warn('Failed to save feature flag override:', error);
+  }
+}
+
+/**
+ * Clear all feature flag overrides
+ */
+export function clearFeatureFlagOverrides(): void {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.removeItem(FEATURE_FLAG_STORAGE_KEY);
+  } catch (error) {
+    console.warn('Failed to clear feature flag overrides:', error);
+  }
+}
 export const FEATURE_FLAGS = {
   // Weather features
   WEATHER_AUTO_REFRESH: process.env.FEATURE_WEATHER_AUTO_REFRESH === 'true',
@@ -37,6 +80,15 @@ export type FeatureFlag = keyof typeof FEATURE_FLAGS;
  * Check if a feature flag is enabled
  */
 export function isFeatureEnabled(flag: FeatureFlag): boolean {
+  // Check localStorage overrides first (client-side only)
+  if (typeof window !== 'undefined') {
+    const overrides = getFeatureFlagOverrides();
+    if (flag in overrides) {
+      return overrides[flag];
+    }
+  }
+  
+  // Fall back to environment variable default
   return FEATURE_FLAGS[flag];
 }
 

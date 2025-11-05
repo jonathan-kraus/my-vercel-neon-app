@@ -1,19 +1,44 @@
 'use client';
 
-import { useState } from 'react';
-import { FEATURE_FLAGS, FeatureFlag, getEnabledFeatures } from '@/app/utils/featureFlags';
+import { useState, useEffect } from 'react';
+import { 
+  FEATURE_FLAGS, 
+  FeatureFlag, 
+  getEnabledFeatures, 
+  isFeatureEnabled,
+  setFeatureFlagOverride,
+  clearFeatureFlagOverrides
+} from '@/app/utils/featureFlags';
 
 export default function FeatureFlagsPage() {
-  const [enabledCount] = useState(getEnabledFeatures().length);
+  const [featureStates, setFeatureStates] = useState<Record<FeatureFlag, boolean>>(() => {
+    // Initialize with current values
+    const states: Record<FeatureFlag, boolean> = {} as Record<FeatureFlag, boolean>;
+    Object.keys(FEATURE_FLAGS).forEach(flag => {
+      states[flag as FeatureFlag] = isFeatureEnabled(flag as FeatureFlag);
+    });
+    return states;
+  });
+
+  const enabledCount = Object.values(featureStates).filter(Boolean).length;
 
   const toggleFlag = (flag: FeatureFlag) => {
-    // In a real app, this would update environment variables or a database
-    // For demo purposes, we'll just show the concept
-    const currentValue = FEATURE_FLAGS[flag];
-    console.log(`Feature flag ${flag} would be toggled to ${!currentValue}`);
-    alert(
-      `In production, this would update the ${flag} environment variable.\n\nFor now, you can manually set FEATURE_${flag}=${!currentValue ? 'true' : 'false'} in your .env file.`
-    );
+    const newValue = !featureStates[flag];
+    setFeatureFlagOverride(flag, newValue);
+    setFeatureStates(prev => ({
+      ...prev,
+      [flag]: newValue
+    }));
+  };
+
+  const resetToDefaults = () => {
+    clearFeatureFlagOverrides();
+    // Reset to environment variable defaults
+    const defaultStates: Record<FeatureFlag, boolean> = {} as Record<FeatureFlag, boolean>;
+    Object.keys(FEATURE_FLAGS).forEach(flag => {
+      defaultStates[flag as FeatureFlag] = FEATURE_FLAGS[flag as FeatureFlag];
+    });
+    setFeatureStates(defaultStates);
   };
 
   return (
@@ -27,7 +52,7 @@ export default function FeatureFlagsPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {Object.entries(FEATURE_FLAGS).map(([flag, enabled]) => (
+        {Object.entries(featureStates).map(([flag, enabled]) => (
           <div key={flag} className="border rounded-lg p-4 bg-white shadow-sm">
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold text-lg">{flag.replace(/_/g, ' ')}</h3>
@@ -45,14 +70,29 @@ export default function FeatureFlagsPage() {
             <p className="text-sm text-gray-600 mb-3">{getFlagDescription(flag as FeatureFlag)}</p>
             <div className="text-xs text-gray-500">
               Environment variable: <code className="bg-gray-100 px-1 rounded">FEATURE_{flag}</code>
+              {FEATURE_FLAGS[flag as FeatureFlag] !== enabled && (
+                <span className="ml-2 text-orange-600">(overridden)</span>
+              )}
             </div>
           </div>
         ))}
       </div>
 
       <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-        <h2 className="font-semibold mb-2">How to Use Feature Flags</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold">Feature Flag Management</h2>
+          <button
+            onClick={resetToDefaults}
+            className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 text-sm"
+          >
+            Reset to Defaults
+          </button>
+        </div>
         <div className="text-sm space-y-2">
+          <p>
+            <strong>How it works:</strong> Feature flags are stored in localStorage and override environment variables.
+            Changes persist across page reloads but are reset when you clear browser data.
+          </p>
           <p>
             <strong>In your code:</strong>
           </p>
@@ -64,7 +104,7 @@ if (isFeatureEnabled('WEATHER_AUTO_REFRESH')) {
 }`}
           </pre>
           <p>
-            <strong>In your .env file:</strong>
+            <strong>Environment variables (for production):</strong>
           </p>
           <pre className="bg-white p-2 rounded text-xs">
             {`FEATURE_WEATHER_AUTO_REFRESH=true
@@ -81,7 +121,7 @@ function getFlagDescription(flag: FeatureFlag): string {
   const descriptions: Record<FeatureFlag, string> = {
     WEATHER_AUTO_REFRESH: 'Automatically refresh weather data every few minutes',
     WEATHER_LOCATION_DISPLAY: 'Show detailed location information with weather data',
-    LOCATION_PHILADELPHIA: 'Enable Philadelphia as an available weather location',
+    LOCATION_PHILADELPHIA: 'Enable King of Prussia as an available weather location',
     LOCATION_NEW_YORK: 'Enable New York City as an available weather location',
     LOCATION_SAN_FRANCISCO: 'Enable San Francisco as an available weather location',
     LOCATION_CHICAGO: 'Enable Chicago as an available weather location',

@@ -12,9 +12,9 @@ export interface Location {
 export const LOCATIONS: Record<string, Location> = {
   philadelphia: {
     name: 'philadelphia',
-    lat: 40.1042,
-    lon: -75.414,
-    displayName: 'Philadelphia, PA',
+    lat: 40.104234,
+    lon: -75.41397,
+    displayName: 'King of Prussia, PA',
     flag: 'LOCATION_PHILADELPHIA',
   },
   newYork: {
@@ -48,7 +48,7 @@ export function getAvailableLocations(): Location[] {
 }
 
 /**
- * Get the currently active location (first enabled one, or default to Philadelphia)
+ * Get the currently active location (first enabled one, or default to King of Prussia)
  */
 export function getActiveLocation(): Location {
   const available = getAvailableLocations();

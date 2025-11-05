@@ -2,6 +2,7 @@
 
 import { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
+import { getActiveLocation } from '@/app/utils/locations';
 
 interface SunMoonCardProps {
   forecast: DailyForecastPoint[];
@@ -67,7 +68,7 @@ export default function SunMoonCard({ forecast }: SunMoonCardProps) {
 
       {isFeatureEnabled('WEATHER_LOCATION_DISPLAY') && (
         <div className="mb-4 p-2 bg-blue-50 rounded text-sm text-center text-blue-800">
-          📍 Location: Philadelphia, PA (Demo)
+          📍 Location: {getActiveLocation().displayName}
         </div>
       )}
 
