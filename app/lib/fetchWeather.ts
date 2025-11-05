@@ -1,4 +1,5 @@
 import { db } from './db';
+import { getActiveLocation, formatLocationForTomorrowIO, formatLocationForOSM } from '../utils/locations';
 
 console.log(`[fetchWeather] Module loaded`);
 export async function fetchWeather(requestId?: string) {
@@ -8,8 +9,15 @@ export async function fetchWeather(requestId?: string) {
   const apiKey = process.env.TOMORROW_API_KEY;
   requestId = requestId ?? 'no-request-id';
   if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
-  //const url = `https://api.tomorrow.io/v4/weather/realtime?location=${zip}&units=imperial&apikey=${apiKey}`;
-  const url = `https://api.tomorrow.io/v4/weather/realtime?location=40.10520,-75.41404&units=imperial&apikey=${apiKey}`;
+
+  // Get the active location from feature flags
+  const activeLocation = getActiveLocation();
+  const locationParam = formatLocationForTomorrowIO(activeLocation);
+  const osmLocationParam = formatLocationForOSM(activeLocation);
+
+  console.log(`[fetchWeather] [${requestId}] Using location: ${activeLocation.displayName} (${locationParam})`);
+
+  const url = `https://api.tomorrow.io/v4/weather/realtime?location=${locationParam}&units=imperial&apikey=${apiKey}`;
 
   console.log(
     `[fetchWeather] [${requestId}] Fetching weather data from API: ${url.replace(apiKey, '***')}`
@@ -25,7 +33,7 @@ export async function fetchWeather(requestId?: string) {
   console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: values`, values);
   console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location2`, location2);
   //const url2 = 'https://nominatim.openstreetmap.org/reverse?lat=40.10520&lon=-75.41404&format=json';
-  const url2 = 'https://nominatim.openstreetmap.org/reverse?lat=42.19520&lon=-71.07184&format=json';
+  const url2 = `https://nominatim.openstreetmap.org/reverse?lat=${osmLocationParam}&format=json`;
   console.log(`[fetchWeather] [${requestId}] Fetching location data from API: ${url2}`);
   let locationDetails = {
     city: undefined as string | undefined,

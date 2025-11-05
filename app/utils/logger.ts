@@ -42,7 +42,12 @@ export async function logger(payload: LogPayload) {
     (typeof window !== 'undefined' && window.location.origin) ||
     'http://localhost:3000';
 
-  await fetch(`${baseUrl}/api/log`, {
+  console.log(`[logger] Base URL for API call: ${baseUrl}`);
+
+  const fullUrl = `${baseUrl}/api/log`;
+  console.log(`[logger] Full URL for API call: ${fullUrl}`);
+
+  await fetch(fullUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(enriched),
