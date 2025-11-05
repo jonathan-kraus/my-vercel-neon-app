@@ -5,6 +5,12 @@ import { generateUUID } from '@/uuidj';
 const logInfo = logInfoFactory('app/api/logs/search/route');
 
 export async function GET(req: Request) {
+  const requestId = generateUUID();
+  logInfo(
+    `Initialized log search route`,
+    { action: `init`, timestamp: new Date().toISOString() },
+    requestId
+  );
   try {
     const JKID = generateUUID();
     const url = new URL(req.url);
@@ -17,9 +23,6 @@ export async function GET(req: Request) {
     const requestId = params.get('requestId') || JKID;
     const from = params.get('from') || undefined;
     const to = params.get('to') || undefined;
-    // (logInfo(`Initialized log search route${requestId}`),
-    //   { action: `init ${requestId}`, timestamp: new Date().toISOString() },
-    //   requestId);
     const where: any = {};
     if (severity) where.severity = severity;
     if (source) where.source = source;

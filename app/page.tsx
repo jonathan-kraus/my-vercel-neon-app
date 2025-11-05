@@ -13,6 +13,8 @@ import { CompleteButton } from '@/app/components/CompleteButton';
 import { MarkCompleteButton } from './components/MarkCompleteButton';
 import SunMoonCard from './components/SunMoonCard';
 import { getDailyForecast } from './lib/GetDailyForecast';
+import { createLogger } from './utils/logger';
+import { generateUUID } from '../uuidj';
 // removed client-side duplicate form import (PostFormClient)
 // import PostFormClient from '@/app/components/PostFormClient';
 //import { revalidatePath } from "next/cache";
@@ -43,11 +45,17 @@ type BlogPost = {
 };
 
 export default async function Home() {
+  const requestId = generateUUID();
+  const log = createLogger('app/page', requestId);
+
+  log.info('Home page rendering started', { action: 'page_load' });
   const posts = await db.post.findMany({
     orderBy: { createdAt: 'desc' },
     where: { published: true },
     include: { author: true },
   });
+
+  log.info('Posts fetched from database', { postCount: posts.length });
 
   // Check for posts that need follow-up
   const followUpPosts = await db.post.findMany({
@@ -56,7 +64,11 @@ export default async function Home() {
     orderBy: { followUpDate: 'asc' },
   });
 
-  const forecastResult = await getDailyForecast();
+  log.info('Follow-up posts fetched', { followUpCount: followUpPosts.length });
+
+  const forecastResult = await getDailyForecast(requestId);
+
+  log.info('Forecast data fetched', { forecastDays: forecastResult.forecast.length });
 
   return (
     <div className="flex min-h-screen flex-col">
