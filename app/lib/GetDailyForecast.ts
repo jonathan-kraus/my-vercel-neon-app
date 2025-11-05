@@ -1,7 +1,7 @@
 'use server';
 
 import { generateUUID } from '../../uuidj';
-import { getActiveLocation, formatLocationForTomorrowIO } from '../utils/locations';
+import { getActiveLocation, formatLocationForTomorrowIO, Location } from '../utils/locations';
 import { isFeatureEnabled } from '../utils/featureFlags';
 
 export type DailyForecastPoint = {
@@ -93,7 +93,7 @@ function generateMockForecast(requestId?: string): DailyForecastResult {
   };
 }
 
-export async function getDailyForecast(requestId?: string): Promise<DailyForecastResult> {
+export async function getDailyForecast(requestId?: string, location?: Location): Promise<DailyForecastResult> {
   console.log(`[getDailyForecast] [${requestId}] Function started`);
   const apiKey = process.env.TOMORROW_API_KEY;
   if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
@@ -109,11 +109,11 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   if (!requestId) requestId = generateUUID();
   console.log(`[getDailyForecast] [${requestId}] getDailyForecast started`);
 
-  // Get the active location from feature flags
-  const activeLocation = getActiveLocation();
-  const locationParam = formatLocationForTomorrowIO(activeLocation);
+  // Get the location to use (passed parameter or active location from feature flags)
+  const locationToUse = location || getActiveLocation();
+  const locationParam = formatLocationForTomorrowIO(locationToUse);
   console.log(
-    `[getDailyForecast] [${requestId}] Using location: ${activeLocation.displayName} (${locationParam})`
+    `[getDailyForecast] [${requestId}] Using location: ${locationToUse.displayName} (${locationParam})`
   );
 
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${locationParam}&timesteps=1d&units=imperial&fields=temperatureMax,temperatureMin,precipitationProbability,weatherCodeMax,weatherCodeMin,rainAccumulationAvg,rainAccumulationMax,rainAccumulationMin,rainAccumulationSum,sunriseTime,sunsetTime,moonriseTime,moonsetTime&apikey=${apiKey}`;

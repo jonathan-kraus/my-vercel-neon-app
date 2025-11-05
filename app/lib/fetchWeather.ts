@@ -1,8 +1,8 @@
 import { db } from './db';
-import { getActiveLocation, formatLocationForTomorrowIO, formatLocationForOSM } from '../utils/locations';
+import { getActiveLocation, formatLocationForTomorrowIO, formatLocationForOSM, Location } from '../utils/locations';
 
 console.log(`[fetchWeather] Module loaded`);
-export async function fetchWeather(requestId?: string) {
+export async function fetchWeather(requestId?: string, location?: Location) {
   if (!requestId) requestId = 'requestid-not-passed'; //generateUUID()
   console.log(`[fetchWeather] [${requestId}] Server function started`);
 
@@ -10,12 +10,12 @@ export async function fetchWeather(requestId?: string) {
   requestId = requestId ?? 'no-request-id';
   if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
 
-  // Get the active location from feature flags
-  const activeLocation = getActiveLocation();
-  const locationParam = formatLocationForTomorrowIO(activeLocation);
-  const osmLocationParam = formatLocationForOSM(activeLocation);
+  // Get the location to use (passed parameter or active location from feature flags)
+  const locationToUse = location || getActiveLocation();
+  const locationParam = formatLocationForTomorrowIO(locationToUse);
+  const osmLocation = formatLocationForOSM(locationToUse);
 
-  console.log(`[fetchWeather] [${requestId}] Using location: ${activeLocation.displayName} (${locationParam})`);
+  console.log(`[fetchWeather] [${requestId}] Using location: ${locationToUse.displayName} (${locationParam})`);
 
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${locationParam}&units=imperial&apikey=${apiKey}`;
 
@@ -33,7 +33,7 @@ export async function fetchWeather(requestId?: string) {
   console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: values`, values);
   console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location2`, location2);
   //const url2 = 'https://nominatim.openstreetmap.org/reverse?lat=40.10520&lon=-75.41404&format=json';
-  const url2 = `https://nominatim.openstreetmap.org/reverse?lat=${osmLocationParam}&format=json`;
+  const url2 = `https://nominatim.openstreetmap.org/reverse?lat=${osmLocation.lat}&lon=${osmLocation.lon}&format=json`;
   console.log(`[fetchWeather] [${requestId}] Fetching location data from API: ${url2}`);
   let locationDetails = {
     city: undefined as string | undefined,
@@ -112,7 +112,7 @@ export async function fetchWeather(requestId?: string) {
       village: undefined,
       hamlet: undefined,
       county: undefined,
-      displayName: activeLocation.displayName,
+      displayName: locationToUse.displayName,
     };
   }
   console.log(`[fetchWeather] [${requestId}] Preparing to log event to external logging service`);

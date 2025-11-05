@@ -2,13 +2,14 @@
 
 import { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
-import { getActiveLocation } from '@/app/utils/locations';
+import { getActiveLocation, Location } from '@/app/utils/locations';
 
 interface SunMoonCardProps {
   forecast: DailyForecastPoint[];
+  location?: Location;
 }
 
-export default function SunMoonCard({ forecast }: SunMoonCardProps) {
+export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
   if (!forecast || forecast.length === 0) {
     return (
       <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-600">
@@ -68,7 +69,7 @@ export default function SunMoonCard({ forecast }: SunMoonCardProps) {
 
       {isFeatureEnabled('WEATHER_LOCATION_DISPLAY') && (
         <div className="mb-4 p-2 bg-blue-50 rounded text-sm text-center text-blue-800">
-          📍 Location: {getActiveLocation().displayName}
+          📍 Location: {location?.displayName || getActiveLocation().displayName}
         </div>
       )}
 

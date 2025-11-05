@@ -14,10 +14,12 @@ interface WeatherSectionProps {
 
 export default function WeatherSection({ initialForecast }: WeatherSectionProps) {
   const [forecast, setForecast] = useState<DailyForecastPoint[]>(initialForecast);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
 
   const handleLocationChange = async (location: Location) => {
     try {
-      const result = await getDailyForecast(generateUUID());
+      setSelectedLocation(location);
+      const result = await getDailyForecast(generateUUID(), location);
       setForecast(result.forecast);
     } catch (err) {
       console.error('Failed to fetch forecast for new location:', err);
@@ -28,7 +30,7 @@ export default function WeatherSection({ initialForecast }: WeatherSectionProps)
   return (
     <section className="mb-8">
       <LocationSelector onLocationChange={handleLocationChange} />
-      <SunMoonCard forecast={forecast} />
+      <SunMoonCard forecast={forecast} location={selectedLocation || undefined} />
     </section>
   );
 }

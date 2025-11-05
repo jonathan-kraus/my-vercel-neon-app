@@ -70,8 +70,8 @@ export function formatLocationForTomorrowIO(location: Location): string {
 }
 
 /**
- * Format location for OpenStreetMap (lat,lon)
+ * Format location for OpenStreetMap (returns {lat, lon} object)
  */
-export function formatLocationForOSM(location: Location): string {
-  return `${location.lat},${location.lon}`;
+export function formatLocationForOSM(location: Location): { lat: number; lon: number } {
+  return { lat: location.lat, lon: location.lon };
 }
