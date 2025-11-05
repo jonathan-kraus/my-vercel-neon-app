@@ -6,7 +6,9 @@ import toast from 'react-hot-toast';
 import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
 import DailyForecastCard from '@/app/components/DailyForecastCard';
+import DailyForecastCardNew from '@/app/components/DailyForecastCardNew';
 import WeatherCard from '@/app/components/WeatherCard';
+import WeatherCardNew from '@/app/components/WeatherCardNew';
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
 import SunMoonCard from '@/app/components/SunMoonCard';
 import LocationSelector from '@/app/components/LocationSelector';
@@ -14,6 +16,7 @@ import SendForecastEmailButton from '@/app/components/SendForecastEmailButton';
 import { Location, getActiveLocation } from '@/app/utils/locations';
 import { logInfoFactory, logErrorFactory } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
+import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
 const logInfo = logInfoFactory('app/admin/weather/page.tsx');
 const logError = logErrorFactory('app/admin/weather/page.tsx');
@@ -26,7 +29,13 @@ export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const [requestId] = useState(() => generateUUID());
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(getActiveLocation());
+  const [useNewUI, setUseNewUI] = useState(false);
   const emailSentRef = useRef(false);
+  
+  useEffect(() => {
+    setUseNewUI(isFeatureEnabled('NEW_UI_COMPONENTS'));
+  }, []);
+  
   const onLog = useCallback(
     async (severity: 'info' | 'error', message: string, metadata?: Record<string, any>) => {
       if (severity === 'info') {
@@ -102,6 +111,9 @@ export default function WeatherPage() {
 
   if (!forecast || forecast.forecast.length === 0) return <p>Loading forecast...</p>;
 
+  const WeatherComponent = useNewUI ? WeatherCardNew : WeatherCard;
+  const ForecastComponent = useNewUI ? DailyForecastCardNew : DailyForecastCard;
+
   return (
     <div className="space-y-4 animate-fade-in">
       <h2 className="text-xl text-center font-bold">Weather</h2>
@@ -134,13 +146,13 @@ export default function WeatherPage() {
         </div>
       )}
 
-      <WeatherCard location={selectedLocation || undefined} />
+      <WeatherComponent location={selectedLocation || undefined} />
 
       <SunMoonCard forecast={forecast.forecast} location={selectedLocation || undefined} />
 
       <HourlyForecastChart />
 
-      <DailyForecastCard forecast={forecast.forecast} />
+      <ForecastComponent forecast={forecast.forecast} />
     </div>
   );
 }
