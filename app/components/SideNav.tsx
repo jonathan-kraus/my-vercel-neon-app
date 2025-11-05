@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { showCookieSummaryToast } from './ToastSpinner';
+import { generateUUID } from '@/uuidj';
 type NavItemProps =
   | { href: string; label: string; currentPath?: string; onHoverPrefetch?: (href: string) => void }
   | { onClick: () => void; label: string };
@@ -42,7 +43,7 @@ export function NavItem(props: NavItemProps) {
   );
 }
 
-const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+const requestId = generateUUID();
 const calllog = async (message: string) => {
   // Skip logging during build to prevent errors
   if (process.env.NEXT_PHASE === 'phase-production-build') return;
