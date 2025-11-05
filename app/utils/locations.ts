@@ -40,8 +40,8 @@ export const LOCATIONS: Record<string, Location> = {
   },
   williamstown: {
     name: 'williamstown',
-    lat: 42.7125,
-    lon: -73.2037,
+    lat: 42.7083,
+    lon: -73.1901,
     displayName: 'Williamstown, MA',
     flag: 'LOCATION_WILLIAMSTOWN',
   },
