@@ -50,10 +50,17 @@ export async function fetchWeather(requestId?: string) {
         'User-Agent': 'my-vercel-neon-app/1.0 (jonathankraus@comcast.net)',
       },
     });
-    if (!res2.ok) throw new Error('Failed to fetch location data');
+    
+    console.log(`[fetchWeather] [${requestId}] Nominatim API response status: ${res2.status}`);
+    
+    if (!res2.ok) {
+      console.error(`[fetchWeather] [${requestId}] Nominatim API error: ${res2.status} ${res2.statusText}`);
+      throw new Error('Failed to fetch location data');
+    }
 
     const data2 = await res2.json();
-    console.log(`[fetchWeather] [${requestId}] Location data fetch response: json`, data2);
+    console.log(`[fetchWeather] [${requestId}] Location data fetch response:`, data2);
+    console.log(`[fetchWeather] [${requestId}] Address object:`, data2.address);
 
     locationDetails = {
       city: data2.address?.city,
@@ -97,6 +104,16 @@ export async function fetchWeather(requestId?: string) {
     );
   } catch (error) {
     console.error(`[fetchWeather] [${requestId}] Error fetching location data:`, error);
+    
+    // Fallback: use active location display name
+    locationDetails = {
+      city: undefined,
+      town: undefined,
+      village: undefined,
+      hamlet: undefined,
+      county: undefined,
+      displayName: activeLocation.displayName,
+    };
   }
   console.log(`[fetchWeather] [${requestId}] Preparing to log event to external logging service`);
 
