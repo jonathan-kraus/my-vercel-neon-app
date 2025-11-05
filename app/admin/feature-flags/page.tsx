@@ -127,7 +127,7 @@ function getFlagDescription(flag: FeatureFlag): string {
   const descriptions: Record<FeatureFlag, string> = {
     WEATHER_AUTO_REFRESH: 'Automatically refresh weather data every few minutes',
     WEATHER_LOCATION_DISPLAY: 'Show detailed location information with weather data',
-    WEATHER_MOCK_DATA: 'Use mock weather data instead of API calls (for development/testing)',
+    WEATHER_MOCK_DATA: 'Use mock weather data instead of API calls (for development/testing). Note: Enable at least one location flag to see weather.',
     LOCATION_KOP: 'Enable King of Prussia as an available weather location',
     LOCATION_NEW_YORK: 'Enable New York City as an available weather location',
     LOCATION_SAN_FRANCISCO: 'Enable San Francisco as an available weather location',

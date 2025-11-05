@@ -19,6 +19,17 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
   };
 
   if (availableLocations.length <= 1) {
+    // Show a message if no locations are available but we have a fallback
+    if (availableLocations.length === 0 && activeLocation) {
+      return (
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            <strong>Note:</strong> Using fallback location ({activeLocation.displayName}). 
+            Enable location flags in <a href="/admin/feature-flags" className="underline">Feature Flags</a> to switch locations.
+          </p>
+        </div>
+      );
+    }
     return null; // Don't show selector if only one location is available
   }
 
