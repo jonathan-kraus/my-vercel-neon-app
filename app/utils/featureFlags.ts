@@ -53,6 +53,7 @@ export const FEATURE_FLAGS = {
   LOCATION_NEW_YORK: process.env.FEATURE_LOCATION_NEW_YORK !== 'false', // Default to true
   LOCATION_SAN_FRANCISCO: process.env.FEATURE_LOCATION_SAN_FRANCISCO === 'true',
   LOCATION_CHICAGO: process.env.FEATURE_LOCATION_CHICAGO === 'true',
+  LOCATION_WILLIAMSTOWN: process.env.FEATURE_LOCATION_WILLIAMSTOWN === 'true',
 
   // Logging features
   VERBOSE_LOGGING: process.env.FEATURE_VERBOSE_LOGGING === 'true',

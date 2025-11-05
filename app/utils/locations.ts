@@ -38,6 +38,13 @@ export const LOCATIONS: Record<string, Location> = {
     displayName: 'Chicago, IL',
     flag: 'LOCATION_CHICAGO',
   },
+  williamstown: {
+    name: 'williamstown',
+    lat: 42.7125,
+    lon: -73.2037,
+    displayName: 'Williamstown, MA',
+    flag: 'LOCATION_WILLIAMSTOWN',
+  },
 };
 
 /**
