@@ -12,7 +12,6 @@ export async function GET(req: Request) {
     requestId
   );
   try {
-    const JKID = generateUUID();
     const url = new URL(req.url);
     const params = url.searchParams;
     const page = Math.max(1, parseInt(params.get('page') || '1', 10));
@@ -20,14 +19,14 @@ export async function GET(req: Request) {
     const severity = params.get('severity') || undefined;
     const source = params.get('source') || undefined;
     const message = params.get('message') || undefined;
-    const requestId = params.get('requestId') || JKID;
+    const requestIdParam = params.get('requestId') || undefined;
     const from = params.get('from') || undefined;
     const to = params.get('to') || undefined;
     const where: any = {};
     if (severity) where.severity = severity;
     if (source) where.source = source;
     if (message) where.message = { contains: message, mode: 'insensitive' };
-    if (requestId) where.requestId = { equals: requestId };
+    if (requestIdParam) where.requestId = { equals: requestIdParam };
     if (from || to) {
       where.timestamp = {};
       if (from) {
