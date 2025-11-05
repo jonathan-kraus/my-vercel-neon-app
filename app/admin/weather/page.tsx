@@ -1,7 +1,7 @@
 //app/admin/weather/page.tsx
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
@@ -10,6 +10,7 @@ import WeatherCard from '@/app/components/WeatherCard';
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
 import SunMoonCard from '@/app/components/SunMoonCard';
 import LocationSelector from '@/app/components/LocationSelector';
+import SendForecastEmailButton from '@/app/components/SendForecastEmailButton';
 import { Location, getActiveLocation } from '@/app/utils/locations';
 import { logInfoFactory, logErrorFactory } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
@@ -26,11 +27,21 @@ export default function WeatherPage() {
   const [requestId] = useState(() => generateUUID());
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(getActiveLocation());
   const emailSentRef = useRef(false);
+  const onLog = useCallback(
+    async (severity: 'info' | 'error', message: string, metadata?: Record<string, any>) => {
+      if (severity === 'info') {
+        await logInfo(message, metadata || {}, requestId);
+      } else {
+        await logError(message, metadata || {});
+      }
+    },
+    [requestId]
+  );
 
   const handleLocationChange = async (location: Location) => {
     setSelectedLocation(location); // Update selected location
     setForecast(null); // Clear current forecast while loading
-    emailSentRef.current = false; // Reset email sent flag for new location
+    // emailSentRef.current = false; // Reset email sent flag for new location - removed to prevent multiple sends
 
     try {
       const result = await getDailyForecast(generateUUID(), location); // Pass the selected location
@@ -96,6 +107,10 @@ export default function WeatherPage() {
       <h2 className="text-xl text-center font-bold">Weather</h2>
 
       <LocationSelector onLocationChange={handleLocationChange} />
+
+      {forecast && forecast.forecast.length > 0 && (
+        <SendForecastEmailButton forecast={forecast.forecast} requestId={requestId} onLog={onLog} />
+      )}
 
       {forecast.maxRainAccumulation > 0 && (
         <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded">

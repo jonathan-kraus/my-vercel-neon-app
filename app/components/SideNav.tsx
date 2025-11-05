@@ -65,7 +65,7 @@ const calllog = async (message: string) => {
     console.error('Failed to log event:', error);
   }
 };
-calllog(`[SideNav] [${requestId}] component loaded`);
+// calllog(`[SideNav] [${requestId}] component loaded`); // Moved to useEffect
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(
@@ -112,6 +112,11 @@ export default function SideNav() {
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const [sessionLoading, setSessionLoading] = useState<boolean>(true);
+
+  // Log component load
+  useEffect(() => {
+    calllog(`[SideNav] [${requestId}] component loaded`);
+  }, []);
 
   // Read cookies and/or server session. Re-run on route changes and window focus.
   async function refreshSession(mountedRef: { current: boolean }) {
