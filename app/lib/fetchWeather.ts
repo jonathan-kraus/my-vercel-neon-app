@@ -1,17 +1,56 @@
 import { db } from './db';
 import { getActiveLocation, formatLocationForTomorrowIO, formatLocationForOSM, Location } from '../utils/locations';
+import { isFeatureEnabled } from '../utils/featureFlags';
 
 console.log(`[fetchWeather] Module loaded`);
+
+function generateMockWeather(requestId: string, location: Location) {
+  return {
+    temperature: 65 + Math.random() * 20, // 65-85°F
+    humidity: 50 + Math.random() * 30, // 50-80%
+    windSpeed: 5 + Math.random() * 10, // 5-15 mph
+    windGust: 8 + Math.random() * 15, // 8-23 mph
+    precipitationProbability: Math.random() * 40, // 0-40%
+    conditions: {
+      day: Math.floor(Math.random() * 1000) + 1000, // Weather codes 1000-1999
+      night: Math.floor(Math.random() * 1000) + 1000,
+    },
+    rainAccumulationAvg: Math.random() * 0.1,
+    rainAccumulationMax: Math.random() * 0.3,
+    rainAccumulationMin: 0,
+    rainAccumulationSum: Math.random() * 0.2,
+    location: location.displayName,
+    locationDetails: {
+      city: location.displayName.split(',')[0],
+      town: undefined,
+      village: undefined,
+      hamlet: undefined,
+      county: undefined,
+      displayName: location.displayName,
+    },
+    emailSent: false,
+    lastEmailTimestamp: null,
+    requestId,
+  };
+}
+
 export async function fetchWeather(requestId?: string, location?: Location) {
   if (!requestId) requestId = 'requestid-not-passed'; //generateUUID()
   console.log(`[fetchWeather] [${requestId}] Server function started`);
+
+  // Get the location to use (passed parameter or active location from feature flags)
+  const locationToUse = location || getActiveLocation();
+  
+  // Check if mock data is enabled
+  if (isFeatureEnabled('WEATHER_MOCK_DATA')) {
+    console.log(`[fetchWeather] [${requestId}] Using mock weather data for ${locationToUse.displayName}`);
+    return generateMockWeather(requestId, locationToUse);
+  }
 
   const apiKey = process.env.TOMORROW_API_KEY;
   requestId = requestId ?? 'no-request-id';
   if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
 
-  // Get the location to use (passed parameter or active location from feature flags)
-  const locationToUse = location || getActiveLocation();
   const locationParam = formatLocationForTomorrowIO(locationToUse);
   const osmLocation = formatLocationForOSM(locationToUse);
 
