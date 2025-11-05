@@ -98,14 +98,19 @@ function generateMockForecast(requestId?: string): DailyForecastResult {
 
 export async function getDailyForecast(requestId?: string, location?: Location): Promise<DailyForecastResult> {
   console.log(`[getDailyForecast] [${requestId}] Function started`);
-  const apiKey = process.env.TOMORROW_API_KEY;
-  if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
   
   // Check if mock data is enabled
-  if (isFeatureEnabled('WEATHER_MOCK_DATA')) {
+  const useMockData = isFeatureEnabled('WEATHER_MOCK_DATA');
+  console.log(`[getDailyForecast] [${requestId}] Mock data enabled: ${useMockData}`);
+  console.log(`[getDailyForecast] [${requestId}] Environment variable FEATURE_WEATHER_MOCK_DATA: ${process.env.FEATURE_WEATHER_MOCK_DATA}`);
+  
+  if (useMockData) {
     console.log(`[getDailyForecast] [${requestId}] Using mock weather data`);
     return generateMockForecast(requestId);
   }
+  
+  const apiKey = process.env.TOMORROW_API_KEY;
+  if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
 
   console.log(`[getDailyForecast] [${requestId}] Using API key: ${apiKey.slice(0, 4)}...`);
 

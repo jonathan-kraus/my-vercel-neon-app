@@ -42,7 +42,11 @@ export async function fetchWeather(requestId?: string, location?: Location) {
   const locationToUse = location || getActiveLocation();
   
   // Check if mock data is enabled
-  if (isFeatureEnabled('WEATHER_MOCK_DATA')) {
+  const useMockData = isFeatureEnabled('WEATHER_MOCK_DATA');
+  console.log(`[fetchWeather] [${requestId}] Mock data enabled: ${useMockData}`);
+  console.log(`[fetchWeather] [${requestId}] Environment variable FEATURE_WEATHER_MOCK_DATA: ${process.env.FEATURE_WEATHER_MOCK_DATA}`);
+  
+  if (useMockData) {
     console.log(`[fetchWeather] [${requestId}] Using mock weather data for ${locationToUse.displayName}`);
     return generateMockWeather(requestId, locationToUse);
   }
