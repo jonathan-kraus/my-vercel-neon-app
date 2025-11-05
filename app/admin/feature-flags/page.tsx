@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { logInfoFactory } from '@/app/utils/logger';
+import { generateUUID } from '@/uuidj';
 import { 
   FEATURE_FLAGS, 
   FeatureFlag, 
@@ -18,7 +20,12 @@ export default function FeatureFlagsPage() {
     });
     return states;
   });
-
+  const logInfo = logInfoFactory('FeatureFlagsPage');
+  const requestId = generateUUID();
+  logInfo('FeatureFlagsPage rendered',
+    { featureStates },
+    requestId
+  );
   const enabledCount = Object.values(featureStates).filter(Boolean).length;
 
   const toggleFlag = (flag: FeatureFlag) => {

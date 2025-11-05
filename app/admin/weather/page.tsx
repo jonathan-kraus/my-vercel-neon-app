@@ -10,7 +10,7 @@ import WeatherCard from '@/app/components/WeatherCard';
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
 import SunMoonCard from '@/app/components/SunMoonCard';
 import LocationSelector from '@/app/components/LocationSelector';
-import { Location } from '@/app/utils/locations';
+import { Location, getActiveLocation } from '@/app/utils/locations';
 import { logInfoFactory, logErrorFactory } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 
@@ -24,7 +24,7 @@ type ForecastResult = {
 export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const [requestId] = useState(() => generateUUID());
-  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(getActiveLocation());
   const emailSentRef = useRef(false);
 
   const handleLocationChange = async (location: Location) => {
