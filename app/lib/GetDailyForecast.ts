@@ -2,6 +2,7 @@
 
 import { generateUUID } from '../../uuidj';
 import { getActiveLocation, formatLocationForTomorrowIO } from '../utils/locations';
+import { isFeatureEnabled } from '../utils/featureFlags';
 
 export type DailyForecastPoint = {
   requestId?: string;
@@ -26,6 +27,11 @@ export type DailyForecastPoint = {
 export type DailyForecastResult = {
   forecast: DailyForecastPoint[];
   maxRainAccumulation: number;
+  error?: {
+    type: 'rate_limit' | 'network' | 'api_error' | 'unknown';
+    message: string;
+    statusCode?: number;
+  };
 };
 type RawDailyEntry = {
   time: string;
@@ -46,10 +52,58 @@ type RawDailyEntry = {
   };
 };
 
+function generateMockForecast(requestId?: string): DailyForecastResult {
+  const now = new Date();
+  const forecast: DailyForecastPoint[] = [];
+  
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(now);
+    date.setDate(date.getDate() + i);
+    
+    forecast.push({
+      requestId,
+      time: date.toISOString().split('T')[0] + 'T11:00:00Z',
+      temperatureMax: 65 + Math.random() * 20, // 65-85°F
+      temperatureMin: 45 + Math.random() * 15, // 45-60°F
+      precipitation: Math.random() * 30, // 0-30% chance
+      conditions: {
+        day: Math.floor(Math.random() * 1000) + 1000, // Weather codes 1000-1999
+        night: Math.floor(Math.random() * 1000) + 1000,
+      },
+      rainAccumulationAvg: Math.random() * 0.1,
+      rainAccumulationMax: Math.random() * 0.5,
+      rainAccumulationMin: 0,
+      rainAccumulationSum: Math.random() * 0.3,
+      sunriseTime: date.toISOString().split('T')[0] + 'T06:30:00Z',
+      sunsetTime: date.toISOString().split('T')[0] + 'T19:45:00Z',
+      moonriseTime: date.toISOString().split('T')[0] + 'T20:15:00Z',
+      moonsetTime: date.toISOString().split('T')[0] + 'T08:30:00Z',
+    });
+  }
+  
+  const maxRainAccumulation = Math.max(...forecast.map(f => f.rainAccumulationSum));
+  
+  return { 
+    forecast, 
+    maxRainAccumulation,
+    error: {
+      type: 'unknown',
+      message: 'Using mock weather data (API not called)'
+    }
+  };
+}
+
 export async function getDailyForecast(requestId?: string): Promise<DailyForecastResult> {
   console.log(`[getDailyForecast] [${requestId}] Function started`);
   const apiKey = process.env.TOMORROW_API_KEY;
   if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
+  
+  // Check if mock data is enabled
+  if (isFeatureEnabled('WEATHER_MOCK_DATA')) {
+    console.log(`[getDailyForecast] [${requestId}] Using mock weather data`);
+    return generateMockForecast(requestId);
+  }
+
   console.log(`[getDailyForecast] [${requestId}] Using API key: ${apiKey.slice(0, 4)}...`);
 
   if (!requestId) requestId = generateUUID();
@@ -67,7 +121,27 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   const res = await fetch(url);
   if (!res.ok) {
     console.error(`[Tomorrow.io] ❌ HTTP error: ${res.status}`);
-    return { forecast: [], maxRainAccumulation: 0 };
+    
+    let errorType: 'rate_limit' | 'network' | 'api_error' | 'unknown' = 'api_error';
+    let errorMessage = `API request failed with status ${res.status}`;
+    
+    if (res.status === 429) {
+      errorType = 'rate_limit';
+      errorMessage = 'Weather API rate limit exceeded. Please try again later.';
+    } else if (res.status >= 500) {
+      errorType = 'api_error';
+      errorMessage = 'Weather service is temporarily unavailable.';
+    }
+    
+    return { 
+      forecast: [], 
+      maxRainAccumulation: 0,
+      error: {
+        type: errorType,
+        message: errorMessage,
+        statusCode: res.status
+      }
+    };
   }
 
   const data = await res.json();

@@ -46,6 +46,7 @@ export const FEATURE_FLAGS = {
   // Weather features
   WEATHER_AUTO_REFRESH: process.env.FEATURE_WEATHER_AUTO_REFRESH === 'true',
   WEATHER_LOCATION_DISPLAY: process.env.FEATURE_WEATHER_LOCATION_DISPLAY === 'true',
+  WEATHER_MOCK_DATA: process.env.FEATURE_WEATHER_MOCK_DATA === 'true',
 
   // Location features
   LOCATION_PHILADELPHIA: process.env.FEATURE_LOCATION_PHILADELPHIA === 'true',
