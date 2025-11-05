@@ -60,6 +60,9 @@ function generateMockForecast(requestId?: string): DailyForecastResult {
     const date = new Date(now);
     date.setDate(date.getDate() + i);
     
+    // Realistic sunrise/sunset times for EST/EDT (adjusted for local timezone)
+    // Sunrise around 6:30 AM EST = 11:30 UTC
+    // Sunset around 4:45 PM EST = 21:45 UTC (16:45 + 5 hours)
     forecast.push({
       requestId,
       time: date.toISOString().split('T')[0] + 'T11:00:00Z',
@@ -74,10 +77,10 @@ function generateMockForecast(requestId?: string): DailyForecastResult {
       rainAccumulationMax: Math.random() * 0.5,
       rainAccumulationMin: 0,
       rainAccumulationSum: Math.random() * 0.3,
-      sunriseTime: date.toISOString().split('T')[0] + 'T06:30:00Z',
-      sunsetTime: date.toISOString().split('T')[0] + 'T19:45:00Z',
-      moonriseTime: date.toISOString().split('T')[0] + 'T20:15:00Z',
-      moonsetTime: date.toISOString().split('T')[0] + 'T08:30:00Z',
+      sunriseTime: date.toISOString().split('T')[0] + 'T11:30:00Z', // ~6:30 AM EST
+      sunsetTime: date.toISOString().split('T')[0] + 'T21:45:00Z', // ~4:45 PM EST
+      moonriseTime: date.toISOString().split('T')[0] + 'T23:15:00Z', // ~6:15 PM EST
+      moonsetTime: date.toISOString().split('T')[0] + 'T13:30:00Z', // ~8:30 AM EST
     });
   }
   
@@ -170,25 +173,35 @@ export async function getDailyForecast(requestId?: string, location?: Location):
 
     console.log(`[getDailyForecast] [${requestId}] JJJ daily entries:`, daily);
     const forecast = daily.slice(0, 7).map(
-      (day): DailyForecastPoint => ({
-        requestId,
-        time: day.time,
-        temperatureMax: day.values?.temperatureMax ?? 0,
-        temperatureMin: day.values?.temperatureMin ?? 0,
-        precipitation: day.values?.precipitationProbability ?? 0,
-        conditions: {
-          day: day.values.weatherCodeMax ?? -1,
-          night: day.values.weatherCodeMin ?? -1,
-        },
-        rainAccumulationAvg: day.values?.rainAccumulationAvg ?? 0,
-        rainAccumulationMax: day.values?.rainAccumulationMax ?? 0,
-        rainAccumulationMin: day.values?.rainAccumulationMin ?? 0,
-        rainAccumulationSum: day.values?.rainAccumulationSum ?? 0,
-        sunriseTime: day.values?.sunriseTime,
-        sunsetTime: day.values?.sunsetTime,
-        moonriseTime: day.values?.moonriseTime,
-        moonsetTime: day.values?.moonsetTime,
-      })
+      (day): DailyForecastPoint => {
+        // Log the raw sun/moon times from Tomorrow.io
+        console.log(`[getDailyForecast] [${requestId}] Day ${day.time}:`, {
+          sunriseTime: day.values?.sunriseTime,
+          sunsetTime: day.values?.sunsetTime,
+          moonriseTime: day.values?.moonriseTime,
+          moonsetTime: day.values?.moonsetTime,
+        });
+        
+        return {
+          requestId,
+          time: day.time,
+          temperatureMax: day.values?.temperatureMax ?? 0,
+          temperatureMin: day.values?.temperatureMin ?? 0,
+          precipitation: day.values?.precipitationProbability ?? 0,
+          conditions: {
+            day: day.values.weatherCodeMax ?? -1,
+            night: day.values.weatherCodeMin ?? -1,
+          },
+          rainAccumulationAvg: day.values?.rainAccumulationAvg ?? 0,
+          rainAccumulationMax: day.values?.rainAccumulationMax ?? 0,
+          rainAccumulationMin: day.values?.rainAccumulationMin ?? 0,
+          rainAccumulationSum: day.values?.rainAccumulationSum ?? 0,
+          sunriseTime: day.values?.sunriseTime,
+          sunsetTime: day.values?.sunsetTime,
+          moonriseTime: day.values?.moonriseTime,
+          moonsetTime: day.values?.moonsetTime,
+        };
+      }
     );
 
     return { forecast, maxRainAccumulation };
