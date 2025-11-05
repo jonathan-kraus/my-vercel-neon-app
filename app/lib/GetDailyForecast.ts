@@ -1,6 +1,7 @@
 'use server';
 
 import { generateUUID } from '../../uuidj';
+import { getActiveLocation, formatLocationForTomorrowIO } from '../utils/locations';
 
 export type DailyForecastPoint = {
   requestId?: string;
@@ -54,7 +55,12 @@ export async function getDailyForecast(requestId?: string): Promise<DailyForecas
   if (!requestId) requestId = generateUUID();
   console.log(`[getDailyForecast] [${requestId}] getDailyForecast started`);
 
-  const url = `https://api.tomorrow.io/v4/weather/forecast?location=40.10520,-75.41404&timesteps=1d&units=imperial&fields=temperatureMax,temperatureMin,precipitationProbability,weatherCodeMax,weatherCodeMin,rainAccumulationAvg,rainAccumulationMax,rainAccumulationMin,rainAccumulationSum,sunriseTime,sunsetTime,moonriseTime,moonsetTime&apikey=${apiKey}`;
+  // Get the active location from feature flags
+  const activeLocation = getActiveLocation();
+  const locationParam = formatLocationForTomorrowIO(activeLocation);
+  console.log(`[getDailyForecast] [${requestId}] Using location: ${activeLocation.displayName} (${locationParam})`);
+
+  const url = `https://api.tomorrow.io/v4/weather/forecast?location=${locationParam}&timesteps=1d&units=imperial&fields=temperatureMax,temperatureMin,precipitationProbability,weatherCodeMax,weatherCodeMin,rainAccumulationAvg,rainAccumulationMax,rainAccumulationMin,rainAccumulationSum,sunriseTime,sunsetTime,moonriseTime,moonsetTime&apikey=${apiKey}`;
 
   const res = await fetch(url);
   if (!res.ok) {

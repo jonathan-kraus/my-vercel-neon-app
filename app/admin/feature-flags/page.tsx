@@ -88,6 +88,10 @@ function getFlagDescription(flag: FeatureFlag): string {
   const descriptions: Record<FeatureFlag, string> = {
     WEATHER_AUTO_REFRESH: 'Automatically refresh weather data every few minutes',
     WEATHER_LOCATION_DISPLAY: 'Show detailed location information with weather data',
+    LOCATION_PHILADELPHIA: 'Enable Philadelphia as an available weather location',
+    LOCATION_NEW_YORK: 'Enable New York City as an available weather location',
+    LOCATION_SAN_FRANCISCO: 'Enable San Francisco as an available weather location',
+    LOCATION_CHICAGO: 'Enable Chicago as an available weather location',
     VERBOSE_LOGGING: 'Enable detailed logging for debugging and monitoring',
     LOG_REQUEST_TRACING: 'Add request IDs to all log entries for better tracing',
     ADMIN_TOOLS: 'Enable advanced administrative features and tools',

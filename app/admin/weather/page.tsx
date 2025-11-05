@@ -9,6 +9,8 @@ import DailyForecastCard from '@/app/components/DailyForecastCard';
 import WeatherCard from '@/app/components/WeatherCard';
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
 import SunMoonCard from '@/app/components/SunMoonCard';
+import LocationSelector from '@/app/components/LocationSelector';
+import { Location } from '@/app/utils/locations';
 import { logInfoFactory, logErrorFactory } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 
@@ -22,7 +24,27 @@ type ForecastResult = {
 export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const [requestId] = useState(() => generateUUID());
+  const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
   const emailSentRef = useRef(false);
+
+  const handleLocationChange = async (location: Location) => {
+    setCurrentLocation(location);
+    setForecast(null); // Clear current forecast while loading
+    emailSentRef.current = false; // Reset email sent flag for new location
+
+    try {
+      const result = await getDailyForecast(generateUUID());
+      setForecast(result);
+      logInfo('Fetched forecast for new location', {
+        location: location.displayName,
+        forecastLength: result.forecast.length
+      }, requestId);
+    } catch (err) {
+      console.error('Failed to fetch forecast for new location:', err);
+      toast.error(`Failed to fetch forecast for ${location.displayName}`);
+      await logError('Forecast fetch failed for new location', { error: String(err), location: location.displayName });
+    }
+  };
 
   // Fetch forecast on mount
   useEffect(() => {
@@ -65,6 +87,8 @@ export default function WeatherPage() {
   return (
     <div className="space-y-4 animate-fade-in">
       <h2 className="text-xl text-center font-bold">Weather</h2>
+
+      <LocationSelector onLocationChange={handleLocationChange} />
 
       {forecast.maxRainAccumulation > 0 && (
         <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded">

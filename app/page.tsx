@@ -11,7 +11,7 @@ import docs from '@/assets/docs.svg';
 import CreatePostForm from './components/CreatePostForm';
 import { CompleteButton } from '@/app/components/CompleteButton';
 import { MarkCompleteButton } from './components/MarkCompleteButton';
-import SunMoonCard from './components/SunMoonCard';
+import WeatherSection from './components/WeatherSection';
 import { getDailyForecast } from './lib/GetDailyForecast';
 import { createLogger } from './utils/logger';
 import { generateUUID } from '../uuidj';
@@ -128,9 +128,7 @@ export default async function Home() {
         </section>
 
         {/* Sun & Moon Information */}
-        <section className="mb-8">
-          <SunMoonCard forecast={forecastResult.forecast} />
-        </section>
+        <WeatherSection initialForecast={forecastResult.forecast} />
 
         {/* Branding & CTA */}
         <main className="flex flex-1 flex-col justify-center">
