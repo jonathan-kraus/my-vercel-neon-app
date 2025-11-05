@@ -56,10 +56,12 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
 
   const formatTime = (timeString?: string): string => {
     if (!timeString) return 'N/A';
+    // Use local time zone for display
     return new Date(timeString).toLocaleTimeString('en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
+      timeZoneName: 'short',
     });
   };
 
