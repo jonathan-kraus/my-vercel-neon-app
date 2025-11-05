@@ -2,9 +2,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
-import { generateUUID } from '../../uuidj';
-
-const requestId = generateUUID();
 type LocationDetails = { city?: string; town?: string; village?: string; hamlet?: string; county?: string; displayName?: string; };
 type WeatherType = {
   temperature: number;
@@ -146,7 +143,7 @@ export default function WeatherCardNew({ location }: { location?: { name: string
                 </svg>
                 <span className="text-sm font-medium text-blue-100">Rain Total</span>
               </div>
-              <p className="text-2xl font-bold">{weather.rainAccumulationSum.toFixed(2)}"</p>
+              <p className="text-2xl font-bold">{weather.rainAccumulationSum.toFixed(2)}&quot;</p>
             </div>
           )}
         </div>

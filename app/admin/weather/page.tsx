@@ -1,7 +1,7 @@
 //app/admin/weather/page.tsx
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import DailyForecastCard from '@/app/components/DailyForecastCard';
@@ -28,11 +28,7 @@ export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const [requestId] = useState(() => generateUUID());
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(getActiveLocation());
-  const [useNewUI, setUseNewUI] = useState(false);
-  
-  useEffect(() => {
-    setUseNewUI(isFeatureEnabled('NEW_UI_COMPONENTS'));
-  }, []);
+  const useNewUI = isFeatureEnabled('NEW_UI_COMPONENTS');
   
   const onLog = useCallback(
     async (severity: 'info' | 'error', message: string, metadata?: Record<string, any>) => {

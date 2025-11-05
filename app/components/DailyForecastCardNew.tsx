@@ -40,7 +40,6 @@ export default function DailyForecastCardNew({ forecast }: DailyForecastCardProp
           const dayName = isToday ? 'Today' : date.toLocaleDateString('en-US', { weekday: 'short' });
           const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
           
-          const tempRange = day.temperatureMax - day.temperatureMin;
           const tempColor = day.temperatureMax > 80 ? 'from-red-400 to-orange-500' 
                           : day.temperatureMax > 60 ? 'from-yellow-400 to-orange-400'
                           : 'from-blue-400 to-cyan-500';
