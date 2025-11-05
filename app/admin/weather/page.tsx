@@ -124,10 +124,9 @@ export default function WeatherPage() {
           </div>
         </div>
       )}
+      <SunMoonCard forecast={forecast.forecast} location={selectedLocation || undefined} />
 
       <WeatherComponent location={selectedLocation || undefined} />
-
-      <SunMoonCard forecast={forecast.forecast} location={selectedLocation || undefined} />
 
       <HourlyForecastChart />
 
