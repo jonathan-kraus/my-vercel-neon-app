@@ -30,13 +30,42 @@ type WeatherType = {
   };
 };
 
-export default function WeatherCard() {
+import { generateUUID } from '../../uuidj';
+
+const requestId = generateUUID();
+type WeatherType = {
+  temperature: number;
+  humidity: number;
+  windSpeed: number;
+  windGust: number;
+  precipitationProbability: number;
+  conditions: { day: number; night: number };
+  emailSent?: boolean;
+  lastEmailTimestamp: string | null;
+  requestId?: string;
+  locationName?: string;
+  rainAccumulationAvg: number;
+  rainAccumulationMax: number;
+  rainAccumulationMin: number;
+  rainAccumulationSum: number;
+  locationDetails?: {
+    city?: string;
+    town?: string;
+    village?: string;
+    hamlet?: string;
+    county?: string;
+    displayName?: string;
+  };
+};
+
+export default function WeatherCard({ location }: { location?: { name: string; lat: number; lon: number; displayName: string; flag: string } } = {}) {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchWeather = async () => {
     try {
-      const res = await fetch('/api/getWeather');
+      const url = location ? `/api/getWeather?location=${location.name}` : '/api/getWeather';
+      const res = await fetch(url);
       if (!res.ok) throw new Error('API response not OK');
       const data: WeatherType = await res.json();
       setWeather(data);
@@ -85,7 +114,7 @@ export default function WeatherCard() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, []);
+  }, [location]); // Re-fetch when location changes
 
   useEffect(() => {
     const fetchForecast = async () => {

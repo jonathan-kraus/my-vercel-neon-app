@@ -71,6 +71,11 @@ export async function fetchWeather(requestId?: string, location?: Location) {
       displayName: data2.display_name,
     };
 
+    // Fallback if Nominatim response is malformed
+    if (!locationDetails.displayName) {
+      locationDetails.displayName = locationToUse.name;
+    }
+
     const locationName =
       locationDetails.city ??
       locationDetails.town ??
@@ -105,14 +110,14 @@ export async function fetchWeather(requestId?: string, location?: Location) {
   } catch (error) {
     console.error(`[fetchWeather] [${requestId}] Error fetching location data:`, error);
     
-    // Fallback: use active location display name
+    // Fallback: use active location name
     locationDetails = {
       city: undefined,
       town: undefined,
       village: undefined,
       hamlet: undefined,
       county: undefined,
-      displayName: locationToUse.displayName,
+      displayName: locationToUse.name,
     };
   }
   console.log(`[fetchWeather] [${requestId}] Preparing to log event to external logging service`);

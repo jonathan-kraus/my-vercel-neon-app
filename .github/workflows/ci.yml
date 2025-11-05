@@ -13,10 +13,9 @@ jobs:
       run:
         working-directory: ./
 
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      NEXT_PUBLIC_STACK_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_STACK_PROJECT_ID }}
-      NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY: ${{ secrets.NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY }}
+    # env:
+    #   DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      
 
     steps:
       - name: Checkout repository

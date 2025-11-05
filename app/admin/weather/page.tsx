@@ -24,6 +24,7 @@ type ForecastResult = {
 export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const [requestId] = useState(() => generateUUID());
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const emailSentRef = useRef(false);
 
   const handleLocationChange = async (location: Location) => {
@@ -31,7 +32,7 @@ export default function WeatherPage() {
     emailSentRef.current = false; // Reset email sent flag for new location
 
     try {
-      const result = await getDailyForecast(generateUUID());
+      const result = await getDailyForecast(generateUUID(), location); // Pass the selected location
       setForecast(result);
       logInfo(
         'Fetched forecast for new location',
@@ -117,9 +118,9 @@ export default function WeatherPage() {
         </div>
       )}
 
-      <WeatherCard />
+      <WeatherCard location={selectedLocation || undefined} />
 
-      <SunMoonCard forecast={forecast.forecast} />
+      <SunMoonCard forecast={forecast.forecast} location={selectedLocation || undefined} />
 
       <HourlyForecastChart />
 

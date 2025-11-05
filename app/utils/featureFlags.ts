@@ -50,7 +50,7 @@ export const FEATURE_FLAGS = {
 
   // Location features
   LOCATION_KOP: process.env.FEATURE_LOCATION_KOP === 'true',
-  LOCATION_NEW_YORK: process.env.FEATURE_LOCATION_NEW_YORK === 'true',
+  LOCATION_NEW_YORK: process.env.FEATURE_LOCATION_NEW_YORK !== 'false', // Default to true
   LOCATION_SAN_FRANCISCO: process.env.FEATURE_LOCATION_SAN_FRANCISCO === 'true',
   LOCATION_CHICAGO: process.env.FEATURE_LOCATION_CHICAGO === 'true',
 
