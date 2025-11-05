@@ -232,6 +232,7 @@ export default function SideNav() {
       '/authors',
       '/pstbyusr/',
       '/admin/logs/viewer',
+      '/admin/feature-flags',
       '/admin/db-status',
       '/admin/weather',
       '/dev/update-post',
@@ -341,6 +342,12 @@ export default function SideNav() {
             <NavItem
               href="/pstbyusr/"
               label="Posts by User"
+              currentPath={pathname}
+              onHoverPrefetch={handleHoverPrefetch}
+            />
+            <NavItem
+              href="/admin/feature-flags"
+              label="Feature Flags"
               currentPath={pathname}
               onHoverPrefetch={handleHoverPrefetch}
             />

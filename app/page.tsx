@@ -15,6 +15,7 @@ import SunMoonCard from './components/SunMoonCard';
 import { getDailyForecast } from './lib/GetDailyForecast';
 import { createLogger } from './utils/logger';
 import { generateUUID } from '../uuidj';
+import { isFeatureEnabled } from './utils/featureFlags';
 // removed client-side duplicate form import (PostFormClient)
 // import PostFormClient from '@/app/components/PostFormClient';
 //import { revalidatePath } from "next/cache";
@@ -48,7 +49,9 @@ export default async function Home() {
   const requestId = generateUUID();
   const log = createLogger('app/page', requestId);
 
-  log.info('Home page rendering started', { action: 'page_load' });
+  if (isFeatureEnabled('VERBOSE_LOGGING')) {
+    log.info('Home page rendering started', { action: 'page_load' });
+  }
   const posts = await db.post.findMany({
     orderBy: { createdAt: 'desc' },
     where: { published: true },

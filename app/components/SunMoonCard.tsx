@@ -1,6 +1,7 @@
 'use client';
 
 import { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
+import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
 interface SunMoonCardProps {
   forecast: DailyForecastPoint[];
@@ -63,6 +64,12 @@ export default function SunMoonCard({ forecast }: SunMoonCardProps) {
   return (
     <div className="bg-linear-to-r from-yellow-50 to-orange-50 dark:from-gray-800 dark:to-gray-700 rounded-lg p-4 border border-yellow-200 dark:border-gray-600">
       <h3 className="text-lg font-semibold mb-3 text-center">🌅 Sun & Moon Today</h3>
+
+      {isFeatureEnabled('WEATHER_LOCATION_DISPLAY') && (
+        <div className="mb-4 p-2 bg-blue-50 rounded text-sm text-center text-blue-800">
+          📍 Location: Philadelphia, PA (Demo)
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Sun Section */}
