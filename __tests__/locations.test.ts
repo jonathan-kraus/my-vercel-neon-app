@@ -47,11 +47,12 @@ describe('Location Utilities', () => {
 
       const available = getAvailableLocations();
 
-      expect(available).toHaveLength(4); // kop, newYork, sanFrancisco, chicago
+      expect(available).toHaveLength(5); // kop, newYork, sanFrancisco, chicago, williamstown
       expect(available).toContainEqual(LOCATIONS.kop);
       expect(available).toContainEqual(LOCATIONS.newYork);
       expect(available).toContainEqual(LOCATIONS.sanFrancisco);
       expect(available).toContainEqual(LOCATIONS.chicago);
+      expect(available).toContainEqual(LOCATIONS.williamstown);
     });
   });
 
@@ -162,6 +163,7 @@ describe('Location Utilities', () => {
       expect(LOCATIONS).toHaveProperty('newYork');
       expect(LOCATIONS).toHaveProperty('sanFrancisco');
       expect(LOCATIONS).toHaveProperty('chicago');
+      expect(LOCATIONS).toHaveProperty('williamstown');
     });
 
     it('each location has required properties', () => {
