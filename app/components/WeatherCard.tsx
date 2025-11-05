@@ -1,10 +1,11 @@
 'use client';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 import { generateUUID } from '../../uuidj';
 
 const requestId = generateUUID();
+type LocationDetails = { city?: string; town?: string; village?: string; hamlet?: string; county?: string; displayName?: string; };
 type WeatherType = {
   temperature: number;
   humidity: number;
@@ -20,49 +21,14 @@ type WeatherType = {
   rainAccumulationMax: number;
   rainAccumulationMin: number;
   rainAccumulationSum: number;
-  locationDetails?: {
-    city?: string;
-    town?: string;
-    village?: string;
-    hamlet?: string;
-    county?: string;
-    displayName?: string;
-  };
-};
-
-import { generateUUID } from '../../uuidj';
-
-const requestId = generateUUID();
-type WeatherType = {
-  temperature: number;
-  humidity: number;
-  windSpeed: number;
-  windGust: number;
-  precipitationProbability: number;
-  conditions: { day: number; night: number };
-  emailSent?: boolean;
-  lastEmailTimestamp: string | null;
-  requestId?: string;
-  locationName?: string;
-  rainAccumulationAvg: number;
-  rainAccumulationMax: number;
-  rainAccumulationMin: number;
-  rainAccumulationSum: number;
-  locationDetails?: {
-    city?: string;
-    town?: string;
-    village?: string;
-    hamlet?: string;
-    county?: string;
-    displayName?: string;
-  };
+  locationDetails?: LocationDetails;
 };
 
 export default function WeatherCard({ location }: { location?: { name: string; lat: number; lon: number; displayName: string; flag: string } } = {}) {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const fetchWeather = async () => {
+  const fetchWeather = useCallback(async () => {
     try {
       const url = location ? `/api/getWeather?location=${location.name}` : '/api/getWeather';
       const res = await fetch(url);
@@ -84,7 +50,7 @@ export default function WeatherCard({ location }: { location?: { name: string; l
       console.error('Failed to fetch current weather:', err);
       toast.error('❌ Failed to load weather');
     }
-  };
+  }, [location]);
 
   const fetchDailyForecast = async () => {
     try {
@@ -114,7 +80,7 @@ export default function WeatherCard({ location }: { location?: { name: string; l
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [location]); // Re-fetch when location changes
+  }, [location, fetchWeather]); // Re-fetch when location changes
 
   useEffect(() => {
     const fetchForecast = async () => {

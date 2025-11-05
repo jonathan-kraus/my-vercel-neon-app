@@ -28,6 +28,7 @@ export default function WeatherPage() {
   const emailSentRef = useRef(false);
 
   const handleLocationChange = async (location: Location) => {
+    setSelectedLocation(location); // Update selected location
     setForecast(null); // Clear current forecast while loading
     emailSentRef.current = false; // Reset email sent flag for new location
 
