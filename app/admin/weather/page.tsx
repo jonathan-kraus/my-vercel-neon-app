@@ -11,6 +11,7 @@ import WeatherCardNew from '@/app/components/WeatherCardNew';
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
 import SunMoonCard from '@/app/components/SunMoonCard';
 import LocationSelector from '@/app/components/LocationSelector';
+import LocationMap from '@/app/components/LocationMap';
 import SendForecastEmailButton from '@/app/components/SendForecastEmailButton';
 import { Location, getActiveLocation } from '@/app/utils/locations';
 import { logInfoFactory, logErrorFactory } from '@/app/utils/logger';
@@ -95,6 +96,8 @@ export default function WeatherPage() {
       <h2 className="text-xl text-center font-bold">Weather</h2>
 
       <LocationSelector onLocationChange={handleLocationChange} />
+
+      {selectedLocation && <LocationMap location={selectedLocation} />}
 
       {forecast && forecast.forecast.length > 0 && (
         <SendForecastEmailButton forecast={forecast.forecast} requestId={requestId} onLog={onLog} />
