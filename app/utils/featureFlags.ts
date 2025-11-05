@@ -49,7 +49,7 @@ export const FEATURE_FLAGS = {
   WEATHER_MOCK_DATA: process.env.FEATURE_WEATHER_MOCK_DATA === 'true',
 
   // Location features
-  LOCATION_PHILADELPHIA: process.env.FEATURE_LOCATION_PHILADELPHIA === 'true',
+  LOCATION_KOP: process.env.FEATURE_LOCATION_KOP === 'true',
   LOCATION_NEW_YORK: process.env.FEATURE_LOCATION_NEW_YORK === 'true',
   LOCATION_SAN_FRANCISCO: process.env.FEATURE_LOCATION_SAN_FRANCISCO === 'true',
   LOCATION_CHICAGO: process.env.FEATURE_LOCATION_CHICAGO === 'true',
