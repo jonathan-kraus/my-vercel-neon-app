@@ -72,9 +72,9 @@ export async function fetchWeather(requestId?: string, location?: Location) {
   const data = await res.json();
   const values = data.data.values;
   const location2 = data.location ?? 'Unknown2';
-
+if (isFeatureEnabled('VERBOSE_LOGGING')) {
   console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: values`, values);
-  console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location2`, location2);
+  console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location2`, location2);}
   //const url2 = 'https://nominatim.openstreetmap.org/reverse?lat=40.10520&lon=-75.41404&format=json';
   const url2 = `https://nominatim.openstreetmap.org/reverse?lat=${osmLocation.lat}&lon=${osmLocation.lon}&format=json`;
   console.log(`[fetchWeather] [${requestId}] Fetching location data from API: ${url2}`);
