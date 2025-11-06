@@ -17,6 +17,10 @@ export default async function logSendEmailModuleAccess() {
       where: { message: { contains: 'email sent', mode: 'insensitive' } },
       orderBy: { timestamp: 'desc' },
     });
+    
+    logInfo(`[${requestId}] sendemail.ts Last email sent at:, ${lasttime?.timestamp}`,
+     {action: 'fetch_last_email_log', timestamp: new Date().toISOString() },
+     requestId);
     console.log(`🚀 [${requestId}] sendemail.ts Last email sent at:`, lasttime?.timestamp);
     console.log(`🚀 [${requestId}] sendemail.ts Last email message:`, lasttime?.message);
   } catch (err) {
