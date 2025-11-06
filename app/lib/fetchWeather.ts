@@ -194,9 +194,10 @@ if (isFeatureEnabled('VERBOSE_LOGGING')) {
       weatherCode: values.weatherCode,
       emailSent: false, // No automatic email
       requestId,
+      location: locationToUse.name, // Add location identifier
     },
   });
-  console.log(`[${requestId}] 📝 Weather log created in DB`);
+  console.log(`[${requestId}] 📝 Weather log created in DB for ${locationToUse.displayName}`);
 
   return {
     temperature: values.temperature,

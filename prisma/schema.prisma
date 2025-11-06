@@ -44,6 +44,7 @@ model WeatherLog {
   weatherCode Int
   emailSent   Boolean @default(false)
   requestId   String?  // 👈 optional trace ID
+  location    String?  // 👈 location identifier (e.g., "kop", "new_york")
 }
 
 model Log {
