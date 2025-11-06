@@ -31,12 +31,12 @@ export const LOCATIONS: Record<string, Location> = {
     displayName: 'San Francisco, CA',
     flag: 'LOCATION_SAN_FRANCISCO',
   },
-  chicago: {
-    name: 'chicago',
-    lat: 41.8781,
-    lon: -87.6298,
-    displayName: 'Chicago, IL',
-    flag: 'LOCATION_CHICAGO',
+  brookline: {
+    name: 'brookline',
+    lat: 42.3318,
+    lon: -71.1212,
+    displayName: 'Brookline, MA',
+    flag: 'LOCATION_BROOKLINE',
   },
   williamstown: {
     name: 'williamstown',

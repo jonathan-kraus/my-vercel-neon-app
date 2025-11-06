@@ -52,7 +52,7 @@ export const FEATURE_FLAGS = {
   LOCATION_KOP: process.env.FEATURE_LOCATION_KOP === 'true',
   LOCATION_NEW_YORK: process.env.FEATURE_LOCATION_NEW_YORK !== 'false', // Default to true
   LOCATION_SAN_FRANCISCO: process.env.FEATURE_LOCATION_SAN_FRANCISCO === 'true',
-  LOCATION_CHICAGO: process.env.FEATURE_LOCATION_CHICAGO === 'true',
+  LOCATION_BROOKLINE: process.env.FEATURE_LOCATION_BROOKLINE === 'true',
   LOCATION_WILLIAMSTOWN: process.env.FEATURE_LOCATION_WILLIAMSTOWN === 'true',
 
   // Logging features

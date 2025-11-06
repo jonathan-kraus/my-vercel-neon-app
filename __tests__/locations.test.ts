@@ -47,11 +47,11 @@ describe('Location Utilities', () => {
 
       const available = getAvailableLocations();
 
-      expect(available).toHaveLength(5); // kop, newYork, sanFrancisco, chicago, williamstown
+      expect(available).toHaveLength(5); // kop, newYork, sanFrancisco, brookline, williamstown
       expect(available).toContainEqual(LOCATIONS.kop);
       expect(available).toContainEqual(LOCATIONS.newYork);
       expect(available).toContainEqual(LOCATIONS.sanFrancisco);
-      expect(available).toContainEqual(LOCATIONS.chicago);
+      expect(available).toContainEqual(LOCATIONS.brookline);
       expect(available).toContainEqual(LOCATIONS.williamstown);
     });
   });
@@ -135,13 +135,13 @@ describe('Location Utilities', () => {
 
   describe('formatLocationForOSM', () => {
     it('returns object with lat and lon properties', () => {
-      const location = LOCATIONS.chicago; // lat: 41.8781, lon: -87.6298
+      const location = LOCATIONS.brookline; // lat: 42.3318, lon: -71.1212
 
       const formatted = formatLocationForOSM(location);
 
       expect(formatted).toEqual({
-        lat: 41.8781,
-        lon: -87.6298,
+        lat: 42.3318,
+        lon: -71.1212,
       });
     });
 
@@ -162,7 +162,7 @@ describe('Location Utilities', () => {
       expect(LOCATIONS).toHaveProperty('kop');
       expect(LOCATIONS).toHaveProperty('newYork');
       expect(LOCATIONS).toHaveProperty('sanFrancisco');
-      expect(LOCATIONS).toHaveProperty('chicago');
+      expect(LOCATIONS).toHaveProperty('brookline');
       expect(LOCATIONS).toHaveProperty('williamstown');
     });
 
