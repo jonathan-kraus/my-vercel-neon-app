@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 import { generateUUID } from '../../uuidj';
 import { logInfoFactory } from '../utils/logger';
+import { isFeatureEnabled } from '@/app/utils/featureFlags';
 const logInfo = logInfoFactory('app/components/DbStatus.tsx');
 
 type DbStatusType = {
@@ -137,7 +138,9 @@ export default function DbStatus() {
 
   // Auto-send once after status loads (only in browser, not during build)
   useEffect(() => {
-    if (status && !emailSentRef.current && typeof window !== 'undefined') {
+    if (status && !emailSentRef.current && 
+      typeof window !== 'undefined' 
+      && isFeatureEnabled('EMAIL_NOTIFICATIONS')) {
       emailSentRef.current = true;
       sendStatusEmail();
     }
