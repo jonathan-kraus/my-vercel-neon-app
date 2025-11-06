@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
 import { logInfoFactory } from '@/app/utils/logger';
 import { Prisma } from '@prisma/client';
+import { generateUUID } from '@/uuidj';
 import { z } from 'zod';
 
 const CreatePostSchema = z.object({
@@ -9,6 +10,7 @@ const CreatePostSchema = z.object({
   body: z.string().min(1),
 });
 const logInfo = logInfoFactory('api/posts');
+const requestId = generateUUID();
 function parseCookies(cookieHeader: string | null): Record<string, string> {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
@@ -23,14 +25,10 @@ function parseCookies(cookieHeader: string | null): Record<string, string> {
   return cookies;
 }
 
-function makeRequestId(): string {
-  const hasRandomUUID = typeof crypto !== 'undefined' && 'randomUUID' in crypto;
-  if (hasRandomUUID) return (crypto as unknown as { randomUUID: () => string }).randomUUID();
-  return `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
-}
+
 
 export async function GET(request: Request) {
-  const requestId = makeRequestId();
+
   try {
     const url = new URL(request.url);
     const rawAuthor = url.searchParams.get('author');
@@ -72,7 +70,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(req: Request) {
-  const requestId = makeRequestId();
+
   try {
     const payload = await req.json();
     const parsed = CreatePostSchema.safeParse(payload);
