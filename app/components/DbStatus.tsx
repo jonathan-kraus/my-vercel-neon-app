@@ -36,13 +36,13 @@ function RegionBadge({ region }: { region: string }) {
 
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
+  const [requestId] = useState(() => generateUUID());
   const emailSentRef = useRef(false);
 
   const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
 
   // Log event once on mount
   useEffect(() => {
-    const requestId = generateUUID();
     const baseUrl =
       (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
       process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
@@ -60,13 +60,13 @@ export default function DbStatus() {
     };
 
     jck();
-  }, []);
+  }, [requestId]);
 
   // Fetch DB status
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const data = await getDbStatus();
+        const data = await getDbStatus(requestId);
         const formattedData: DbStatusType = {
           ...data,
           latestPostDate: data.latestPostDate ? data.latestPostDate.toISOString() : null,
@@ -79,7 +79,7 @@ export default function DbStatus() {
     };
 
     fetchStatus();
-  }, []);
+  }, [requestId]);
 
   // Email sender
   const sendStatusEmail = useCallback(async () => {
@@ -95,7 +95,6 @@ export default function DbStatus() {
     }
 
     try {
-      const requestId = generateUUID();
       const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -134,7 +133,7 @@ export default function DbStatus() {
       console.error('Failed to send status email:', err);
       toast.error('Failed to send status email');
     }
-  }, [status, region]);
+  }, [status, region, requestId]);
 
   // Auto-send once after status loads (only in browser, not during build)
   useEffect(() => {

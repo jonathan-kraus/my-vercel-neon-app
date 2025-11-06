@@ -5,7 +5,6 @@ import { logEvent } from '../lib/abslog';
 import { generateUUID } from '../../uuidj';
 
 const prisma = db; // For clarity in this file
-const requestId = generateUUID();
 
 async function getLastDatabaseActivity() {
   try {
@@ -72,7 +71,10 @@ async function getLastDatabaseActivity() {
   }
 }
 
-export async function getDbStatus() {
+export async function getDbStatus(requestId?: string) {
+  // Generate requestId if not provided
+  if (!requestId) requestId = generateUUID();
+  
   console.log(`[getDbStatus] [${requestId}] Checking database status...`);
 
   const start = Date.now();
