@@ -131,7 +131,7 @@ function getFlagDescription(flag: FeatureFlag): string {
     LOCATION_KOP: 'Enable King of Prussia as an available weather location',
     LOCATION_NEW_YORK: 'Enable New York City as an available weather location',
     LOCATION_SAN_FRANCISCO: 'Enable San Francisco as an available weather location',
-    LOCATION_CHICAGO: 'Enable Chicago as an available weather location',
+    LOCATION_BROOKLINE: 'Enable Brookline as an available weather location',
     LOCATION_WILLIAMSTOWN: 'Enable Williamstown, MA as an available weather location',
     VERBOSE_LOGGING: 'Enable detailed logging for debugging and monitoring',
     LOG_REQUEST_TRACING: 'Add request IDs to all log entries for better tracing',

@@ -9,7 +9,7 @@ vi.mock('../app/utils/featureFlags', () => ({
     LOCATION_KOP: false,
     LOCATION_NEW_YORK: false,
     LOCATION_SAN_FRANCISCO: false,
-    LOCATION_CHICAGO: false,
+    LOCATION_BROOKLINE: false,
     VERBOSE_LOGGING: true,
     LOG_REQUEST_TRACING: false,
     ADMIN_TOOLS: true,
@@ -313,7 +313,7 @@ describe('Feature Flags', () => {
       expect(FEATURE_FLAGS).toHaveProperty('LOCATION_KOP');
       expect(FEATURE_FLAGS).toHaveProperty('LOCATION_NEW_YORK');
       expect(FEATURE_FLAGS).toHaveProperty('LOCATION_SAN_FRANCISCO');
-      expect(FEATURE_FLAGS).toHaveProperty('LOCATION_CHICAGO');
+      expect(FEATURE_FLAGS).toHaveProperty('LOCATION_BROOKLINE');
     });
 
     it('all flags have boolean values', () => {
@@ -331,7 +331,7 @@ describe('Feature Flags', () => {
       expect(locationFlags).toContain('LOCATION_KOP');
       expect(locationFlags).toContain('LOCATION_NEW_YORK');
       expect(locationFlags).toContain('LOCATION_SAN_FRANCISCO');
-      expect(locationFlags).toContain('LOCATION_CHICAGO');
+      expect(locationFlags).toContain('LOCATION_BROOKLINE');
     });
   });
 });
