@@ -31,9 +31,7 @@ export default async function AuthorsPage() {
       // Log successful fetch
       await logInfo(
         `Fetched ${authors.length} authors`,
-        {
-          authors,
-        },
+        { authorsCount: authors.length },
         requestId
       );
     }
@@ -48,14 +46,13 @@ export default async function AuthorsPage() {
     try {
       await logError(
         'Failed to fetch authors',
-        {
-          error: errorMessage,
-          userAction: 'fetch_authors_failed',
-        },
-        requestId
+        
+        {  error: errorMessage,
+          userAction: 'fetch_authors_failed',},
+          requestId
       );
     } catch (logErr) {
-      console.error('Failed to log error:', logErr);
+      console.error('[authors/page.tsx] Failed to log error:', logErr);
     }
   }
 
