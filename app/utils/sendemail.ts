@@ -3,20 +3,16 @@ import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { db } from '../lib/db';
 import { sendWithDedup } from '@/app/lib/sendWithDedup';
 import { generateUUID } from '../../uuidj';
+import { logInfoFactory } from './logger';
 console.log('📦 sendemail.ts loaded');
-
+const logInfo = logInfoFactory('app/utils/sendemail.ts');
 const mailerSend = new MailerSend({
   apiKey: process.env.MAILERSEND_API_KEY!,
 });
-
+const requestId = generateUUID();
 const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
 export default async function logSendEmailModuleAccess() {
-  const severity = 'info';
-  const source = 'sendemail.ts';
-  const message = `sendemail.ts module accessed`;
-  const requestId = generateUUID();
-  const metadata = { action: 'fetch', timestamp: new Date().toISOString() };
-  try {
+ try {
     const lasttime = await db.log.findFirst({
       where: { message: { contains: 'email sent', mode: 'insensitive' } },
       orderBy: { timestamp: 'desc' },
@@ -29,16 +25,9 @@ export default async function logSendEmailModuleAccess() {
 
   try {
     console.log(`🚀 [${requestId}] sendemail.ts Starting logic`);
-    await db.log.create({
-      data: {
-        severity,
-        source,
-        message,
-        requestId,
-        metadata: metadata ?? {},
-        timestamp: new Date(),
-      },
-    });
+    await logInfo(`sendemail.ts module accessed`, 
+      { action: 'fetch', timestamp: new Date().toISOString() }, requestId);
+ 
   } catch (err) {
     console.error(`❌ ${requestId} [sendemail.ts] Error caught:`, err);
   }
