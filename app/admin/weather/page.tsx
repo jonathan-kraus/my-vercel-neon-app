@@ -97,7 +97,7 @@ export default function WeatherPage() {
 
       <LocationSelector onLocationChange={handleLocationChange} />
 
-      {selectedLocation && <LocationMap location={selectedLocation} />}
+      
 
       {forecast && forecast.forecast.length > 0 && (
         <SendForecastEmailButton forecast={forecast.forecast} requestId={requestId} onLog={onLog} />
@@ -131,6 +131,7 @@ export default function WeatherPage() {
       <HourlyForecastChart />
 
       <ForecastComponent forecast={forecast.forecast} />
+      {selectedLocation && <LocationMap location={selectedLocation} />}
     </div>
   );
 }
