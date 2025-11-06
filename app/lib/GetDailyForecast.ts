@@ -169,10 +169,10 @@ export async function getDailyForecast(requestId?: string, location?: Location):
     );
     const daily: RawDailyEntry[] = data.timelines?.daily;
 
-    console.log(
-      `[${requestId}] Raw daily forecastvalues:`,
-      daily.map((d) => d.values)
-    );
+    // console.log(
+    //   `[${requestId}] Raw daily forecastvalues:`,
+    //   daily.map((d) => d.values)
+    // );
     const maxRainAccumulation = Math.max(
       ...daily.map((d) => d.values.rainAccumulationSum).filter((val) => typeof val === 'number')
     );
