@@ -159,7 +159,9 @@ export async function getDailyForecast(requestId?: string, location?: Location):
       console.warn(`[Tomorrow.io] ⚠️ Unexpected response format`, data);
       return { forecast: [], maxRainAccumulation: 0 };
     }
-    console.log(`[getDailyForecast] [${requestId}] Data fetched from API:`, data);
+    if (isFeatureEnabled('VERBOSE_LOGGING')) {
+      console.log(`[getDailyForecast] [${requestId}] Data fetched from API:`, data);
+    }
 
     console.log(
       `[GetDailyForecast] [${requestId}] Forecast response:`,
