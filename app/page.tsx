@@ -58,7 +58,7 @@ export default async function Home() {
     include: { author: true },
   });
 
-  log.info('Posts fetched from database', { postCount: posts.length });
+  
 
   // Check for posts that need follow-up
   const followUpPosts = await db.post.findMany({
@@ -66,12 +66,15 @@ export default async function Home() {
     include: { author: true },
     orderBy: { followUpDate: 'asc' },
   });
-
+  if (followUpPosts.length > 0 && isFeatureEnabled('VERBOSE_LOGGING')) {
+    log.info('Follow-up posts detected', { followUpCount: followUpPosts.length });
+  }
+  log.info('Posts fetched from database', { postCount: posts.length });
   log.info('Follow-up posts fetched', { followUpCount: followUpPosts.length });
 
   const forecastResult = await getDailyForecast(requestId);
 
-  log.info('Forecast data fetched', { forecastDays: forecastResult.forecast.length });
+  log.info('Weather Forecast data fetched', { forecastDays: forecastResult.forecast.length });
 
   return (
     <div className="flex min-h-screen flex-col">
