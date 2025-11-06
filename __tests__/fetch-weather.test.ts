@@ -15,10 +15,10 @@ vi.mock('../app/lib/db', () => ({
 
 vi.mock('../app/utils/locations', () => ({
   getActiveLocation: vi.fn(() => ({
-    name: 'King of Prussia, PA',
+    name: 'kop',
     lat: 40.104234,
     lon: -75.41397,
-    displayName: 'King of Prussia, PA (40.104234,-75.41397)',
+    displayName: 'King of Prussia, PA',
     flag: 'LOCATION_KOP',
   })),
   formatLocationForTomorrowIO: vi.fn((location) => `${location.lat},${location.lon}`),
@@ -165,6 +165,7 @@ describe('fetchWeather', () => {
           weatherCode: 1001,
           emailSent: false,
           requestId: 'test-request-id',
+          location: 'kop', // Add location to expected data
         },
       });
     });
@@ -289,7 +290,7 @@ describe('fetchWeather', () => {
         village: undefined,
         hamlet: undefined,
         county: undefined,
-        displayName: 'King of Prussia, PA', // Fallback to active location
+        displayName: 'kop',
       });
     });
 
@@ -322,7 +323,7 @@ describe('fetchWeather', () => {
         village: undefined,
         hamlet: undefined,
         county: undefined,
-        displayName: 'King of Prussia, PA',
+        displayName: 'kop',
       });
     });
   });
