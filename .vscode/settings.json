@@ -11,5 +11,8 @@
   "eslint.codeAction.showDocumentation": {
     "enable": true
   },
-  "eslint.run": "onType"
+  "eslint.run": "onType",
+  "github-actions.workflows.pinned.workflows": [
+    ".github/workflows/ci.yml"
+  ]
 }

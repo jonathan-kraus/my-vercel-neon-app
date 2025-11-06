@@ -50,7 +50,7 @@ export default function DbStatus() {
 
     const jck = async () => {
       try {
-        await logInfo('Retrieving database status', 
+        await logInfo(`Retrieving database status baseUrl: ${baseUrl}`, 
           { userAction: 'fetch', source: 'DbStatus' },
             requestId,
         );
