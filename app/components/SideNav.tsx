@@ -65,7 +65,6 @@ const calllog = async (message: string) => {
     console.error('Failed to log event:', error);
   }
 };
-// calllog(`[SideNav] [${requestId}] component loaded`); // Moved to useEffect
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(

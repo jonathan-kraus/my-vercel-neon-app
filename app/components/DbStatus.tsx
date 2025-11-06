@@ -3,6 +3,8 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 import { generateUUID } from '../../uuidj';
+import { logInfoFactory } from '../utils/logger';
+const logInfo = logInfoFactory('app/components/DbStatus.tsx');
 
 type DbStatusType = {
   version: string;
@@ -46,25 +48,18 @@ export default function DbStatus() {
       process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
       'https://www.kraus.my.id';
 
-    const logEvent = async () => {
+    const jck = async () => {
       try {
-        await fetch(`${baseUrl}/api/log`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            severity: 'info',
-            source: 'DbStatus',
-            message: 'Retrieving database status',
+        await logInfo('Retrieving database status', 
+          { userAction: 'fetch', source: 'DbStatus' },
             requestId,
-            metadata: { userAction: 'fetch' },
-          }),
-        });
+        );
       } catch (error) {
         console.error('Failed to log event:', error);
       }
     };
 
-    logEvent();
+    jck();
   }, []);
 
   // Fetch DB status
