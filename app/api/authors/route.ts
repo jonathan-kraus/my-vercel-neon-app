@@ -2,6 +2,7 @@ import { db } from '@/app/lib/db';
 import { sendConfirmationEmail } from '@/app/utils/email-client';
 import { NextResponse } from 'next/server';
 import { generateUUID } from '../../../uuidj';
+import { isFeatureEnabled } from '@/app/utils/featureFlags';
 console.log('[build] Generating /authors');
 export async function GET(req: Request) {
   const requestId = req.headers.get('x-request-id') ?? generateUUID();
@@ -24,11 +25,13 @@ export async function GET(req: Request) {
       subject: 'Authors Route Page Clicked',
       requestId: requestId,
     };
-    const { success, message } = await sendConfirmationEmail(emailData);
-    if (success) {
-      console.log(`[${requestId}] Email sent successfully: ${message}`);
-    } else {
-      console.error(`[${requestId}] Email failed: ${message}`);
+    if (isFeatureEnabled('EMAIL_NOTIFICATIONS')) {
+      const { success, message } = await sendConfirmationEmail(emailData);
+      if (success) {
+        console.log(`[${requestId}] Email sent successfully: ${message}`);
+      } else {
+        console.error(`[${requestId}] Email failed: ${message}`);
+      }
     }
   }
 }
