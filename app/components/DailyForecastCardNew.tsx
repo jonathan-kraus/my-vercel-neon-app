@@ -10,7 +10,7 @@ type DailyForecastCardProps = {
 export default function DailyForecastCardNew({ forecast }: DailyForecastCardProps) {
   if (!forecast || forecast.length === 0) {
     return (
-      <div className="flex items-center justify-center py-12 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg">
+      <div className="flex items-center justify-center py-12 bg-linear-to-br from-gray-50 to-gray-100 rounded-2xl shadow-lg">
         <div className="flex flex-col items-center space-y-3">
           <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
           <span className="text-gray-600 font-medium">Loading forecast...</span>
@@ -22,7 +22,7 @@ export default function DailyForecastCardNew({ forecast }: DailyForecastCardProp
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-bold bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
           7-Day Forecast
         </h2>
         <div className="flex items-center space-x-2 text-sm text-gray-500">
@@ -52,7 +52,7 @@ export default function DailyForecastCardNew({ forecast }: DailyForecastCardProp
               }`}
             >
               {/* Background gradient */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${tempColor} opacity-10 group-hover:opacity-20 transition-opacity`}></div>
+              <div className={`absolute inset-0 bg-linear-to-br ${tempColor} opacity-10 group-hover:opacity-20 transition-opacity`}></div>
               
               <div className="relative p-5 bg-white/90 backdrop-blur-sm">
                 {/* Date header */}
@@ -118,7 +118,7 @@ export default function DailyForecastCardNew({ forecast }: DailyForecastCardProp
                 </div>
 
                 {/* Hover indicator */}
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-blue-500 to-indigo-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
               </div>
             </div>
           );

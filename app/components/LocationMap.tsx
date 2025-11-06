@@ -15,7 +15,7 @@ export default function LocationMap({ location }: LocationMapProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="p-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+      <div className="p-4 bg-linear-to-r from-blue-500 to-indigo-600 text-white">
         <h3 className="text-lg font-semibold flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />

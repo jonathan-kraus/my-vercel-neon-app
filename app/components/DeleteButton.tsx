@@ -3,8 +3,10 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { logEvent } from '../lib/log';
-import { generateUUID } from '../../uuidj';
+import { logInfoFactory } from '../utils/logger';
+import { generateUUID } from '@/uuidj';
+
+const logInfo = logInfoFactory('app/components/DeleteButton.tsx');
 
 export function DeleteButton({ postId }: { postId: number }) {
   const router = useRouter();
@@ -15,12 +17,10 @@ export function DeleteButton({ postId }: { postId: number }) {
     const requestId = generateUUID();
 
     try {
-      await logEvent({
-        source: 'DeleteButton',
-        message: `Post delete attempted: ${postId}`,
-        requestId,
-        metadata: { userAction: 'delete_attempt', postId },
-      });
+      await logInfo(`Post delete attempted: ${postId}`,
+      { userAction: 'delete_attempt', postId },
+      requestId,
+      );
 
       const res = await fetch(`/api/posts/${postId}`, {
         method: 'DELETE',
@@ -38,13 +38,10 @@ export function DeleteButton({ postId }: { postId: number }) {
       console.error('Delete failed', err);
       toast.error('Failed to delete post');
       const errorMessage = err instanceof Error ? err.message : String(err);
-      await logEvent({
-        source: 'DeleteButton',
-        message: `Post delete failed: ${postId}`,
-        requestId,
-        severity: 'error',
-        metadata: { error: errorMessage, postId },
-      });
+      await logInfo(`Post delete failed: ${postId}`,
+      { error: errorMessage, postId },
+      requestId
+      );
     } finally {
       setLoading(false);
     }

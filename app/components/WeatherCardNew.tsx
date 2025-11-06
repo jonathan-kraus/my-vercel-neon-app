@@ -65,7 +65,7 @@ export default function WeatherCardNew({ location }: { location?: { name: string
 
   if (!weather) {
     return (
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-xl p-8 animate-pulse">
+      <div className="bg-linear-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-xl p-8 animate-pulse">
         <div className="flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
         </div>
@@ -79,7 +79,7 @@ export default function WeatherCardNew({ location }: { location?: { name: string
   const isWindy = typeof weather?.windSpeed === 'number' && weather.windSpeed > 10;
 
   return (
-    <div className="bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-2xl shadow-2xl p-8 text-white transform transition-all hover:scale-105 hover:shadow-3xl">
+    <div className="bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600 rounded-2xl shadow-2xl p-8 text-white transform transition-all hover:scale-105 hover:shadow-3xl">
       <div className="flex flex-col space-y-6">
         {/* Header */}
         <div className="flex items-start justify-between">
