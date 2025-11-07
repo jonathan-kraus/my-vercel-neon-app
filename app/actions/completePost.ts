@@ -2,12 +2,11 @@
 
 import { revalidatePath } from 'next/cache';
 import { db } from '../lib/db';
-import { logInfoFactory } from '../utils/logger';
-
-const logInfo = logInfoFactory('app/actions/completePost');
+import { createLogger } from '../utils/logger';
 
 export async function completePost(formData: FormData) {
   const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+  const log = createLogger('app/actions/completePost', requestId);
 
   try {
     const postId = formData.get('postId') as string;
@@ -27,10 +26,9 @@ export async function completePost(formData: FormData) {
     });
 
     try {
-      await logInfo(
-        `[app/actions/completePost]Post follow-up completed: ${requestId}`,
-        { userAction: 'complete_followup', postId: post.id.toString(), postTitle: post.title },
-        requestId
+      await log.info(
+        'Post follow-up completed',
+        { userAction: 'complete_followup', postId: post.id.toString(), postTitle: post.title }
       );
     } catch {
       // non-fatal

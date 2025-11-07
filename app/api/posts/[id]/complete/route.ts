@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { db } from '@/app/lib/db';
-import { logger } from '@/app/lib/logger';
 import { generateUUID } from '../../../../../uuidj';
 import { logInfoFactory } from '@/app/utils/logger';
 

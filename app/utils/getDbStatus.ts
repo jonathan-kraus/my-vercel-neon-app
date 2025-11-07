@@ -1,9 +1,8 @@
 'use server';
 
 import { db } from '@/app/lib/db';
-import { logInfoFactory } from './logger';
+import { createLogger } from './logger';
 import { generateUUID } from '../../uuidj';
-const logInfo = logInfoFactory('getDbStatus');
 const prisma = db; // For clarity in this file
 
 async function getLastDatabaseActivity() {
@@ -75,6 +74,7 @@ export async function getDbStatus(requestId?: string) {
   // Generate requestId if not provided
   if (!requestId) requestId = generateUUID();
   
+  const log = createLogger('getDbStatus', requestId);
   console.log(`[getDbStatus] [${requestId}] Checking database status...`);
 
   const start = Date.now();
@@ -87,10 +87,8 @@ export async function getDbStatus(requestId?: string) {
   ]);
   const latencyMs = Date.now() - start;
   console.log(`[getDbStatus] [${requestId}] Start logging database status...`);
-  await logInfo(`Database status retrieved`, 
-  { userAction: 'fetch', logCount },
-    requestId,
-  );
+  await log.info(`Database status retrieved`, 
+    { userAction: 'fetch', logCount });
   //await triggerEmail('JDB Status', requestId, `Database Status Update`, message);
 
   console.log(`[getDbStatus] [${requestId}] Database status logged.`);

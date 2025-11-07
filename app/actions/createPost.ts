@@ -3,11 +3,12 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { db } from '../lib/db';
-import { logger } from '../lib/logger';
+import { createLogger } from '../utils/logger';
 import { triggerEmail } from '../components/actions';
 
 export async function createPost(formData: FormData) {
   const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
+  const log = createLogger('app/actions/createPost.ts', requestId);
 
   try {
     const title = formData.get('title') as string;
@@ -62,13 +63,8 @@ export async function createPost(formData: FormData) {
     }
 
     try {
-      await logger({
-        severity: 'info',
-        source: 'CreatePost Action',
-        message: `Post created by ${authorName}: ${requestId}`,
-        requestId,
-        metadata: { userAction: 'create_post', postTitle: post.title },
-      });
+      await log.info(`Post created by ${authorName}`,
+        { userAction: 'create_post', postTitle: post.title });
     } catch {
       // non-fatal
     }
