@@ -14,12 +14,13 @@ import LocationSelector from '@/app/components/LocationSelector';
 import LocationMap from '@/app/components/LocationMap';
 import SendForecastEmailButton from '@/app/components/SendForecastEmailButton';
 import { Location, getActiveLocation } from '@/app/utils/locations';
-import { logInfoFactory, logErrorFactory } from '@/app/utils/logger';
+import { logInfoFactory, logErrorFactory, createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
 const logInfo = logInfoFactory('app/admin/weather/page.tsx');
 const logError = logErrorFactory('app/admin/weather/page.tsx');
+const log = createLogger('JKapp/admin/weather/page.tsx');
 type ForecastResult = {
   forecast: DailyForecastPoint[];
   maxRainAccumulation: number;
@@ -50,14 +51,13 @@ export default function WeatherPage() {
     try {
       const result = await getDailyForecast(generateUUID(), location); // Pass the selected location
       setForecast(result);
-      logInfo(
+      log.info(
         'Fetched forecast for new location',
         {
           location: location.displayName,
           forecastLength: result.forecast.length,
         },
-        requestId
-      );
+        );
     } catch (err) {
       console.error('Failed to fetch forecast for new location:', err);
       toast.error(`Failed to fetch forecast for ${location.displayName}`);
