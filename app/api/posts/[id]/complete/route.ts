@@ -3,6 +3,9 @@ import { cookies } from 'next/headers';
 import { db } from '@/app/lib/db';
 import { logger } from '@/app/lib/logger';
 import { generateUUID } from '../../../../../uuidj';
+import { logInfoFactory } from '@/app/utils/logger';
+
+const logInfo = logInfoFactory('app/api/posts/[id]/complete/route.ts');
 
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
@@ -20,13 +23,14 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
       data: { published: false },
     });
 
-    await logger({
-      severity: 'info',
-      source: 'post.complete',
-      message: `Post ${id} marked as unpublished`,
-      requestId: generateUUID(),
-      metadata: { user: user, action: 'mark_complete', postId: id },
-    });
+    // Log the action
+    const requestId = generateUUID();
+ 
+    await logInfo(
+      `Post ${id} marked as unpublished`,
+      { action: 'mark_complete', postId: id, user: user},
+      requestId
+    );
 
     return NextResponse.json({ success: true });
   } catch (err) {
