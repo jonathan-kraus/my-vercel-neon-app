@@ -18,11 +18,11 @@ export function CompleteButton({ postId }: { postId: number }) {
 
       await completePost(formData);
 
-      toast.success('Post marked as completed!');
+      toast.success('Follow-up marked as complete!');
       router.refresh();
     } catch (err) {
       console.error('Complete failed', err);
-      toast.error('Failed to complete post');
+      toast.error('Failed to complete follow-up');
     } finally {
       setLoading(false);
     }
@@ -32,8 +32,8 @@ export function CompleteButton({ postId }: { postId: number }) {
     <button
       onClick={handleComplete}
       disabled={loading}
-      className="text-sm text-green-600 hover:underline px-2 py-1"
-      title="Mark post as completed"
+      className="text-sm bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded font-semibold"
+      title="Mark follow-up as complete"
     >
       {loading ? 'Completing…' : 'Complete'}
     </button>

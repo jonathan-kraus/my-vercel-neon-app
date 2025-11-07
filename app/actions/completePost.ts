@@ -21,7 +21,6 @@ export async function completePost(formData: FormData) {
     const post = await db.post.update({
       where: { id },
       data: {
-        published: true, // Make it visible on the home page
         needsFollowUp: false, // Remove from follow-ups
         followUpNotes: `Completed on ${new Date().toLocaleDateString()}`, // Update notes with completion date
       },
@@ -29,8 +28,8 @@ export async function completePost(formData: FormData) {
 
     try {
       await logInfo(
-        `[app/actions/completePost]Post completed: ${requestId}`,
-        { userAction: 'complete_post', postId: post.id.toString(), postTitle: post.title },
+        `[app/actions/completePost]Post follow-up completed: ${requestId}`,
+        { userAction: 'complete_followup', postId: post.id.toString(), postTitle: post.title },
         requestId
       );
     } catch {

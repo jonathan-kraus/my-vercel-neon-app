@@ -17,9 +17,9 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
       });
 
       if (res.ok) {
-        toast.success('Post marked as unpublished');
+        toast.success('Post unpublished!');
       } else {
-        toast.error('Failed to mark unpublished');
+        toast.error('Failed to unpublish post');
       }
     });
   };
@@ -28,10 +28,10 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
     <button
       onClick={handleClick}
       disabled={isPending}
-      className="text-sm text-blue-600 hover:underline px-2 py-1"
-      title="Mark post as complete"
+      className="text-sm bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded font-semibold"
+      title="Unpublish this post"
     >
-      {isPending ? 'Marking…' : 'Mark Complete'}
+      {isPending ? 'Unpublishing…' : 'Unpublish'}
     </button>
   );
 }
