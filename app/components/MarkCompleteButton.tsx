@@ -25,7 +25,8 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
         });
 
         if (res.ok) {
-          toast.success('Post unpublished!');
+          const data = await res.json();
+          toast.success(`Post unpublished! (${data.requestId || requestId})`);
           try {
             await logInfo(`Post unpublished`, { postId }, requestId);
           } catch (_) {
@@ -34,12 +35,14 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
         } else {
           // Try to extract a helpful message from the response body
           let reason = `HTTP ${res.status}`;
+          let serverRequestId = requestId;
           try {
             const text = await res.text();
             if (text) {
               try {
                 const parsed = JSON.parse(text);
                 reason = parsed?.error || parsed?.message || text;
+                serverRequestId = parsed?.requestId || requestId;
               } catch {
                 reason = text;
               }
@@ -48,7 +51,7 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
             console.error('Failed to read error response body', readErr);
           }
 
-          toast.error(`Failed to unpublish: ${reason}`);
+          toast.error(`Failed to unpublish: ${reason} (${serverRequestId})`);
           try {
             await logInfo(`Unpublish failed`, { postId, status: res.status, reason }, requestId);
           } catch (_) {
