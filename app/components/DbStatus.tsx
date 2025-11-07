@@ -39,6 +39,11 @@ export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
   const [requestId] = useState(() => generateUUID());
   const emailSentRef = useRef(false);
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<{
+    type: 'success' | 'throttled' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
 
   const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
 
@@ -95,6 +100,9 @@ export default function DbStatus() {
       return;
     }
 
+    setEmailLoading(true);
+    setEmailStatus({ type: null, message: '' });
+
     try {
       const response = await fetch('/api/send-email', {
         method: 'POST',
@@ -128,11 +136,28 @@ export default function DbStatus() {
       }
 
       const result = await response.json();
-      toast.success('Status report email success!');
       console.log('Email API result:', result);
+
+      // Handle different response types
+      if (result.status === 'success') {
+        setEmailStatus({ type: 'success', message: 'Email sent successfully!' });
+        toast.success('Status report email sent!');
+      } else if (result.status === 'skipped' && result.reason === 'throttled') {
+        setEmailStatus({ 
+          type: 'throttled', 
+          message: 'Email throttled - too soon since last send' 
+        });
+        toast('Email throttled - please wait before sending again', { icon: '⏱️' });
+      } else {
+        setEmailStatus({ type: 'error', message: 'Email send failed' });
+        toast.error('Email send failed');
+      }
     } catch (err) {
       console.error('Failed to send status email:', err);
+      setEmailStatus({ type: 'error', message: `Error: ${err instanceof Error ? err.message : 'Unknown error'}` });
       toast.error('Failed to send status email');
+    } finally {
+      setEmailLoading(false);
     }
   }, [status, region, requestId]);
 
@@ -213,9 +238,58 @@ export default function DbStatus() {
         <button onClick={() => toast('DbStatus toast!')} className="px-3 py-1 bg-gray-200 rounded">
           Make me a toast!
         </button>
-        <button onClick={sendStatusEmail} className="px-3 py-1 bg-blue-500 text-white rounded">
-          Send Status Email
-        </button>
+        <div className="flex flex-col gap-2">
+          <button 
+            onClick={sendStatusEmail} 
+            disabled={emailLoading}
+            className={`px-3 py-1 rounded flex items-center gap-2 transition-colors ${
+              emailLoading 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : emailStatus.type === 'success'
+                ? 'bg-green-500 text-white hover:bg-green-600'
+                : emailStatus.type === 'throttled'
+                ? 'bg-yellow-500 text-white hover:bg-yellow-600'
+                : emailStatus.type === 'error'
+                ? 'bg-red-500 text-white hover:bg-red-600'
+                : 'bg-blue-500 text-white hover:bg-blue-600'
+            }`}
+          >
+            {emailLoading ? (
+              <>
+                <span className="animate-spin">⏳</span>
+                <span>Sending...</span>
+              </>
+            ) : emailStatus.type === 'success' ? (
+              <>
+                <span>✓</span>
+                <span>Email Sent</span>
+              </>
+            ) : emailStatus.type === 'throttled' ? (
+              <>
+                <span>⏱️</span>
+                <span>Throttled</span>
+              </>
+            ) : emailStatus.type === 'error' ? (
+              <>
+                <span>✗</span>
+                <span>Send Failed</span>
+              </>
+            ) : (
+              'Send Status Email'
+            )}
+          </button>
+          {emailStatus.type && emailStatus.message && (
+            <p className={`text-sm ${
+              emailStatus.type === 'success' 
+                ? 'text-green-600' 
+                : emailStatus.type === 'throttled'
+                ? 'text-yellow-600'
+                : 'text-red-600'
+            }`}>
+              {emailStatus.message}
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
