@@ -161,6 +161,8 @@ export async function getDailyForecast(requestId?: string, location?: Location):
     }
     if (isFeatureEnabled('VERBOSE_LOGGING')) {
       console.log(`[getDailyForecast] [${requestId}] Data fetched from API:`, data);
+    } else {
+      console.log(`[getDailyForecast] [${requestId}] Data fetched from API`);
     }
 
     console.log(

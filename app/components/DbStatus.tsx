@@ -137,7 +137,10 @@ export default function DbStatus() {
 
       const result = await response.json();
       console.log('Email API result:', result);
-
+      await logInfo(`Database email status: ${result.status}`, 
+      { userAction: 'fetch', source: 'DbStatus' },
+        requestId,
+        );
       // Handle different response types
       if (result.status === 'success') {
         setEmailStatus({ type: 'success', message: 'Email sent successfully!' });

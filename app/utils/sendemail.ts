@@ -51,7 +51,9 @@ export async function logEvent(payload: LogPayload) {
     process.env.SITE_URL?.replace(/\/$/, '') ||
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
     'https://www.kraus.my.id';
-
+logInfo(`[${requestId}] sendemail.ts logEvent called`, 
+     {action: 'sendemail logEvent', timestamp: new Date().toISOString() },
+     requestId);
   const logUrl = `${baseUrl}/api/log`;
   console.log(`✅ [sendemail] start logging to: ${logUrl} with payload:`, payload);
 
