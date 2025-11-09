@@ -60,7 +60,7 @@ export default function LogViewerPage() {
               newItemIds.forEach((id) => copy.delete(id));
               return copy;
             });
-          }, 5000); // increased from 3000 to 5000ms
+          }, 4444); 
         }
 
         return data.items || [];
@@ -80,7 +80,7 @@ export default function LogViewerPage() {
 
     const interval = setInterval(() => {
       fetchPage();
-    }, 11000); // every 11 seconds
+    }, 41000); 
 
     return () => clearInterval(interval);
   }, [live, fetchPage]);

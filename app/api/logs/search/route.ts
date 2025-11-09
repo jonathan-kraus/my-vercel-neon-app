@@ -7,15 +7,13 @@ const logInfo = logInfoFactory('app/api/logs/search/route');
 
 export async function GET(req: Request) {
   const requestId = generateUUID();
-  useEffect(() => {
+
   logInfo(
     `[app/api/logs/search/route] Initialized log search route`,
     { action: `init`, timestamp: new Date().toISOString() },
     requestId
   );
-  return () => {
-    };
-}, []);
+
   try {
     const url = new URL(req.url);
     const params = url.searchParams;

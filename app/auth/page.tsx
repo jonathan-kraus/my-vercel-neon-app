@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { logInfoFactory } from '@/app/utils/logger';
+import { createLogger, logInfoFactory } from '@/app/utils/logger';
 import { generateUUID } from '../../uuidj';
 
-const logInfo = logInfoFactory('app/auth/page.tsx');
+const log = createLogger('app/auth/page.tsx',generateUUID());
 
 export default function AuthPage() {
   const [name, setName] = useState('');
@@ -20,10 +20,9 @@ export default function AuthPage() {
 
     try {
       // non-fatal logging
-      await logInfo(
+      await log.info(
         `User login attempted for ${name}`,
         { userAction: 'login', user: name },
-        requestId
       );
     } catch {
       // ignore logging failures
@@ -51,10 +50,9 @@ export default function AuthPage() {
         // helper cookie with expiry timestamp (ms) for client countdown UI
         const expiresAt = Date.now() + maxAge * 1000;
         document.cookie = `expires_at=${expiresAt}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
-        await logInfo(
+        await log.info(
           `User login successful for ${name}`,
           { userAction: 'login', user: name },
-          requestId
         );
         router.push('/');
       } else {
