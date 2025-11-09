@@ -2,15 +2,20 @@ import { NextResponse } from 'next/server';
 import { logInfoFactory } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
+import { useEffect } from 'react';
 const logInfo = logInfoFactory('app/api/logs/search/route');
 
 export async function GET(req: Request) {
   const requestId = generateUUID();
+  useEffect(() => {
   logInfo(
-    `Initialized log search route`,
+    `[app/api/logs/search/route] Initialized log search route`,
     { action: `init`, timestamp: new Date().toISOString() },
     requestId
   );
+  return () => {
+    };
+}, []);
   try {
     const url = new URL(req.url);
     const params = url.searchParams;
