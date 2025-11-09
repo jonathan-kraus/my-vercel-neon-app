@@ -32,7 +32,7 @@ export async function createPost(formData: FormData) {
     const postData: any = {
       title,
       content,
-      published: !followUpDate, // If follow-up date is set, don't publish automatically
+      published: true, 
       needsFollowUp: !!followUpDate || !!followUpNotes, // Set needsFollowUp if any follow-up fields are provided
       author: { connect: { id: user.id } },
     };
@@ -63,8 +63,10 @@ export async function createPost(formData: FormData) {
     }
 
     try {
-      await log.info(`Post created by ${authorName}`,
+      await log.info(`[createPost] Post created by ${authorName}`,
         { userAction: 'create_post', postTitle: post.title });
+      await log.info('[createPost]Email sent to admin about new post',
+        { userAction: 'send_email', postTitle: post.title });  
     } catch {
       // non-fatal
     }
