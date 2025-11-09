@@ -2,18 +2,16 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createLogger, logInfoFactory } from '@/app/utils/logger';
+import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '../../uuidj';
-
-const log = createLogger('app/auth/page.tsx',generateUUID());
+const requestId = generateUUID();
+const log = createLogger('app/auth/page.tsx',requestId);
 
 export default function AuthPage() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
-
-  const requestId = generateUUID();
-
+  log.info('[app/auth/page] Rendering AuthPage component', { action: 'render', timestamp: new Date().toISOString() });
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -21,7 +19,7 @@ export default function AuthPage() {
     try {
       // non-fatal logging
       await log.info(
-        `User login attempted for ${name}`,
+        `[app/auth/page] User login attempted for ${name}`,
         { userAction: 'login', user: name },
       );
     } catch {
@@ -51,16 +49,16 @@ export default function AuthPage() {
         const expiresAt = Date.now() + maxAge * 1000;
         document.cookie = `expires_at=${expiresAt}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
         await log.info(
-          `User login successful for ${name}`,
+          `[app/auth/page] User login successful for ${name}`,
           { userAction: 'login', user: name },
         );
         router.push('/');
       } else {
-        setError('Invalid credentials');
+        setError('[app/auth/page] Invalid credentials');
       }
     } catch (err) {
       console.error('Login error', err);
-      setError('Network error');
+      setError('[app/auth/page] Network error');
     }
   };
 
