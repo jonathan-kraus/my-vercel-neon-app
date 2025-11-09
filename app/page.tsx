@@ -67,14 +67,14 @@ export default async function Home() {
     orderBy: { followUpDate: 'asc' },
   });
   if (followUpPosts.length > 0 && isFeatureEnabled('VERBOSE_LOGGING')) {
-    log.info('Follow-up posts detected', { followUpCount: followUpPosts.length });
+    log.info('[app/page] Follow-up posts detected', { followUpCount: followUpPosts.length });
   }
-  log.info('Posts fetched from database', { postCount: posts.length });
-  log.info('Follow-up posts fetched', { followUpCount: followUpPosts.length });
+  log.info('[app/page] Posts fetched from database', { postCount: posts.length });
+  log.info('[app/page] Follow-up posts fetched', { followUpCount: followUpPosts.length });
 
   const forecastResult = await getDailyForecast(requestId);
 
-  log.info('Weather Forecast data fetched', { forecastDays: forecastResult.forecast.length });
+  log.info('[app/page] Weather Forecast data fetched', { forecastDays: forecastResult.forecast.length });
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -133,7 +133,8 @@ export default async function Home() {
         {/* Sun & Moon Information */}
         <WeatherSection initialForecast={forecastResult.forecast} />
 
-        {/* Branding & CTA */}
+        {/* Main Content */}
+        <div className="grow"></div>
         <main className="flex flex-1 flex-col justify-center">
           <div className="mb-6 md:mb-7">
             <Image
