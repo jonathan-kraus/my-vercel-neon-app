@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { logInfoFactory } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
-import { useEffect } from 'react';
 const logInfo = logInfoFactory('app/api/logs/search/route');
 
 export async function GET(req: Request) {
