@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { generateUUID } from '@/uuidj';
+import { createLogger } from '@/app/utils/logger';
+import { db } from '@/app/lib/db';
+  
+const requestId = generateUUID();
+const log = createLogger('api/me', requestId);
 console.log('[build] Generating /api/me');
 function parseCookies(cookieHeader: string | null) {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
   cookieHeader.split(';').forEach((pair) => {
     const idx = pair.indexOf('=');
+    log.info('[api/me] Parsing cookie pair', { pair });
     if (idx > -1) {
       const key = pair.slice(0, idx).trim();
       const val = pair.slice(idx + 1).trim();
@@ -18,6 +24,7 @@ function parseCookies(cookieHeader: string | null) {
 function decodeJwtPayload(token: string | undefined | null): Record<string, unknown> | null {
   if (!token) return null;
   const parts = token.split('.');
+  log.info('[api/me] Decoding JWT payload', { tokenPartCount: parts.length });
   if (parts.length < 2) return null;
   try {
     const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
@@ -30,6 +37,7 @@ function decodeJwtPayload(token: string | undefined | null): Record<string, unkn
 }
 
 export async function GET(req: Request) {
+  log.info('[api/me] Handling GET request');
   try {
     const cookieHeader = req.headers.get('cookie');
     const cookies = parseCookies(cookieHeader);
@@ -60,9 +68,8 @@ export async function GET(req: Request) {
     }
 
     if (payload?.['sub'] && !username) {
-      const prisma = new PrismaClient();
+
       try {
-        // normalize `sub` to a number if possible (Prisma User.id is numeric in this schema)
         let subIdNum: number | undefined;
         if (typeof payload['sub'] === 'number') {
           subIdNum = payload['sub'];
@@ -71,14 +78,14 @@ export async function GET(req: Request) {
         }
 
         if (typeof subIdNum === 'number') {
-          const user = await prisma.user.findUnique({
+          const user = await db.user.findUnique({
             where: { id: subIdNum },
             select: { name: true },
           });
           if (user?.name) username = user.name;
         }
       } catch (e) {
-        console.error('prisma lookup failed in /api/me', e);
+        console.error('db lookup failed in /api/me', e);
       }
     }
 

@@ -1,16 +1,18 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
-import { logInfoFactory } from '@/app/utils/logger';
+import { createLogger } from '@/app/utils/logger';
 import { Prisma } from '@prisma/client';
 import { generateUUID } from '@/uuidj';
 import { z } from 'zod';
+import { create } from 'domain';
 
 const CreatePostSchema = z.object({
   title: z.string().min(1),
   body: z.string().min(1),
 });
-const logInfo = logInfoFactory('api/posts');
 const requestId = generateUUID();
+const log = createLogger('api/posts',requestId);
+
 function parseCookies(cookieHeader: string | null): Record<string, string> {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
@@ -57,7 +59,7 @@ export async function GET(request: Request) {
     });
 
     try {
-      await logInfo('Fetched posts', { postCount: posts.length }, requestId);
+      await log.info('[api/posts] Fetched posts', { postCount: posts.length });
     } catch {
       // non-fatal
     }
@@ -73,6 +75,7 @@ export async function POST(req: Request) {
 
   try {
     const payload = await req.json();
+    log.info('[api/posts] Verifying request', { payloadSize: JSON.stringify(payload).length });
     const parsed = CreatePostSchema.safeParse(payload);
     if (!parsed.success) {
       return NextResponse.json(
@@ -87,6 +90,7 @@ export async function POST(req: Request) {
     const username = cookies['username'] ?? null;
 
     if (!username) {
+      log.info('[api/posts] Unauthorized request - missing username cookie'); 
       return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
     }
 
@@ -106,10 +110,9 @@ export async function POST(req: Request) {
     });
 
     try {
-      await logInfo(
+      await log.info(
         `Post created by ${username} `,
         { userAction: 'create_post', postTitle: post.title },
-        requestId
       );
     } catch {
       // non-fatal
