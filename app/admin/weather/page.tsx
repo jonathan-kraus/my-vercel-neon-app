@@ -35,7 +35,7 @@ export default function WeatherPage() {
   const onLog = useCallback(
     async (severity: 'info' | 'error', message: string, metadata?: Record<string, any>) => {
       if (severity === 'info') {
-        await logInfo(message, metadata || {}, requestId);
+        await log.info(message, metadata || {});
       } else {
         await logError(message, metadata || {});
       }
