@@ -16,6 +16,37 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
   const [timeUntilSunset, setTimeUntilSunset] = useState<string>('');
   const [timeUntilSunrise, setTimeUntilSunrise] = useState<string>('');
 
+  // Get today's forecast (first item) - safe access
+  const today = forecast?.[0];
+  
+  // For testing - use mock data if API doesn't provide sunrise/sunset
+  const mockSunrise = '2025-11-03T06:30:00Z';
+  const mockSunset = '2025-11-03T17:45:00Z';
+  const mockMoonrise = '2025-11-03T19:15:00Z';
+  const mockMoonset = '2025-11-03T07:30:00Z';
+
+  const sunriseTime = today?.sunriseTime || mockSunrise;
+  const sunsetTime = today?.sunsetTime || mockSunset;
+  const moonriseTime = today?.moonriseTime || mockMoonrise;
+  const moonsetTime = today?.moonsetTime || mockMoonset;
+
+  // useEffect must be called before any conditional returns
+  useEffect(() => {
+    const updateTimes = () => {
+      if (sunsetTime) {
+        setTimeUntilSunset(getTimeUntil(new Date(sunsetTime)));
+      }
+      if (sunriseTime) {
+        setTimeUntilSunrise(getTimeUntil(new Date(sunriseTime)));
+      }
+    };
+
+    updateTimes();
+    const interval = setInterval(updateTimes, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [sunsetTime, sunriseTime]);
+
   if (!forecast || forecast.length === 0) {
     return (
       <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-600">
@@ -24,19 +55,6 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
     );
   }
 
-  // Get today's forecast (first item)
-  const today = forecast[0];
-
-  // For testing - use mock data if API doesn't provide sunrise/sunset
-  const mockSunrise = '2025-11-03T06:30:00Z';
-  const mockSunset = '2025-11-03T17:45:00Z';
-  const mockMoonrise = '2025-11-03T19:15:00Z';
-  const mockMoonset = '2025-11-03T07:30:00Z';
-
-  const sunriseTime = today.sunriseTime || mockSunrise;
-  const sunsetTime = today.sunsetTime || mockSunset;
-  const moonriseTime = today.moonriseTime || mockMoonrise;
-  const moonsetTime = today.moonsetTime || mockMoonset;
   const now = new Date();
   const currentTime = now.getTime();
 
@@ -73,22 +91,6 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
 
   // Moon phase
   const moonPhase = getMoonPhase();
-
-  useEffect(() => {
-    const updateTimes = () => {
-      if (sunsetTime) {
-        setTimeUntilSunset(getTimeUntil(new Date(sunsetTime)));
-      }
-      if (sunriseTime) {
-        setTimeUntilSunrise(getTimeUntil(new Date(sunriseTime)));
-      }
-    };
-
-    updateTimes();
-    const interval = setInterval(updateTimes, 60000); // Update every minute
-
-    return () => clearInterval(interval);
-  }, [sunsetTime, sunriseTime]);
 
   return (
     <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-lg p-6 border border-amber-200/50 dark:border-gray-600 relative overflow-hidden">
