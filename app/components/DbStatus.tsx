@@ -5,6 +5,7 @@ import { getDbStatus } from '@/app/utils/getDbStatus';
 import { generateUUID } from '../../uuidj';
 import { logInfoFactory } from '../utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
+import { email } from 'zod';
 const logInfo = logInfoFactory('app/components/DbStatus.tsx');
 
 type DbStatusType = {
@@ -57,7 +58,7 @@ export default function DbStatus() {
     const jck = async () => {
       try {
         await logInfo(`Retrieving database status baseUrl: ${baseUrl}`, 
-          { userAction: 'fetch', source: 'DbStatus' },
+          { userAction: 'fetch', source: 'DbStatus', email: 'bypass_throttle' },
             requestId,
         );
       } catch (error) {

@@ -49,10 +49,10 @@ export async function logger(payload: LogPayload) {
       (typeof window !== 'undefined' && window.location.origin) ||
       'http://localhost:3000';
   }
-
-  console.log(`[logger] NODE_ENV: ${process.env.NODE_ENV}`);
+if (payload.metadata?.email) {
+  console.log(`[logger] metadata: ${payload.metadata.email}`);
   console.log(`[logger] Base URL for API call: ${baseUrl}`);
-
+}
   const fullUrl = `${baseUrl}/api/log`;
   console.log(`[logger] Full URL for API call: ${fullUrl}`);
 
