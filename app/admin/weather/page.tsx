@@ -104,7 +104,7 @@ export default function WeatherPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 animate-fade-in">
       {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+        <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
           Weather Forecast
         </h1>
         <p className="text-gray-600 text-sm md:text-base">Real-time weather updates and forecasts</p>
@@ -124,7 +124,7 @@ export default function WeatherPage() {
 
       {/* Rain Alert */}
       {forecast.maxRainAccumulation > 0 && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 text-blue-800 p-5 rounded-xl shadow-md">
+        <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 text-blue-800 p-5 rounded-xl shadow-md">
           <div className="flex items-start">
             <div className="shrink-0">
               <svg className="h-6 w-6 text-blue-500" viewBox="0 0 20 20" fill="currentColor">

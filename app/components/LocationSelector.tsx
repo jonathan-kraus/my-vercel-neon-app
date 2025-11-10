@@ -49,7 +49,7 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
             onClick={() => handleLocationSelect(location)}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
               activeLocation?.name === location.name
-                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg ring-2 ring-blue-300'
+                ? 'bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg ring-2 ring-blue-300'
                 : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm hover:shadow-md'
             }`}
           >
