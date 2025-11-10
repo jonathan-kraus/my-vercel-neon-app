@@ -12,6 +12,10 @@ interface SunMoonCardProps {
 }
 
 export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
+  // Hooks must be called before any conditional returns
+  const [timeUntilSunset, setTimeUntilSunset] = useState<string>('');
+  const [timeUntilSunrise, setTimeUntilSunrise] = useState<string>('');
+
   if (!forecast || forecast.length === 0) {
     return (
       <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-600">
@@ -69,10 +73,6 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
 
   // Moon phase
   const moonPhase = getMoonPhase();
-
-  // Time until sunset/sunrise with live updates
-  const [timeUntilSunset, setTimeUntilSunset] = useState<string>('');
-  const [timeUntilSunrise, setTimeUntilSunrise] = useState<string>('');
 
   useEffect(() => {
     const updateTimes = () => {

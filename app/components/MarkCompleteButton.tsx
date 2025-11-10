@@ -29,7 +29,7 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
           toast.success(`Post unpublished! (${data.requestId || requestId})`);
           try {
             await logInfo(`Post unpublished`, { postId }, requestId);
-          } catch (_) {
+          } catch {
             // non-fatal
           }
         } else {
@@ -54,7 +54,7 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
           toast.error(`Failed to unpublish: ${reason} (${serverRequestId})`);
           try {
             await logInfo(`Unpublish failed`, { postId, status: res.status, reason }, requestId);
-          } catch (_) {
+          } catch {
             // non-fatal
           }
         }
@@ -64,7 +64,7 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
         toast.error(`Failed to unpublish: ${msg}`);
         try {
           await logInfo(`Unpublish exception`, { postId, error: msg }, requestId);
-        } catch (_) {
+        } catch {
           // non-fatal
         }
       }

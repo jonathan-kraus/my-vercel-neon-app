@@ -40,7 +40,7 @@ export default function WeatherPage() {
         await logError(message, metadata || {});
       }
     },
-    [requestId]
+    []
   );
 
   const handleLocationChange = async (location: Location) => {

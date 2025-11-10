@@ -4,7 +4,6 @@ import { createLogger } from '@/app/utils/logger';
 import { Prisma } from '@prisma/client';
 import { generateUUID } from '@/uuidj';
 import { z } from 'zod';
-import { create } from 'domain';
 
 const CreatePostSchema = z.object({
   title: z.string().min(1),
