@@ -1,8 +1,10 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 import { getActiveLocation, Location } from '@/app/utils/locations';
+import { getMoonPhase, getTimeUntil } from '@/app/utils/weatherUtils';
 
 interface SunMoonCardProps {
   forecast: DailyForecastPoint[];
@@ -65,6 +67,29 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
     });
   };
 
+  // Moon phase
+  const moonPhase = getMoonPhase();
+
+  // Time until sunset/sunrise with live updates
+  const [timeUntilSunset, setTimeUntilSunset] = useState<string>('');
+  const [timeUntilSunrise, setTimeUntilSunrise] = useState<string>('');
+
+  useEffect(() => {
+    const updateTimes = () => {
+      if (sunsetTime) {
+        setTimeUntilSunset(getTimeUntil(new Date(sunsetTime)));
+      }
+      if (sunriseTime) {
+        setTimeUntilSunrise(getTimeUntil(new Date(sunriseTime)));
+      }
+    };
+
+    updateTimes();
+    const interval = setInterval(updateTimes, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [sunsetTime, sunriseTime]);
+
   return (
     <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-lg p-6 border border-amber-200/50 dark:border-gray-600 relative overflow-hidden">
       {/* Decorative background elements */}
@@ -106,7 +131,12 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
                     </svg>
                     Rise
                   </span>
-                  <span className="font-mono font-semibold text-gray-800 dark:text-gray-200">{formatTime(sunriseTime)}</span>
+                  <div className="text-right">
+                    <span className="font-mono font-semibold text-gray-800 dark:text-gray-200 block">{formatTime(sunriseTime)}</span>
+                    {!sunIsUp && timeUntilSunrise && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">in {timeUntilSunrise}</span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                   <span className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
@@ -115,7 +145,12 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
                     </svg>
                     Set
                   </span>
-                  <span className="font-mono font-semibold text-gray-800 dark:text-gray-200">{formatTime(sunsetTime)}</span>
+                  <div className="text-right">
+                    <span className="font-mono font-semibold text-gray-800 dark:text-gray-200 block">{formatTime(sunsetTime)}</span>
+                    {sunIsUp && timeUntilSunset && (
+                      <span className="text-xs text-gray-500 dark:text-gray-400">in {timeUntilSunset}</span>
+                    )}
+                  </div>
                 </div>
               </div>
               <div
@@ -130,13 +165,14 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
             </div>
           </div>
 
-          {/* Moon Section */}
-          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-5 border border-blue-200/50 dark:border-gray-600 transition-all duration-300 hover:shadow-lg hover:scale-105">
-            <div className="text-center">
-              <div className={`text-5xl mb-3 transform transition-transform duration-300 ${moonIsUp ? 'animate-pulse scale-110' : 'opacity-50 scale-100'}`}>
-                {moonIsUp ? '🌕' : '🌑'}
-              </div>
-              <h4 className="font-bold text-lg text-blue-800 dark:text-blue-200 mb-4">Moon</h4>
+        {/* Moon Section */}
+        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-5 border border-blue-200/50 dark:border-gray-600 transition-all duration-300 hover:shadow-lg hover:scale-105">
+          <div className="text-center">
+            <div className={`text-5xl mb-2 transform transition-transform duration-300 ${moonIsUp ? 'animate-pulse scale-110' : 'opacity-50 scale-100'}`}>
+              {moonPhase.emoji}
+            </div>
+            <h4 className="font-bold text-lg text-blue-800 dark:text-blue-200 mb-1">Moon</h4>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">{moonPhase.name}</p>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <span className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">

@@ -8,10 +8,13 @@ const requestId = generateUUID();
 type LocationDetails = { city?: string; town?: string; village?: string; hamlet?: string; county?: string; displayName?: string; };
 type WeatherType = {
   temperature: number;
+  feelsLike?: number;
   humidity: number;
   windSpeed: number;
   windGust: number;
   precipitationProbability: number;
+  pressure?: number | null;
+  visibility?: number | null;
   conditions: { day: number; night: number };
   emailSent?: boolean;
   lastEmailTimestamp: string | null;

@@ -5,10 +5,13 @@ import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 type LocationDetails = { city?: string; town?: string; village?: string; hamlet?: string; county?: string; displayName?: string; };
 type WeatherType = {
   temperature: number;
+  feelsLike?: number;
   humidity: number;
   windSpeed: number;
   windGust: number;
   precipitationProbability: number;
+  pressure?: number | null;
+  visibility?: number | null;
   conditions: { day: number; night: number };
   emailSent?: boolean;
   lastEmailTimestamp: string | null;
@@ -120,6 +123,13 @@ export default function WeatherCardNew({ location }: { location?: { name: string
           <span className="text-3xl md:text-4xl font-light opacity-90">°F</span>
         </div>
 
+        {/* Feels Like */}
+        {weather.feelsLike && Math.abs(weather.feelsLike - weather.temperature) > 1 && (
+          <div className="text-base md:text-lg text-white/80 font-medium">
+            Feels like {Math.round(weather.feelsLike)}°F
+          </div>
+        )}
+
         {/* Conditions */}
         <div className="text-lg md:text-xl font-semibold text-white/95 drop-shadow-md">
           {weatherLabel}
@@ -158,7 +168,18 @@ export default function WeatherCardNew({ location }: { location?: { name: string
             <p className="text-2xl md:text-3xl font-bold">{weather.precipitationProbability}%</p>
           </div>
 
-          {weather.rainAccumulationSum > 0 ? (
+          {weather.pressure ? (
+            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-4 md:p-5 transition-all duration-300 hover:bg-white/30 hover:scale-105 border border-white/20">
+              <div className="flex items-center space-x-2 mb-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span className="text-xs md:text-sm font-medium text-white/90">Pressure</span>
+              </div>
+              <p className="text-2xl md:text-3xl font-bold">{weather.pressure.toFixed(2)}</p>
+              <p className="text-xs text-white/80 mt-1">inHg</p>
+            </div>
+          ) : weather.rainAccumulationSum > 0 ? (
             <div className="bg-white/20 backdrop-blur-md rounded-2xl p-4 md:p-5 transition-all duration-300 hover:bg-white/30 hover:scale-105 border border-white/20">
               <div className="flex items-center space-x-2 mb-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,6 +201,22 @@ export default function WeatherCardNew({ location }: { location?: { name: string
             </div>
           )}
         </div>
+
+        {/* Additional Stats Row */}
+        {weather.visibility && (
+          <div className="grid grid-cols-1 gap-3 md:gap-4 pt-4 border-t border-white/30">
+            <div className="bg-white/20 backdrop-blur-md rounded-2xl p-4 md:p-5 transition-all duration-300 hover:bg-white/30 hover:scale-105 border border-white/20">
+              <div className="flex items-center space-x-2 mb-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <span className="text-xs md:text-sm font-medium text-white/90">Visibility</span>
+              </div>
+              <p className="text-2xl md:text-3xl font-bold">{weather.visibility.toFixed(1)} mi</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

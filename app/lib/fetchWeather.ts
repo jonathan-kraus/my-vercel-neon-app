@@ -5,12 +5,16 @@ import { isFeatureEnabled } from '../utils/featureFlags';
 console.log(`[fetchWeather] Module loaded`);
 
 function generateMockWeather(requestId: string, location: Location) {
+  const temp = 65 + Math.random() * 20; // 65-85°F
   return {
-    temperature: 65 + Math.random() * 20, // 65-85°F
+    temperature: temp,
+    feelsLike: temp + (Math.random() * 6 - 3), // ±3°F variation
     humidity: 50 + Math.random() * 30, // 50-80%
     windSpeed: 5 + Math.random() * 10, // 5-15 mph
     windGust: 8 + Math.random() * 15, // 8-23 mph
     precipitationProbability: Math.random() * 40, // 0-40%
+    pressure: 29.5 + Math.random() * 1.0, // 29.5-30.5 inHg
+    visibility: 5 + Math.random() * 5, // 5-10 miles
     conditions: {
       day: Math.floor(Math.random() * 1000) + 1000, // Weather codes 1000-1999
       night: Math.floor(Math.random() * 1000) + 1000,
@@ -60,7 +64,7 @@ export async function fetchWeather(requestId?: string, location?: Location) {
 
   console.log(`[fetchWeather] [${requestId}] Using location: ${locationToUse.displayName} (${locationParam})`);
 
-  const url = `https://api.tomorrow.io/v4/weather/realtime?location=${locationParam}&units=imperial&apikey=${apiKey}`;
+  const url = `https://api.tomorrow.io/v4/weather/realtime?location=${locationParam}&units=imperial&fields=temperature,temperatureApparent,humidity,windSpeed,windGust,precipitationProbability,weatherCode,pressureSurfaceLevel,visibility,rainAccumulationAvg,rainAccumulationMax,rainAccumulationMin,rainAccumulationSum&apikey=${apiKey}`;
 
   console.log(
     `[fetchWeather] [${requestId}] Fetching weather data from API: ${url.replace(apiKey, '***')}`
@@ -201,10 +205,13 @@ if (isFeatureEnabled('VERBOSE_LOGGING')) {
 
   return {
     temperature: values.temperature,
+    feelsLike: values.temperatureApparent ?? values.temperature,
     humidity: values.humidity,
     windSpeed: values.windSpeed,
     windGust: values.windGust,
     precipitationProbability: values.precipitationProbability,
+    pressure: values.pressureSurfaceLevel ?? null,
+    visibility: values.visibility ?? null,
     conditions: {
       day: values.weatherCode ?? -1,
       night: values.weatherCode ?? -1,
