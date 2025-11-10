@@ -93,7 +93,7 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
   const moonPhase = getMoonPhase();
 
   return (
-    <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-lg p-6 border border-amber-200/50 dark:border-gray-600 relative overflow-hidden">
+    <div className="bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-lg p-6 border border-amber-200/50 dark:border-gray-600 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-200/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
       <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
@@ -158,7 +158,7 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
               <div
                 className={`mt-4 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
                   sunIsUp
-                    ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-yellow-900 shadow-lg'
+                    ? 'bg-linear-to-r from-yellow-400 to-orange-400 text-yellow-900 shadow-lg'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                 }`}
               >
@@ -167,14 +167,14 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
             </div>
           </div>
 
-        {/* Moon Section */}
-        <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-5 border border-blue-200/50 dark:border-gray-600 transition-all duration-300 hover:shadow-lg hover:scale-105">
-          <div className="text-center">
-            <div className={`text-5xl mb-2 transform transition-transform duration-300 ${moonIsUp ? 'animate-pulse scale-110' : 'opacity-50 scale-100'}`}>
-              {moonPhase.emoji}
-            </div>
-            <h4 className="font-bold text-lg text-blue-800 dark:text-blue-200 mb-1">Moon</h4>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">{moonPhase.name}</p>
+          {/* Moon Section */}
+          <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-5 border border-blue-200/50 dark:border-gray-600 transition-all duration-300 hover:shadow-lg hover:scale-105">
+            <div className="text-center">
+              <div className={`text-5xl mb-2 transform transition-transform duration-300 ${moonIsUp ? 'animate-pulse scale-110' : 'opacity-50 scale-100'}`}>
+                {moonPhase.emoji}
+              </div>
+              <h4 className="font-bold text-lg text-blue-800 dark:text-blue-200 mb-1">Moon</h4>
+              <p className="text-xs text-gray-600 dark:text-gray-400 mb-4">{moonPhase.name}</p>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <span className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
@@ -198,7 +198,7 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
               <div
                 className={`mt-4 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
                   moonIsUp
-                    ? 'bg-gradient-to-r from-blue-400 to-indigo-400 text-blue-900 shadow-lg'
+                    ? 'bg-linear-to-r from-blue-400 to-indigo-400 text-blue-900 shadow-lg'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                 }`}
               >
