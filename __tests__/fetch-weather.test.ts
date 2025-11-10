@@ -186,8 +186,9 @@ describe('fetchWeather', () => {
 
       await fetchWeather('test-request-id');
 
+      // createLogger enriches metadata and doesn't add top-level timestamp
       expect(db.log.create).toHaveBeenCalledWith({
-        data: {
+        data: expect.objectContaining({
           severity: 'info',
           source: 'fetchWeather',
           message: 'Weather data fetched successfully',
@@ -197,8 +198,7 @@ describe('fetchWeather', () => {
             timestamp: expect.any(String),
             location: expect.any(Object),
           }),
-          timestamp: expect.any(Date),
-        },
+        }),
       });
     });
 
@@ -218,10 +218,13 @@ describe('fetchWeather', () => {
 
       expect(result).toEqual({
         temperature: 72,
+        feelsLike: 72, // temperatureApparent defaults to temperature if not provided
         humidity: 65,
         windSpeed: 8,
         windGust: 12,
         precipitationProbability: 20,
+        pressure: null, // pressureSurfaceLevel may not be in mock response
+        visibility: null, // visibility may not be in mock response
         conditions: {
           day: 1001,
           night: 1001,
