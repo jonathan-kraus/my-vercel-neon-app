@@ -1,6 +1,7 @@
 import { db } from './db';
 import { getActiveLocation, formatLocationForTomorrowIO, formatLocationForOSM, Location } from '../utils/locations';
 import { isFeatureEnabled } from '../utils/featureFlags';
+import { createLogger } from '../utils/logger';
 
 console.log(`[fetchWeather] Module loaded`);
 
@@ -169,20 +170,12 @@ if (isFeatureEnabled('VERBOSE_LOGGING')) {
   }
   console.log(`[fetchWeather] [${requestId}] Preparing to log event to external logging service`);
 
-  const severity = 'info';
-  const source = 'fetchWeather';
-  const message = `Weather data fetched successfully`;
-  const metadata = { action: 'fetch', timestamp: new Date().toISOString(), location: location2 };
-
-  await db.log.create({
-    data: {
-      severity,
-      source,
-      message,
-      requestId,
-      metadata: metadata ?? {},
-      timestamp: new Date(),
-    },
+  // Use createLogger for consistent logging
+  const log = createLogger('fetchWeather', requestId);
+  await log.info('Weather data fetched successfully', {
+    action: 'fetch',
+    timestamp: new Date().toISOString(),
+    location: location2,
   });
 
   console.log(`[fetchWeather]  Weather data fetched for location2 `);

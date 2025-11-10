@@ -1,4 +1,5 @@
 import { db } from './db';
+import { createLogger } from '../utils/logger';
 
 export type SendWithDedupOptions = {
   source: string; // module name
@@ -86,15 +87,10 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
       const suppressedMessage = `Email suppressed: ${safeMessage}
       (last sent ${Math.round(minutesSince)} minutes ago
         throttle: ${effectiveThrottle} mins)`;
-      await db.log.create({
-        data: {
-          severity: 'info',
-          source,
-          message: suppressedMessage,
-          requestId,
-          metadata: { action: 'throttle', minutesSince: Math.round(minutesSince) },
-          timestamp: new Date(),
-        },
+      const log = createLogger(source, requestId);
+      await log.info(suppressedMessage, {
+        action: 'throttle',
+        minutesSince: Math.round(minutesSince),
       });
 
       return { sent: false, reason: 'throttled', minutesSince: Math.round(minutesSince) };
@@ -105,30 +101,17 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
 
     // record sent
     const sentMessage = `${safeMessage} - email sent`;
-    await db.log.create({
-      data: {
-        severity: 'info',
-        source,
-        message: sentMessage,
-        requestId,
-        metadata: { action: 'sent' },
-        timestamp: new Date(),
-      },
-    });
+    const log = createLogger(source, requestId);
+    await log.info(sentMessage, { action: 'sent' });
 
     return { sent: true };
   } catch (err) {
     // Log the failure but don't throw to caller
     try {
-      await db.log.create({
-        data: {
-          severity: 'error',
-          source,
-          message: `Email send failure: ${safeMessage}`,
-          requestId,
-          metadata: { action: 'error', error: safeSerialize(err) },
-          timestamp: new Date(),
-        },
+      const log = createLogger(source, requestId);
+      await log.error(`Email send failure: ${safeMessage}`, {
+        action: 'error',
+        error: safeSerialize(err),
       });
     } catch (logErr) {
       // swallow
