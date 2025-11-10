@@ -92,7 +92,7 @@ export default function WeatherCardNew({ location }: { location?: { name: string
   const gradientClass = getTemperatureGradient(weather.temperature);
 
   return (
-    <div className={`bg-linear-to-br ${gradientClass} rounded-3xl shadow-2xl p-6 md:p-8 text-white transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl relative overflow-hidden`}>
+    <div className={`bg-gradient-to-br ${gradientClass} rounded-3xl shadow-2xl p-6 md:p-8 text-white transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl relative overflow-hidden`}>
       {/* Animated background pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>

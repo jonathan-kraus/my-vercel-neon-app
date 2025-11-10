@@ -91,7 +91,7 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
   }, [sunsetTime, sunriseTime]);
 
   return (
-    <div className="bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-lg p-6 border border-amber-200/50 dark:border-gray-600 relative overflow-hidden">
+    <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl shadow-lg p-6 border border-amber-200/50 dark:border-gray-600 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-200/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
       <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
@@ -156,7 +156,7 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
               <div
                 className={`mt-4 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
                   sunIsUp
-                    ? 'bg-linear-to-r from-yellow-400 to-orange-400 text-yellow-900 shadow-lg'
+                    ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-yellow-900 shadow-lg'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                 }`}
               >
@@ -196,7 +196,7 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
               <div
                 className={`mt-4 px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
                   moonIsUp
-                    ? 'bg-linear-to-r from-blue-400 to-indigo-400 text-blue-900 shadow-lg'
+                    ? 'bg-gradient-to-r from-blue-400 to-indigo-400 text-blue-900 shadow-lg'
                     : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                 }`}
               >
