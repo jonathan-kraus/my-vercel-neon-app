@@ -34,26 +34,43 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
   }
 
   return (
-    <div className="mb-4">
-      <h3 className="text-sm font-medium text-gray-700 mb-2">Weather Location</h3>
+    <div className="mb-6">
+      <div className="flex items-center gap-2 mb-3">
+        <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <h3 className="text-base font-semibold text-gray-800">Weather Location</h3>
+      </div>
       <div className="flex flex-wrap gap-2">
         {availableLocations.map((location) => (
           <button
             key={location.name}
             onClick={() => handleLocationSelect(location)}
-            className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
               activeLocation?.name === location.name
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg ring-2 ring-blue-300'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 shadow-sm hover:shadow-md'
             }`}
           >
-            {location.displayName}
+            <span className="flex items-center gap-2">
+              {location.flag && <span className="text-lg">{location.flag}</span>}
+              <span>{location.displayName}</span>
+              {activeLocation?.name === location.name && (
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              )}
+            </span>
           </button>
         ))}
       </div>
       {activeLocation && (
-        <p className="text-xs text-gray-500 mt-1">
-          Currently showing weather for {activeLocation.displayName}
+        <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Currently showing weather for <span className="font-medium">{activeLocation.displayName}</span>
         </p>
       )}
     </div>

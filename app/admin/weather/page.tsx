@@ -86,28 +86,48 @@ export default function WeatherPage() {
 
   // Auto-send removed - use manual SendForecastEmailButton instead to avoid rate limiting
 
-  if (!forecast || forecast.forecast.length === 0) return <p>Loading forecast...</p>;
+  if (!forecast || forecast.forecast.length === 0) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex flex-col items-center justify-center min-h-[400px] space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+          <p className="text-gray-600 font-medium">Loading forecast...</p>
+        </div>
+      </div>
+    );
+  }
 
   const WeatherComponent = useNewUI ? WeatherCardNew : WeatherCard;
   const ForecastComponent = useNewUI ? DailyForecastCardNew : DailyForecastCard;
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      <h2 className="text-xl text-center font-bold">Weather</h2>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          Weather Forecast
+        </h1>
+        <p className="text-gray-600 text-sm md:text-base">Real-time weather updates and forecasts</p>
+      </div>
 
-      <LocationSelector onLocationChange={handleLocationChange} />
+      {/* Location Selector */}
+      <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
+        <LocationSelector onLocationChange={handleLocationChange} />
+      </div>
 
-      
-
+      {/* Email Button */}
       {forecast && forecast.forecast.length > 0 && (
-        <SendForecastEmailButton forecast={forecast.forecast} requestId={requestId} onLog={onLog} />
+        <div className="flex justify-center">
+          <SendForecastEmailButton forecast={forecast.forecast} requestId={requestId} onLog={onLog} />
+        </div>
       )}
 
+      {/* Rain Alert */}
       {forecast.maxRainAccumulation > 0 && (
-        <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded">
-          <div className="flex">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 text-blue-800 p-5 rounded-xl shadow-md">
+          <div className="flex items-start">
             <div className="shrink-0">
-              <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+              <svg className="h-6 w-6 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                 <path
                   fillRule="evenodd"
                   d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
@@ -115,23 +135,46 @@ export default function WeatherPage() {
                 />
               </svg>
             </div>
-            <div className="ml-3">
+            <div className="ml-3 flex-1">
+              <h3 className="text-sm font-bold mb-1">Rain Alert</h3>
               <p className="text-sm">
-                <strong>Rain Alert:</strong> Maximum rain accumulation of{' '}
-                {forecast.maxRainAccumulation.toFixed(2)} inches expected in the forecast period.
+                Maximum rain accumulation of{' '}
+                <span className="font-semibold">{forecast.maxRainAccumulation.toFixed(2)} inches</span> expected in the forecast period.
               </p>
             </div>
           </div>
         </div>
       )}
-      <SunMoonCard forecast={forecast.forecast} location={selectedLocation || undefined} />
 
-      <WeatherComponent location={selectedLocation || undefined} />
+      {/* Main Weather Cards Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Sun & Moon Card */}
+        <div>
+          <SunMoonCard forecast={forecast.forecast} location={selectedLocation || undefined} />
+        </div>
 
-      <HourlyForecastChart />
+        {/* Current Weather Card */}
+        <div>
+          <WeatherComponent location={selectedLocation || undefined} />
+        </div>
+      </div>
 
-      <ForecastComponent forecast={forecast.forecast} />
-      {selectedLocation && <LocationMap location={selectedLocation} />}
+      {/* Hourly Forecast Chart */}
+      <div>
+        <HourlyForecastChart />
+      </div>
+
+      {/* Daily Forecast */}
+      <div>
+        <ForecastComponent forecast={forecast.forecast} />
+      </div>
+
+      {/* Location Map */}
+      {selectedLocation && (
+        <div>
+          <LocationMap location={selectedLocation} />
+        </div>
+      )}
     </div>
   );
 }
