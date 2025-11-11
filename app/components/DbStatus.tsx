@@ -26,6 +26,17 @@ type DbStatusType = {
   };
 };
 
+type EnvInfoType = {
+  deploymentUrl: string;
+  environment: string;
+  vercelRegion: string;
+  gitCommitSha: string;
+  gitCommitMessage: string;
+  gitCommitAuthor: string;
+  databaseHost: string;
+  databaseName: string;
+};
+
 console.log('[DbStatus] DbStatus component loaded');
 
 function RegionBadge({ region }: { region: string }) {
@@ -38,6 +49,7 @@ function RegionBadge({ region }: { region: string }) {
 
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
+  const [envInfo, setEnvInfo] = useState<EnvInfoType | null>(null);
   const [requestId] = useState(() => generateUUID());
   log.info('DbStatus component rendered', { action: 'checkDbStatus' });
   const emailSentRef = useRef(false);
@@ -89,6 +101,23 @@ export default function DbStatus() {
 
     fetchStatus();
   }, [requestId]);
+
+  // Fetch environment info
+  useEffect(() => {
+    const fetchEnvInfo = async () => {
+      try {
+        const response = await fetch('/api/env-info');
+        if (response.ok) {
+          const data = await response.json();
+          setEnvInfo(data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch environment info:', err);
+      }
+    };
+
+    fetchEnvInfo();
+  }, []);
 
   // Email sender
   const sendStatusEmail = useCallback(async () => {
@@ -251,51 +280,55 @@ export default function DbStatus() {
         Environment Information
       </h2>
 
-      <p>
-        <strong>Deployment URL:</strong> {process.env.VERCEL_URL || 'localhost'}
-      </p>
-      <p className="flex items-center gap-2">
-        <strong>Environment:</strong>
-        {process.env.VERCEL_ENV ? (
-          <span
-            className={`px-2 py-1 rounded text-xs font-semibold ${
-              process.env.VERCEL_ENV === 'production'
-                ? 'bg-green-100 text-green-800'
-                : process.env.VERCEL_ENV === 'preview'
-                  ? 'bg-yellow-100 text-yellow-800'
-                  : 'bg-blue-100 text-blue-800'
-            }`}
-          >
-            {process.env.VERCEL_ENV}
-          </span>
-        ) : (
-          <span className="px-2 py-1 rounded text-xs font-semibold bg-gray-100 text-gray-800">
-            development
-          </span>
-        )}
-      </p>
-      <p>
-        <strong>Vercel Region:</strong> {process.env.VERCEL_REGION || 'N/A'}
-      </p>
-      {process.env.VERCEL_GIT_COMMIT_SHA && (
-        <p>
-          <strong>Git Commit:</strong> {process.env.VERCEL_GIT_COMMIT_SHA.substring(0, 7)}
-        </p>
+      {envInfo ? (
+        <>
+          <p>
+            <strong>Deployment URL:</strong> {envInfo.deploymentUrl}
+          </p>
+          <p className="flex items-center gap-2">
+            <strong>Environment:</strong>
+            <span
+              className={`px-2 py-1 rounded text-xs font-semibold ${
+                envInfo.environment === 'production'
+                  ? 'bg-green-100 text-green-800'
+                  : envInfo.environment === 'preview'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-blue-100 text-blue-800'
+              }`}
+            >
+              {envInfo.environment}
+            </span>
+          </p>
+          <p>
+            <strong>Vercel Region:</strong> {envInfo.vercelRegion}
+          </p>
+          {envInfo.gitCommitSha !== 'N/A' && (
+            <p>
+              <strong>Git Commit:</strong> {envInfo.gitCommitSha}
+            </p>
+          )}
+          {envInfo.gitCommitMessage !== 'N/A' && (
+            <p>
+              <strong>Commit Message:</strong> {envInfo.gitCommitMessage}
+            </p>
+          )}
+          {envInfo.gitCommitAuthor !== 'N/A' && (
+            <p>
+              <strong>Author:</strong> {envInfo.gitCommitAuthor}
+            </p>
+          )}
+          <p>
+            <strong>Database Host:</strong> {envInfo.databaseHost}
+          </p>
+          {envInfo.databaseName !== 'N/A' && (
+            <p>
+              <strong>Database Name:</strong> {envInfo.databaseName}
+            </p>
+          )}
+        </>
+      ) : (
+        <p className="text-gray-500">Loading environment information...</p>
       )}
-      {process.env.VERCEL_GIT_COMMIT_MESSAGE && (
-        <p>
-          <strong>Commit Message:</strong> {process.env.VERCEL_GIT_COMMIT_MESSAGE}
-        </p>
-      )}
-      {process.env.VERCEL_GIT_COMMIT_AUTHOR_NAME && (
-        <p>
-          <strong>Author:</strong> {process.env.VERCEL_GIT_COMMIT_AUTHOR_NAME}
-        </p>
-      )}
-      <p>
-        <strong>Database Host:</strong>{' '}
-        {process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL).host : 'N/A'}
-      </p>
 
       <div className="flex gap-4">
         <button onClick={() => toast('DbStatus toast!')} className="px-3 py-1 bg-gray-200 rounded">
