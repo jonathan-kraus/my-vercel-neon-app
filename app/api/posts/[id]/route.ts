@@ -46,11 +46,7 @@ export async function DELETE(req: Request) {
     await db.post.delete({ where: { id } });
 
     try {
-      await log.info(
-        `Post ${id} deleted by ${username}`,
-        { user: username, postId: id },
-        requestId
-      );
+      await log.info(`Post ${id} deleted by ${username}`, { user: username, postId: id });
     } catch (e: unknown) {
       if (e instanceof Error) console.error('logInfo failed in DELETE /api/posts/[id]', e.message);
       else console.error('logInfo failed in DELETE /api/posts/[id]', e);
