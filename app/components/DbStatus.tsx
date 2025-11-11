@@ -33,6 +33,10 @@ type EnvInfoType = {
   gitCommitSha: string;
   gitCommitMessage: string;
   gitCommitAuthor: string;
+  VERCEL_DEPLOYMENT_ID: string;
+  VERCEL_GIT_PROVIDER: string;
+  VERCEL_GIT_REPO_SLUG: string;
+  VERCEL_GIT_REPO_OWNER: string;
   databaseHost: string;
   databaseName: string;
 };
@@ -315,6 +319,22 @@ export default function DbStatus() {
           {envInfo.gitCommitAuthor !== 'N/A' && (
             <p>
               <strong>Author:</strong> {envInfo.gitCommitAuthor}
+            </p>
+          )}
+          {envInfo.VERCEL_DEPLOYMENT_ID !== 'N/A' && (
+            <p>
+              <strong>Deployment ID:</strong> {envInfo.VERCEL_DEPLOYMENT_ID}
+            </p>
+          )}
+          {envInfo.VERCEL_GIT_PROVIDER !== 'N/A' && (
+            <p>
+              <strong>Git Provider:</strong> {envInfo.VERCEL_GIT_PROVIDER}
+            </p>
+          )}
+          {envInfo.VERCEL_GIT_REPO_OWNER !== 'N/A' && envInfo.VERCEL_GIT_REPO_SLUG !== 'N/A' && (
+            <p>
+              <strong>Repository:</strong> {envInfo.VERCEL_GIT_REPO_OWNER}/
+              {envInfo.VERCEL_GIT_REPO_SLUG}
             </p>
           )}
           <p>
