@@ -10,8 +10,8 @@ import {
   setFeatureFlagOverride,
   clearFeatureFlagOverrides,
 } from '@/app/utils/featureFlags';
-
-const log = createLogger('app/admin/feature-flags/page.tsx');
+const requestId = generateUUID();
+const log = createLogger('app/admin/feature-flags/page.tsx', requestId);
 
 export default function FeatureFlagsPage() {
   const [featureStates, setFeatureStates] = useState<Record<FeatureFlag, boolean>>(() => {
@@ -23,7 +23,6 @@ export default function FeatureFlagsPage() {
     return states;
   });
 
-  const requestId = generateUUID();
   log.info('FeatureFlagsPage rendered', { featureStates });
   const enabledCount = Object.values(featureStates).filter(Boolean).length;
 
