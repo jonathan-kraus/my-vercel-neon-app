@@ -58,7 +58,7 @@ export async function POST(request: Request) {
     const metadata = parsed.data.metadata;
     const emailMetadata = parsed.data.metadata;
     console.log(`[send-email] Metadata: ${metadata}`);
-    console.log(`[send-email] Metadata: ${emailMetadata}`);
+    console.log(`[send-email] emailMetadata: ${emailMetadata}`);
     // Proceed with sending email
     console.log('📨 Sending email to:', toEmail);
     // await mailerSend.email.send(...)

@@ -3,10 +3,10 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 import { generateUUID } from '../../uuidj';
-import { logInfoFactory } from '../utils/logger';
+import { createLogger } from "@/app/utils/logger";
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
-import { email } from 'zod';
-const logInfo = logInfoFactory('app/components/DbStatus.tsx');
+
+const log = createLogger('app/components/DbStatus.tsx');
 
 type DbStatusType = {
   version: string;
@@ -39,6 +39,7 @@ function RegionBadge({ region }: { region: string }) {
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
   const [requestId] = useState(() => generateUUID());
+  log.info('DbStatus component rendered', {action: 'checkDbStatus'}, );
   const emailSentRef = useRef(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState<{
@@ -57,9 +58,9 @@ export default function DbStatus() {
 
     const jck = async () => {
       try {
-        await logInfo(`Retrieving database status baseUrl: ${baseUrl}`, 
+        await log.info(`Retrieving database status baseUrl: ${baseUrl}`, 
           { userAction: 'fetch', source: 'DbStatus', email: 'bypass_throttle' },
-            requestId,
+
         );
       } catch (error) {
         console.error('Failed to log event:', error);
@@ -139,9 +140,8 @@ export default function DbStatus() {
 
       const result = await response.json();
       console.log('Email API result:', result);
-      await logInfo(`Database email status: ${result.status}`, 
+      await log.info(`Database email status: ${result.status}`, 
       { userAction: 'fetch', source: 'DbStatus' },
-        requestId,
         );
       // Handle different response types
       if (result.status === 'success') {
