@@ -32,6 +32,10 @@ export async function GET() {
       gitCommitSha: process.env.VERCEL_GIT_COMMIT_SHA?.substring(0, 7) || 'N/A',
       gitCommitMessage: process.env.VERCEL_GIT_COMMIT_MESSAGE || 'N/A',
       gitCommitAuthor: process.env.VERCEL_GIT_COMMIT_AUTHOR_NAME || 'N/A',
+      VERCEL_DEPLOYMENT_ID: process.env.VERCEL_DEPLOYMENT_ID || 'N/A',
+      VERCEL_GIT_PROVIDER: process.env.VERCEL_GIT_PROVIDER || 'N/A',
+      VERCEL_GIT_REPO_SLUG: process.env.VERCEL_GIT_REPO_SLUG || 'N/A',
+      VERCEL_GIT_REPO_OWNER: process.env.VERCEL_GIT_REPO_OWNER || 'N/A',
       databaseHost: dbHost,
       databaseName: dbName,
     };
