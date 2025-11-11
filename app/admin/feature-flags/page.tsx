@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { logInfoFactory } from '@/app/utils/logger';
+import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 import {
   FEATURE_FLAGS,
@@ -10,6 +10,8 @@ import {
   setFeatureFlagOverride,
   clearFeatureFlagOverrides,
 } from '@/app/utils/featureFlags';
+
+const log = createLogger('app/admin/feature-flags/page.tsx');
 
 export default function FeatureFlagsPage() {
   const [featureStates, setFeatureStates] = useState<Record<FeatureFlag, boolean>>(() => {
@@ -20,9 +22,9 @@ export default function FeatureFlagsPage() {
     });
     return states;
   });
-  const logInfo = logInfoFactory('FeatureFlagsPage');
+
   const requestId = generateUUID();
-  logInfo('FeatureFlagsPage rendered', { featureStates }, requestId);
+  log.info('FeatureFlagsPage rendered', { featureStates });
   const enabledCount = Object.values(featureStates).filter(Boolean).length;
 
   const toggleFlag = (flag: FeatureFlag) => {
@@ -105,6 +107,7 @@ export default function FeatureFlagsPage() {
 
 if (isFeatureEnabled('WEATHER_AUTO_REFRESH')) {
   // Enable auto-refresh logic
+  log.info('Auto-refresh is enabled', featureStates);
 }`}
           </pre>
           <p>

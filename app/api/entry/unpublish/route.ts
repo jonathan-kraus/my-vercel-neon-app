@@ -1,10 +1,10 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
-import { logInfoFactory } from '@/app/utils/logger';
-import { generateUUID } from '../../../../uuidj';
+import { createLogger } from '@/app/utils/logger';
+import { generateUUID } from '@/uuidj';
 
-const logInfo = logInfoFactory('app/api/entry/unpublish/route.ts');
+const log = createLogger('app/api/entry/unpublish/route.ts');
 
 export async function POST(req: Request) {
   const requestId = req.headers.get('x-request-id') ?? generateUUID();
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   console.log(`[entry/unpublish] [${requestId}] Unpublish request received from ${username}`);
 
   if (!username) {
-    await logInfo(`Unpublish rejected - unauthorized`, { requestId }, requestId);
+    await log.info(`Unpublish rejected - unauthorized`, { requestId });
     return NextResponse.json({ error: 'Unauthorized', requestId }, { status: 401 });
   }
 
@@ -23,12 +23,12 @@ export async function POST(req: Request) {
     const body = await req.json();
     id = body.id;
   } catch (err) {
-    await logInfo(`Unpublish rejected - invalid JSON`, { error: String(err) }, requestId);
+    await log.info(`Unpublish rejected - invalid JSON`, { error: String(err) });
     return NextResponse.json({ error: 'Invalid request body', requestId }, { status: 400 });
   }
 
   if (!id) {
-    await logInfo(`Unpublish rejected - missing entry ID`, { username }, requestId);
+    await log.info(`Unpublish rejected - missing entry ID`, { username });
     return NextResponse.json({ error: 'Missing entry ID', requestId }, { status: 400 });
   }
 
@@ -38,16 +38,16 @@ export async function POST(req: Request) {
       data: { published: false },
     });
 
-    await logInfo(`Entry ${id} marked as unpublished`, { user: username, entryId: id }, requestId);
+    await log.info(`Entry ${id} marked as unpublished`, { user: username, entryId: id });
 
     return NextResponse.json({ success: true, requestId });
   } catch (err) {
     console.error(`[entry/unpublish] [${requestId}] Error:`, err);
-    await logInfo(
-      `Unpublish failed - database error`,
-      { user: username, entryId: id, error: String(err) },
-      requestId
-    );
+    await log.error(`Unpublish failed - database error`, {
+      user: username,
+      entryId: id,
+      error: String(err),
+    });
     return NextResponse.json({ error: 'Failed to unpublish post', requestId }, { status: 500 });
   }
 }

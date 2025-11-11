@@ -14,12 +14,10 @@ import LocationSelector from '@/app/components/LocationSelector';
 import LocationMap from '@/app/components/LocationMap';
 import SendForecastEmailButton from '@/app/components/SendForecastEmailButton';
 import { Location, getActiveLocation } from '@/app/utils/locations';
-import { logInfoFactory, logErrorFactory, createLogger } from '@/app/utils/logger';
+import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
-const logInfo = logInfoFactory('app/admin/weather/page.tsx');
-const logError = logErrorFactory('app/admin/weather/page.tsx');
 const log = createLogger('JKapp/admin/weather/page.tsx');
 type ForecastResult = {
   forecast: DailyForecastPoint[];
@@ -37,7 +35,7 @@ export default function WeatherPage() {
       if (severity === 'info') {
         await log.info(message, metadata || {});
       } else {
-        await logError(message, metadata || {});
+        await log.error(message, metadata || {});
       }
     },
     []
@@ -58,7 +56,7 @@ export default function WeatherPage() {
     } catch (err) {
       console.error('Failed to fetch forecast for new location:', err);
       toast.error(`Failed to fetch forecast for ${location.displayName}`);
-      await logError('Forecast fetch failed for new location', {
+      await log.error('Forecast fetch failed for new location', {
         error: String(err),
         location: location.displayName,
       });
@@ -71,11 +69,11 @@ export default function WeatherPage() {
       try {
         const result = await getDailyForecast(requestId);
         setForecast(result);
-        logInfo('Fetched forecast', { forecastLength: result.forecast.length }, requestId);
+        log.info('Fetched forecast', { forecastLength: result.forecast.length });
       } catch (err) {
         console.error('Failed to fetch forecast:', err);
         toast.error('Failed to fetch forecast');
-        await logError('Forecast fetch failed');
+        await log.error('Forecast fetch failed');
       }
     };
     fetchForecast();
