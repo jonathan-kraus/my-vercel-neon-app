@@ -1,17 +1,15 @@
 import { NextResponse } from 'next/server';
-import { logInfoFactory } from '@/app/utils/logger';
+import { createLogger } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
-const logInfo = logInfoFactory('app/api/logs/search/route');
 
 export async function GET(req: Request) {
   const requestId = generateUUID();
-
-  logInfo(
-    `[app/api/logs/search/route] Initialized log search route`,
-    { action: `init`, timestamp: new Date().toISOString() },
-    requestId
-  );
+  const log = createLogger('app/api/logs/search/route');
+  log.info(`[app/api/logs/search/route] Initialized log search route`, {
+    action: `init`,
+    timestamp: new Date().toISOString(),
+  });
 
   try {
     const url = new URL(req.url);
@@ -52,7 +50,11 @@ export async function GET(req: Request) {
       }),
       db.log.count({ where }),
     ]);
-
+    log.info(`[app/api/logs/search/route] Retrieved log search results ${total}`, {
+      action: `fetch_logs`,
+      timestamp: new Date().toISOString(),
+      totalItems: total,
+    });
     return NextResponse.json({ items, total, page, pageSize });
   } catch (err) {
     console.error('Error in /api/logs/search', err);
