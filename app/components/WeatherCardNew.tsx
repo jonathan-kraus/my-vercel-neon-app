@@ -105,7 +105,7 @@ export default function WeatherCardNew({
 
   return (
     <div
-      className={`bg-linear-to-br ${gradientClass} rounded-3xl shadow-2xl p-6 md:p-8 text-white transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl relative overflow-hidden`}
+      className={`bg-gradient-to-br ${gradientClass} rounded-3xl shadow-2xl p-6 md:p-8 text-white transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl relative overflow-hidden`}
     >
       {/* Animated background pattern */}
       <div className="absolute inset-0 opacity-10">
