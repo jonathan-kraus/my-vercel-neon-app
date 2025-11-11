@@ -247,25 +247,31 @@ export default function DbStatus() {
         <strong>Total Table Operations:</strong> {status.lastActivity?.totalOperations || 0}
       </p>
 
-      <h2 className="text-xl font-bold mt-6 pt-6 border-t border-gray-300">Environment Information</h2>
-      
+      <h2 className="text-xl font-bold mt-6 pt-6 border-t border-gray-300">
+        Environment Information
+      </h2>
+
       <p>
         <strong>Deployment URL:</strong> {process.env.VERCEL_URL || 'localhost'}
       </p>
       <p className="flex items-center gap-2">
         <strong>Environment:</strong>
         {process.env.VERCEL_ENV ? (
-          <span className={`px-2 py-1 rounded text-xs font-semibold ${
-            process.env.VERCEL_ENV === 'production' 
-              ? 'bg-green-100 text-green-800' 
-              : process.env.VERCEL_ENV === 'preview'
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-blue-100 text-blue-800'
-          }`}>
+          <span
+            className={`px-2 py-1 rounded text-xs font-semibold ${
+              process.env.VERCEL_ENV === 'production'
+                ? 'bg-green-100 text-green-800'
+                : process.env.VERCEL_ENV === 'preview'
+                  ? 'bg-yellow-100 text-yellow-800'
+                  : 'bg-blue-100 text-blue-800'
+            }`}
+          >
             {process.env.VERCEL_ENV}
           </span>
         ) : (
-          <span className="px-2 py-1 rounded text-xs font-semibold bg-gray-100 text-gray-800">development</span>
+          <span className="px-2 py-1 rounded text-xs font-semibold bg-gray-100 text-gray-800">
+            development
+          </span>
         )}
       </p>
       <p>
@@ -287,7 +293,8 @@ export default function DbStatus() {
         </p>
       )}
       <p>
-        <strong>Database Host:</strong> {process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL).host : 'N/A'}
+        <strong>Database Host:</strong>{' '}
+        {process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL).host : 'N/A'}
       </p>
 
       <div className="flex gap-4">
