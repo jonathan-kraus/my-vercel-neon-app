@@ -34,7 +34,7 @@ import {
   clearFeatureFlagOverrides,
   getEnabledFeatures,
   getAllFeatureFlags,
-  FEATURE_FLAGS
+  FEATURE_FLAGS,
 } from '../app/utils/featureFlags';
 
 // Mock localStorage globally
@@ -63,7 +63,7 @@ describe('Feature Flags', () => {
     localStorageMock.getItem.mockReturnValue(null);
     localStorageMock.setItem.mockImplementation(() => {});
     localStorageMock.removeItem.mockImplementation(() => {});
-    
+
     // Set up mocked function implementations
     vi.mocked(isFeatureEnabled).mockImplementation((flag) => {
       // Check localStorage overrides first
@@ -81,10 +81,10 @@ describe('Feature Flags', () => {
       // Return default from FEATURE_FLAGS
       return FEATURE_FLAGS[flag as keyof typeof FEATURE_FLAGS] || false;
     });
-    
+
     vi.mocked(setFeatureFlagOverride).mockImplementation((flag, enabled) => {
       if (typeof window === 'undefined') return;
-      
+
       try {
         const stored = localStorageMock.getItem('feature-flag-overrides');
         const overrides = stored ? JSON.parse(stored) : {};
@@ -94,23 +94,23 @@ describe('Feature Flags', () => {
         console.warn('Failed to save feature flag override:', error);
       }
     });
-    
+
     vi.mocked(clearFeatureFlagOverrides).mockImplementation(() => {
       if (typeof window === 'undefined') return;
-      
+
       try {
         localStorageMock.removeItem('feature-flag-overrides');
       } catch (error) {
         console.warn('Failed to clear feature flag overrides:', error);
       }
     });
-    
+
     vi.mocked(getEnabledFeatures).mockImplementation(() => {
-      return Object.keys(FEATURE_FLAGS).filter(
-        (flag) => isFeatureEnabled(flag as keyof typeof FEATURE_FLAGS)
+      return Object.keys(FEATURE_FLAGS).filter((flag) =>
+        isFeatureEnabled(flag as keyof typeof FEATURE_FLAGS)
       ) as any[];
     });
-    
+
     vi.mocked(getAllFeatureFlags).mockReturnValue(FEATURE_FLAGS);
   });
 
@@ -126,9 +126,11 @@ describe('Feature Flags', () => {
     });
 
     it('returns localStorage override when present', () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify({
-        WEATHER_MOCK_DATA: false
-      }));
+      localStorageMock.getItem.mockReturnValue(
+        JSON.stringify({
+          WEATHER_MOCK_DATA: false,
+        })
+      );
 
       const result = isFeatureEnabled('WEATHER_MOCK_DATA');
       expect(result).toBe(false);
@@ -136,9 +138,11 @@ describe('Feature Flags', () => {
 
     it('prioritizes localStorage over environment defaults', () => {
       // Environment default is true, but localStorage says false
-      localStorageMock.getItem.mockReturnValue(JSON.stringify({
-        WEATHER_MOCK_DATA: false
-      }));
+      localStorageMock.getItem.mockReturnValue(
+        JSON.stringify({
+          WEATHER_MOCK_DATA: false,
+        })
+      );
 
       const result = isFeatureEnabled('WEATHER_MOCK_DATA');
       expect(result).toBe(false);
@@ -184,9 +188,11 @@ describe('Feature Flags', () => {
     });
 
     it('merges with existing overrides', () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify({
-        VERBOSE_LOGGING: true
-      }));
+      localStorageMock.getItem.mockReturnValue(
+        JSON.stringify({
+          VERBOSE_LOGGING: true,
+        })
+      );
 
       setFeatureFlagOverride('WEATHER_MOCK_DATA', false);
 
@@ -194,7 +200,7 @@ describe('Feature Flags', () => {
         'feature-flag-overrides',
         JSON.stringify({
           VERBOSE_LOGGING: true,
-          WEATHER_MOCK_DATA: false
+          WEATHER_MOCK_DATA: false,
         })
       );
     });
@@ -267,10 +273,12 @@ describe('Feature Flags', () => {
     });
 
     it('respects localStorage overrides', () => {
-      localStorageMock.getItem.mockReturnValue(JSON.stringify({
-        WEATHER_MOCK_DATA: false,
-        VERBOSE_LOGGING: false
-      }));
+      localStorageMock.getItem.mockReturnValue(
+        JSON.stringify({
+          WEATHER_MOCK_DATA: false,
+          VERBOSE_LOGGING: false,
+        })
+      );
 
       const enabled = getEnabledFeatures();
 
@@ -317,15 +325,13 @@ describe('Feature Flags', () => {
     });
 
     it('all flags have boolean values', () => {
-      Object.values(FEATURE_FLAGS).forEach(value => {
+      Object.values(FEATURE_FLAGS).forEach((value) => {
         expect(typeof value).toBe('boolean');
       });
     });
 
     it('includes location flags for all defined locations', () => {
-      const locationFlags = Object.keys(FEATURE_FLAGS).filter(key =>
-        key.startsWith('LOCATION_')
-      );
+      const locationFlags = Object.keys(FEATURE_FLAGS).filter((key) => key.startsWith('LOCATION_'));
 
       expect(locationFlags).toHaveLength(4);
       expect(locationFlags).toContain('LOCATION_KOP');

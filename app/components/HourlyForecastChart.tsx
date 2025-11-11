@@ -126,7 +126,7 @@ export default function HourlyForecastChart() {
         borderWidth: 1,
         displayColors: true,
         callbacks: {
-          label: function(context: any) {
+          label: function (context: any) {
             let label = context.dataset.label || '';
             if (label) {
               label += ': ';

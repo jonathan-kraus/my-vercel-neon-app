@@ -5,7 +5,14 @@ import { getIcon, getLabel } from '@/app/utils/weatherUtils';
 import { generateUUID } from '../../uuidj';
 
 const requestId = generateUUID();
-type LocationDetails = { city?: string; town?: string; village?: string; hamlet?: string; county?: string; displayName?: string; };
+type LocationDetails = {
+  city?: string;
+  town?: string;
+  village?: string;
+  hamlet?: string;
+  county?: string;
+  displayName?: string;
+};
 type WeatherType = {
   temperature: number;
   feelsLike?: number;
@@ -27,7 +34,11 @@ type WeatherType = {
   locationDetails?: LocationDetails;
 };
 
-export default function WeatherCard({ location }: { location?: { name: string; lat: number; lon: number; displayName: string; flag: string } } = {}) {
+export default function WeatherCard({
+  location,
+}: {
+  location?: { name: string; lat: number; lon: number; displayName: string; flag: string };
+} = {}) {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

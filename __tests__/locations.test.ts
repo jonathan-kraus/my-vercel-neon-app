@@ -5,7 +5,7 @@ import {
   getLocationByName,
   formatLocationForTomorrowIO,
   formatLocationForOSM,
-  LOCATIONS
+  LOCATIONS,
 } from '../app/utils/locations';
 import { isFeatureEnabled } from '../app/utils/featureFlags';
 
@@ -21,10 +21,9 @@ describe('Location Utilities', () => {
 
   describe('getAvailableLocations', () => {
     it('returns only locations with enabled feature flags', () => {
-      vi.mocked(isFeatureEnabled)
-        .mockImplementation((flag: string) => {
-          return flag === 'LOCATION_KOP' || flag === 'LOCATION_NEW_YORK';
-        });
+      vi.mocked(isFeatureEnabled).mockImplementation((flag: string) => {
+        return flag === 'LOCATION_KOP' || flag === 'LOCATION_NEW_YORK';
+      });
 
       const available = getAvailableLocations();
 
@@ -58,8 +57,7 @@ describe('Location Utilities', () => {
 
   describe('getActiveLocation', () => {
     it('returns first available location when locations are enabled', () => {
-      vi.mocked(isFeatureEnabled)
-        .mockImplementation((flag: string) => flag === 'LOCATION_KOP');
+      vi.mocked(isFeatureEnabled).mockImplementation((flag: string) => flag === 'LOCATION_KOP');
 
       const active = getActiveLocation();
 
@@ -99,7 +97,7 @@ describe('Location Utilities', () => {
     });
 
     it('returns correct location for all defined locations', () => {
-      Object.keys(LOCATIONS).forEach(name => {
+      Object.keys(LOCATIONS).forEach((name) => {
         const location = getLocationByName(name);
         expect(location).toBeDefined();
         expect(location?.name).toBe(name);
@@ -146,7 +144,7 @@ describe('Location Utilities', () => {
     });
 
     it('handles all location types', () => {
-      Object.values(LOCATIONS).forEach(location => {
+      Object.values(LOCATIONS).forEach((location) => {
         const formatted = formatLocationForOSM(location);
 
         expect(formatted).toHaveProperty('lat');
@@ -167,7 +165,7 @@ describe('Location Utilities', () => {
     });
 
     it('each location has required properties', () => {
-      Object.values(LOCATIONS).forEach(location => {
+      Object.values(LOCATIONS).forEach((location) => {
         expect(location).toHaveProperty('name');
         expect(location).toHaveProperty('lat');
         expect(location).toHaveProperty('lon');
@@ -182,7 +180,7 @@ describe('Location Utilities', () => {
     });
 
     it('location coordinates are reasonable', () => {
-      Object.values(LOCATIONS).forEach(location => {
+      Object.values(LOCATIONS).forEach((location) => {
         // Latitude should be between -90 and 90
         expect(location.lat).toBeGreaterThanOrEqual(-90);
         expect(location.lat).toBeLessThanOrEqual(90);

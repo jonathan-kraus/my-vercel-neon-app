@@ -12,7 +12,5 @@
     "enable": true
   },
   "eslint.run": "onType",
-  "github-actions.workflows.pinned.workflows": [
-    ".github/workflows/ci.yml"
-  ]
+  "github-actions.workflows.pinned.workflows": [".github/workflows/ci.yml"]
 }

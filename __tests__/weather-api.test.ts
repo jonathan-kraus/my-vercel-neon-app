@@ -61,7 +61,7 @@ describe('getDailyForecast', () => {
       const requestId = 'test-123';
       const result = await getDailyForecast(requestId);
 
-      result.forecast.forEach(day => {
+      result.forecast.forEach((day) => {
         expect(day.requestId).toBe(requestId);
       });
     });
@@ -207,32 +207,33 @@ describe('getDailyForecast', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          timelines: {
-            daily: [{
-              time: '2025-11-05T00:00:00Z',
-              values: {
-                temperatureMax: 70,
-                temperatureMin: 50,
-                precipitationProbability: 10,
-                weatherCodeMax: 1000,
-                weatherCodeMin: 1000,
-                rainAccumulationAvg: 0,
-                rainAccumulationMax: 0,
-                rainAccumulationMin: 0,
-                rainAccumulationSum: 0,
-              },
-            }],
-          },
-        }),
+        json: () =>
+          Promise.resolve({
+            timelines: {
+              daily: [
+                {
+                  time: '2025-11-05T00:00:00Z',
+                  values: {
+                    temperatureMax: 70,
+                    temperatureMin: 50,
+                    precipitationProbability: 10,
+                    weatherCodeMax: 1000,
+                    weatherCodeMin: 1000,
+                    rainAccumulationAvg: 0,
+                    rainAccumulationMax: 0,
+                    rainAccumulationMin: 0,
+                    rainAccumulationSum: 0,
+                  },
+                },
+              ],
+            },
+          }),
       });
 
       const result = await getDailyForecast('test-id', customLocation);
 
       expect(result.forecast).toHaveLength(1);
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('location=40.7128,-74.006')
-      );
+      expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining('location=40.7128,-74.006'));
     });
   });
 });

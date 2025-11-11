@@ -24,10 +24,10 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
 
     // Log the action
     const requestId = generateUUID();
- 
+
     await logInfo(
       `Post ${id} marked as unpublished`,
-      { action: 'mark_complete', postId: id, user: user},
+      { action: 'mark_complete', postId: id, user: user },
       requestId
     );
 

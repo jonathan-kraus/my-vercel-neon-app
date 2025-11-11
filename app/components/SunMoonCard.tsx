@@ -18,7 +18,7 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
 
   // Get today's forecast (first item) - safe access
   const today = forecast?.[0];
-  
+
   // For testing - use mock data if API doesn't provide sunrise/sunset
   const mockSunrise = '2025-11-03T06:30:00Z';
   const mockSunset = '2025-11-03T17:45:00Z';
@@ -97,11 +97,13 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
       {/* Decorative background elements */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-200/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
       <div className="absolute bottom-0 left-0 w-32 h-32 bg-orange-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-      
+
       <div className="relative">
         <div className="flex items-center justify-center gap-2 mb-6">
           <span className="text-2xl">🌅</span>
-          <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100">Sun & Moon Today</h3>
+          <h3 className="text-xl md:text-2xl font-bold text-gray-800 dark:text-gray-100">
+            Sun & Moon Today
+          </h3>
           <span className="text-2xl">🌙</span>
         </div>
 
@@ -109,8 +111,18 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
           <div className="mb-5 p-3 bg-white/60 dark:bg-gray-700/60 backdrop-blur-sm rounded-xl text-sm text-center text-blue-800 dark:text-blue-200 border border-blue-200/50 dark:border-blue-700/50">
             <span className="flex items-center justify-center gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
               </svg>
               {location?.displayName || getActiveLocation().displayName}
             </span>
@@ -121,36 +133,66 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
           {/* Sun Section */}
           <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-5 border border-yellow-200/50 dark:border-gray-600 transition-all duration-300 hover:shadow-lg hover:scale-105">
             <div className="text-center">
-              <div className={`text-5xl mb-3 transform transition-transform duration-300 ${sunIsUp ? 'animate-pulse scale-110' : 'opacity-50 scale-100'}`}>
+              <div
+                className={`text-5xl mb-3 transform transition-transform duration-300 ${sunIsUp ? 'animate-pulse scale-110' : 'opacity-50 scale-100'}`}
+              >
                 {sunIsUp ? '☀️' : '🌙'}
               </div>
               <h4 className="font-bold text-lg text-yellow-800 dark:text-yellow-200 mb-4">Sun</h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                   <span className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
-                    <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    <svg
+                      className="w-4 h-4 text-yellow-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                      />
                     </svg>
                     Rise
                   </span>
                   <div className="text-right">
-                    <span className="font-mono font-semibold text-gray-800 dark:text-gray-200 block">{formatTime(sunriseTime)}</span>
+                    <span className="font-mono font-semibold text-gray-800 dark:text-gray-200 block">
+                      {formatTime(sunriseTime)}
+                    </span>
                     {!sunIsUp && timeUntilSunrise && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400">in {timeUntilSunrise}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        in {timeUntilSunrise}
+                      </span>
                     )}
                   </div>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                   <span className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
-                    <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    <svg
+                      className="w-4 h-4 text-orange-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                      />
                     </svg>
                     Set
                   </span>
                   <div className="text-right">
-                    <span className="font-mono font-semibold text-gray-800 dark:text-gray-200 block">{formatTime(sunsetTime)}</span>
+                    <span className="font-mono font-semibold text-gray-800 dark:text-gray-200 block">
+                      {formatTime(sunsetTime)}
+                    </span>
                     {sunIsUp && timeUntilSunset && (
-                      <span className="text-xs text-gray-500 dark:text-gray-400">in {timeUntilSunset}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        in {timeUntilSunset}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -170,7 +212,9 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
           {/* Moon Section */}
           <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl p-5 border border-blue-200/50 dark:border-gray-600 transition-all duration-300 hover:shadow-lg hover:scale-105">
             <div className="text-center">
-              <div className={`text-5xl mb-2 transform transition-transform duration-300 ${moonIsUp ? 'animate-pulse scale-110' : 'opacity-50 scale-100'}`}>
+              <div
+                className={`text-5xl mb-2 transform transition-transform duration-300 ${moonIsUp ? 'animate-pulse scale-110' : 'opacity-50 scale-100'}`}
+              >
                 {moonPhase.emoji}
               </div>
               <h4 className="font-bold text-lg text-blue-800 dark:text-blue-200 mb-1">Moon</h4>
@@ -178,21 +222,45 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <span className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    <svg
+                      className="w-4 h-4 text-blue-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                      />
                     </svg>
                     Rise
                   </span>
-                  <span className="font-mono font-semibold text-gray-800 dark:text-gray-200">{formatTime(moonriseTime)}</span>
+                  <span className="font-mono font-semibold text-gray-800 dark:text-gray-200">
+                    {formatTime(moonriseTime)}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
                   <span className="text-gray-700 dark:text-gray-300 font-medium flex items-center gap-2">
-                    <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    <svg
+                      className="w-4 h-4 text-indigo-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                      />
                     </svg>
                     Set
                   </span>
-                  <span className="font-mono font-semibold text-gray-800 dark:text-gray-200">{formatTime(moonsetTime)}</span>
+                  <span className="font-mono font-semibold text-gray-800 dark:text-gray-200">
+                    {formatTime(moonsetTime)}
+                  </span>
                 </div>
               </div>
               <div
@@ -213,8 +281,8 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
           <div className="flex justify-center items-center gap-4 text-sm font-medium">
             <span
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${
-                sunIsUp 
-                  ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200' 
+                sunIsUp
+                  ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
               }`}
             >
@@ -223,8 +291,8 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
             <span className="text-gray-400 dark:text-gray-500">•</span>
             <span
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 ${
-                moonIsUp 
-                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200' 
+                moonIsUp
+                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
               }`}
             >

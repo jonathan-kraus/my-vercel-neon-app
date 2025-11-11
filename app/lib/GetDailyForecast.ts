@@ -55,11 +55,11 @@ type RawDailyEntry = {
 function generateMockForecast(requestId?: string): DailyForecastResult {
   const now = new Date();
   const forecast: DailyForecastPoint[] = [];
-  
+
   for (let i = 0; i < 7; i++) {
     const date = new Date(now);
     date.setDate(date.getDate() + i);
-    
+
     // Realistic sunrise/sunset times for EST/EDT (adjusted for local timezone)
     // Sunrise around 6:30 AM EST = 11:30 UTC
     // Sunset around 4:45 PM EST = 21:45 UTC (16:45 + 5 hours)
@@ -83,32 +83,37 @@ function generateMockForecast(requestId?: string): DailyForecastResult {
       moonsetTime: date.toISOString().split('T')[0] + 'T13:30:00Z', // ~8:30 AM EST
     });
   }
-  
-  const maxRainAccumulation = Math.max(...forecast.map(f => f.rainAccumulationSum));
-  
-  return { 
-    forecast, 
+
+  const maxRainAccumulation = Math.max(...forecast.map((f) => f.rainAccumulationSum));
+
+  return {
+    forecast,
     maxRainAccumulation,
     error: {
       type: 'unknown',
-      message: 'Using mock weather data (API not called)'
-    }
+      message: 'Using mock weather data (API not called)',
+    },
   };
 }
 
-export async function getDailyForecast(requestId?: string, location?: Location): Promise<DailyForecastResult> {
+export async function getDailyForecast(
+  requestId?: string,
+  location?: Location
+): Promise<DailyForecastResult> {
   console.log(`[getDailyForecast] [${requestId}] Function started`);
-  
+
   // Check if mock data is enabled
   const useMockData = isFeatureEnabled('WEATHER_MOCK_DATA');
   console.log(`[getDailyForecast] [${requestId}] Mock data enabled: ${useMockData}`);
-  console.log(`[getDailyForecast] [${requestId}] Environment variable FEATURE_WEATHER_MOCK_DATA: ${process.env.FEATURE_WEATHER_MOCK_DATA}`);
-  
+  console.log(
+    `[getDailyForecast] [${requestId}] Environment variable FEATURE_WEATHER_MOCK_DATA: ${process.env.FEATURE_WEATHER_MOCK_DATA}`
+  );
+
   if (useMockData) {
     console.log(`[getDailyForecast] [${requestId}] Using mock weather data`);
     return generateMockForecast(requestId);
   }
-  
+
   const apiKey = process.env.TOMORROW_API_KEY;
   if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
 
@@ -130,10 +135,10 @@ export async function getDailyForecast(requestId?: string, location?: Location):
     const res = await fetch(url);
     if (!res.ok) {
       console.error(`[Tomorrow.io] ❌ HTTP error: ${res.status}`);
-      
+
       let errorType: 'rate_limit' | 'network' | 'api_error' | 'unknown' = 'api_error';
       let errorMessage = `API request failed with status ${res.status}`;
-      
+
       if (res.status === 429) {
         errorType = 'rate_limit';
         errorMessage = 'Weather API rate limit exceeded. Please try again later.';
@@ -141,15 +146,15 @@ export async function getDailyForecast(requestId?: string, location?: Location):
         errorType = 'api_error';
         errorMessage = 'Weather service is temporarily unavailable.';
       }
-      
-      return { 
-        forecast: [], 
+
+      return {
+        forecast: [],
         maxRainAccumulation: 0,
         error: {
           type: errorType,
           message: errorMessage,
-          statusCode: res.status
-        }
+          statusCode: res.status,
+        },
       };
     }
 
@@ -181,37 +186,35 @@ export async function getDailyForecast(requestId?: string, location?: Location):
     console.log(`[getDailyForecast] [${requestId}] Max rainAccumulationSum:`, maxRainAccumulation);
 
     console.log(`[getDailyForecast] [${requestId}] JJJ daily entries:`, daily);
-    const forecast = daily.slice(0, 7).map(
-      (day): DailyForecastPoint => {
-        // Log the raw sun/moon times from Tomorrow.io
-        console.log(`[getDailyForecast] [${requestId}] Day ${day.time}:`, {
-          sunriseTime: day.values?.sunriseTime,
-          sunsetTime: day.values?.sunsetTime,
-          moonriseTime: day.values?.moonriseTime,
-          moonsetTime: day.values?.moonsetTime,
-        });
-        
-        return {
-          requestId,
-          time: day.time,
-          temperatureMax: day.values?.temperatureMax ?? 0,
-          temperatureMin: day.values?.temperatureMin ?? 0,
-          precipitation: day.values?.precipitationProbability ?? 0,
-          conditions: {
-            day: day.values.weatherCodeMax ?? -1,
-            night: day.values.weatherCodeMin ?? -1,
-          },
-          rainAccumulationAvg: day.values?.rainAccumulationAvg ?? 0,
-          rainAccumulationMax: day.values?.rainAccumulationMax ?? 0,
-          rainAccumulationMin: day.values?.rainAccumulationMin ?? 0,
-          rainAccumulationSum: day.values?.rainAccumulationSum ?? 0,
-          sunriseTime: day.values?.sunriseTime,
-          sunsetTime: day.values?.sunsetTime,
-          moonriseTime: day.values?.moonriseTime,
-          moonsetTime: day.values?.moonsetTime,
-        };
-      }
-    );
+    const forecast = daily.slice(0, 7).map((day): DailyForecastPoint => {
+      // Log the raw sun/moon times from Tomorrow.io
+      console.log(`[getDailyForecast] [${requestId}] Day ${day.time}:`, {
+        sunriseTime: day.values?.sunriseTime,
+        sunsetTime: day.values?.sunsetTime,
+        moonriseTime: day.values?.moonriseTime,
+        moonsetTime: day.values?.moonsetTime,
+      });
+
+      return {
+        requestId,
+        time: day.time,
+        temperatureMax: day.values?.temperatureMax ?? 0,
+        temperatureMin: day.values?.temperatureMin ?? 0,
+        precipitation: day.values?.precipitationProbability ?? 0,
+        conditions: {
+          day: day.values.weatherCodeMax ?? -1,
+          night: day.values.weatherCodeMin ?? -1,
+        },
+        rainAccumulationAvg: day.values?.rainAccumulationAvg ?? 0,
+        rainAccumulationMax: day.values?.rainAccumulationMax ?? 0,
+        rainAccumulationMin: day.values?.rainAccumulationMin ?? 0,
+        rainAccumulationSum: day.values?.rainAccumulationSum ?? 0,
+        sunriseTime: day.values?.sunriseTime,
+        sunsetTime: day.values?.sunsetTime,
+        moonriseTime: day.values?.moonriseTime,
+        moonsetTime: day.values?.moonsetTime,
+      };
+    });
 
     return { forecast, maxRainAccumulation };
   } catch (error) {
@@ -222,8 +225,8 @@ export async function getDailyForecast(requestId?: string, location?: Location):
       error: {
         type: 'network',
         message: 'Network error occurred while fetching weather data',
-        statusCode: 0
-      }
+        statusCode: 0,
+      },
     };
   }
 }

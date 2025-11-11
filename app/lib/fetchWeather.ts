@@ -1,5 +1,10 @@
 import { db } from './db';
-import { getActiveLocation, formatLocationForTomorrowIO, formatLocationForOSM, Location } from '../utils/locations';
+import {
+  getActiveLocation,
+  formatLocationForTomorrowIO,
+  formatLocationForOSM,
+  Location,
+} from '../utils/locations';
 import { isFeatureEnabled } from '../utils/featureFlags';
 import { createLogger } from '../utils/logger';
 
@@ -45,14 +50,18 @@ export async function fetchWeather(requestId?: string, location?: Location) {
 
   // Get the location to use (passed parameter or active location from feature flags)
   const locationToUse = location || getActiveLocation();
-  
+
   // Check if mock data is enabled
   const useMockData = isFeatureEnabled('WEATHER_MOCK_DATA');
   console.log(`[fetchWeather] [${requestId}] Mock data enabled: ${useMockData}`);
-  console.log(`[fetchWeather] [${requestId}] Environment variable FEATURE_WEATHER_MOCK_DATA: ${process.env.FEATURE_WEATHER_MOCK_DATA}`);
-  
+  console.log(
+    `[fetchWeather] [${requestId}] Environment variable FEATURE_WEATHER_MOCK_DATA: ${process.env.FEATURE_WEATHER_MOCK_DATA}`
+  );
+
   if (useMockData) {
-    console.log(`[fetchWeather] [${requestId}] Using mock weather data for ${locationToUse.displayName}`);
+    console.log(
+      `[fetchWeather] [${requestId}] Using mock weather data for ${locationToUse.displayName}`
+    );
     return generateMockWeather(requestId, locationToUse);
   }
 
@@ -63,7 +72,9 @@ export async function fetchWeather(requestId?: string, location?: Location) {
   const locationParam = formatLocationForTomorrowIO(locationToUse);
   const osmLocation = formatLocationForOSM(locationToUse);
 
-  console.log(`[fetchWeather] [${requestId}] Using location: ${locationToUse.displayName} (${locationParam})`);
+  console.log(
+    `[fetchWeather] [${requestId}] Using location: ${locationToUse.displayName} (${locationParam})`
+  );
 
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${locationParam}&units=imperial&fields=temperature,temperatureApparent,humidity,windSpeed,windGust,precipitationProbability,weatherCode,pressureSurfaceLevel,visibility,rainAccumulationAvg,rainAccumulationMax,rainAccumulationMin,rainAccumulationSum&apikey=${apiKey}`;
 
@@ -77,9 +88,13 @@ export async function fetchWeather(requestId?: string, location?: Location) {
   const data = await res.json();
   const values = data.data.values;
   const location2 = data.location ?? 'Unknown2';
-if (isFeatureEnabled('VERBOSE_LOGGING')) {
-  console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: values`, values);
-  console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: location2`, location2);}
+  if (isFeatureEnabled('VERBOSE_LOGGING')) {
+    console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: values`, values);
+    console.log(
+      `[fetchWeather] [${requestId}] Weather data fetched from API: location2`,
+      location2
+    );
+  }
   //const url2 = 'https://nominatim.openstreetmap.org/reverse?lat=40.10520&lon=-75.41404&format=json';
   const url2 = `https://nominatim.openstreetmap.org/reverse?lat=${osmLocation.lat}&lon=${osmLocation.lon}&format=json`;
   console.log(`[fetchWeather] [${requestId}] Fetching location data from API: ${url2}`);
@@ -98,11 +113,13 @@ if (isFeatureEnabled('VERBOSE_LOGGING')) {
         'User-Agent': 'my-vercel-neon-app/1.0 (jonathankraus@comcast.net)',
       },
     });
-    
+
     console.log(`[fetchWeather] [${requestId}] Nominatim API response status: ${res2.status}`);
-    
+
     if (!res2.ok) {
-      console.error(`[fetchWeather] [${requestId}] Nominatim API error: ${res2.status} ${res2.statusText}`);
+      console.error(
+        `[fetchWeather] [${requestId}] Nominatim API error: ${res2.status} ${res2.statusText}`
+      );
       throw new Error('Failed to fetch location data');
     }
 
@@ -157,7 +174,7 @@ if (isFeatureEnabled('VERBOSE_LOGGING')) {
     );
   } catch (error) {
     console.error(`[fetchWeather] [${requestId}] Error fetching location data:`, error);
-    
+
     // Fallback: use active location name
     locationDetails = {
       city: undefined,

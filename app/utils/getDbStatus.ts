@@ -73,7 +73,7 @@ async function getLastDatabaseActivity() {
 export async function getDbStatus(requestId?: string) {
   // Generate requestId if not provided
   if (!requestId) requestId = generateUUID();
-  
+
   const log = createLogger('getDbStatus', requestId);
   console.log(`[getDbStatus] [${requestId}] Checking database status...`);
 
@@ -87,8 +87,7 @@ export async function getDbStatus(requestId?: string) {
   ]);
   const latencyMs = Date.now() - start;
   console.log(`[getDbStatus] [${requestId}] Start logging database status...`);
-  await log.info(`Database status retrieved`, 
-    { userAction: 'fetch', logCount });
+  await log.info(`Database status retrieved`, { userAction: 'fetch', logCount });
   //await triggerEmail('JDB Status', requestId, `Database Status Update`, message);
 
   console.log(`[getDbStatus] [${requestId}] Database status logged.`);

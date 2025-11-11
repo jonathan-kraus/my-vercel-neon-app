@@ -5,23 +5,26 @@ import { useRouter } from 'next/navigation';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '../../uuidj';
 const requestId = generateUUID();
-const log = createLogger('app/auth/page.tsx',requestId);
+const log = createLogger('app/auth/page.tsx', requestId);
 
 export default function AuthPage() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
-  log.info('[app/auth/page] Rendering AuthPage component', { action: 'render', timestamp: new Date().toISOString() });
+  log.info('[app/auth/page] Rendering AuthPage component', {
+    action: 'render',
+    timestamp: new Date().toISOString(),
+  });
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     try {
       // non-fatal logging
-      await log.info(
-        `[app/auth/page] User login attempted for ${name}`,
-        { userAction: 'login', user: name },
-      );
+      await log.info(`[app/auth/page] User login attempted for ${name}`, {
+        userAction: 'login',
+        user: name,
+      });
     } catch {
       // ignore logging failures
     }
@@ -48,10 +51,10 @@ export default function AuthPage() {
         // helper cookie with expiry timestamp (ms) for client countdown UI
         const expiresAt = Date.now() + maxAge * 1000;
         document.cookie = `expires_at=${expiresAt}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
-        await log.info(
-          `[app/auth/page] User login successful for ${name}`,
-          { userAction: 'login', user: name },
-        );
+        await log.info(`[app/auth/page] User login successful for ${name}`, {
+          userAction: 'login',
+          user: name,
+        });
         router.push('/');
       } else {
         setError('[app/auth/page] Invalid credentials');

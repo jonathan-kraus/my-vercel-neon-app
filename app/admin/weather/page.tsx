@@ -31,7 +31,7 @@ export default function WeatherPage() {
   const [requestId] = useState(() => generateUUID());
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(getActiveLocation());
   const useNewUI = isFeatureEnabled('NEW_UI_COMPONENTS');
-  
+
   const onLog = useCallback(
     async (severity: 'info' | 'error', message: string, metadata?: Record<string, any>) => {
       if (severity === 'info') {
@@ -51,13 +51,10 @@ export default function WeatherPage() {
     try {
       const result = await getDailyForecast(generateUUID(), location); // Pass the selected location
       setForecast(result);
-      log.info(
-        'Fetched forecast for new location',
-        {
-          location: location.displayName,
-          forecastLength: result.forecast.length,
-        },
-        );
+      log.info('Fetched forecast for new location', {
+        location: location.displayName,
+        forecastLength: result.forecast.length,
+      });
     } catch (err) {
       console.error('Failed to fetch forecast for new location:', err);
       toast.error(`Failed to fetch forecast for ${location.displayName}`);
@@ -107,7 +104,9 @@ export default function WeatherPage() {
         <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
           Weather Forecast
         </h1>
-        <p className="text-gray-600 text-sm md:text-base">Real-time weather updates and forecasts</p>
+        <p className="text-gray-600 text-sm md:text-base">
+          Real-time weather updates and forecasts
+        </p>
       </div>
 
       {/* Location Selector */}
@@ -118,7 +117,11 @@ export default function WeatherPage() {
       {/* Email Button */}
       {forecast && forecast.forecast.length > 0 && (
         <div className="flex justify-center">
-          <SendForecastEmailButton forecast={forecast.forecast} requestId={requestId} onLog={onLog} />
+          <SendForecastEmailButton
+            forecast={forecast.forecast}
+            requestId={requestId}
+            onLog={onLog}
+          />
         </div>
       )}
 
@@ -139,7 +142,10 @@ export default function WeatherPage() {
               <h3 className="text-sm font-bold mb-1">Rain Alert</h3>
               <p className="text-sm">
                 Maximum rain accumulation of{' '}
-                <span className="font-semibold">{forecast.maxRainAccumulation.toFixed(2)} inches</span> expected in the forecast period.
+                <span className="font-semibold">
+                  {forecast.maxRainAccumulation.toFixed(2)} inches
+                </span>{' '}
+                expected in the forecast period.
               </p>
             </div>
           </div>

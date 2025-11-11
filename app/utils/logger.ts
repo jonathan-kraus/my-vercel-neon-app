@@ -38,21 +38,21 @@ export async function logger(payload: LogPayload) {
 
   // ✅ Client-side: forward to API route
   let baseUrl: string;
-  
+
   if (process.env.NODE_ENV === 'development') {
     // In development, always use localhost
     baseUrl = 'http://localhost:3000';
   } else {
     // In production, use Vercel URL or window origin
-    baseUrl = 
+    baseUrl =
       (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
       (typeof window !== 'undefined' && window.location.origin) ||
       'http://localhost:3000';
   }
-if (payload.metadata?.email) {
-  console.log(`[logger] metadata: ${payload.metadata.email}`);
-  console.log(`[logger] Base URL for API call: ${baseUrl}`);
-}
+  if (payload.metadata?.email) {
+    console.log(`[logger] metadata: ${payload.metadata.email}`);
+    console.log(`[logger] Base URL for API call: ${baseUrl}`);
+  }
   const fullUrl = `${baseUrl}/api/log`;
   console.log(`[logger] Full URL for API call: ${fullUrl}`);
 

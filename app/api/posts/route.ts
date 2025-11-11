@@ -10,7 +10,7 @@ const CreatePostSchema = z.object({
   body: z.string().min(1),
 });
 const requestId = generateUUID();
-const log = createLogger('api/posts',requestId);
+const log = createLogger('api/posts', requestId);
 
 function parseCookies(cookieHeader: string | null): Record<string, string> {
   const cookies: Record<string, string> = {};
@@ -26,10 +26,7 @@ function parseCookies(cookieHeader: string | null): Record<string, string> {
   return cookies;
 }
 
-
-
 export async function GET(request: Request) {
-
   try {
     const url = new URL(request.url);
     const rawAuthor = url.searchParams.get('author');
@@ -71,7 +68,6 @@ export async function GET(request: Request) {
 }
 
 export async function POST(req: Request) {
-
   try {
     const payload = await req.json();
     log.info('[api/posts] Verifying request', { payloadSize: JSON.stringify(payload).length });
@@ -89,7 +85,7 @@ export async function POST(req: Request) {
     const username = cookies['username'] ?? null;
 
     if (!username) {
-      log.info('[api/posts] Unauthorized request - missing username cookie'); 
+      log.info('[api/posts] Unauthorized request - missing username cookie');
       return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
     }
 
@@ -109,10 +105,10 @@ export async function POST(req: Request) {
     });
 
     try {
-      await log.info(
-        `Post created by ${username} `,
-        { userAction: 'create_post', postTitle: post.title },
-      );
+      await log.info(`Post created by ${username} `, {
+        userAction: 'create_post',
+        postTitle: post.title,
+      });
     } catch {
       // non-fatal
     }

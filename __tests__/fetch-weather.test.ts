@@ -92,10 +92,7 @@ describe('fetchWeather', () => {
       expect(mockFetch).toHaveBeenCalledTimes(2);
 
       // First call should be to Tomorrow.io
-      expect(mockFetch).toHaveBeenNthCalledWith(
-        1,
-        expect.stringContaining('api.tomorrow.io')
-      );
+      expect(mockFetch).toHaveBeenNthCalledWith(1, expect.stringContaining('api.tomorrow.io'));
 
       expect(result.temperature).toBe(72);
       expect(result.humidity).toBe(65);
@@ -247,7 +244,7 @@ describe('fetchWeather', () => {
       // Clear all mocks first
       vi.clearAllMocks();
       process.env.TOMORROW_API_KEY = 'test-api-key';
-      
+
       // Mock Tomorrow.io API to fail
       mockFetch.mockImplementationOnce(() =>
         Promise.resolve({
@@ -264,7 +261,7 @@ describe('fetchWeather', () => {
       // Clear all mocks first
       vi.clearAllMocks();
       process.env.TOMORROW_API_KEY = 'test-api-key';
-      
+
       // Mock Tomorrow.io API to succeed
       mockFetch.mockImplementationOnce(() =>
         Promise.resolve({
@@ -301,7 +298,7 @@ describe('fetchWeather', () => {
       // Clear all mocks first
       vi.clearAllMocks();
       process.env.TOMORROW_API_KEY = 'test-api-key';
-      
+
       // Mock Tomorrow.io API to succeed
       mockFetch.mockImplementationOnce(() =>
         Promise.resolve({
@@ -383,7 +380,7 @@ describe('fetchWeather', () => {
       // Clear all mocks first
       vi.clearAllMocks();
       process.env.TOMORROW_API_KEY = 'test-api-key';
-      
+
       // Mock Tomorrow.io API to succeed
       mockFetch.mockImplementationOnce(() =>
         Promise.resolve({

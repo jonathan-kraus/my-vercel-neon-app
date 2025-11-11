@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { generateUUID } from '@/uuidj';
 import { createLogger } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
-  
+
 const requestId = generateUUID();
 const log = createLogger('api/me', requestId);
 console.log('[build] Generating /api/me');
@@ -68,7 +68,6 @@ export async function GET(req: Request) {
     }
 
     if (payload?.['sub'] && !username) {
-
       try {
         let subIdNum: number | undefined;
         if (typeof payload['sub'] === 'number') {

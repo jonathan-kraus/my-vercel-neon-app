@@ -6,7 +6,7 @@ const FEATURE_FLAG_STORAGE_KEY = 'feature-flag-overrides';
  */
 function getFeatureFlagOverrides(): Record<string, boolean> {
   if (typeof window === 'undefined') return {};
-  
+
   try {
     const stored = localStorage.getItem(FEATURE_FLAG_STORAGE_KEY);
     return stored ? JSON.parse(stored) : {};
@@ -20,7 +20,7 @@ function getFeatureFlagOverrides(): Record<string, boolean> {
  */
 export function setFeatureFlagOverride(flag: FeatureFlag, enabled: boolean): void {
   if (typeof window === 'undefined') return;
-  
+
   try {
     const overrides = getFeatureFlagOverrides();
     overrides[flag] = enabled;
@@ -35,7 +35,7 @@ export function setFeatureFlagOverride(flag: FeatureFlag, enabled: boolean): voi
  */
 export function clearFeatureFlagOverrides(): void {
   if (typeof window === 'undefined') return;
-  
+
   try {
     localStorage.removeItem(FEATURE_FLAG_STORAGE_KEY);
   } catch (error) {
@@ -89,7 +89,7 @@ export function isFeatureEnabled(flag: FeatureFlag): boolean {
       return overrides[flag];
     }
   }
-  
+
   // Fall back to environment variable default
   return FEATURE_FLAGS[flag];
 }

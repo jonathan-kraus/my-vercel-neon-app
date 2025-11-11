@@ -7,7 +7,7 @@ import { generateUUID } from '../../../uuidj';
 export async function GET(req: Request) {
   const requestId = req.headers.get('x-request-id') ?? generateUUID();
   const log = createLogger('getDailyForecast', requestId);
-  
+
   console.log('[getDailyForecast] New logger follows', `${requestId}`);
   await log.info('Fetching daily forecast');
 

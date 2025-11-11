@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 import { generateUUID } from '../../uuidj';
-import { createLogger } from "@/app/utils/logger";
+import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
 const log = createLogger('app/components/DbStatus.tsx');
@@ -39,7 +39,7 @@ function RegionBadge({ region }: { region: string }) {
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
   const [requestId] = useState(() => generateUUID());
-  log.info('DbStatus component rendered', {action: 'checkDbStatus'}, );
+  log.info('DbStatus component rendered', { action: 'checkDbStatus' });
   const emailSentRef = useRef(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState<{
@@ -58,10 +58,11 @@ export default function DbStatus() {
 
     const jck = async () => {
       try {
-        await log.info(`Retrieving database status baseUrl: ${baseUrl}`, 
-          { userAction: 'fetch', source: 'DbStatus', email: 'bypass_throttle' },
-
-        );
+        await log.info(`Retrieving database status baseUrl: ${baseUrl}`, {
+          userAction: 'fetch',
+          source: 'DbStatus',
+          email: 'bypass_throttle',
+        });
       } catch (error) {
         console.error('Failed to log event:', error);
       }
@@ -140,17 +141,18 @@ export default function DbStatus() {
 
       const result = await response.json();
       console.log('Email API result:', result);
-      await log.info(`Database email status: ${result.status}`, 
-      { userAction: 'fetch', source: 'DbStatus' },
-        );
+      await log.info(`Database email status: ${result.status}`, {
+        userAction: 'fetch',
+        source: 'DbStatus',
+      });
       // Handle different response types
       if (result.status === 'success') {
         setEmailStatus({ type: 'success', message: 'Email sent successfully!' });
         toast.success('Status report email sent!');
       } else if (result.status === 'skipped' && result.reason === 'throttled') {
-        setEmailStatus({ 
-          type: 'throttled', 
-          message: 'Email throttled - too soon since last send' 
+        setEmailStatus({
+          type: 'throttled',
+          message: 'Email throttled - too soon since last send',
         });
         toast('Email throttled - please wait before sending again', { icon: '⏱️' });
       } else {
@@ -159,7 +161,10 @@ export default function DbStatus() {
       }
     } catch (err) {
       console.error('Failed to send status email:', err);
-      setEmailStatus({ type: 'error', message: `Error: ${err instanceof Error ? err.message : 'Unknown error'}` });
+      setEmailStatus({
+        type: 'error',
+        message: `Error: ${err instanceof Error ? err.message : 'Unknown error'}`,
+      });
       toast.error('Failed to send status email');
     } finally {
       setEmailLoading(false);
@@ -168,9 +173,12 @@ export default function DbStatus() {
 
   // Auto-send once after status loads (only in browser, not during build)
   useEffect(() => {
-    if (status && !emailSentRef.current && 
-      typeof window !== 'undefined' 
-      && isFeatureEnabled('EMAIL_NOTIFICATIONS')) {
+    if (
+      status &&
+      !emailSentRef.current &&
+      typeof window !== 'undefined' &&
+      isFeatureEnabled('EMAIL_NOTIFICATIONS')
+    ) {
       emailSentRef.current = true;
       sendStatusEmail();
     }
@@ -244,19 +252,19 @@ export default function DbStatus() {
           Make me a toast!
         </button>
         <div className="flex flex-col gap-2">
-          <button 
-            onClick={sendStatusEmail} 
+          <button
+            onClick={sendStatusEmail}
             disabled={emailLoading}
             className={`px-3 py-1 rounded flex items-center gap-2 transition-colors ${
-              emailLoading 
-                ? 'bg-gray-400 cursor-not-allowed' 
+              emailLoading
+                ? 'bg-gray-400 cursor-not-allowed'
                 : emailStatus.type === 'success'
-                ? 'bg-green-500 text-white hover:bg-green-600'
-                : emailStatus.type === 'throttled'
-                ? 'bg-yellow-500 text-white hover:bg-yellow-600'
-                : emailStatus.type === 'error'
-                ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'bg-blue-500 text-white hover:bg-blue-600'
+                  ? 'bg-green-500 text-white hover:bg-green-600'
+                  : emailStatus.type === 'throttled'
+                    ? 'bg-yellow-500 text-white hover:bg-yellow-600'
+                    : emailStatus.type === 'error'
+                      ? 'bg-red-500 text-white hover:bg-red-600'
+                      : 'bg-blue-500 text-white hover:bg-blue-600'
             }`}
           >
             {emailLoading ? (
@@ -284,13 +292,15 @@ export default function DbStatus() {
             )}
           </button>
           {emailStatus.type && emailStatus.message && (
-            <p className={`text-sm ${
-              emailStatus.type === 'success' 
-                ? 'text-green-600' 
-                : emailStatus.type === 'throttled'
-                ? 'text-yellow-600'
-                : 'text-red-600'
-            }`}>
+            <p
+              className={`text-sm ${
+                emailStatus.type === 'success'
+                  ? 'text-green-600'
+                  : emailStatus.type === 'throttled'
+                    ? 'text-yellow-600'
+                    : 'text-red-600'
+              }`}
+            >
               {emailStatus.message}
             </p>
           )}

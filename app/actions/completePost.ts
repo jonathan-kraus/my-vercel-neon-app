@@ -26,10 +26,11 @@ export async function completePost(formData: FormData) {
     });
 
     try {
-      await log.info(
-        'Post follow-up completed',
-        { userAction: 'complete_followup', postId: post.id.toString(), postTitle: post.title }
-      );
+      await log.info('Post follow-up completed', {
+        userAction: 'complete_followup',
+        postId: post.id.toString(),
+        postTitle: post.title,
+      });
     } catch {
       // non-fatal
     }

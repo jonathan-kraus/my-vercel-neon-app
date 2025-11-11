@@ -58,8 +58,6 @@ export default async function Home() {
     include: { author: true },
   });
 
-  
-
   // Check for posts that need follow-up
   const followUpPosts = await db.post.findMany({
     where: { needsFollowUp: true },
@@ -74,7 +72,9 @@ export default async function Home() {
 
   const forecastResult = await getDailyForecast(requestId);
 
-  log.info('[app/page] Weather Forecast data fetched', { forecastDays: forecastResult.forecast.length });
+  log.info('[app/page] Weather Forecast data fetched', {
+    forecastDays: forecastResult.forecast.length,
+  });
 
   return (
     <div className="flex min-h-screen flex-col">

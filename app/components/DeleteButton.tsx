@@ -17,9 +17,10 @@ export function DeleteButton({ postId }: { postId: number }) {
     const requestId = generateUUID();
 
     try {
-      await logInfo(`Post delete attempted: ${postId}`,
-      { userAction: 'delete_attempt', postId },
-      requestId,
+      await logInfo(
+        `Post delete attempted: ${postId}`,
+        { userAction: 'delete_attempt', postId },
+        requestId
       );
 
       const res = await fetch(`/api/posts/${postId}`, {
@@ -38,10 +39,7 @@ export function DeleteButton({ postId }: { postId: number }) {
       console.error('Delete failed', err);
       toast.error('Failed to delete post');
       const errorMessage = err instanceof Error ? err.message : String(err);
-      await logInfo(`Post delete failed: ${postId}`,
-      { error: errorMessage, postId },
-      requestId
-      );
+      await logInfo(`Post delete failed: ${postId}`, { error: errorMessage, postId }, requestId);
     } finally {
       setLoading(false);
     }

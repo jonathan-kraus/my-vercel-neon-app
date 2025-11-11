@@ -43,7 +43,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, requestId });
   } catch (err) {
     console.error(`[entry/unpublish] [${requestId}] Error:`, err);
-    await logInfo(`Unpublish failed - database error`, { user: username, entryId: id, error: String(err) }, requestId);
+    await logInfo(
+      `Unpublish failed - database error`,
+      { user: username, entryId: id, error: String(err) },
+      requestId
+    );
     return NextResponse.json({ error: 'Failed to unpublish post', requestId }, { status: 500 });
   }
 }

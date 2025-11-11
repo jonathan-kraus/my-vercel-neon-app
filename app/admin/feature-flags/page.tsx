@@ -3,37 +3,34 @@
 import { useState } from 'react';
 import { logInfoFactory } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
-import { 
-  FEATURE_FLAGS, 
-  FeatureFlag, 
+import {
+  FEATURE_FLAGS,
+  FeatureFlag,
   isFeatureEnabled,
   setFeatureFlagOverride,
-  clearFeatureFlagOverrides
+  clearFeatureFlagOverrides,
 } from '@/app/utils/featureFlags';
 
 export default function FeatureFlagsPage() {
   const [featureStates, setFeatureStates] = useState<Record<FeatureFlag, boolean>>(() => {
     // Initialize with current values
     const states: Record<FeatureFlag, boolean> = {} as Record<FeatureFlag, boolean>;
-    Object.keys(FEATURE_FLAGS).forEach(flag => {
+    Object.keys(FEATURE_FLAGS).forEach((flag) => {
       states[flag as FeatureFlag] = isFeatureEnabled(flag as FeatureFlag);
     });
     return states;
   });
   const logInfo = logInfoFactory('FeatureFlagsPage');
   const requestId = generateUUID();
-  logInfo('FeatureFlagsPage rendered',
-    { featureStates },
-    requestId
-  );
+  logInfo('FeatureFlagsPage rendered', { featureStates }, requestId);
   const enabledCount = Object.values(featureStates).filter(Boolean).length;
 
   const toggleFlag = (flag: FeatureFlag) => {
     const newValue = !featureStates[flag];
     setFeatureFlagOverride(flag, newValue);
-    setFeatureStates(prev => ({
+    setFeatureStates((prev) => ({
       ...prev,
-      [flag]: newValue
+      [flag]: newValue,
     }));
   };
 
@@ -41,7 +38,7 @@ export default function FeatureFlagsPage() {
     clearFeatureFlagOverrides();
     // Reset to environment variable defaults
     const defaultStates: Record<FeatureFlag, boolean> = {} as Record<FeatureFlag, boolean>;
-    Object.keys(FEATURE_FLAGS).forEach(flag => {
+    Object.keys(FEATURE_FLAGS).forEach((flag) => {
       defaultStates[flag as FeatureFlag] = FEATURE_FLAGS[flag as FeatureFlag];
     });
     setFeatureStates(defaultStates);
@@ -96,8 +93,9 @@ export default function FeatureFlagsPage() {
         </div>
         <div className="text-sm space-y-2">
           <p>
-            <strong>How it works:</strong> Feature flags are stored in localStorage and override environment variables.
-            Changes persist across page reloads but are reset when you clear browser data.
+            <strong>How it works:</strong> Feature flags are stored in localStorage and override
+            environment variables. Changes persist across page reloads but are reset when you clear
+            browser data.
           </p>
           <p>
             <strong>In your code:</strong>
@@ -127,7 +125,8 @@ function getFlagDescription(flag: FeatureFlag): string {
   const descriptions: Record<FeatureFlag, string> = {
     WEATHER_AUTO_REFRESH: 'Automatically refresh weather data every few minutes',
     WEATHER_LOCATION_DISPLAY: 'Show detailed location information with weather data',
-    WEATHER_MOCK_DATA: 'Use mock weather data instead of API calls (for development/testing). Note: Enable at least one location flag to see weather.',
+    WEATHER_MOCK_DATA:
+      'Use mock weather data instead of API calls (for development/testing). Note: Enable at least one location flag to see weather.',
     LOCATION_KOP: 'Enable King of Prussia as an available weather location',
     LOCATION_NEW_YORK: 'Enable New York City as an available weather location',
     LOCATION_SAN_FRANCISCO: 'Enable San Francisco as an available weather location',
