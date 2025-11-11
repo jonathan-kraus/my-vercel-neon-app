@@ -128,6 +128,7 @@ export default function DbStatus() {
 - Total Table Operations: ${status.lastActivity?.totalOperations || 0}
 - Generated at: ${new Date().toISOString()}`,
           requestId,
+          metadata: { email: 'bypass_throttle' },
         }),
       });
 

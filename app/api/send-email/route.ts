@@ -31,11 +31,12 @@ const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
 // }
 console.log('📥 [API] Received email request');
 const EmailSchema = z.object({
-  toEmail: z.string().email(),
+  toEmail: z.email(),
   toName: z.string(),
   subject: z.string(),
   message: z.string().optional(),
   requestId: z.string().optional(),
+  metadata: z.string().optional(),
 });
 // Route Handlers use standard Web API Request/Response objects
 export async function POST(request: Request) {
@@ -54,7 +55,10 @@ export async function POST(request: Request) {
     const requestId = providedRequestId || generateUUID();
     // Format message for HTML (convert newlines to <br>)
     const htmlMessage = message.replace(/\n/g, '<br>');
-
+    const metadata = parsed.data.metadata;
+    const emailMetadata = parsed.data.metadata;
+    console.log(`[send-email] Metadata: ${metadata}`);
+    console.log(`[send-email] Metadata: ${emailMetadata}`);
     // Proceed with sending email
     console.log('📨 Sending email to:', toEmail);
     // await mailerSend.email.send(...)
