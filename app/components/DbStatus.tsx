@@ -41,6 +41,30 @@ type EnvInfoType = {
   databaseName: string;
 };
 
+type ConsumptionPeriod = {
+  period_id: string;
+  consumption: Array<{
+    timeframe_start: string;
+    timeframe_end: string;
+    active_time_seconds: number;
+    compute_time_seconds: number;
+    written_data_bytes: number;
+    synthetic_storage_size_bytes: number;
+  }>;
+  data_storage_bytes_hour: number;
+  data_transfer_bytes: number;
+  written_data_bytes: number;
+  compute_time_seconds: number;
+  active_time_seconds: number;
+};
+
+type ConsumptionData = {
+  periods: ConsumptionPeriod[];
+  pagination?: {
+    cursor: string;
+  };
+};
+
 console.log('[DbStatus] DbStatus component loaded');
 
 function RegionBadge({ region }: { region: string }) {
@@ -54,6 +78,7 @@ function RegionBadge({ region }: { region: string }) {
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
   const [envInfo, setEnvInfo] = useState<EnvInfoType | null>(null);
+  const [consumption, setConsumption] = useState<ConsumptionData | null>(null);
   const [requestId] = useState(() => generateUUID());
   log.info('DbStatus component rendered', { action: 'checkDbStatus' });
   const emailSentRef = useRef(false);
@@ -121,6 +146,25 @@ export default function DbStatus() {
     };
 
     fetchEnvInfo();
+  }, []);
+
+  // Fetch consumption metrics
+  useEffect(() => {
+    const fetchConsumption = async () => {
+      try {
+        const response = await fetch('/api/neon-consumption');
+        if (response.ok) {
+          const data = await response.json();
+          setConsumption(data);
+        } else {
+          console.log('Consumption metrics not available (may require paid plan)');
+        }
+      } catch (err) {
+        console.error('Failed to fetch consumption metrics:', err);
+      }
+    };
+
+    fetchConsumption();
   }, []);
 
   // Email sender
@@ -348,6 +392,37 @@ export default function DbStatus() {
         </>
       ) : (
         <p className="text-gray-500">Loading environment information...</p>
+      )}
+
+      {consumption && consumption.periods && consumption.periods.length > 0 && (
+        <>
+          <h2 className="text-xl font-bold mt-6 pt-6 border-t border-gray-300">
+            Consumption Metrics (Last 7 Days)
+          </h2>
+          {consumption.periods.slice(0, 1).map((period) => (
+            <div key={period.period_id} className="space-y-2">
+              <p>
+                <strong>Active Time:</strong> {(period.active_time_seconds / 3600).toFixed(2)} hours
+              </p>
+              <p>
+                <strong>Compute Time:</strong> {(period.compute_time_seconds / 3600).toFixed(2)}{' '}
+                hours
+              </p>
+              <p>
+                <strong>Data Written:</strong>{' '}
+                {(period.written_data_bytes / 1024 / 1024).toFixed(2)} MB
+              </p>
+              <p>
+                <strong>Data Transfer:</strong>{' '}
+                {(period.data_transfer_bytes / 1024 / 1024).toFixed(2)} MB
+              </p>
+              <p>
+                <strong>Storage (avg):</strong>{' '}
+                {(period.data_storage_bytes_hour / 1024 / 1024 / 1024).toFixed(4)} GB-hours
+              </p>
+            </div>
+          ))}
+        </>
       )}
 
       <div className="flex gap-4">
