@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 import { fetchWeather } from '@/app/lib/fetchWeather';
 import { generateUUID } from '@/uuidj';
 import { getLocationByName } from '@/app/utils/locations';
-console.log('[build] Generating /getWeather');
+import { createLogger } from '@/app/utils/logger';
+
 export async function GET(request: Request) {
   const requestId = generateUUID();
-  console.log(`[getWeather] API route started at ${new Date().toISOString()}`);
+  const log = createLogger('app/api/getWeather/route.ts', requestId);
 
   const url = new URL(request.url);
   const locationName = url.searchParams.get('location');
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
     const weather = await fetchWeather(requestId, location);
     return NextResponse.json({ ...weather, requestId });
   } catch (err) {
-    console.error(`[getWeather] ❌ Error:`, err);
+    await log.error('Error fetching weather', { error: String(err) });
     return NextResponse.json({ error: 'Failed to fetch weather' }, { status: 500 });
   }
 }

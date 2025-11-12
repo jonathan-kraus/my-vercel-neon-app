@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
 import { createLogger } from '@/app/utils/logger';
-const log = createLogger('app/api/posts/[id]/route.ts');
+import { generateUUID } from '@/uuidj';
 
 function parseCookies(cookieHeader: string | null): Record<string, string> {
   const cookies: Record<string, string> = {};
@@ -19,13 +19,16 @@ function parseCookies(cookieHeader: string | null): Record<string, string> {
 
 // DELETE handler: extract id from the request URL to avoid typing mismatch on the second param
 export async function DELETE(req: Request) {
+  const requestId = generateUUID();
+  const log = createLogger('app/api/posts/[id]/route.ts', requestId);
+
   try {
     const url = new URL(req.url);
     const parts = url.pathname.split('/').filter(Boolean);
     const idStr = parts[parts.length - 1];
     const id = Number(idStr);
     if (!id || Number.isNaN(id)) {
-      console.warn('Invalid id in URL:', idStr);
+      await log.warn('Invalid id in URL', { idStr });
       return NextResponse.json({ error: 'invalid_id' }, { status: 400 });
     }
 
@@ -41,14 +44,14 @@ export async function DELETE(req: Request) {
     try {
       await log.info(`Post ${id} deleted by ${username}`, { user: username, postId: id });
     } catch (e: unknown) {
-      if (e instanceof Error) console.error('logInfo failed in DELETE /api/posts/[id]', e.message);
-      else console.error('logInfo failed in DELETE /api/posts/[id]', e);
+      console.warn('[posts/[id]] Failed to log deletion:', e);
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (err: unknown) {
-    if (err instanceof Error) console.error('/api/posts/[id] DELETE error', err.message, err);
-    else console.error('/api/posts/[id] DELETE error', err);
+    await log.error('Error deleting post', {
+      error: err instanceof Error ? err.message : String(err),
+    });
     return NextResponse.json({ error: 'internal_error' }, { status: 500 });
   }
 }

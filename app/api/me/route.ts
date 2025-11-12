@@ -3,15 +3,11 @@ import { generateUUID } from '@/uuidj';
 import { createLogger } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
 
-const requestId = generateUUID();
-const log = createLogger('api/me/route', requestId);
-console.log('[build] Generating /api/me');
 function parseCookies(cookieHeader: string | null) {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
   cookieHeader.split(';').forEach((pair) => {
     const idx = pair.indexOf('=');
-    log.info('[api/me/route] Parsing cookie pair', { idx, pair });
     if (idx > -1) {
       const key = pair.slice(0, idx).trim();
       const val = pair.slice(idx + 1).trim();
@@ -21,10 +17,12 @@ function parseCookies(cookieHeader: string | null) {
   return cookies;
 }
 
-function decodeJwtPayload(token: string | undefined | null): Record<string, unknown> | null {
+function decodeJwtPayload(
+  token: string | undefined | null,
+  requestId: string
+): Record<string, unknown> | null {
   if (!token) return null;
   const parts = token.split('.');
-  log.info('[api/me] Decoding JWT payload', { tokenPartCount: parts.length });
   if (parts.length < 2) return null;
   try {
     const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
@@ -37,11 +35,15 @@ function decodeJwtPayload(token: string | undefined | null): Record<string, unkn
 }
 
 export async function GET(req: Request) {
-  log.info('[api/me/route] Handling GET request', {
+  const requestId = generateUUID();
+  const log = createLogger('app/api/me/route.ts', requestId);
+
+  await log.info('Handling GET request', {
     action: 'GET',
     timestamp: new Date().toISOString(),
-    cookies: req.headers.get('cookie'),
+    hasCookies: !!req.headers.get('cookie'),
   });
+
   try {
     const cookieHeader = req.headers.get('cookie');
     const cookies = parseCookies(cookieHeader);
@@ -56,14 +58,14 @@ export async function GET(req: Request) {
     let username: string | null = null;
     let expiresAt: number | null = null;
 
-    const payload = decodeJwtPayload(token);
+    const payload = decodeJwtPayload(token, requestId);
 
     if (payload) {
       const nameVal = typeof payload['name'] === 'string' ? payload['name'] : undefined;
       const usernameVal = typeof payload['username'] === 'string' ? payload['username'] : undefined;
       const subVal = typeof payload['sub'] === 'string' ? payload['sub'] : undefined;
       const expRaw = payload['exp'];
-      log.info('[api/me/route] Decoded JWT payload', { nameVal, usernameVal, subVal, expRaw });
+
       let expNum: number | undefined;
       if (typeof expRaw === 'number') expNum = expRaw;
       else if (typeof expRaw === 'string' && !Number.isNaN(Number(expRaw))) expNum = Number(expRaw);
@@ -100,7 +102,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ username, expiresAt });
   } catch (err) {
-    console.error('/api/me error', err);
+    await log.error('Error determining session', { error: String(err) });
     return NextResponse.json({ error: 'failed to determine session' }, { status: 500 });
   }
 }

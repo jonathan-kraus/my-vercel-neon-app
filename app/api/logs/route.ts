@@ -1,7 +1,12 @@
 import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
-console.log('[build] Generating /logs');
+import { generateUUID } from '@/uuidj';
+import { createLogger } from '@/app/utils/logger';
+
 export async function GET() {
+  const requestId = generateUUID();
+  const log = createLogger('app/api/logs/route.ts', requestId);
+
   try {
     const logs = await db.log.findMany({
       orderBy: { timestamp: 'desc' },
@@ -10,7 +15,7 @@ export async function GET() {
 
     return NextResponse.json(logs);
   } catch (error) {
-    console.error('Failed to fetch logs:', error);
+    await log.error('Failed to fetch logs', { error: String(error) });
     return NextResponse.json({ error: 'Failed to fetch logs' }, { status: 500 });
   }
 }

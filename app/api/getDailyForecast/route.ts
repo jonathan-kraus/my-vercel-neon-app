@@ -8,7 +8,6 @@ export async function GET(req: Request) {
   const requestId = req.headers.get('x-request-id') ?? generateUUID();
   const log = createLogger('getDailyForecast', requestId);
 
-  console.log('[getDailyForecast] New logger follows', `${requestId}`);
   await log.info('Fetching daily forecast');
 
   try {
@@ -18,7 +17,7 @@ export async function GET(req: Request) {
       forecastLength: result.forecast.length,
       maxRainAccumulation: result.maxRainAccumulation,
     });
-    console.log('[getDailyForecast] New logger above', `${requestId}`);
+
     return NextResponse.json({ ...result, requestId });
   } catch (err) {
     await log.error('Forecast fetch failed', { error: String(err) });

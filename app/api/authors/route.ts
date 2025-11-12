@@ -3,9 +3,12 @@ import { sendConfirmationEmail } from '@/app/utils/email-client';
 import { NextResponse } from 'next/server';
 import { generateUUID } from '../../../uuidj';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
-console.log('[build] Generating /authors');
+import { createLogger } from '@/app/utils/logger';
+
 export async function GET(req: Request) {
   const requestId = req.headers.get('x-request-id') ?? generateUUID();
+  const log = createLogger('app/api/authors/route.ts', requestId);
+
   try {
     // Include a posts count for each user so clients can render badges without extra queries
     const authors = await db.user.findMany({
@@ -13,10 +16,9 @@ export async function GET(req: Request) {
       select: { id: true, name: true, _count: { select: { posts: true } } },
     });
 
-    console.log(`[${requestId}] Fetched authors, returning response`);
     return NextResponse.json(authors);
   } catch (error) {
-    console.error(`[${requestId}] Error fetching authors:`, error);
+    await log.error('Error fetching authors', { error: String(error) });
     return NextResponse.json({ error: 'Failed to fetch authors' }, { status: 500 });
   } finally {
     const emailData = {
@@ -28,9 +30,9 @@ export async function GET(req: Request) {
     if (isFeatureEnabled('EMAIL_NOTIFICATIONS')) {
       const { success, message } = await sendConfirmationEmail(emailData);
       if (success) {
-        console.log(`[${requestId}] Email sent successfully: ${message}`);
+        await log.info('Email sent successfully', { message });
       } else {
-        console.error(`[${requestId}] Email failed: ${message}`);
+        await log.error('Email failed', { message });
       }
     }
   }

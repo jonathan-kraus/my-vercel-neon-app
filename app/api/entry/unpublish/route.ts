@@ -10,7 +10,7 @@ export async function POST(req: Request) {
   const cookieStore = await cookies();
   const username = cookieStore.get('username')?.value;
 
-  console.log(`[entry/unpublish] [${requestId}] Unpublish request received from ${username}`);
+  await log.info('Unpublish request received', { user: username });
 
   if (!username) {
     await log.info(`Unpublish rejected - unauthorized`, { requestId });
@@ -41,8 +41,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, requestId });
   } catch (err) {
-    console.error(`[entry/unpublish] [${requestId}] Error:`, err);
-    await log.error(`Unpublish failed - database error`, {
+    await log.error('Unpublish failed - database error', {
       user: username,
       entryId: id,
       error: String(err),

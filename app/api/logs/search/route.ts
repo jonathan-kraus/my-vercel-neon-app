@@ -57,7 +57,7 @@ export async function GET(req: Request) {
     });
     return NextResponse.json({ items, total, page, pageSize });
   } catch (err) {
-    console.error('Error in /api/logs/search', err);
+    await log.error('Error in log search', { error: String(err) });
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }

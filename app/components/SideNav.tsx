@@ -176,7 +176,6 @@ export default function SideNav() {
     return () => {
       mountedRef.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   // Re-check on window focus (user may have signed in/out elsewhere)
@@ -188,7 +187,6 @@ export default function SideNav() {
       window.removeEventListener('focus', onFocus);
       mountedRef.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Effect: precise expiry boundary + lightweight minute updates

@@ -9,8 +9,6 @@ const CreatePostSchema = z.object({
   title: z.string().min(1),
   body: z.string().min(1),
 });
-const requestId = generateUUID();
-const log = createLogger('api/posts', requestId);
 
 function parseCookies(cookieHeader: string | null): Record<string, string> {
   const cookies: Record<string, string> = {};
@@ -25,8 +23,11 @@ function parseCookies(cookieHeader: string | null): Record<string, string> {
   });
   return cookies;
 }
-console.log('[build] Generating /api/posts requestId:', requestId);
+
 export async function GET(request: Request) {
+  const requestId = generateUUID();
+  const log = createLogger('app/api/posts/route.ts', requestId);
+
   try {
     const url = new URL(request.url);
     const rawAuthor = url.searchParams.get('author');
@@ -62,15 +63,18 @@ export async function GET(request: Request) {
 
     return NextResponse.json(posts);
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    await log.error('Error fetching posts', { error: String(error) });
     return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
+  const requestId = generateUUID();
+  const log = createLogger('app/api/posts/route.ts', requestId);
+
   try {
     const payload = await req.json();
-    log.info('[api/posts] Verifying request', { payloadSize: JSON.stringify(payload).length });
+    await log.info('Verifying request', { payloadSize: JSON.stringify(payload).length });
     const parsed = CreatePostSchema.safeParse(payload);
     if (!parsed.success) {
       return NextResponse.json(
@@ -85,7 +89,7 @@ export async function POST(req: Request) {
     const username = cookies['username'] ?? null;
 
     if (!username) {
-      log.info('[api/posts] Unauthorized request - missing username cookie');
+      await log.info('Unauthorized request - missing username cookie');
       return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
     }
 
@@ -115,7 +119,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(post, { status: 201 });
   } catch (err) {
-    console.error('/api/posts error', err);
+    await log.error('Error creating post', { error: String(err) });
     return NextResponse.json({ error: 'internal_error' }, { status: 500 });
   }
 }

@@ -4,7 +4,8 @@ import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { sendWithDedup } from '@/app/lib/sendWithDedup';
 import { z } from 'zod';
 import { generateUUID } from '../../../uuidj';
-console.log('[build] Generating /api/send-email');
+import { createLogger } from '@/app/utils/logger';
+
 export async function OPTIONS() {
   return new Response(null, {
     status: 204,
@@ -26,10 +27,10 @@ const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
 // interface EmailRequest {
 //   toEmail: string;
 //   toName: string;
-//   subject: string
+//   subject: z.string()
 //   requestId?: string;
 // }
-console.log('📥 [API] Received email request');
+
 const EmailSchema = z.object({
   toEmail: z.email(),
   toName: z.string(),
@@ -40,28 +41,25 @@ const EmailSchema = z.object({
 });
 // Route Handlers use standard Web API Request/Response objects
 export async function POST(request: Request) {
-  console.log('📥 [API] Received email request');
+  const requestId = generateUUID();
+  const log = createLogger('app/api/send-email/route.ts', requestId);
+
   try {
     const body = await request.json();
     const parsed = EmailSchema.safeParse(body);
-    if (parsed.success) {
-      console.log('[send-email] Validation passed:', parsed.data);
-    } else {
-      console.error('[send-email] Validation failed:', parsed.error.format());
+    if (!parsed.success) {
+      await log.error('Validation failed', { errors: parsed.error.format() });
       return new Response('Invalid payload', { status: 400 });
     }
 
     const { toEmail, toName, subject, message = '', requestId: providedRequestId } = parsed.data;
-    const requestId = providedRequestId || generateUUID();
+    const finalRequestId = providedRequestId || requestId;
     // Format message for HTML (convert newlines to <br>)
     const htmlMessage = message.replace(/\n/g, '<br>');
     const metadata = parsed.data.metadata;
     const emailMetadata = parsed.data.metadata;
-    console.log(`[send-email] Metadata: ${metadata}`);
-    console.log(`[send-email] emailMetadata: ${emailMetadata}`);
+
     // Proceed with sending email
-    console.log('📨 Sending email to:', toEmail);
-    // await mailerSend.email.send(...)
     const recipients = [new Recipient(toEmail, toName)];
 
     const emailParams = new EmailParams()
@@ -74,8 +72,6 @@ export async function POST(request: Request) {
         `<strong>Sent from API to ${toName} app message:</strong><br>${htmlMessage} ${requestId}`
       );
 
-    console.log('📧 [send-email] Subject:', subject);
-
     const sendFn = async () => {
       await mailerSend.email.send(emailParams);
     };
@@ -83,7 +79,7 @@ export async function POST(request: Request) {
     const result = await sendWithDedup({
       source: 'sendemail',
       message: `Email with subject ${subject}`,
-      requestId,
+      requestId: finalRequestId,
       sendFn,
     });
 
@@ -92,7 +88,7 @@ export async function POST(request: Request) {
         JSON.stringify({
           status: 'success',
           message: 'Email sent',
-          requestId,
+          requestId: finalRequestId,
         }),
         {
           status: 200,
@@ -110,7 +106,7 @@ export async function POST(request: Request) {
       JSON.stringify({
         status: 'skipped',
         reason: result.reason || 'throttled',
-        requestId,
+        requestId: finalRequestId,
       }),
       {
         status: 200,
@@ -118,13 +114,13 @@ export async function POST(request: Request) {
       }
     );
   } catch (err) {
-    console.error(`[send-email] ❌ Error sending email`, err);
+    await log.error('Error sending email', { error: String(err) });
 
     return new Response(
       JSON.stringify({
         status: 'error',
         message: 'Internal server error',
-        requestId: generateUUID(),
+        requestId,
       }),
       {
         status: 500,

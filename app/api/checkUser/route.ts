@@ -1,7 +1,6 @@
 // app/api/checkUser/route.ts
 import { db } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
-console.log('[build] Generating /checkUser');
 
 export async function POST(req: Request) {
   const { name } = await req.json();

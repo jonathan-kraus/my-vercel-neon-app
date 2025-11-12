@@ -6,6 +6,8 @@ import { createLogger } from '@/app/utils/logger';
 
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
+  const requestId = generateUUID();
+  const log = createLogger('app/api/posts/[id]/complete/route.ts', requestId);
 
   const cookieStore = await cookies();
   const user = cookieStore.get('authorizedUser')?.value;
@@ -20,9 +22,6 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
       data: { published: false },
     });
 
-    // Log the action
-    const requestId = generateUUID();
-    const log = createLogger('app/api/posts/[id]/complete/route.ts', requestId);
     await log.info(`Post ${id} marked as unpublished`, {
       action: 'mark_complete',
       postId: id,
@@ -31,7 +30,11 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    console.error('Failed to mark post complete:', err);
+    await log.error(`Failed to mark post ${id} complete`, {
+      error: String(err),
+      postId: id,
+      user,
+    });
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }

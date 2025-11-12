@@ -42,7 +42,12 @@ export async function GET() {
 
     return NextResponse.json(envInfo);
   } catch (error) {
-    console.error('[env-info] Error fetching environment info:', error);
+    try {
+      await log.error('Error fetching environment info', { error: String(error) });
+    } catch {
+      // Fallback if logging fails
+      console.warn('[env-info] Failed to log error:', error);
+    }
     return NextResponse.json({ error: 'Failed to fetch environment info' }, { status: 500 });
   }
 }

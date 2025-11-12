@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
 
-console.log('[build] Generating /log');
-
 export async function OPTIONS() {
   return new Response(null, {
     status: 204,
@@ -16,10 +14,7 @@ export async function OPTIONS() {
 
 export async function POST(req: Request) {
   const body = await req.json();
-
   const { severity = 'info', source, message = '', requestId, metadata } = body;
-
-  console.log(`[log] [${requestId}] Received log event:`, { severity, source, message, metadata });
 
   try {
     await db.log.create({
@@ -33,8 +28,6 @@ export async function POST(req: Request) {
       },
     });
 
-    console.log(`[log] [${requestId}] Log event inserted successfully`);
-
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: {
@@ -42,7 +35,8 @@ export async function POST(req: Request) {
       },
     });
   } catch (error) {
-    console.error('Log insert failed:', error);
+    // Fallback to console since this is the logging endpoint
+    console.warn('[log] Insert failed:', error);
 
     const message = error instanceof Error ? error.message : 'Unknown error';
 

@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
+import { generateUUID } from '@/uuidj';
+import { createLogger } from '@/app/utils/logger';
 
 export async function GET(request: Request) {
+  const requestId = generateUUID();
+  const log = createLogger('app/api/neon-consumption/route.ts', requestId);
+
   try {
     const apiKey = process.env.NEON_API_KEY;
 
@@ -35,7 +40,10 @@ export async function GET(request: Request) {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('[neon-consumption] API error:', response.status, errorText);
+      await log.error('Neon API error', {
+        status: response.status,
+        details: errorText,
+      });
       return NextResponse.json(
         {
           error: `Neon API error: ${response.status}`,
@@ -53,7 +61,9 @@ export async function GET(request: Request) {
       period: { from, to },
     });
   } catch (error) {
-    console.error('[neon-consumption] Error fetching consumption metrics:', error);
+    await log.error('Error fetching consumption metrics', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return NextResponse.json(
       {
         error: 'Failed to fetch consumption metrics',
