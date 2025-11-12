@@ -41,6 +41,7 @@ const config = [
       'no-undef': 'off',
       'react-hooks/exhaustive-deps': 'off',
       'react-hooks/rules-of-hooks': 'warn',
+      'react-compiler/react-compiler': 'off',
     },
   },
   {
