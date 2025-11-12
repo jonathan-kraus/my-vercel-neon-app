@@ -65,7 +65,7 @@ export async function GET(req: Request) {
       const usernameVal = typeof payload['username'] === 'string' ? payload['username'] : undefined;
       const subVal = typeof payload['sub'] === 'string' ? payload['sub'] : undefined;
       const expRaw = payload['exp'];
-
+      log.info('Decoded JWT payload', { payload, requestId });
       let expNum: number | undefined;
       if (typeof expRaw === 'number') expNum = expRaw;
       else if (typeof expRaw === 'string' && !Number.isNaN(Number(expRaw))) expNum = Number(expRaw);

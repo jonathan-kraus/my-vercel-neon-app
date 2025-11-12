@@ -47,6 +47,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const parsed = EmailSchema.safeParse(body);
+    log.info('Received send-email request', { requestBody: body });
     if (!parsed.success) {
       await log.error('Validation failed', { errors: parsed.error.format() });
       return new Response('Invalid payload', { status: 400 });
@@ -58,7 +59,7 @@ export async function POST(request: Request) {
     const htmlMessage = message.replace(/\n/g, '<br>');
     const metadata = parsed.data.metadata;
     const emailMetadata = parsed.data.metadata;
-
+    log.info('Preparing to send email', { metadata, emailj: emailMetadata });
     // Proceed with sending email
     const recipients = [new Recipient(toEmail, toName)];
 
