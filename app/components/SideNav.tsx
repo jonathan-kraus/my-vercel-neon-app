@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { showCookieSummaryToast } from './ToastSpinner';
 import { generateUUID } from '@/uuidj';
 import { createLogger } from '../utils/logger';
-import { ca } from 'zod/v4/locales';
+
 type NavItemProps =
   | { href: string; label: string; currentPath?: string; onHoverPrefetch?: (href: string) => void }
   | { onClick: () => void; label: string };

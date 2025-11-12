@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '../../../../../uuidj';
-import { logInfoFactory } from '@/app/utils/logger';
+import { createLogger } from '@/app/utils/logger';
 
-const logInfo = logInfoFactory('app/api/posts/[id]/complete/route.ts');
+const log = createLogger('app/api/posts/[id]/complete/route.ts');
 
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
@@ -25,11 +25,11 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     // Log the action
     const requestId = generateUUID();
 
-    await logInfo(
-      `Post ${id} marked as unpublished`,
-      { action: 'mark_complete', postId: id, user: user },
-      requestId
-    );
+    await log.info(`Post ${id} marked as unpublished`, {
+      action: 'mark_complete',
+      postId: id,
+      user: user,
+    });
 
     return NextResponse.json({ success: true });
   } catch (err) {

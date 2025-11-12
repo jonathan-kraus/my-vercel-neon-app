@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic';
 import { db } from '../lib/db';
 import PostCountBadge from '../components/PostCountBadge';
-import { logInfoFactory, logErrorFactory } from '@/app/utils/logger';
+import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '../../uuidj';
 type Author = {
   id: number;
@@ -9,8 +9,8 @@ type Author = {
   _count?: { posts: number };
 };
 
-const logInfo = logInfoFactory('app/authors/page.tsx');
-const logError = logErrorFactory('app/authors/page.tsx');
+const log = createLogger('app/authors/page.tsx');
+
 export default async function AuthorsPage() {
   const requestId = generateUUID();
   let authors: Author[] = [];
@@ -29,11 +29,7 @@ export default async function AuthorsPage() {
       console.log(`[ AuthorsPage ] No authors found.`);
     } else {
       // Log successful fetch
-      await logInfo(
-        `Fetched ${authors.length} authors`,
-        { authorsCount: authors.length },
-        requestId
-      );
+      await log.info(`Fetched ${authors.length} authors`, { authorsCount: authors.length });
     }
 
     console.log(`[AuthorsPage] Fetched ${authors.length} authors.`);
@@ -44,12 +40,10 @@ export default async function AuthorsPage() {
 
     // Log the error
     try {
-      await logError(
-        'Failed to fetch authors',
-
-        { error: errorMessage, userAction: 'fetch_authors_failed' },
-        requestId
-      );
+      await log.error('Failed to fetch authors', {
+        error: errorMessage,
+        userAction: 'fetch_authors_failed',
+      });
     } catch (logErr) {
       console.error('[authors/page.tsx] Failed to log error:', logErr);
     }
