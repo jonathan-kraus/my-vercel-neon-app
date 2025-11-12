@@ -2,11 +2,10 @@ import { NextResponse } from 'next/server';
 import { generateUUID } from '@/uuidj';
 import { createLogger } from '@/app/utils/logger';
 
-const requestid = generateUUID();
-
-const log = createLogger('app/api/env-info/route.ts', requestid);
-log.info(`[${requestid}] app/api/env-info/route.ts accessed`);
 export async function GET() {
+  const requestId = generateUUID();
+  const log = createLogger('app/api/env-info/route.ts', requestId);
+
   try {
     // Parse database URL to get host (safely)
     let dbHost = 'N/A';
@@ -39,6 +38,13 @@ export async function GET() {
       databaseHost: dbHost,
       databaseName: dbName,
     };
+
+    await log.info('Environment info fetched', {
+      environment: envInfo.environment,
+      region: envInfo.vercelRegion,
+      dbHost,
+      gitSha: envInfo.gitCommitSha,
+    });
 
     return NextResponse.json(envInfo);
   } catch (error) {
