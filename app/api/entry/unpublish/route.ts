@@ -4,10 +4,9 @@ import { db } from '@/app/lib/db';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 
-const log = createLogger('app/api/entry/unpublish/route.ts');
-
 export async function POST(req: Request) {
   const requestId = req.headers.get('x-request-id') ?? generateUUID();
+  const log = createLogger('app/api/entry/unpublish/route.ts', requestId);
   const cookieStore = await cookies();
   const username = cookieStore.get('username')?.value;
 
