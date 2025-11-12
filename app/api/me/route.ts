@@ -25,6 +25,7 @@ function decodeJwtPayload(
   const parts = token.split('.');
   if (parts.length < 2) return null;
   try {
+    console.log(`[app/api/me/route.ts] [${requestId}] Decoding JWT payload`);
     const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
     const padded = payload + '==='.slice((payload.length + 3) % 4);
     const json = Buffer.from(padded, 'base64').toString('utf8');
