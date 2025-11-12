@@ -5,9 +5,10 @@ import toast, { Toaster } from 'react-hot-toast';
 import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
 import { generateUUID } from '../../uuidj';
-import { logInfoFactory } from '@/app/utils/logger';
-const logInfo = logInfoFactory('app/components/ForecastStatus.tsx');
+import { createLogger } from '@/app/utils/logger';
 
+const requestId = generateUUID();
+const log = createLogger('app/components/ForecastStatus.tsx', requestId);
 type ForecastResult = {
   forecast: DailyForecastPoint[];
   maxRainAccumulation: number;
@@ -26,11 +27,9 @@ export default function ForecastStatus() {
     try {
       await sendForecastEmail(forecast.forecast, requestIdRef.current);
       toast.success('Forecast email success!');
-      await logInfo(
-        'Success: Forecast auto send email',
-        { forecastLength: forecast.forecast.length },
-        requestIdRef.current
-      );
+      await log.info('Success: Forecast auto send email', {
+        forecastLength: forecast.forecast.length,
+      });
     } catch (err) {
       console.error('Failed to send forecast email:', err);
       toast.error('Failed to send forecast email');
@@ -43,14 +42,10 @@ export default function ForecastStatus() {
       try {
         const result = await getDailyForecast(requestIdRef.current);
         setForecast(result);
-        await logInfo(
-          'Forecast fetched successfully',
-          {
-            forecastLength: result.forecast.length,
-            maxRainAccumulation: result.maxRainAccumulation,
-          },
-          requestIdRef.current
-        );
+        await log.info('Forecast fetched successfully', {
+          forecastLength: result.forecast.length,
+          maxRainAccumulation: result.maxRainAccumulation,
+        });
       } catch (err) {
         console.error('Failed to fetch forecast:', err);
         toast.error('Failed to fetch forecast');
