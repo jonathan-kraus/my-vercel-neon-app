@@ -3,7 +3,6 @@ import { cookies } from 'next/headers';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '../../../../../uuidj';
 import { createLogger } from '@/app/utils/logger';
-import { request } from 'node:https';
 
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
