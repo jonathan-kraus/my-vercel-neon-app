@@ -3,7 +3,7 @@ import { db } from '../lib/db';
 import PostCountBadge from '../components/PostCountBadge';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '../../uuidj';
-import { request } from 'http';
+
 type Author = {
   id: number;
   name: string | null;
