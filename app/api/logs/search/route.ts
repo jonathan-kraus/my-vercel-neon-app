@@ -5,7 +5,7 @@ import { generateUUID } from '@/uuidj';
 
 export async function GET(req: Request) {
   const requestId = generateUUID();
-  const log = createLogger('app/api/logs/search/route');
+  const log = createLogger('app/api/logs/search/route', requestId);
   log.info(`[app/api/logs/search/route] Initialized log search route`, {
     action: `init`,
     timestamp: new Date().toISOString(),

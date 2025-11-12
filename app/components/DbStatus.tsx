@@ -6,8 +6,6 @@ import { generateUUID } from '../../uuidj';
 import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
-const log = createLogger('app/components/DbStatus.tsx');
-
 type DbStatusType = {
   version: string;
   postCount: number;
@@ -80,6 +78,7 @@ export default function DbStatus() {
   const [envInfo, setEnvInfo] = useState<EnvInfoType | null>(null);
   const [consumption, setConsumption] = useState<ConsumptionData | null>(null);
   const [requestId] = useState(() => generateUUID());
+  let log = createLogger('app/components/DbStatus.tsx', requestId);
   log.info('DbStatus component rendered', { action: 'checkDbStatus' });
   const emailSentRef = useRef(false);
   const [emailLoading, setEmailLoading] = useState(false);
