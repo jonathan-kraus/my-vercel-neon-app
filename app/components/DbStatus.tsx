@@ -78,8 +78,7 @@ export default function DbStatus() {
   const [envInfo, setEnvInfo] = useState<EnvInfoType | null>(null);
   const [consumption, setConsumption] = useState<ConsumptionData | null>(null);
   const [requestId] = useState(() => generateUUID());
-  let log = createLogger('app/components/DbStatus.tsx', requestId);
-  log.info('DbStatus component rendered', { action: 'checkDbStatus' });
+  const log = useRef(createLogger('app/components/DbStatus.tsx', requestId));
   const emailSentRef = useRef(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState<{
@@ -98,7 +97,7 @@ export default function DbStatus() {
 
     const jck = async () => {
       try {
-        await log.info(`Retrieving database status baseUrl: ${baseUrl}`, {
+        await log.current.info(`Retrieving database status baseUrl: ${baseUrl}`, {
           userAction: 'fetch',
           source: 'DbStatus',
           email: 'bypass_throttle',
@@ -109,7 +108,7 @@ export default function DbStatus() {
     };
 
     jck();
-  }, [log]);
+  }, []);
 
   // Fetch DB status
   useEffect(() => {
@@ -217,7 +216,7 @@ export default function DbStatus() {
 
       const result = await response.json();
       console.log('Email API result:', result);
-      await log.info(`Database email status: ${result.status}`, {
+      await log.current.info(`Database email status: ${result.status}`, {
         userAction: 'fetch',
         source: 'DbStatus',
       });
@@ -245,7 +244,7 @@ export default function DbStatus() {
     } finally {
       setEmailLoading(false);
     }
-  }, [status, region, requestId, log]);
+  }, [status, region, requestId]);
 
   // Auto-send once after status loads (only in browser, not during build)
   useEffect(() => {

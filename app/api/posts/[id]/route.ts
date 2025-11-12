@@ -25,7 +25,6 @@ function makeRequestId(): string {
 
 // DELETE handler: extract id from the request URL to avoid typing mismatch on the second param
 export async function DELETE(req: Request) {
-  const requestId = makeRequestId();
   try {
     const url = new URL(req.url);
     const parts = url.pathname.split('/').filter(Boolean);
