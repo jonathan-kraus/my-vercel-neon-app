@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { showCookieSummaryToast } from './ToastSpinner';
 import { generateUUID } from '@/uuidj';
+import { createLogger } from '../utils/logger';
 type NavItemProps =
   | { href: string; label: string; currentPath?: string; onHoverPrefetch?: (href: string) => void }
   | { onClick: () => void; label: string };
@@ -43,24 +44,13 @@ export function NavItem(props: NavItemProps) {
   );
 }
 
-const requestId = generateUUID();
 const calllog = async (message: string) => {
   // Skip logging during build to prevent errors
   if (process.env.NEXT_PHASE === 'phase-production-build') return;
-
+  const requestId = generateUUID();
+  const log = createLogger('app/components/SideNav.tsx', requestId);
   try {
-    await fetch('/api/log', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        severity: 'info',
-        source: 'SideNav',
-        message,
-        requestId,
-        metadata: { userAction: 'fetch' },
-      }),
-    });
+    await log.info('Sidenav initialized', { action: 'init', timestamp: new Date().toISOString() });
   } catch (error) {
     console.error('Failed to log event:', error);
   }
@@ -111,11 +101,6 @@ export default function SideNav() {
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const [sessionLoading, setSessionLoading] = useState<boolean>(true);
-
-  // Log component load
-  useEffect(() => {
-    calllog(`[SideNav] [${requestId}] component loaded`);
-  }, []);
 
   // Read cookies and/or server session. Re-run on route changes and window focus.
   async function refreshSession(mountedRef: { current: boolean }) {
