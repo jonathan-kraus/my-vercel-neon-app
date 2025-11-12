@@ -6,8 +6,6 @@ import toast from 'react-hot-toast';
 import { createLogger } from '../utils/logger';
 import { generateUUID } from '@/uuidj';
 
-const log = createLogger('app/components/DeleteButton.tsx');
-
 export function DeleteButton({ postId }: { postId: number }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -15,7 +13,7 @@ export function DeleteButton({ postId }: { postId: number }) {
   const handleDelete = async () => {
     setLoading(true);
     const requestId = generateUUID();
-
+    const log = createLogger('app/components/DeleteButton.tsx', requestId);
     try {
       await log.info(`Post delete attempted: ${postId}`, { userAction: 'delete_attempt', postId });
 
