@@ -18,7 +18,6 @@ import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
-const log = createLogger('JKapp/admin/weather/page.tsx');
 type ForecastResult = {
   forecast: DailyForecastPoint[];
   maxRainAccumulation: number;
@@ -27,6 +26,7 @@ type ForecastResult = {
 export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const [requestId] = useState(() => generateUUID());
+  const log = createLogger('JKapp/admin/weather/page.tsx', requestId);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(getActiveLocation());
   const useNewUI = isFeatureEnabled('NEW_UI_COMPONENTS');
 
@@ -49,6 +49,9 @@ export default function WeatherPage() {
     try {
       const result = await getDailyForecast(generateUUID(), location); // Pass the selected location
       setForecast(result);
+      if (!requestId) {
+        let requestId = 'not passed';
+      }
       log.info('Fetched forecast for new location', {
         location: location.displayName,
         forecastLength: result.forecast.length,
