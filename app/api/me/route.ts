@@ -4,14 +4,14 @@ import { createLogger } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
 
 const requestId = generateUUID();
-const log = createLogger('api/me', requestId);
+const log = createLogger('api/me/route', requestId);
 console.log('[build] Generating /api/me');
 function parseCookies(cookieHeader: string | null) {
   const cookies: Record<string, string> = {};
   if (!cookieHeader) return cookies;
   cookieHeader.split(';').forEach((pair) => {
     const idx = pair.indexOf('=');
-    log.info('[api/me] Parsing cookie pair', { pair });
+    log.info('[api/me/route] Parsing cookie pair', { idx, pair });
     if (idx > -1) {
       const key = pair.slice(0, idx).trim();
       const val = pair.slice(idx + 1).trim();
@@ -37,7 +37,11 @@ function decodeJwtPayload(token: string | undefined | null): Record<string, unkn
 }
 
 export async function GET(req: Request) {
-  log.info('[api/me] Handling GET request');
+  log.info('[api/me/route] Handling GET request', {
+    action: 'GET',
+    timestamp: new Date().toISOString(),
+    cookies: req.headers.get('cookie'),
+  });
   try {
     const cookieHeader = req.headers.get('cookie');
     const cookies = parseCookies(cookieHeader);
@@ -59,6 +63,7 @@ export async function GET(req: Request) {
       const usernameVal = typeof payload['username'] === 'string' ? payload['username'] : undefined;
       const subVal = typeof payload['sub'] === 'string' ? payload['sub'] : undefined;
       const expRaw = payload['exp'];
+      log.info('[api/me/route] Decoded JWT payload', { nameVal, usernameVal, subVal, expRaw });
       let expNum: number | undefined;
       if (typeof expRaw === 'number') expNum = expRaw;
       else if (typeof expRaw === 'string' && !Number.isNaN(Number(expRaw))) expNum = Number(expRaw);
@@ -84,7 +89,7 @@ export async function GET(req: Request) {
           if (user?.name) username = user.name;
         }
       } catch (e) {
-        console.error('db lookup failed in /api/me', e);
+        log.error('db lookup failed in /api/me', { error: String(e) });
       }
     }
 
