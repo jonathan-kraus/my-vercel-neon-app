@@ -25,7 +25,7 @@ function parseCookies(cookieHeader: string | null): Record<string, string> {
   });
   return cookies;
 }
-
+console.log('[build] Generating /api/posts requestId:', requestId);
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);

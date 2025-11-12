@@ -109,7 +109,7 @@ export default function DbStatus() {
     };
 
     jck();
-  }, [requestId]);
+  }, [log]);
 
   // Fetch DB status
   useEffect(() => {
@@ -245,7 +245,7 @@ export default function DbStatus() {
     } finally {
       setEmailLoading(false);
     }
-  }, [status, region, requestId]);
+  }, [status, region, requestId, log]);
 
   // Auto-send once after status loads (only in browser, not during build)
   useEffect(() => {
