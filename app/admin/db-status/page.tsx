@@ -3,8 +3,9 @@ import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 
 console.log('[build] Generating /admin/db-status page');
-const log = createLogger('app/admin/db-status/page.tsx');
+
 const requestId = generateUUID();
+const log = createLogger('app/admin/db-status/page.tsx', requestId);
 export default function DbStatusPage() {
   log.info('Rendering /admin/db-status page', {
     'action: render page: /admin/db-status timestamp: ': +new Date().toISOString(),
