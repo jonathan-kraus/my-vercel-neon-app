@@ -332,6 +332,12 @@ export default function SideNav() {
               onHoverPrefetch={handleHoverPrefetch}
             />
             <NavItem
+              href="/admin/logs/viewer"
+              label="Activity Logs"
+              currentPath={pathname}
+              onHoverPrefetch={handleHoverPrefetch}
+            />
+            <NavItem
               href="/pstbyusr/"
               label="Posts by User"
               currentPath={pathname}
@@ -340,12 +346,6 @@ export default function SideNav() {
             <NavItem
               href="/admin/feature-flags"
               label="Feature Flags"
-              currentPath={pathname}
-              onHoverPrefetch={handleHoverPrefetch}
-            />
-            <NavItem
-              href="/admin/logs/viewer"
-              label="Activity Logs"
               currentPath={pathname}
               onHoverPrefetch={handleHoverPrefetch}
             />
