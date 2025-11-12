@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { showCookieSummaryToast } from './ToastSpinner';
 import { generateUUID } from '@/uuidj';
 import { createLogger } from '../utils/logger';
+import { ca } from 'zod/v4/locales';
 type NavItemProps =
   | { href: string; label: string; currentPath?: string; onHoverPrefetch?: (href: string) => void }
   | { onClick: () => void; label: string };
@@ -44,7 +45,7 @@ export function NavItem(props: NavItemProps) {
   );
 }
 
-const calllog = async (message: string) => {
+const calllog = async () => {
   // Skip logging during build to prevent errors
   if (process.env.NEXT_PHASE === 'phase-production-build') return;
   const requestId = generateUUID();
@@ -55,6 +56,7 @@ const calllog = async (message: string) => {
     console.error('Failed to log event:', error);
   }
 };
+calllog();
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(

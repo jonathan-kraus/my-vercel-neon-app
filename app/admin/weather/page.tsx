@@ -47,11 +47,9 @@ export default function WeatherPage() {
     // emailSentRef.current = false; // Reset email sent flag for new location - removed to prevent multiple sends
 
     try {
-      const result = await getDailyForecast(generateUUID(), location); // Pass the selected location
+      const result = await getDailyForecast(requestId, location); // Pass the selected location
       setForecast(result);
-      if (!requestId) {
-        let requestId = 'not passed';
-      }
+
       log.info('Fetched forecast for new location', {
         location: location.displayName,
         forecastLength: result.forecast.length,
