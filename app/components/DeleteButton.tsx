@@ -35,7 +35,7 @@ export function DeleteButton({ postId }: { postId: number }) {
       console.error('Delete failed', err);
       toast.error('Failed to delete post');
       const errorMessage = err instanceof Error ? err.message : String(err);
-      await log.error(`Post delete failed: ${postId}`, { error: errorMessage, postId }, requestId);
+      await log.error(`Post delete failed: ${postId}`, { error: errorMessage, postId });
     } finally {
       setLoading(false);
     }
