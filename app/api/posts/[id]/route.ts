@@ -17,12 +17,6 @@ function parseCookies(cookieHeader: string | null): Record<string, string> {
   return cookies;
 }
 
-function makeRequestId(): string {
-  const hasRandomUUID = typeof crypto !== 'undefined' && 'randomUUID' in crypto;
-  if (hasRandomUUID) return (crypto as unknown as { randomUUID: () => string }).randomUUID();
-  return `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
-}
-
 // DELETE handler: extract id from the request URL to avoid typing mismatch on the second param
 export async function DELETE(req: Request) {
   try {

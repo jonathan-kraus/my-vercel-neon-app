@@ -18,6 +18,7 @@ export default function LogViewerPage() {
   const [pageSize, setPageSize] = useState(75);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [newIds, setNewIds] = useState<Set<string>>(new Set());
 
   const [live, setLive] = useState(false);
 
@@ -25,7 +26,7 @@ export default function LogViewerPage() {
   const [severity, setSeverity] = useState<string>('');
   const [source, setSource] = useState<string>('');
   const [message, setMessage] = useState<string>('');
-  const [requestId, setRequestId] = useState<string>('');
+  const [filterRequestId, setFilterRequestId] = useState<string>('');
   const [from, setFrom] = useState<string>('');
   const [to, setTo] = useState<string>('');
 
@@ -37,7 +38,7 @@ export default function LogViewerPage() {
     if (severity) params.set('severity', severity);
     if (source) params.set('source', source);
     if (message) params.set('message', message);
-    if (requestId) params.set('requestId', requestId);
+    if (filterRequestId) params.set('requestId', filterRequestId);
     if (from) params.set('from', from);
     if (to) params.set('to', to);
 
@@ -74,7 +75,7 @@ export default function LogViewerPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, severity, source, message, requestId, from, to]);
+  }, [page, pageSize, severity, source, message, filterRequestId, from, to]);
   useEffect(() => {
     if (!live) return;
 
@@ -87,7 +88,6 @@ export default function LogViewerPage() {
   useEffect(() => {
     fetchPage();
   }, [fetchPage]);
-  const [newIds, setNewIds] = useState<Set<string>>(new Set());
 
   function onFilterApply() {
     // trigger the page reset — useEffect will call fetchPage()
@@ -168,8 +168,8 @@ export default function LogViewerPage() {
         />
         <input
           placeholder="requestId"
-          value={requestId}
-          onChange={(e) => setRequestId(e.target.value)}
+          value={filterRequestId}
+          onChange={(e) => setFilterRequestId(e.target.value)}
           className="input"
         />
         <div>
@@ -199,7 +199,7 @@ export default function LogViewerPage() {
               setSeverity('');
               setSource('');
               setMessage('');
-              setRequestId('');
+              setFilterRequestId('');
               setFrom('');
               setTo('');
               // reset to first page; useEffect will trigger fetch
@@ -306,7 +306,7 @@ export default function LogViewerPage() {
                     {it.requestId ? (
                       <button
                         onClick={() => {
-                          setRequestId(it.requestId!);
+                          setFilterRequestId(it.requestId!);
                           setPage(1);
                         }}
                         className="text-blue-600 hover:text-blue-800 underline font-mono text-sm"
