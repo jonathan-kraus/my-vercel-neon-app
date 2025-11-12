@@ -2,18 +2,16 @@
 
 import { useTransition } from 'react';
 import { toast } from 'react-hot-toast';
-import { logInfoFactory } from '../utils/logger';
+import { createLogger } from '../utils/logger';
+import { generateUUID } from '@/uuidj';
 
 export function MarkCompleteButton({ postId }: { postId: string }) {
   const [isPending, startTransition] = useTransition();
-  const logInfo = logInfoFactory('app/components/MarkCompleteButton.tsx');
 
   const handleClick = () => {
     startTransition(async () => {
-      const requestId =
-        (typeof crypto !== 'undefined' && (crypto as any).randomUUID?.()) ||
-        `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
-
+      const requestId = generateUUID();
+      const log = createLogger('app/components/MarkCompleteButton.tsx', requestId);
       try {
         const res = await fetch('/api/entry/unpublish', {
           method: 'POST',
@@ -28,7 +26,7 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
           const data = await res.json();
           toast.success(`Post unpublished! (${data.requestId || requestId})`);
           try {
-            await logInfo(`Post unpublished`, { postId }, requestId);
+            await log.info(`Post unpublished`, { postId });
           } catch {
             // non-fatal
           }
@@ -43,6 +41,7 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
                 const parsed = JSON.parse(text);
                 reason = parsed?.error || parsed?.message || text;
                 serverRequestId = parsed?.requestId || requestId;
+                log.error(`Unpublish failed`, { postId, status: res.status, reason });
               } catch {
                 reason = text;
               }
@@ -53,7 +52,7 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
 
           toast.error(`Failed to unpublish: ${reason} (${serverRequestId})`);
           try {
-            await logInfo(`Unpublish failed`, { postId, status: res.status, reason }, requestId);
+            await log.info(`Unpublish failed 2`, { postId, status: res.status, reason });
           } catch {
             // non-fatal
           }
@@ -63,7 +62,7 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
         console.error('Unpublish exception', err);
         toast.error(`Failed to unpublish: ${msg}`);
         try {
-          await logInfo(`Unpublish exception`, { postId, error: msg }, requestId);
+          await log.info(`Unpublish exception`, { postId, error: msg });
         } catch {
           // non-fatal
         }

@@ -2,7 +2,7 @@
 
 import { db } from '@/app/lib/db';
 import { createLogger } from './logger';
-import { generateUUID } from '../../uuidj';
+import { generateUUID } from '@/uuidj';
 const prisma = db; // For clarity in this file
 
 async function getLastDatabaseActivity() {

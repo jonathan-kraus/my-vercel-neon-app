@@ -1,6 +1,6 @@
 'use server';
 
-import { generateUUID } from '../../uuidj';
+import { generateUUID } from '@/uuidj';
 import { getActiveLocation, formatLocationForTomorrowIO, Location } from '../utils/locations';
 import { isFeatureEnabled } from '../utils/featureFlags';
 

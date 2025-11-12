@@ -2,14 +2,15 @@ import 'dotenv/config';
 import { MailerSend, EmailParams, Sender, Recipient } from 'mailersend';
 import { db } from '../lib/db';
 import { sendWithDedup } from '@/app/lib/sendWithDedup';
-import { generateUUID } from '../../uuidj';
-import { logInfoFactory } from './logger';
+import { generateUUID } from '@/uuidj';
+import { createLogger } from './logger';
 console.log('📦 sendemail.ts loaded');
-const logInfo = logInfoFactory('app/utils/sendemail.ts');
+
 const mailerSend = new MailerSend({
   apiKey: process.env.MAILERSEND_API_KEY!,
 });
 const requestId = generateUUID();
+const log = createLogger('app/utils/sendemail.ts', '[logSendEmailModuleAccess], Initialize');
 const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
 export default async function logSendEmailModuleAccess() {
   try {
@@ -18,11 +19,10 @@ export default async function logSendEmailModuleAccess() {
       orderBy: { timestamp: 'desc' },
     });
 
-    logInfo(
-      `[${requestId}] sendemail.ts Last email sent at:, ${lasttime?.timestamp}`,
-      { action: 'fetch_last_email_log', timestamp: new Date().toISOString() },
-      requestId
-    );
+    log.info(`[${requestId}] sendemail.ts Last email sent at:, ${lasttime?.timestamp}`, {
+      action: 'fetch_last_email_log',
+      timestamp: new Date().toISOString(),
+    });
     console.log(`🚀 [${requestId}] sendemail.ts Last email sent at:`, lasttime?.timestamp);
     console.log(`🚀 [${requestId}] sendemail.ts Last email message:`, lasttime?.message);
   } catch (err) {
@@ -31,11 +31,10 @@ export default async function logSendEmailModuleAccess() {
 
   try {
     console.log(`🚀 [${requestId}] sendemail.ts Starting logic`);
-    await logInfo(
-      `sendemail.ts module accessed`,
-      { action: 'fetch', timestamp: new Date().toISOString() },
-      requestId
-    );
+    await log.info(`sendemail.ts module accessed`, {
+      action: 'fetch',
+      timestamp: new Date().toISOString(),
+    });
   } catch (err) {
     console.error(`❌ ${requestId} [sendemail.ts] Error caught:`, err);
   }
@@ -55,11 +54,10 @@ export async function logEvent(payload: LogPayload) {
     process.env.SITE_URL?.replace(/\/$/, '') ||
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
     'https://www.kraus.my.id';
-  logInfo(
-    `[${requestId}] sendemail.ts logEvent called`,
-    { action: 'sendemail logEvent', timestamp: new Date().toISOString() },
-    requestId
-  );
+  log.info(`[${requestId}] sendemail.ts logEvent called`, {
+    action: 'sendemail logEvent',
+    timestamp: new Date().toISOString(),
+  });
   const logUrl = `${baseUrl}/api/log`;
   console.log(`✅ [sendemail] start logging to: ${logUrl} with payload:`, payload);
 

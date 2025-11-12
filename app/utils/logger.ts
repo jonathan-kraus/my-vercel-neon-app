@@ -63,17 +63,6 @@ export async function logger(payload: LogPayload) {
   });
 }
 
-// Convenience helper for your 90% case
-export const logInfoFactory = (source: string) => {
-  return (message: string, metadata?: Record<string, any>, requestId?: string) =>
-    logger({ severity: 'info', source, message, requestId, metadata });
-};
-
-export const logErrorFactory = (source: string) => {
-  return (message: string, metadata?: Record<string, any>, requestId?: string) =>
-    logger({ severity: 'error', source, message, requestId, metadata });
-};
-
 export const createLogger = (source: string, requestId?: string) => {
   return {
     info: (message: string, metadata?: Record<string, any>) =>
