@@ -3,16 +3,16 @@ import { db } from '../lib/db';
 import PostCountBadge from '../components/PostCountBadge';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '../../uuidj';
+import { request } from 'http';
 type Author = {
   id: number;
   name: string | null;
   _count?: { posts: number };
 };
 
-const log = createLogger('app/authors/page.tsx');
-
 export default async function AuthorsPage() {
   const requestId = generateUUID();
+  const log = createLogger('app/authors/page.tsx', requestId);
   let authors: Author[] = [];
   let hasError = false;
   let errorMessage = '';
