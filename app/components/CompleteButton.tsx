@@ -22,7 +22,8 @@ export function CompleteButton({ postId }: { postId: number }) {
       router.refresh();
     } catch (err) {
       console.error('Complete failed', err);
-      toast.error('Failed to complete follow-up');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to complete follow-up';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
