@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '../../uuidj';
-import { count } from 'console';
+
 const requestId = generateUUID();
 const log = createLogger('app/auth/page.tsx', requestId);
 const countj = 1;
@@ -21,7 +21,14 @@ useEffect(() => {
 export default function AuthPage() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
-  const [cookieDisplay, setCookieDisplay] = useState('');
+
+  // Initialize cookie display from browser (runs only once)
+  const [cookieDisplay, setCookieDisplay] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return document.cookie;
+    }
+    return '';
+  });
 
   // Initialize loginAttempts from localStorage (runs only once)
   const [loginAttempts, setLoginAttempts] = useState(() => {
@@ -52,10 +59,6 @@ export default function AuthPage() {
     }
   }, [loginAttempts]); // <- Re-run whenever loginAttempts changes
 
-  // useEffect: Update cookie display
-  useEffect(() => {
-    setCookieDisplay(document.cookie);
-  }, []);
   log.info('[app/auth/page] Rendering AuthPage component', {
     action: 'render',
     timestamp: new Date().toISOString(),
