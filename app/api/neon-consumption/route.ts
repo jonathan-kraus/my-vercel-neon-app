@@ -22,13 +22,20 @@ export async function GET(request: Request) {
     const granularity = searchParams.get('granularity') || 'hourly'; // Required: hourly, daily, monthly
 
     // Construct API URL with query parameters
+    // Note: The consumption_history endpoint returns 406 (Not Acceptable) errors
+    // This endpoint likely requires a paid Neon plan or is not publicly accessible
+    // TODO: Re-enable when upgraded to paid plan or Neon provides alternative endpoint
     const apiUrl = new URL('https://console.neon.tech/api/v2/consumption_history/projects');
     apiUrl.searchParams.set('from', from);
     apiUrl.searchParams.set('to', to);
     apiUrl.searchParams.set('limit', limit);
-    apiUrl.searchParams.set('granularity', granularity); // Always set (required by Neon API)
+    apiUrl.searchParams.set('granularity', granularity); // Required by Neon API
     if (searchParams.get('cursor')) {
       apiUrl.searchParams.set('cursor', searchParams.get('cursor')!);
+    }
+    // Try adding org_id if available
+    if (searchParams.get('org_id')) {
+      apiUrl.searchParams.set('org_id', searchParams.get('org_id')!);
     }
 
     // Log the actual URL being called for debugging
