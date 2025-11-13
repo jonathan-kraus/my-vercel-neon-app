@@ -10,19 +10,21 @@ const log = createLogger('app/auth/page.tsx', requestId);
 export default function AuthPage() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
-  const [loginAttempts, setLoginAttempts] = useState(0);
-  const router = useRouter();
 
-  // useEffect: Load attempts from localStorage on mount
-  useEffect(() => {
-    // This runs ONCE when component first renders
-    const saved = localStorage.getItem('loginAttempts');
-    if (saved) {
-      const count = parseInt(saved, 10);
-      setLoginAttempts(count);
-      console.log(`📂 Loaded ${count} attempts from localStorage`);
+  // Initialize loginAttempts from localStorage (runs only once)
+  const [loginAttempts, setLoginAttempts] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('loginAttempts');
+      if (saved) {
+        const count = parseInt(saved, 10);
+        console.log(`📂 Loaded ${count} attempts from localStorage`);
+        return count;
+      }
     }
-  }, []); // <- Empty array = run once on mount
+    return 0;
+  });
+
+  const router = useRouter();
 
   // useEffect: Save to localStorage whenever loginAttempts changes
   useEffect(() => {
