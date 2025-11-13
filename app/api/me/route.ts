@@ -110,12 +110,12 @@ export async function GET(req: Request) {
       const parsed = Number(cookies['expires_at']);
       if (!Number.isNaN(parsed)) expiresAt = parsed;
     }
-
-    await log.info('Completed GET request', {
-      action: 'GET_complete',
-      timestamp: new Date().toISOString(),
-    });
-
+    if (val === 'init') {
+      await log.info('Completed GET request', {
+        action: 'GET_complete',
+        timestamp: new Date().toISOString(),
+      });
+    }
     const response = NextResponse.json({ username, expiresAt });
 
     // If val was 'init', update it to 'used'
