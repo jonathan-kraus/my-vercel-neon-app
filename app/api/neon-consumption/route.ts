@@ -19,15 +19,23 @@ export async function GET(request: Request) {
       searchParams.get('from') || new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
     const to = searchParams.get('to') || new Date().toISOString();
     const limit = searchParams.get('limit') || '10';
+    const granularity = searchParams.get('granularity') || 'hourly'; // Required: hourly, daily, monthly
 
     // Construct API URL with query parameters
     const apiUrl = new URL('https://console.neon.tech/api/v2/consumption_history/projects');
     apiUrl.searchParams.set('from', from);
     apiUrl.searchParams.set('to', to);
     apiUrl.searchParams.set('limit', limit);
+    apiUrl.searchParams.set('granularity', granularity); // Always set (required by Neon API)
     if (searchParams.get('cursor')) {
       apiUrl.searchParams.set('cursor', searchParams.get('cursor')!);
     }
+
+    // Log the actual URL being called for debugging
+    await log.info('Calling Neon API', {
+      url: apiUrl.toString(),
+      params: { from, to, limit, granularity },
+    });
 
     // Fetch consumption history from Neon API
     const response = await fetch(apiUrl.toString(), {
