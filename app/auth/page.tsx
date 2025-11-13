@@ -51,7 +51,7 @@ export default function AuthPage() {
 
   // useEffect: Set demo cookie on mount
   useEffect(() => {
-    document.cookie = 'name=chipsAhoy; path=/; max-age=6400';
+    document.cookie = 'name=chipsAhoy; val=init; path=/; max-age=6400';
     log.info('[app/auth/page] AuthPage component mounted', {
       action: 'mount',
       timestamp: new Date().toISOString(),

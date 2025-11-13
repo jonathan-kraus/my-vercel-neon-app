@@ -36,21 +36,29 @@ function decodeJwtPayload(
     return null;
   }
 }
+function getCookie(name: string): string | null {
+  const cookies = document.cookie.split('; ');
+  const cookie = cookies.find((c) => c.startsWith(name + '='));
+  return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+}
 
 export async function GET(req: Request) {
   const requestId = generateUUID();
   const log = createLogger('app/api/me/route.ts', requestId);
 
-  await log.info('Handling GET request', {
-    action: 'GET',
-    timestamp: new Date().toISOString(),
-    hasCookies: !!req.headers.get('cookie'),
-  });
+  const cookieHeader = req.headers.get('cookie');
+  const cookies = parseCookies(cookieHeader);
+  const val = cookies['val'];
+
+  if (val === 'init') {
+    await log.info('Handling GET request', {
+      action: 'GET',
+      timestamp: new Date().toISOString(),
+      hasCookies: !!req.headers.get('cookie'),
+    });
+  }
 
   try {
-    const cookieHeader = req.headers.get('cookie');
-    const cookies = parseCookies(cookieHeader);
-
     const token =
       cookies['token'] ??
       cookies['auth'] ??
@@ -108,7 +116,14 @@ export async function GET(req: Request) {
       timestamp: new Date().toISOString(),
     });
 
-    return NextResponse.json({ username, expiresAt });
+    const response = NextResponse.json({ username, expiresAt });
+
+    // If val was 'init', update it to 'used'
+    if (val === 'init') {
+      response.headers.set('Set-Cookie', 'val=used; path=/; max-age=6400; SameSite=Lax');
+    }
+
+    return response;
   } catch (err) {
     await log.error('Error determining session', { error: String(err) });
     return NextResponse.json({ error: 'failed to determine session' }, { status: 500 });
