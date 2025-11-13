@@ -7,20 +7,6 @@ import { generateUUID } from '../../uuidj';
 
 const requestId = generateUUID();
 const log = createLogger('app/auth/page.tsx', requestId);
-function SetCook() {
-  const countj = 1;
-  useEffect(() => {
-    countj + 1;
-    document.cookie = 'name=chipsAhoy; path=/; max-age=6400';
-    log.info('[app/auth/page] AuthPage component mounted', {
-      action: 'mount',
-      countj: countj,
-      timestamp: new Date().toISOString(),
-    });
-  }, []);
-}
-SetCook();
-console.log('🍪 Cookie set to:', document.cookie);
 
 export default function AuthPage() {
   const [name, setName] = useState('');
@@ -62,6 +48,15 @@ export default function AuthPage() {
       }
     }
   }, [loginAttempts]); // <- Re-run whenever loginAttempts changes
+
+  // useEffect: Set demo cookie on mount
+  useEffect(() => {
+    document.cookie = 'name=chipsAhoy; path=/; max-age=6400';
+    log.info('[app/auth/page] AuthPage component mounted', {
+      action: 'mount',
+      timestamp: new Date().toISOString(),
+    });
+  }, []);
 
   log.info('[app/auth/page] Rendering AuthPage component', {
     action: 'render',
