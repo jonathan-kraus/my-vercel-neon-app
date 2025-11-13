@@ -75,7 +75,7 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
     });
 
     const minutesSince = recent ? (now.getTime() - recent.timestamp.getTime()) / 60000 : Infinity;
-
+    const log = createLogger(source, requestId);
     await log.info('Checking email throttle', {
       safeMessage,
       minutesSince: Math.round(minutesSince),
@@ -87,7 +87,7 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
       const suppressedMessage = `Email suppressed: ${safeMessage}
       (last sent ${Math.round(minutesSince)} minutes ago
         throttle: ${effectiveThrottle} mins)`;
-      const log = createLogger(source, requestId);
+
       await log.info(suppressedMessage, {
         action: 'throttle',
         minutesSince: Math.round(minutesSince),
@@ -101,7 +101,7 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
 
     // record sent
     const sentMessage = `${safeMessage} - email sent`;
-    const log = createLogger(source, requestId);
+
     await log.info(sentMessage, { action: 'sent' });
 
     return { sent: true };
