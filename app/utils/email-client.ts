@@ -107,10 +107,10 @@ export async function sendConfirmationEmail(
             success: false,
             message: errorJson.message || `API Error: ${response.status}`,
           };
-        } catch (_e) {
+        } catch (e) {
           result = {
             success: false,
-            message: `Server error (${response.status}): ${errorBodyAsText.slice(0, 50)}...`,
+            message: `Server error (${response.status}, ${e}): ${errorBodyAsText.slice(0, 50)}...`,
           };
         }
         await log
