@@ -111,14 +111,6 @@ export async function fetchWeather(requestId?: string, location?: Location) {
     if (!locationDetails.displayName) {
       locationDetails.displayName = locationToUse.name;
     }
-
-    const locationName =
-      locationDetails.city ??
-      locationDetails.town ??
-      locationDetails.village ??
-      locationDetails.hamlet ??
-      locationDetails.county ??
-      'Unknown Location';
   } catch (error) {
     await log
       .error('Error fetching location data', {

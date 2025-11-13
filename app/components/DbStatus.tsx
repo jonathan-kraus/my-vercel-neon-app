@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
-import { generateUUID } from '../../uuidj';
+import { useRequestId } from '@/app/contexts/RequestIdContext';
 import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
@@ -77,7 +77,10 @@ export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
   const [envInfo, setEnvInfo] = useState<EnvInfoType | null>(null);
   const [consumption, setConsumption] = useState<ConsumptionData | null>(null);
-  const [requestId] = useState(() => generateUUID());
+
+  // 🆔 Get the SHARED requestId from context!
+  const requestId = useRequestId();
+
   const log = useRef(createLogger('app/components/DbStatus.tsx', requestId));
   const emailSentRef = useRef(false);
   const [emailLoading, setEmailLoading] = useState(false);
@@ -87,6 +90,8 @@ export default function DbStatus() {
   }>({ type: null, message: '' });
 
   const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
+
+  console.log(`🔍 DbStatus using requestId: ${requestId}`);
 
   // Log event once on mount
   useEffect(() => {

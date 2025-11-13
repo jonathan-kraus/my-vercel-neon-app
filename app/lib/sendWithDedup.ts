@@ -11,7 +11,6 @@ export type SendWithDedupOptions = {
 
 export async function sendWithDedup(opts: SendWithDedupOptions) {
   const { source, message, requestId, sendFn } = opts;
-  const log = createLogger('app/lib/sendWithDedup.ts', requestId);
 
   // Allow overriding default via environment variable
   const envthrottle = process.env.EMAIL_THROTTLE_MINUTES;

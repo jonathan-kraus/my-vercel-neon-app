@@ -107,7 +107,7 @@ export async function sendConfirmationEmail(
             success: false,
             message: errorJson.message || `API Error: ${response.status}`,
           };
-        } catch (e) {
+        } catch (_e) {
           result = {
             success: false,
             message: `Server error (${response.status}): ${errorBodyAsText.slice(0, 50)}...`,

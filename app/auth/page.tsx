@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '../../uuidj';
@@ -10,7 +10,33 @@ const log = createLogger('app/auth/page.tsx', requestId);
 export default function AuthPage() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const [loginAttempts, setLoginAttempts] = useState(0);
   const router = useRouter();
+
+  // useEffect: Load attempts from localStorage on mount
+  useEffect(() => {
+    // This runs ONCE when component first renders
+    const saved = localStorage.getItem('loginAttempts');
+    if (saved) {
+      const count = parseInt(saved, 10);
+      setLoginAttempts(count);
+      console.log(`📂 Loaded ${count} attempts from localStorage`);
+    }
+  }, []); // <- Empty array = run once on mount
+
+  // useEffect: Save to localStorage whenever loginAttempts changes
+  useEffect(() => {
+    if (loginAttempts > 0) {
+      // Save to localStorage
+      localStorage.setItem('loginAttempts', loginAttempts.toString());
+      console.log(`💾 Saved attempt #${loginAttempts} to localStorage`);
+
+      // Example: Show warning after 3 attempts
+      if (loginAttempts >= 3) {
+        console.warn('⚠️ Multiple login attempts detected!');
+      }
+    }
+  }, [loginAttempts]); // <- Re-run whenever loginAttempts changes
   log.info('[app/auth/page] Rendering AuthPage component', {
     action: 'render',
     timestamp: new Date().toISOString(),
@@ -19,11 +45,15 @@ export default function AuthPage() {
     e.preventDefault();
     setError('');
 
+    // Increment the attempt counter
+    setLoginAttempts(loginAttempts + 1);
+
     try {
       // non-fatal logging
       await log.info(`[app/auth/page] User login attempted for ${name}`, {
         userAction: 'login',
         user: name,
+        attemptNumber: loginAttempts + 1,
       });
     } catch {
       // ignore logging failures
@@ -68,6 +98,31 @@ export default function AuthPage() {
   return (
     <div className="p-6 max-w-md mx-auto">
       <h2 className="text-xl font-bold mb-4">Sign in</h2>
+
+      {/* Display login attempt counter */}
+      <div className="mb-4 p-3 bg-gray-100 rounded border">
+        <p className="text-sm text-gray-700">
+          Login attempts: <span className="font-bold text-blue-600">{loginAttempts}</span>
+          <span className="text-xs text-gray-500 ml-2">(saved in localStorage)</span>
+        </p>
+        {loginAttempts >= 3 && (
+          <p className="text-xs text-orange-600 mt-1">
+            ⚠️ Multiple attempts detected - check your credentials
+          </p>
+        )}
+        <button
+          type="button"
+          onClick={() => {
+            localStorage.removeItem('loginAttempts');
+            setLoginAttempts(0);
+            console.log('🗑️ Cleared localStorage and reset counter');
+          }}
+          className="mt-2 text-xs text-red-600 hover:underline"
+        >
+          Reset counter
+        </button>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
