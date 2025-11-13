@@ -165,7 +165,7 @@ export default function AuthPage() {
           }}
           className="mt-2 ml-3 text-xs text-red-600 hover:underline"
         >
-          Delete 'name' cookie
+          Delete &apos;name&apos; cookie
         </button>
       </div>
 
