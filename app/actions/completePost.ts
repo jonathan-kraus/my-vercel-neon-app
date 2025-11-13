@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import { db } from '../lib/db';
 import { createLogger } from '../utils/logger';
 
@@ -9,6 +10,15 @@ export async function completePost(formData: FormData) {
   const log = createLogger('app/actions/completePost', requestId);
 
   try {
+    // Check for authenticated user
+    const cookieStore = await cookies();
+    const username = cookieStore.get('username')?.value;
+
+    if (!username) {
+      await log.warn('Complete post rejected - unauthorized', { requestId });
+      throw new Error('Unauthorized - please sign in');
+    }
+
     const postId = formData.get('postId') as string;
     const id = Number(postId);
 
@@ -28,6 +38,7 @@ export async function completePost(formData: FormData) {
     try {
       await log.info('Post follow-up completed', {
         userAction: 'complete_followup',
+        user: username,
         postId: post.id.toString(),
         postTitle: post.title,
       });

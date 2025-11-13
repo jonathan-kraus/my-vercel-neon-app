@@ -9,9 +9,10 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
   const [isPending, startTransition] = useTransition();
 
   const handleClick = () => {
+    const requestId = generateUUID();
+    const log = createLogger('app/components/MarkCompleteButton.tsx', requestId);
+
     startTransition(async () => {
-      const requestId = generateUUID();
-      const log = createLogger('app/components/MarkCompleteButton.tsx', requestId);
       try {
         const res = await fetch('/api/entry/unpublish', {
           method: 'POST',
@@ -24,7 +25,8 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
 
         if (res.ok) {
           const data = await res.json();
-          toast.success(`Post unpublished! (${data.requestId || requestId})`);
+          // Move toast outside transition by using queueMicrotask
+          queueMicrotask(() => toast.success(`Post unpublished! (${data.requestId || requestId})`));
           try {
             await log.info(`Post unpublished`, { postId });
           } catch {
@@ -50,7 +52,8 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
             console.error('Failed to read error response body', readErr);
           }
 
-          toast.error(`Failed to unpublish: ${reason} (${serverRequestId})`);
+          // Move toast outside transition
+          queueMicrotask(() => toast.error(`Failed to unpublish: ${reason} (${serverRequestId})`));
           try {
             await log.info(`Unpublish failed 2`, { postId, status: res.status, reason });
           } catch {
@@ -60,7 +63,8 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         console.error('Unpublish exception', err);
-        toast.error(`Failed to unpublish: ${msg}`);
+        // Move toast outside transition
+        queueMicrotask(() => toast.error(`Failed to unpublish: ${msg}`));
         try {
           await log.info(`Unpublish exception`, { postId, error: msg });
         } catch {
