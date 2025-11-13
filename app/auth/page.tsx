@@ -7,16 +7,20 @@ import { generateUUID } from '../../uuidj';
 
 const requestId = generateUUID();
 const log = createLogger('app/auth/page.tsx', requestId);
-const countj = 1;
-useEffect(() => {
-  countj + 1;
-  document.cookie = 'name=chipsAhoy; path=/; max-age=6400';
-  log.info('[app/auth/page] AuthPage component mounted', {
-    action: 'mount',
-    countj: countj,
-    timestamp: new Date().toISOString(),
-  });
-}, []);
+function setCook() {
+  const countj = 1;
+  useEffect(() => {
+    countj + 1;
+    document.cookie = 'name=chipsAhoy; path=/; max-age=6400';
+    log.info('[app/auth/page] AuthPage component mounted', {
+      action: 'mount',
+      countj: countj,
+      timestamp: new Date().toISOString(),
+    });
+  }, []);
+}
+setCook();
+console.log('🍪 Cookie set to:', document.cookie);
 
 export default function AuthPage() {
   const [name, setName] = useState('');
