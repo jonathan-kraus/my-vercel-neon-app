@@ -7,7 +7,7 @@ import { generateUUID } from '../../uuidj';
 
 const requestId = generateUUID();
 const log = createLogger('app/auth/page.tsx', requestId);
-function setCook() {
+function SetCook() {
   const countj = 1;
   useEffect(() => {
     countj + 1;
@@ -19,7 +19,7 @@ function setCook() {
     });
   }, []);
 }
-setCook();
+SetCook();
 console.log('🍪 Cookie set to:', document.cookie);
 
 export default function AuthPage() {
