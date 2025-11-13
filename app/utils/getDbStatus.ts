@@ -59,7 +59,8 @@ async function getLastDatabaseActivity() {
       totalOperations: Number(tableActivity[0]?.total_operations || 0),
     };
   } catch (error) {
-    console.error('Error getting database activity:', error);
+    // Note: Can't use logger here as we're in a nested function without requestId
+    console.warn('[getDbStatus] Error getting database activity:', error);
     return {
       activeConnections: 0,
       lastActivity: null,
@@ -71,11 +72,8 @@ async function getLastDatabaseActivity() {
 }
 
 export async function getDbStatus(requestId?: string) {
-  // Generate requestId if not provided
   if (!requestId) requestId = generateUUID();
-
-  const log = createLogger('getDbStatus', requestId);
-  console.log(`[getDbStatus] [${requestId}] Checking database status...`);
+  const log = createLogger('app/utils/getDbStatus.ts', requestId);
 
   const start = Date.now();
   const [version, postCount, latestPost, logCount, lastActivity] = await Promise.all([
@@ -86,11 +84,13 @@ export async function getDbStatus(requestId?: string) {
     getLastDatabaseActivity(),
   ]);
   const latencyMs = Date.now() - start;
-  console.log(`[getDbStatus] [${requestId}] Start logging database status...`);
-  await log.info(`Database status retrieved`, { userAction: 'fetch', logCount });
-  //await triggerEmail('JDB Status', requestId, `Database Status Update`, message);
 
-  console.log(`[getDbStatus] [${requestId}] Database status logged.`);
+  await log.info('Database status retrieved', {
+    latencyMs,
+    postCount,
+    logCount,
+    activeConnections: lastActivity.activeConnections,
+  });
   return {
     version: (version as { version: string }[])[0].version,
     postCount,

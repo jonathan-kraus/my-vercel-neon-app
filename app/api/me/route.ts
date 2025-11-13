@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { generateUUID } from '@/uuidj';
 import { createLogger } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
+import { MetadataBoundary } from 'next/dist/lib/framework/boundary-components';
 
 function parseCookies(cookieHeader: string | null) {
   const cookies: Record<string, string> = {};
@@ -25,7 +26,8 @@ function decodeJwtPayload(
   const parts = token.split('.');
   if (parts.length < 2) return null;
   try {
-    console.log(`[app/api/me/route.ts] [${requestId}] Decoding JWT payload`);
+    const log = createLogger('app/api/me/route.ts', requestId);
+    log.info(`[app/api/me/route.ts]  Decoding JWT payload`, { Metadata: parts[1] });
     const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
     const padded = payload + '==='.slice((payload.length + 3) % 4);
     const json = Buffer.from(padded, 'base64').toString('utf8');
@@ -66,7 +68,7 @@ export async function GET(req: Request) {
       const usernameVal = typeof payload['username'] === 'string' ? payload['username'] : undefined;
       const subVal = typeof payload['sub'] === 'string' ? payload['sub'] : undefined;
       const expRaw = payload['exp'];
-      log.info('Decoded JWT payload', { payload, requestId });
+      log.info('Decoded JWT payload', { payload });
       let expNum: number | undefined;
       if (typeof expRaw === 'number') expNum = expRaw;
       else if (typeof expRaw === 'string' && !Number.isNaN(Number(expRaw))) expNum = Number(expRaw);
@@ -100,6 +102,11 @@ export async function GET(req: Request) {
       const parsed = Number(cookies['expires_at']);
       if (!Number.isNaN(parsed)) expiresAt = parsed;
     }
+
+    await log.info('Completed GET request', {
+      action: 'GET_complete',
+      timestamp: new Date().toISOString(),
+    });
 
     return NextResponse.json({ username, expiresAt });
   } catch (err) {

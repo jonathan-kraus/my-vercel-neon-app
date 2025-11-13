@@ -3,6 +3,7 @@
 import { generateUUID } from '@/uuidj';
 import { getActiveLocation, formatLocationForTomorrowIO, Location } from '../utils/locations';
 import { isFeatureEnabled } from '../utils/featureFlags';
+import { createLogger } from '../utils/logger';
 
 export type DailyForecastPoint = {
   requestId?: string;
@@ -100,42 +101,31 @@ export async function getDailyForecast(
   requestId?: string,
   location?: Location
 ): Promise<DailyForecastResult> {
-  console.log(`[getDailyForecast] [${requestId}] Function started`);
+  if (!requestId) requestId = generateUUID();
+  const log = createLogger('app/lib/GetDailyForecast.ts', requestId);
 
-  // Check if mock data is enabled
   const useMockData = isFeatureEnabled('WEATHER_MOCK_DATA');
-  console.log(`[getDailyForecast] [${requestId}] Mock data enabled: ${useMockData}`);
-  console.log(
-    `[getDailyForecast] [${requestId}] Environment variable FEATURE_WEATHER_MOCK_DATA: ${process.env.FEATURE_WEATHER_MOCK_DATA}`
-  );
+
+  await log.info('getDailyForecast started', {
+    useMockData,
+    hasLocation: !!location,
+  });
 
   if (useMockData) {
-    console.log(`[getDailyForecast] [${requestId}] Using mock weather data`);
     return generateMockForecast(requestId);
   }
 
   const apiKey = process.env.TOMORROW_API_KEY;
   if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
 
-  console.log(`[getDailyForecast] [${requestId}] Using API key: ${apiKey.slice(0, 4)}...`);
-
-  if (!requestId) requestId = generateUUID();
-  console.log(`[getDailyForecast] [${requestId}] getDailyForecast started`);
-
-  // Get the location to use (passed parameter or active location from feature flags)
   const locationToUse = location || getActiveLocation();
   const locationParam = formatLocationForTomorrowIO(locationToUse);
-  console.log(
-    `[getDailyForecast] [${requestId}] Using location: ${locationToUse.displayName} (${locationParam})`
-  );
 
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${locationParam}&timesteps=1d&units=imperial&fields=temperatureMax,temperatureMin,precipitationProbability,weatherCodeMax,weatherCodeMin,rainAccumulationAvg,rainAccumulationMax,rainAccumulationMin,rainAccumulationSum,sunriseTime,sunsetTime,moonriseTime,moonsetTime&apikey=${apiKey}`;
 
   try {
     const res = await fetch(url);
     if (!res.ok) {
-      console.error(`[Tomorrow.io] ❌ HTTP error: ${res.status}`);
-
       let errorType: 'rate_limit' | 'network' | 'api_error' | 'unknown' = 'api_error';
       let errorMessage = `API request failed with status ${res.status}`;
 
@@ -146,6 +136,12 @@ export async function getDailyForecast(
         errorType = 'api_error';
         errorMessage = 'Weather service is temporarily unavailable.';
       }
+
+      await log.error('Tomorrow.io API error', {
+        status: res.status,
+        errorType,
+        errorMessage,
+      });
 
       return {
         forecast: [],
@@ -161,40 +157,26 @@ export async function getDailyForecast(
     const data = await res.json();
 
     if (!data || !data.timelines || !Array.isArray(data.timelines.daily)) {
-      console.warn(`[Tomorrow.io] ⚠️ Unexpected response format`, data);
+      await log.warn('Unexpected response format from Tomorrow.io', {
+        hasData: !!data,
+        hasTimelines: !!data?.timelines,
+        isDailyArray: Array.isArray(data?.timelines?.daily),
+      });
       return { forecast: [], maxRainAccumulation: 0 };
     }
-    if (isFeatureEnabled('VERBOSE_LOGGING')) {
-      console.log(`[getDailyForecast] [${requestId}] Data fetched from API:`, data);
-    } else {
-      console.log(`[getDailyForecast] [${requestId}] Data fetched from API`);
-    }
 
-    console.log(
-      `[GetDailyForecast] [${requestId}] Forecast response:`,
-      JSON.stringify(data, null, 2)
-    );
     const daily: RawDailyEntry[] = data.timelines?.daily;
 
-    // console.log(
-    //   `[${requestId}] Raw daily forecastvalues:`,
-    //   daily.map((d) => d.values)
-    // );
     const maxRainAccumulation = Math.max(
       ...daily.map((d) => d.values.rainAccumulationSum).filter((val) => typeof val === 'number')
     );
-    console.log(`[getDailyForecast] [${requestId}] Max rainAccumulationSum:`, maxRainAccumulation);
 
-    console.log(`[getDailyForecast] [${requestId}] JJJ daily entries:`, daily);
+    await log.info('Forecast data retrieved', {
+      dailyEntries: daily.length,
+      maxRainAccumulation,
+    });
+
     const forecast = daily.slice(0, 7).map((day): DailyForecastPoint => {
-      // Log the raw sun/moon times from Tomorrow.io
-      console.log(`[getDailyForecast] [${requestId}] Day ${day.time}:`, {
-        sunriseTime: day.values?.sunriseTime,
-        sunsetTime: day.values?.sunsetTime,
-        moonriseTime: day.values?.moonriseTime,
-        moonsetTime: day.values?.moonsetTime,
-      });
-
       return {
         requestId,
         time: day.time,
@@ -218,7 +200,16 @@ export async function getDailyForecast(
 
     return { forecast, maxRainAccumulation };
   } catch (error) {
-    console.error(`[Tomorrow.io] ❌ Network error:`, error);
+    await log
+      .error('Tomorrow.io network error', {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      })
+      .catch(() => {
+        // Fallback if logging fails
+        console.warn('[getDailyForecast] Failed to log error:', error);
+      });
+
     return {
       forecast: [],
       maxRainAccumulation: 0,

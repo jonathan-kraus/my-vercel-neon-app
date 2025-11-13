@@ -1,5 +1,8 @@
 // utils/db.js
 import { PrismaClient } from '@prisma/client';
+import { createLogger } from './logger';
+import { randomUUID } from 'crypto';
+
 const prisma = new PrismaClient();
 
 export async function createLog({
@@ -17,7 +20,10 @@ export async function createLog({
   published: boolean;
   id: number;
 }> {
-  const log = await prisma.post.create({
+  const requestId = randomUUID();
+  const log = createLogger('createLog', requestId);
+
+  const post = await prisma.post.create({
     data: {
       title,
       content,
@@ -25,6 +31,14 @@ export async function createLog({
       published: false,
     },
   });
-  console.log('📬 createLog called with:', { title, content, authorId });
-  return log;
+
+  await log
+    .info('Post created', {
+      title,
+      authorId,
+      postId: post.id,
+    })
+    .catch(() => console.warn('[createLog] Failed to log post creation'));
+
+  return post;
 }

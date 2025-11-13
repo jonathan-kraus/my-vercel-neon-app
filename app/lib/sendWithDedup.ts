@@ -11,13 +11,11 @@ export type SendWithDedupOptions = {
 
 export async function sendWithDedup(opts: SendWithDedupOptions) {
   const { source, message, requestId, sendFn } = opts;
+  const log = createLogger('app/lib/sendWithDedup.ts', requestId);
 
   // Allow overriding default via environment variable
   const envthrottle = process.env.EMAIL_THROTTLE_MINUTES;
   const effectiveThrottle: number = envthrottle ? parseInt(envthrottle, 10) : 15;
-  console.log(
-    `[${requestId}] [sendWithDedup] effectiveThrottle set to ${effectiveThrottle} minutes`
-  );
 
   const now = new Date();
 
@@ -78,9 +76,12 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
     });
 
     const minutesSince = recent ? (now.getTime() - recent.timestamp.getTime()) / 60000 : Infinity;
-    console.log(
-      `[${requestId}] [sendWithDedup] Minutes since last "${safeMessage}": ${minutesSince}`
-    );
+
+    await log.info('Checking email throttle', {
+      safeMessage,
+      minutesSince: Math.round(minutesSince),
+      effectiveThrottle,
+    });
     const isNew = safeMessage.includes('Post:'); // allow immediate send for new post emails
     if (!isNew && minutesSince < effectiveThrottle) {
       // Suppress
@@ -114,8 +115,8 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
         error: safeSerialize(err),
       });
     } catch (logErr) {
-      // swallow
-      console.error('Failed to write error log for sendWithDedup:', logErr);
+      // Fallback if logging fails
+      console.warn('[sendWithDedup] Failed to log error:', logErr);
     }
 
     return { sent: false, reason: 'error', error: safeSerialize(err) };

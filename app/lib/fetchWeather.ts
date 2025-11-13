@@ -8,8 +8,6 @@ import {
 import { isFeatureEnabled } from '../utils/featureFlags';
 import { createLogger } from '../utils/logger';
 
-console.log(`[fetchWeather] Module loaded`);
-
 function generateMockWeather(requestId: string, location: Location) {
   const temp = 65 + Math.random() * 20; // 65-85°F
   return {
@@ -45,23 +43,13 @@ function generateMockWeather(requestId: string, location: Location) {
 }
 
 export async function fetchWeather(requestId?: string, location?: Location) {
-  if (!requestId) requestId = 'requestid-not-passed'; //generateUUID()
-  console.log(`[fetchWeather] [${requestId}] Server function started`);
+  if (!requestId) requestId = 'requestid-not-passed';
+  const log = createLogger('fetchWeather', requestId);
 
-  // Get the location to use (passed parameter or active location from feature flags)
   const locationToUse = location || getActiveLocation();
-
-  // Check if mock data is enabled
   const useMockData = isFeatureEnabled('WEATHER_MOCK_DATA');
-  console.log(`[fetchWeather] [${requestId}] Mock data enabled: ${useMockData}`);
-  console.log(
-    `[fetchWeather] [${requestId}] Environment variable FEATURE_WEATHER_MOCK_DATA: ${process.env.FEATURE_WEATHER_MOCK_DATA}`
-  );
 
   if (useMockData) {
-    console.log(
-      `[fetchWeather] [${requestId}] Using mock weather data for ${locationToUse.displayName}`
-    );
     return generateMockWeather(requestId, locationToUse);
   }
 
@@ -72,15 +60,7 @@ export async function fetchWeather(requestId?: string, location?: Location) {
   const locationParam = formatLocationForTomorrowIO(locationToUse);
   const osmLocation = formatLocationForOSM(locationToUse);
 
-  console.log(
-    `[fetchWeather] [${requestId}] Using location: ${locationToUse.displayName} (${locationParam})`
-  );
-
   const url = `https://api.tomorrow.io/v4/weather/realtime?location=${locationParam}&units=imperial&fields=temperature,temperatureApparent,humidity,windSpeed,windGust,precipitationProbability,weatherCode,pressureSurfaceLevel,visibility,rainAccumulationAvg,rainAccumulationMax,rainAccumulationMin,rainAccumulationSum&apikey=${apiKey}`;
-
-  console.log(
-    `[fetchWeather] [${requestId}] Fetching weather data from API: ${url.replace(apiKey, '***')}`
-  );
 
   const res = await fetch(url);
   if (!res.ok) throw new Error('Failed to fetch weather');
@@ -88,16 +68,8 @@ export async function fetchWeather(requestId?: string, location?: Location) {
   const data = await res.json();
   const values = data.data.values;
   const location2 = data.location ?? 'Unknown2';
-  if (isFeatureEnabled('VERBOSE_LOGGING')) {
-    console.log(`[fetchWeather] [${requestId}] Weather data fetched from API: values`, values);
-    console.log(
-      `[fetchWeather] [${requestId}] Weather data fetched from API: location2`,
-      location2
-    );
-  }
   //const url2 = 'https://nominatim.openstreetmap.org/reverse?lat=40.10520&lon=-75.41404&format=json';
   const url2 = `https://nominatim.openstreetmap.org/reverse?lat=${osmLocation.lat}&lon=${osmLocation.lon}&format=json`;
-  console.log(`[fetchWeather] [${requestId}] Fetching location data from API: ${url2}`);
   let locationDetails = {
     city: undefined as string | undefined,
     town: undefined as string | undefined,
@@ -114,18 +86,17 @@ export async function fetchWeather(requestId?: string, location?: Location) {
       },
     });
 
-    console.log(`[fetchWeather] [${requestId}] Nominatim API response status: ${res2.status}`);
-
     if (!res2.ok) {
-      console.error(
-        `[fetchWeather] [${requestId}] Nominatim API error: ${res2.status} ${res2.statusText}`
-      );
+      await log
+        .error('Nominatim API error', {
+          status: res2.status,
+          statusText: res2.statusText,
+        })
+        .catch(() => console.warn('[fetchWeather] Failed to log Nominatim API error'));
       throw new Error('Failed to fetch location data');
     }
 
     const data2 = await res2.json();
-    console.log(`[fetchWeather] [${requestId}] Location data fetch response:`, data2);
-    console.log(`[fetchWeather] [${requestId}] Address object:`, data2.address);
 
     locationDetails = {
       city: data2.address?.city,
@@ -148,32 +119,12 @@ export async function fetchWeather(requestId?: string, location?: Location) {
       locationDetails.hamlet ??
       locationDetails.county ??
       'Unknown Location';
-
-    console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: city`,
-      locationDetails.city
-    );
-    console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: town ${locationDetails.town}`
-    );
-    console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: village ${locationDetails.village}`
-    );
-    console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: hamlet ${locationDetails.hamlet}`
-    );
-    console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: county ${locationDetails.county}`
-    );
-
-    console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: locationName ${locationName}`
-    );
-    console.log(
-      `[fetchWeather] [${requestId}] Location data fetched from API: display_name ${locationDetails.displayName}`
-    );
   } catch (error) {
-    console.error(`[fetchWeather] [${requestId}] Error fetching location data:`, error);
+    await log
+      .error('Error fetching location data', {
+        error: error instanceof Error ? error.message : String(error),
+      })
+      .catch(() => console.warn('[fetchWeather] Failed to log location fetch error'));
 
     // Fallback: use active location name
     locationDetails = {
@@ -185,17 +136,14 @@ export async function fetchWeather(requestId?: string, location?: Location) {
       displayName: locationToUse.name,
     };
   }
-  console.log(`[fetchWeather] [${requestId}] Preparing to log event to external logging service`);
 
-  // Use createLogger for consistent logging
-  const log = createLogger('fetchWeather', requestId);
-  await log.info('Weather data fetched successfully', {
-    action: 'fetch',
-    timestamp: new Date().toISOString(),
-    location: location2,
-  });
-
-  console.log(`[fetchWeather]  Weather data fetched for location2 `);
+  await log
+    .info('Weather data fetched successfully', {
+      action: 'fetch',
+      timestamp: new Date().toISOString(),
+      location: location2,
+    })
+    .catch(() => console.warn('[fetchWeather] Failed to log weather fetch success'));
 
   // Weather logging (no automatic email sending)
   await db.weatherLog.create({
@@ -211,7 +159,6 @@ export async function fetchWeather(requestId?: string, location?: Location) {
       location: locationToUse.name, // Add location identifier
     },
   });
-  console.log(`[${requestId}] 📝 Weather log created in DB for ${locationToUse.displayName}`);
 
   return {
     temperature: values.temperature,

@@ -4,39 +4,36 @@ import { db } from '../lib/db';
 import { sendWithDedup } from '@/app/lib/sendWithDedup';
 import { generateUUID } from '@/uuidj';
 import { createLogger } from './logger';
-console.log('📦 sendemail.ts loaded');
 
 const mailerSend = new MailerSend({
   apiKey: process.env.MAILERSEND_API_KEY!,
 });
-const requestId = generateUUID();
-const log = createLogger('app/utils/sendemail.ts', '[logSendEmailModuleAccess], Initialize');
 const sentFrom = new Sender('Jonathan@kraus.my.id', 'Jonathan');
-export default async function logSendEmailModuleAccess() {
+export default async function logSendEmailModuleAccess(requestId?: string) {
+  const finalRequestId = requestId || generateUUID();
+  const log = createLogger('app/utils/sendemail.ts', finalRequestId);
+
   try {
     const lasttime = await db.log.findFirst({
       where: { message: { contains: 'email sent', mode: 'insensitive' } },
       orderBy: { timestamp: 'desc' },
     });
 
-    log.info(`[${requestId}] sendemail.ts Last email sent at:, ${lasttime?.timestamp}`, {
-      action: 'fetch_last_email_log',
-      timestamp: new Date().toISOString(),
+    await log.info('Last email log retrieved', {
+      lastEmailTime: lasttime?.timestamp?.toISOString(),
+      lastEmailMessage: lasttime?.message,
     });
-    console.log(`🚀 [${requestId}] sendemail.ts Last email sent at:`, lasttime?.timestamp);
-    console.log(`🚀 [${requestId}] sendemail.ts Last email message:`, lasttime?.message);
   } catch (err) {
-    console.error(`❌ ${requestId} [sendemail.ts] Error caught:`, err);
+    await log.error('Error fetching last email log', {
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 
   try {
-    console.log(`🚀 [${requestId}] sendemail.ts Starting logic`);
-    await log.info(`sendemail.ts module accessed`, {
-      action: 'fetch',
-      timestamp: new Date().toISOString(),
-    });
+    await log.info('sendemail.ts module accessed');
   } catch (err) {
-    console.error(`❌ ${requestId} [sendemail.ts] Error caught:`, err);
+    // Fallback if logging fails
+    console.warn('[sendemail] Failed to log module access:', err);
   }
 }
 // ✅ Move type and logger OUTSIDE
@@ -49,29 +46,27 @@ export type LogPayload = {
 };
 
 export async function logEvent(payload: LogPayload) {
-  const baseUrl =
-    (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
-    process.env.SITE_URL?.replace(/\/$/, '') ||
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') ||
-    'https://www.kraus.my.id';
-  log.info(`[${requestId}] sendemail.ts logEvent called`, {
-    action: 'sendemail logEvent',
-    timestamp: new Date().toISOString(),
-  });
-  const logUrl = `${baseUrl}/api/log`;
-  console.log(`✅ [sendemail] start logging to: ${logUrl} with payload:`, payload);
+  const requestId = payload.requestId || generateUUID();
+  const log = createLogger('app/utils/sendemail.ts', requestId);
 
   try {
-    await logSendEmailModuleAccess();
-
-    console.log(`[logEvent] sent to ${logUrl}`);
+    await logSendEmailModuleAccess(requestId);
+    await log.info('Log event processed', {
+      severity: payload.severity,
+      source: payload.source,
+    });
   } catch (err) {
-    console.error(`[logEvent] failed`, err);
+    await log
+      .error('Log event failed', {
+        error: err instanceof Error ? err.message : String(err),
+      })
+      .catch(() => {
+        // Fallback if logging fails
+        console.warn('[sendemail] Failed to log event:', err);
+      });
   }
 }
 
-// ✅ Now your email function can call it
-console.log('[sendemail] sendEmailDirect function defined');
 export async function sendEmailDirect(
   toEmail: string,
   toName: string,
@@ -79,6 +74,8 @@ export async function sendEmailDirect(
   subject?: string | number | Record<string, unknown>,
   message?: string | number | Record<string, unknown>
 ) {
+  const finalRequestId = requestId || generateUUID();
+  const log = createLogger('app/utils/sendemail.ts', finalRequestId);
   const recipients = [new Recipient(toEmail, toName)];
 
   let finalSubject: string;
@@ -87,13 +84,15 @@ export async function sendEmailDirect(
   } else if (typeof subject === 'number') {
     finalSubject = subject.toString();
   } else if (subject && typeof subject === 'object') {
-    // If it's an object, try to extract a meaningful subject
     finalSubject = `Weather Forecast - ${new Date().toLocaleDateString()}`;
   } else {
     finalSubject = `Mail Success Confirmation - ${toName}`;
   }
 
-  console.log(`[sendemail] sendEmailDirect triggered for ${toEmail} with requestId: ${requestId}`);
+  await log.info('Sending email', {
+    recipient: toEmail,
+    subject: finalSubject,
+  });
   const emailParams = new EmailParams()
     .setFrom(sentFrom)
     .setTo(recipients)
@@ -111,18 +110,23 @@ export async function sendEmailDirect(
   const result = await sendWithDedup({
     source: 'sendemail',
     message: `Email : ${finalSubject}`,
-    requestId,
+    requestId: finalRequestId,
     throttleMinutes: process.env.EMAIL_THROTTLE_MINUTES ? 15 : 0,
     sendFn,
   });
 
   if (result.sent) {
-    console.log('✅ Email from utils sent successfully to:', toEmail, toName);
+    await log.info('Email sent successfully', {
+      recipient: toEmail,
+      recipientName: toName,
+      subject: finalSubject,
+    });
     return true;
   }
 
-  console.log('ℹ️ Email skipped:', result.reason || 'throttled');
+  await log.info('Email skipped', {
+    reason: result.reason || 'throttled',
+    recipient: toEmail,
+  });
   return false;
 }
-// Avoid top-level side effects during build/runtime module evaluation
-// Call logSendEmailModuleAccess() explicitly from a safe place if needed
