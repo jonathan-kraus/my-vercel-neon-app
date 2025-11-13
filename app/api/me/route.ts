@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { generateUUID } from '@/uuidj';
 import { createLogger } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
+import { cookies } from 'next/headers';
 
 function parseCookies(cookieHeader: string | null) {
   const cookies: Record<string, string> = {};

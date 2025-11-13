@@ -4,12 +4,24 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '../../uuidj';
+import { count } from 'console';
 const requestId = generateUUID();
 const log = createLogger('app/auth/page.tsx', requestId);
+const countj = 1;
+useEffect(() => {
+  countj + 1;
+  document.cookie = 'name=chipsAhoy; path=/; max-age=6400';
+  log.info('[app/auth/page] AuthPage component mounted', {
+    action: 'mount',
+    countj: countj,
+    timestamp: new Date().toISOString(),
+  });
+}, []);
 
 export default function AuthPage() {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const [cookieDisplay, setCookieDisplay] = useState('');
 
   // Initialize loginAttempts from localStorage (runs only once)
   const [loginAttempts, setLoginAttempts] = useState(() => {
@@ -39,6 +51,11 @@ export default function AuthPage() {
       }
     }
   }, [loginAttempts]); // <- Re-run whenever loginAttempts changes
+
+  // useEffect: Update cookie display
+  useEffect(() => {
+    setCookieDisplay(document.cookie);
+  }, []);
   log.info('[app/auth/page] Rendering AuthPage component', {
     action: 'render',
     timestamp: new Date().toISOString(),
@@ -122,6 +139,33 @@ export default function AuthPage() {
           className="mt-2 text-xs text-red-600 hover:underline"
         >
           Reset counter
+        </button>
+      </div>
+
+      {/* Display cookies */}
+      <div className="mb-4 p-3 bg-blue-50 rounded border border-blue-200">
+        <p className="text-sm font-semibold text-blue-900 mb-2">🍪 Current Cookies:</p>
+        <p className="text-xs font-mono text-blue-700 break-all">
+          {cookieDisplay || 'No cookies set'}
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            setCookieDisplay(document.cookie);
+          }}
+          className="mt-2 text-xs text-blue-600 hover:underline"
+        >
+          Refresh
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            document.cookie = 'name=; path=/; max-age=0';
+            setCookieDisplay(document.cookie);
+          }}
+          className="mt-2 ml-3 text-xs text-red-600 hover:underline"
+        >
+          Delete 'name' cookie
         </button>
       </div>
 
