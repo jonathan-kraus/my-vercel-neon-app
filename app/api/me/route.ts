@@ -43,9 +43,9 @@ export async function GET(req: Request) {
 
   const cookieHeader = req.headers.get('cookie');
   const cookies = parseCookies(cookieHeader);
-  const val = cookies['val'];
+  const chipsAhoy = cookies['chipsAhoy'];
 
-  if (val === 'init') {
+  if (chipsAhoy === 'init') {
     await log.info('Handling GET request', {
       action: 'GET',
       timestamp: new Date().toISOString(),
