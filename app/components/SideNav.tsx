@@ -103,6 +103,7 @@ export default function SideNav() {
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const [sessionLoading, setSessionLoading] = useState<boolean>(true);
+  const [hoverCount, setHoverCount] = useState(0);
 
   // Read cookies and/or server session. Re-run on route changes and window focus.
   async function refreshSession(mountedRef: { current: boolean }) {
@@ -235,13 +236,14 @@ export default function SideNav() {
       }
     }
   }, [router]);
-  let countj = 0;
+
   useEffect(() => {
-    countj += 1;
+    setHoverCount((prev) => prev + 1);
     const log = createLogger('app/components/SideNav.tsx', 'requestId');
-    log.info(`Prefetching (hover count: ${countj})`);
-    console.log(`Prefetching (hover count: ${countj})`);
-  }, [router]);
+    log.info(`SideNav rendered (count: ${hoverCount + 1})`);
+    console.log(`SideNav rendered (count: ${hoverCount + 1})`);
+  });
+
   const handleHoverPrefetch = (href: string) => {
     try {
       (router as any).prefetch?.(href);
@@ -292,7 +294,7 @@ export default function SideNav() {
         <div className="flex-1 overflow-y-auto space-y-6">
           {/* Top section: user info + 🍎 box + cookie button */}
           <div className="space-y-4 px-2 pt-2">
-            <div className="text-sm text-yellow-400">User {countj} </div>
+            <div className="text-sm text-yellow-400">User {hoverCount} </div>
             <div className="font-medium text-yellow-300 flex items-center gap-2">
               {sessionLoading ? (
                 <>
