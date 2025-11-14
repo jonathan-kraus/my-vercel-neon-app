@@ -237,7 +237,7 @@ export default function SideNav() {
   }, [router]);
   let countj = 0;
   useEffect(() => {
-    countj++;
+    countj += 1;
     const log = createLogger('app/components/SideNav.tsx', 'requestId');
     log.info(`Prefetching (hover count: ${countj})`);
     console.log(`Prefetching (hover count: ${countj})`);
