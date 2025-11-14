@@ -237,12 +237,16 @@ export default function SideNav() {
     }
   }, [router]);
 
+  // Count renders - runs only once on mount
   useEffect(() => {
-    setHoverCount((prev) => prev + 1);
-    const log = createLogger('app/components/SideNav.tsx', 'requestId');
-    log.info(`SideNav rendered (count: ${hoverCount + 1})`);
-    console.log(`SideNav rendered (count: ${hoverCount + 1})`);
-  });
+    setHoverCount((prev) => {
+      const newCount = prev + 1;
+      const log = createLogger('app/components/SideNav.tsx', 'requestId');
+      log.info(`SideNav mounted/remounted (count: ${newCount})`);
+      console.log(`SideNav mounted/remounted (count: ${newCount})`);
+      return newCount;
+    });
+  }, []); // Empty array = only run once on mount
 
   const handleHoverPrefetch = (href: string) => {
     try {
