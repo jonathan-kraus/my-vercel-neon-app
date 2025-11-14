@@ -237,13 +237,15 @@ export default function SideNav() {
     }
   }, [router]);
 
-  // Count renders - increment ref without causing re-render
+  // Count every render - increment ref at render time (doesn't cause re-render)
+  renderCountRef.current += 1;
+
+  // Log the render count (runs on every render, but doesn't cause infinite loop)
   useEffect(() => {
-    renderCountRef.current += 1;
     const log = createLogger('app/components/SideNav.tsx', 'requestId');
-    log.info(`SideNav mounted (count: ${renderCountRef.current})`);
-    console.log(`SideNav mounted (count: ${renderCountRef.current})`);
-  }, []); // Only on mount
+    log.info(`SideNav rendered (count: ${renderCountRef.current})`);
+    console.log(`SideNav rendered (count: ${renderCountRef.current})`);
+  }); // No dependency array = runs after every render
 
   const handleHoverPrefetch = (href: string) => {
     try {
