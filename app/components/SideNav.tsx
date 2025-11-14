@@ -236,13 +236,13 @@ export default function SideNav() {
     }
   }, [router]);
   let countj = 0;
+  useEffect(() => {
+    countj++;
+    const log = createLogger('app/components/SideNav.tsx', 'requestId');
+    log.info(`Prefetching (hover count: ${countj})`);
+    console.log(`Prefetching (hover count: ${countj})`);
+  }, [router]);
   const handleHoverPrefetch = (href: string) => {
-    useEffect(() => {
-      countj++;
-      const log = createLogger('app/components/SideNav.tsx', 'requestId');
-      log.info(`Prefetching ${href} (hover count: ${countj})`);
-      console.log(`Prefetching ${href} (hover count: ${countj})`);
-    }, [href]);
     try {
       (router as any).prefetch?.(href);
     } catch {
