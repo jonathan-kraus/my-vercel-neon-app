@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { showCookieSummaryToast } from './ToastSpinner';
@@ -103,7 +103,7 @@ export default function SideNav() {
   const [expiresAt, setExpiresAt] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const [sessionLoading, setSessionLoading] = useState<boolean>(true);
-  const [hoverCount, setHoverCount] = useState(0);
+  const renderCountRef = useRef(0);
 
   // Read cookies and/or server session. Re-run on route changes and window focus.
   async function refreshSession(mountedRef: { current: boolean }) {
@@ -237,16 +237,13 @@ export default function SideNav() {
     }
   }, [router]);
 
-  // Count renders - runs only once on mount
+  // Count renders - increment ref without causing re-render
   useEffect(() => {
-    setHoverCount((prev) => {
-      const newCount = prev + 1;
-      const log = createLogger('app/components/SideNav.tsx', 'requestId');
-      log.info(`SideNav mounted/remounted (count: ${newCount})`);
-      console.log(`SideNav mounted/remounted (count: ${newCount})`);
-      return newCount;
-    });
-  }, []); // Empty array = only run once on mount
+    renderCountRef.current += 1;
+    const log = createLogger('app/components/SideNav.tsx', 'requestId');
+    log.info(`SideNav mounted (count: ${renderCountRef.current})`);
+    console.log(`SideNav mounted (count: ${renderCountRef.current})`);
+  }, []); // Only on mount
 
   const handleHoverPrefetch = (href: string) => {
     try {
@@ -298,7 +295,7 @@ export default function SideNav() {
         <div className="flex-1 overflow-y-auto space-y-6">
           {/* Top section: user info + 🍎 box + cookie button */}
           <div className="space-y-4 px-2 pt-2">
-            <div className="text-sm text-yellow-400">User {hoverCount} </div>
+            <div className="text-sm text-yellow-400">Renders: {renderCountRef.current} </div>
             <div className="font-medium text-yellow-300 flex items-center gap-2">
               {sessionLoading ? (
                 <>
