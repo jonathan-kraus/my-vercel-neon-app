@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { showCookieSummaryToast } from './ToastSpinner';
-import { generateUUID } from '@/uuidj';
+import { useRequestId } from '../contexts/RequestIdContext';
 import { createLogger } from '../utils/logger';
 
 type NavItemProps =
@@ -45,10 +45,9 @@ export function NavItem(props: NavItemProps) {
   );
 }
 
-const calllog = async () => {
+const calllog = async (requestId: string) => {
   // Skip logging during build to prevent errors
   if (process.env.NEXT_PHASE === 'phase-production-build') return;
-  const requestId = generateUUID();
   const log = createLogger('app/components/SideNav.tsx', requestId);
   try {
     await log.info('Sidenav initialized', { action: 'init', timestamp: new Date().toISOString() });
@@ -56,7 +55,6 @@ const calllog = async () => {
     console.error('Failed to log event:', error);
   }
 };
-calllog();
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(
@@ -96,6 +94,11 @@ function formatTimeLeft(ms: number) {
 }
 
 export default function SideNav() {
+  const requestId = useRequestId();
+
+  // Call initialization log with requestId
+  calllog(requestId);
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -242,7 +245,7 @@ export default function SideNav() {
 
   // Log the render count (runs on every render, but doesn't cause infinite loop)
   useEffect(() => {
-    const log = createLogger('app/components/SideNav.tsx', 'requestId');
+    const log = createLogger('app/components/SideNav.tsx', requestId);
     log.info(`SideNav rendered (count: ${renderCountRef.current})`);
     console.log(`SideNav rendered (count: ${renderCountRef.current})`);
   }); // No dependency array = runs after every render
