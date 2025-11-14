@@ -16,10 +16,14 @@ export function CompleteButton({ postId }: { postId: number }) {
       const formData = new FormData();
       formData.append('postId', postId.toString());
 
-      await completePost(formData);
+      const result = await completePost(formData);
 
-      toast.success('Follow-up marked as complete!');
-      router.refresh();
+      if (result.success) {
+        toast.success('Follow-up marked as complete!');
+        router.refresh();
+      } else {
+        toast.error(result.error);
+      }
     } catch (err) {
       console.error('Complete failed', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to complete follow-up';

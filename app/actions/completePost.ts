@@ -5,7 +5,9 @@ import { cookies } from 'next/headers';
 import { db } from '../lib/db';
 import { createLogger } from '../utils/logger';
 
-export async function completePost(formData: FormData) {
+type CompletePostResult = { success: true } | { success: false; error: string };
+
+export async function completePost(formData: FormData): Promise<CompletePostResult> {
   const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
   const log = createLogger('app/actions/completePost', requestId);
 
@@ -15,7 +17,7 @@ export async function completePost(formData: FormData) {
 
   if (!username) {
     await log.warn('Complete post rejected - unauthorized', { requestId });
-    throw new Error('Unauthorized - please sign in');
+    return { success: false, error: 'Unauthorized - please sign in' };
   }
 
   try {
@@ -23,7 +25,7 @@ export async function completePost(formData: FormData) {
     const id = Number(postId);
 
     if (!id || Number.isNaN(id)) {
-      throw new Error('Invalid post ID');
+      return { success: false, error: 'Invalid post ID' };
     }
 
     // Update the post to mark it as completed
@@ -48,11 +50,16 @@ export async function completePost(formData: FormData) {
 
     revalidatePath('/');
     revalidatePath('/follow-ups');
+
+    return { success: true };
   } catch (err) {
     await log.error('CompletePost action error', {
       error: err instanceof Error ? err.message : String(err),
       stack: err instanceof Error ? err.stack : undefined,
     });
-    throw err; // Re-throw to let the component handle the error
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : 'Failed to complete follow-up',
+    };
   }
 }
