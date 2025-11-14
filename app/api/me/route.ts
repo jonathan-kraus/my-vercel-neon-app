@@ -36,11 +36,6 @@ function decodeJwtPayload(
     return null;
   }
 }
-function getCookie(name: string): string | null {
-  const cookies = document.cookie.split('; ');
-  const cookie = cookies.find((c) => c.startsWith(name + '='));
-  return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
-}
 
 export async function GET(req: Request) {
   const requestId = generateUUID();
