@@ -51,7 +51,7 @@ export default function AuthPage() {
 
   // useEffect: Set demo cookie on mount
   useEffect(() => {
-    document.cookie = 'name=chipsAhoy; val=init; path=/; max-age=6400';
+    document.cookie = 'chipsAhoy=init; path=/; max-age=6400';
     log.info('[app/auth/page] AuthPage component mounted', {
       action: 'mount',
       timestamp: new Date().toISOString(),
@@ -162,12 +162,12 @@ export default function AuthPage() {
         <button
           type="button"
           onClick={() => {
-            document.cookie = 'name=; path=/; max-age=0';
+            document.cookie = 'chipsAhoy=; path=/; max-age=0';
             setCookieDisplay(document.cookie);
           }}
           className="mt-2 ml-3 text-xs text-red-600 hover:underline"
         >
-          Delete &apos;name&apos; cookie
+          Delete &apos;chipsAhoy&apos; cookie
         </button>
       </div>
 

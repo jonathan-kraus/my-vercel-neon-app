@@ -105,7 +105,7 @@ export async function GET(req: Request) {
       const parsed = Number(cookies['expires_at']);
       if (!Number.isNaN(parsed)) expiresAt = parsed;
     }
-    if (val === 'init') {
+    if (cookies['chipsAhoy'] === 'init') {
       await log.info('Completed GET request', {
         action: 'GET_complete',
         timestamp: new Date().toISOString(),
@@ -113,9 +113,9 @@ export async function GET(req: Request) {
     }
     const response = NextResponse.json({ username, expiresAt });
 
-    // If val was 'init', update it to 'used'
-    if (val === 'init') {
-      response.headers.set('Set-Cookie', 'val=used; path=/; max-age=6400; SameSite=Lax');
+    // If chipsAhoy was 'init', update it to 'used'
+    if (cookies['chipsAhoy'] === 'init') {
+      response.headers.set('Set-Cookie', 'chipsAhoy=used; path=/; max-age=6400; SameSite=Lax');
     }
 
     return response;
