@@ -54,11 +54,6 @@ export function MarkCompleteButton({ postId }: { postId: string }) {
 
           // Move toast outside transition
           queueMicrotask(() => toast.error(`Failed to unpublish: ${reason} (${serverRequestId})`));
-          try {
-            await log.info(`Unpublish failed 2`, { postId, status: res.status, reason });
-          } catch {
-            // non-fatal
-          }
         }
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);

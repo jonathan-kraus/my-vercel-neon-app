@@ -9,16 +9,16 @@ export async function completePost(formData: FormData) {
   const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
   const log = createLogger('app/actions/completePost', requestId);
 
+  // Check for authenticated user
+  const cookieStore = await cookies();
+  const username = cookieStore.get('username')?.value;
+
+  if (!username) {
+    await log.warn('Complete post rejected - unauthorized', { requestId });
+    throw new Error('Unauthorized - please sign in');
+  }
+
   try {
-    // Check for authenticated user
-    const cookieStore = await cookies();
-    const username = cookieStore.get('username')?.value;
-
-    if (!username) {
-      await log.warn('Complete post rejected - unauthorized', { requestId });
-      throw new Error('Unauthorized - please sign in');
-    }
-
     const postId = formData.get('postId') as string;
     const id = Number(postId);
 
@@ -49,7 +49,10 @@ export async function completePost(formData: FormData) {
     revalidatePath('/');
     revalidatePath('/follow-ups');
   } catch (err) {
-    console.error('CompletePost action error:', err);
+    await log.error('CompletePost action error', {
+      error: err instanceof Error ? err.message : String(err),
+      stack: err instanceof Error ? err.stack : undefined,
+    });
     throw err; // Re-throw to let the component handle the error
   }
 }
