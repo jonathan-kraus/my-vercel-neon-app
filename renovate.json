@@ -1,9 +1,9 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base"],
-  "enabledManagers": ["pnpm"],
+
   "packageFiles": ["**/package.json"],
-  "logLevel": "debug",
+
   "printConfig": true,
   "lockFileMaintenance": {
     "enabled": true,
