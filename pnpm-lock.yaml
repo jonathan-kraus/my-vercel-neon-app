@@ -113,7 +113,7 @@ importers:
         version: 16.2.6
       neonctl:
         specifier: ^2.17.1
-        version: 2.17.1
+        version: 2.18.0
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
@@ -1635,8 +1635,8 @@ packages:
     resolution: {integrity: sha512-HOJkrhaYsweh+W+e74Yn7YStZOilkoPb6fycpwNLKzSPtruFs48nYis0zy5yJz1+ktUhHxoRDJ27RQAWLIJVJw==}
     engines: {node: '>=16.0.0'}
 
-  default-browser-id@5.0.0:
-    resolution: {integrity: sha512-A6p/pu/6fyBcA1TRz/GqWYPViplrftcW2gZC9q79ngNCKAeR/X3gcEdXQHl4KNXV+3wgIJ1CPkJQ3IHM6lcsyA==}
+  default-browser-id@5.0.1:
+    resolution: {integrity: sha512-x1VCxdX4t+8wVfd1so/9w+vQ4vx7lKd2Qp5tDRutErwmR85OgmfX7RlLRMWafRMY7hbEiXIbudNrjOAPa/hL8Q==}
     engines: {node: '>=18'}
 
   default-browser@5.3.0:
@@ -2617,8 +2617,8 @@ packages:
     engines: {node: '>=20.19.0'}
     hasBin: true
 
-  neonctl@2.17.1:
-    resolution: {integrity: sha512-reU2qPTNzw+EfAZWlp2tyTImslK2g61uwr+8PABvLCWPKLcc51Gx/HiogytsZr91FCDaI8JBcV8xXX6KGJ6U3w==}
+  neonctl@2.18.0:
+    resolution: {integrity: sha512-uprtsSVdqh9Bz7dBqSTZfD9gT1Oe35aUPhe0EgiEVtuXV0vzyHufzUfC95S5XITLVXgCE68gAJqimAvd3Z3RkA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -2643,8 +2643,8 @@ packages:
       sass:
         optional: true
 
-  node-abi@3.84.0:
-    resolution: {integrity: sha512-gUsfGhz3l5Bb5P4Kis8qMZei4JieEYBc4QqLqerrkwipX6ltjejshLYTV3FRADECB4RGWCEWuxSf6r0tUcr5Yw==}
+  node-abi@3.85.0:
+    resolution: {integrity: sha512-zsFhmbkAzwhTft6nd3VxcG0cvJsT70rL+BIGHWVq5fi6MwGrHwzqKaxXE+Hl2GmnGItnDKPPkO5/LQqjVkIdFg==}
     engines: {node: '>=10'}
 
   node-domexception@2.0.2:
@@ -4970,12 +4970,12 @@ snapshots:
 
   deepmerge-ts@7.1.5: {}
 
-  default-browser-id@5.0.0: {}
+  default-browser-id@5.0.1: {}
 
   default-browser@5.3.0:
     dependencies:
       bundle-name: 4.1.0
-      default-browser-id: 5.0.0
+      default-browser-id: 5.0.1
 
   define-data-property@1.1.4:
     dependencies:
@@ -6086,7 +6086,7 @@ snapshots:
       execa: 9.6.0
       yoctocolors: 2.1.2
 
-  neonctl@2.17.1:
+  neonctl@2.18.0:
     dependencies:
       '@neondatabase/api-client': 2.2.0
       '@segment/analytics-node': 1.3.0
@@ -6137,7 +6137,7 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  node-abi@3.84.0:
+  node-abi@3.85.0:
     dependencies:
       semver: 7.7.3
 
@@ -6343,7 +6343,7 @@ snapshots:
       minimist: 1.2.8
       mkdirp-classic: 0.5.3
       napi-build-utils: 2.0.0
-      node-abi: 3.84.0
+      node-abi: 3.85.0
       pump: 3.0.3
       rc: 1.2.8
       simple-get: 4.0.1
