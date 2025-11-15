@@ -46,14 +46,15 @@ export async function POST(req: NextRequest) {
       const packageGroup = branch.replace('renovate/', '');
       const severity = title.includes('major') ? 'warning' : 'info';
 
-      //   log.info('dependency.update', {
-      //     source: 'renovate',
-      //     packageGroup,
-      //     branch,
-      //     title,
-      //     createdAt,
-      //     severity,
-      //   });
+      await log.info('dependency.update', {
+        source: 'renovate',
+        packageGroup,
+        branch,
+        title,
+        createdAt,
+        severity,
+        requestId,
+      });
     }
   }
 
