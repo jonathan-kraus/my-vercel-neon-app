@@ -4,6 +4,7 @@
   "enabledManagers": ["pnpm"],
   "packageFiles": ["**/package.json"],
   "logLevel": "debug",
+  "printConfig": true,
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true
