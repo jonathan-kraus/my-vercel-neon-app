@@ -1,6 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base"],
+  "enabledManagers": ["pnpm"],
+  "packageFiles": ["**/package.json"],
+  "logLevel": "debug",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true
+  },
   "packageRules": [
     {
       "matchUpdateTypes": ["patch", "minor"],
@@ -12,12 +19,5 @@
       "automerge": false,
       "labels": ["major-update", "needs-review"]
     }
-  ],
-  "lockFileMaintenance": {
-    "enabled": true,
-    "automerge": true
-  },
-  "pnpm": {
-    "enabled": true
-  }
+  ]
 }
