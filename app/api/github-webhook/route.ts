@@ -41,6 +41,35 @@ export async function POST(req: NextRequest) {
     requestId,
   });
 
+  if (event === 'check_run') {
+    const run = payload.check_run;
+    await log.info('check.run', {
+      id: run.id,
+      name: run.name,
+      status: run.status,
+      conclusion: run.conclusion,
+      startedAt: run.started_at,
+      completedAt: run.completed_at,
+      headSha: run.head_sha?.substring(0, 7),
+      externalId: run.external_id,
+      app: run.app?.name,
+      requestId,
+    });
+  }
+
+  if (event === 'check_suite') {
+    const suite = payload.check_suite;
+    await log.info('check.suite', {
+      id: suite.id,
+      status: suite.status,
+      conclusion: suite.conclusion,
+      headBranch: suite.head_branch,
+      headSha: suite.head_sha?.substring(0, 7),
+      app: suite.app?.name,
+      requestId,
+    });
+  }
+
   if (event === 'deployment_status') {
     const deployment = payload.deployment;
     const deploymentStatus = payload.deployment_status;
@@ -110,6 +139,21 @@ export async function POST(req: NextRequest) {
           requestId,
         });
       }
+    }
+  }
+
+  if (event === 'push') {
+    const commits = payload.commits || [];
+    for (const commit of commits) {
+      await log.info('commit.pushed', {
+        sha: commit.id.substring(0, 7),
+        message: commit.message,
+        author: commit.author?.name,
+        email: commit.author?.email,
+        branch: payload.ref?.replace('refs/heads/', ''),
+        pusher: payload.pusher?.name,
+        requestId,
+      });
     }
   }
 
