@@ -54,7 +54,14 @@ export async function POST(req: NextRequest) {
     return data?.commit?.message;
   }
 
-  const sha = payload.workflow_run?.head_sha || payload.check_suite?.head_sha;
+  const sha =
+    payload.after || // push events
+    payload.pull_request?.head?.sha || // PR events
+    payload.workflow_run?.head_sha || // workflow_run events
+    payload.check_suite?.head_sha || // check_suite events
+    payload.check_run?.head_sha || // check_run events
+    payload.sha; // <-- status/deployment events often put it here
+
   let description = payload.head_commit?.message || payload.pull_request?.title;
   console.log('sha candidate:', sha);
   console.log('description before fetch:', description);
