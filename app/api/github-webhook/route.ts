@@ -33,7 +33,33 @@ export async function POST(req: NextRequest) {
 
   const event = req.headers.get('x-github-event');
   const payload = JSON.parse(body);
+  async function fetchCommitMessage(sha: string) {
+    const res = await fetch(
+      `https://api.github.com/repos/jonathan-kraus/my-vercel-neon-app/commits/${sha}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+          Accept: 'application/vnd.github+json',
+        },
+      }
+    );
 
+    if (!res.ok) return undefined;
+    const data = await res.json();
+    return data?.commit?.message;
+  }
+  const sha = payload.workflow_run?.head_sha || payload.check_suite?.head_sha;
+  let description = payload.head_commit?.message || payload.pull_request?.title;
+
+  if (!description && sha) {
+    description = await fetchCommitMessage(sha);
+  }
+
+  await log.info('JKworkflow.run', {
+    sha: sha?.substring(0, 7),
+    description,
+    // ...other fields
+  });
   // Log all webhook events received
   await log.info('webhook.received', {
     event,
