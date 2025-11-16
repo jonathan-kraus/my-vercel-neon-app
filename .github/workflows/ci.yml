@@ -52,6 +52,9 @@ jobs:
       - name: Check for outdated dependencies
         run: pnpm outdated || true
 
+      - name: Security audit
+        run: pnpm audit
+
       - name: Lint
         run: pnpm lint
 
