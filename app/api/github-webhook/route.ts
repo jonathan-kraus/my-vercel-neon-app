@@ -60,6 +60,8 @@ export async function POST(req: NextRequest) {
       requestId,
     });
   }
+  console.log('event', event);
+  console.log('payload', payload);
 
   if (event === 'pull_request') {
     const pr = payload.pull_request;
