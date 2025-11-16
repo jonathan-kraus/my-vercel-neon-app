@@ -27,6 +27,7 @@ export default function LogViewerPage() {
   const [source, setSource] = useState<string>('');
   const [message, setMessage] = useState<string>('');
   const [filterRequestId, setFilterRequestId] = useState<string>('');
+  const [metadata, setMetadata] = useState<string>('');
   const [from, setFrom] = useState<string>('');
   const [to, setTo] = useState<string>('');
 
@@ -39,6 +40,7 @@ export default function LogViewerPage() {
     if (source) params.set('source', source);
     if (message) params.set('message', message);
     if (filterRequestId) params.set('requestId', filterRequestId);
+    if (metadata) params.set('metadata', metadata);
     if (from) params.set('from', from);
     if (to) params.set('to', to);
 
@@ -75,7 +77,7 @@ export default function LogViewerPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, pageSize, severity, source, message, filterRequestId, from, to]);
+  }, [page, pageSize, severity, source, message, filterRequestId, metadata, from, to]);
   useEffect(() => {
     if (!live) return;
 
@@ -141,7 +143,7 @@ export default function LogViewerPage() {
   }
 
   // Get active search terms (excluding requestId as requested)
-  const searchTerms = [severity, source, message].filter((term) => term.trim());
+  const searchTerms = [severity, source, message, metadata].filter((term) => term.trim());
 
   return (
     <div className="p-4">
@@ -172,6 +174,12 @@ export default function LogViewerPage() {
           onChange={(e) => setFilterRequestId(e.target.value)}
           className="input"
         />
+        <input
+          placeholder="metadata contains"
+          value={metadata}
+          onChange={(e) => setMetadata(e.target.value)}
+          className="input"
+        />
         <div>
           <label className="block text-sm">From</label>
           <input
@@ -200,6 +208,7 @@ export default function LogViewerPage() {
               setSource('');
               setMessage('');
               setFilterRequestId('');
+              setMetadata('');
               setFrom('');
               setTo('');
               // reset to first page; useEffect will trigger fetch
@@ -319,9 +328,15 @@ export default function LogViewerPage() {
                     )}
                   </td>
                   <td className="p-2 align-top">
-                    <pre className="whitespace-pre-wrap">
-                      {JSON.stringify(it.metadata || {}, null, 2)}
-                    </pre>
+                    <pre
+                      className="whitespace-pre-wrap"
+                      dangerouslySetInnerHTML={{
+                        __html: highlightText(
+                          JSON.stringify(it.metadata || {}, null, 2),
+                          searchTerms
+                        ),
+                      }}
+                    />
                   </td>
                 </tr>
               ))
