@@ -45,34 +45,57 @@ export async function GET(req: Request) {
     let items, total;
 
     if (metadata) {
-      // Use raw SQL for JSONB text search since Prisma doesn't support it directly
-      const metadataFilter = `%${metadata}%`;
-      items = await db.$queryRaw`
-        SELECT * FROM "Log"
-        WHERE 
-          (${severity ? `severity = ${severity}` : 'TRUE'})
-          AND (${source ? `source = ${source}` : 'TRUE'})
-          AND (${message ? `message ILIKE ${`%${message}%`}` : 'TRUE'})
-          AND (${requestIdParam ? `"requestId" = ${requestIdParam}` : 'TRUE'})
-          AND (${from ? `timestamp >= ${new Date(from)}::timestamp` : 'TRUE'})
-          AND (${to ? `timestamp <= ${new Date(to)}::timestamp` : 'TRUE'})
-          AND metadata::text ILIKE ${metadataFilter}
-        ORDER BY timestamp DESC
-        LIMIT ${pageSize}
-        OFFSET ${skip}
-      `;
+      // Build SQL query with proper parameter handling
+      let query = 'SELECT * FROM "Log" WHERE metadata::text ILIKE $1';
+      let countQuery = 'SELECT COUNT(*)::int as count FROM "Log" WHERE metadata::text ILIKE $1';
+      const queryParams: any[] = [`%${metadata}%`];
+      let paramIndex = 2;
 
-      const [countResult] = await db.$queryRaw<[{ count: bigint }]>`
-        SELECT COUNT(*)::int as count FROM "Log"
-        WHERE 
-          (${severity ? `severity = ${severity}` : 'TRUE'})
-          AND (${source ? `source = ${source}` : 'TRUE'})
-          AND (${message ? `message ILIKE ${`%${message}%`}` : 'TRUE'})
-          AND (${requestIdParam ? `"requestId" = ${requestIdParam}` : 'TRUE'})
-          AND (${from ? `timestamp >= ${new Date(from)}::timestamp` : 'TRUE'})
-          AND (${to ? `timestamp <= ${new Date(to)}::timestamp` : 'TRUE'})
-          AND metadata::text ILIKE ${metadataFilter}
-      `;
+      if (severity) {
+        query += ` AND severity = $${paramIndex}`;
+        countQuery += ` AND severity = $${paramIndex}`;
+        queryParams.push(severity);
+        paramIndex++;
+      }
+      if (source) {
+        query += ` AND source = $${paramIndex}`;
+        countQuery += ` AND source = $${paramIndex}`;
+        queryParams.push(source);
+        paramIndex++;
+      }
+      if (message) {
+        query += ` AND message ILIKE $${paramIndex}`;
+        countQuery += ` AND message ILIKE $${paramIndex}`;
+        queryParams.push(`%${message}%`);
+        paramIndex++;
+      }
+      if (requestIdParam) {
+        query += ` AND "requestId" = $${paramIndex}`;
+        countQuery += ` AND "requestId" = $${paramIndex}`;
+        queryParams.push(requestIdParam);
+        paramIndex++;
+      }
+      if (from) {
+        query += ` AND timestamp >= $${paramIndex}::timestamp`;
+        countQuery += ` AND timestamp >= $${paramIndex}::timestamp`;
+        queryParams.push(new Date(from).toISOString());
+        paramIndex++;
+      }
+      if (to) {
+        query += ` AND timestamp <= $${paramIndex}::timestamp`;
+        countQuery += ` AND timestamp <= $${paramIndex}::timestamp`;
+        queryParams.push(new Date(to).toISOString());
+        paramIndex++;
+      }
+
+      query += ` ORDER BY timestamp DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
+      queryParams.push(pageSize, skip);
+
+      items = await db.$queryRawUnsafe(query, ...queryParams);
+      const [countResult] = await db.$queryRawUnsafe<[{ count: bigint }]>(
+        countQuery,
+        ...queryParams.slice(0, paramIndex - 1)
+      );
       total = Number(countResult.count);
     } else {
       [items, total] = await Promise.all([
