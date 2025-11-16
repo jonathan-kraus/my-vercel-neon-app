@@ -44,13 +44,20 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    if (!res.ok) return undefined;
+    if (!res.ok) {
+      console.error('GitHub API error:', res.status, await res.text());
+      return undefined;
+    }
+
     const data = await res.json();
+    console.log('Commit data:', data);
     return data?.commit?.message;
   }
+
   const sha = payload.workflow_run?.head_sha || payload.check_suite?.head_sha;
   let description = payload.head_commit?.message || payload.pull_request?.title;
-
+  console.log('sha candidate:', sha);
+  console.log('description before fetch:', description);
   if (!description && sha) {
     description = await fetchCommitMessage(sha);
   }
@@ -58,6 +65,8 @@ export async function POST(req: NextRequest) {
   await log.info('JKworkflow.run', {
     sha: sha?.substring(0, 7),
     description,
+    event,
+    action: payload.action,
     // ...other fields
   });
   // Log all webhook events received
@@ -67,7 +76,7 @@ export async function POST(req: NextRequest) {
     requestId,
 
     // Full raw payload for inspection
-    raw: payload,
+    //raw: payload,
 
     // Normalized fields for dashboard consistency
     normalized: {
