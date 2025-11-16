@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
   console.log(`--- BEGIN PAYLOAD ---`);
   console.log(JSON.stringify(payload, null, 2)); // Log the entire payload object, formatted nicely
-  log.info('Payload', { payload });
+  log.info('Payload event', { payload, event });
   console.log(`--- END PAYLOAD ---\n`);
   // ------------------------------------
   async function fetchCommitMessage(sha: string) {
