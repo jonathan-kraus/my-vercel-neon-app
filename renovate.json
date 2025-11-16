@@ -13,7 +13,9 @@
     {
       "matchUpdateTypes": ["patch", "minor"],
       "automerge": true,
-      "automergeType": "branch"
+      "automergeType": "branch",
+      "deleteBranchAfterMerge": true,
+      "branchConcurrentLimit": 10
     },
     {
       "matchUpdateTypes": ["major"],
