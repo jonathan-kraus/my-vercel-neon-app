@@ -43,9 +43,9 @@ export async function GET(request: Request) {
       url: apiUrl.toString(),
       params: { from, to, limit, granularity },
     });
-
+    const apiUrl2 = new URL('https://console.neon.tech/api/v2/projects');
     // Fetch consumption history from Neon API
-    const response = await fetch(apiUrl.toString(), {
+    const response = await fetch(apiUrl2.toString(), {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${apiKey}`,
