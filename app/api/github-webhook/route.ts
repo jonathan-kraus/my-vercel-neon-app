@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
+import { getCommitMessage } from '@/app/utils/github';
 import crypto from 'crypto';
 
 async function verifySignature(req: NextRequest, body: string): Promise<boolean> {
@@ -33,6 +34,7 @@ export async function POST(req: NextRequest) {
 
   const event = req.headers.get('x-github-event');
   const payload = JSON.parse(body);
+  const description = await getCommitMessage(payload);
   async function fetchCommitMessage(sha: string) {
     const res = await fetch(
       `https://api.github.com/repos/jonathan-kraus/my-vercel-neon-app/commits/${sha}`,
@@ -62,13 +64,13 @@ export async function POST(req: NextRequest) {
     payload.check_run?.head_sha || // check_run events
     payload.sha; // <-- status/deployment events often put it here
 
-  let description = payload.head_commit?.message || payload.pull_request?.title;
+  let description2 = 'D2';
   console.log('sha candidate:', sha);
   console.log('description before fetch:', description);
   if (!description && sha) {
-    description = await fetchCommitMessage(sha);
+    description2 = await fetchCommitMessage(sha);
   }
-
+  console.log('description2 after fetch:', description2);
   await log.info('JKworkflow.run', {
     sha: sha?.substring(0, 7),
     description,
@@ -78,7 +80,7 @@ export async function POST(req: NextRequest) {
   });
   // Log all webhook events received
   await log.info('webhook.received', {
-    event,
+    event: req.headers.get('x-github-event'),
     action: payload.action,
     requestId,
 
