@@ -295,15 +295,15 @@ export async function POST(req: NextRequest) {
   if (
     event &&
     ![
-      'deployment_status',
-      'pull_request',
-      'workflow_run',
-      'workflow_job',
-      'deployment',
-      'status',
       'check_run',
       'check_suite',
+      'deployment',
+      'deployment_status',
+      'pull_request',
       'push',
+      'status',
+      'workflow_job',
+      'workflow_run',
     ].includes(event)
   ) {
     await log.info('webhook.unhandled', {
