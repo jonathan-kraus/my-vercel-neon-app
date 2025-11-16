@@ -34,7 +34,14 @@ export async function POST(req: NextRequest) {
   const event = req.headers.get('x-github-event');
   const payload = JSON.parse(body);
 
-  if (event === 'pull_request' && payload.action === 'opened') {
+  // Log all webhook events received
+  await log.info('webhook.received', {
+    event,
+    action: payload.action,
+    requestId,
+  });
+
+  if (event === 'pull_request') {
     const pr = payload.pull_request;
     const isRenovate = pr.user?.login === 'renovate[bot]';
 
@@ -42,19 +49,45 @@ export async function POST(req: NextRequest) {
       const branch = pr.head.ref;
       const title = pr.title;
       const createdAt = pr.created_at;
+      const prUrl = pr.html_url;
+      const merged = pr.merged;
 
       const packageGroup = branch.replace('renovate/', '');
       const severity = title.includes('major') ? 'warning' : 'info';
 
-      await log.info('dependency.update', {
-        source: 'renovate',
-        packageGroup,
-        branch,
-        title,
-        createdAt,
-        severity,
-        requestId,
-      });
+      if (payload.action === 'opened') {
+        await log.info('dependency.update.opened', {
+          source: 'renovate',
+          packageGroup,
+          branch,
+          title,
+          createdAt,
+          severity,
+          prUrl,
+          requestId,
+        });
+      } else if (payload.action === 'closed' && merged) {
+        await log.info('dependency.update.merged', {
+          source: 'renovate',
+          packageGroup,
+          branch,
+          title,
+          severity,
+          prUrl,
+          mergedAt: pr.merged_at,
+          requestId,
+        });
+      } else if (payload.action === 'synchronize') {
+        await log.info('dependency.update.synchronized', {
+          source: 'renovate',
+          packageGroup,
+          branch,
+          title,
+          severity,
+          prUrl,
+          requestId,
+        });
+      }
     }
   }
 

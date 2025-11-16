@@ -1,9 +1,7 @@
 // utils/db.js
-import { PrismaClient } from '@prisma/client';
+import { db } from '@/app/lib/db';
 import { createLogger } from './logger';
 import { randomUUID } from 'crypto';
-
-const prisma = new PrismaClient();
 
 export async function createLog({
   title,
@@ -23,7 +21,7 @@ export async function createLog({
   const requestId = randomUUID();
   const log = createLogger('createLog', requestId);
 
-  const post = await prisma.post.create({
+  const post = await db.post.create({
     data: {
       title,
       content,
