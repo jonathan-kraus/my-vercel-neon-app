@@ -49,7 +49,10 @@ export async function POST(req: NextRequest) {
       state: deploymentStatus.state,
       environment: deployment.environment,
       sha: deployment.sha?.substring(0, 7),
-      commitMessage: deployment.payload?.commit_message || deployment.description,
+      commitMessage:
+        deployment.payload?.commit_message ||
+        deployment.description ||
+        payload.commits?.[0]?.message,
       deploymentUrl: deploymentStatus.target_url,
       creator: deployment.creator?.login,
       pusher: deployment.payload?.pusher?.name || payload.sender?.login,
