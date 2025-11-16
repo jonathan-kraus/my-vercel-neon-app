@@ -39,8 +39,8 @@ export async function POST(req: NextRequest) {
   log.info(`Received GitHub event: ${event}`, { requestId });
 
   log.info(`--- BEGIN PAYLOAD ---`);
-  log.info(JSON.stringify(payload, null, 2)); // Log the entire payload object, formatted nicely
-  log.info('Payload event', { payload, event });
+  //log.info(JSON.stringify(payload, null, 2)); // Log the entire payload object, formatted nicely
+  //log.info('Payload event', { payload, event });
   log.info(`--- END PAYLOAD ---\n`);
   // ------------------------------------
   async function fetchCommitMessage(sha: string) {
