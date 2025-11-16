@@ -34,7 +34,11 @@ export async function POST(req: NextRequest) {
 
   const event = req.headers.get('x-github-event');
   const payload = JSON.parse(body);
-
+  // --- 👀 THIS IS THE KEY PART 👀 ---
+  console.log(`\n--- RECEIVED GITHUB EVENT: ${event} ---`);
+  console.log(JSON.stringify(payload, null, 2)); // Log the entire payload object, formatted nicely
+  console.log(`--- END PAYLOAD ---\n`);
+  // ------------------------------------
   async function fetchCommitMessage(sha: string) {
     const res = await fetch(
       `https://api.github.com/repos/jonathan-kraus/my-vercel-neon-app/commits/${sha}`,
