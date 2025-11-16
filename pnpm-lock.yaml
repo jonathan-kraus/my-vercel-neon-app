@@ -64,16 +64,16 @@ importers:
         version: 4.1.12
     devDependencies:
       '@eslint/eslintrc':
-        specifier: ^3.3.1
+        specifier: 3.3.1
         version: 3.3.1
       '@eslint/js':
-        specifier: ^9.39.1
+        specifier: 9.39.1
         version: 9.39.1
       '@tailwindcss/postcss':
-        specifier: ^4.1.17
+        specifier: 4.1.17
         version: 4.1.17
       '@types/node':
-        specifier: ^24.10.1
+        specifier: 24.10.1
         version: 24.10.1
       '@types/react':
         specifier: 19.2.5
@@ -82,40 +82,40 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(@types/react@19.2.5)
       '@typescript-eslint/eslint-plugin':
-        specifier: ^8.46.4
+        specifier: 8.46.4
         version: 8.46.4(@typescript-eslint/parser@8.46.4(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
       '@typescript-eslint/parser':
-        specifier: ^8.46.4
+        specifier: 8.46.4
         version: 8.46.4(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
       '@vitest/ui':
-        specifier: ^4.0.8
+        specifier: 4.0.9
         version: 4.0.9(vitest@4.0.9)
       autoprefixer:
-        specifier: ^10.4.22
+        specifier: 10.4.22
         version: 10.4.22(postcss@8.5.6)
       eslint:
-        specifier: ^9.39.1
+        specifier: 9.39.1
         version: 9.39.1(jiti@2.6.1)
       eslint-config-next:
         specifier: 16.0.3
         version: 16.0.3(@typescript-eslint/parser@8.46.4(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
       eslint-plugin-next:
-        specifier: ^0.0.0
+        specifier: 0.0.0
         version: 0.0.0
       eslint-plugin-react:
-        specifier: ^7.37.5
+        specifier: 7.37.5
         version: 7.37.5(eslint@9.39.1(jiti@2.6.1))
       husky:
-        specifier: ^9.1.7
+        specifier: 9.1.7
         version: 9.1.7
       lint-staged:
-        specifier: ^16.2.6
+        specifier: 16.2.6
         version: 16.2.6
       neonctl:
-        specifier: ^2.17.1
+        specifier: 2.18.0
         version: 2.18.0
       postcss:
-        specifier: ^8.5.6
+        specifier: 8.5.6
         version: 8.5.6
       prettier:
         specifier: 3.6.2
@@ -124,19 +124,19 @@ importers:
         specifier: 6.19.0
         version: 6.19.0(typescript@5.9.3)
       tailwindcss:
-        specifier: ^4.1.17
+        specifier: 4.1.17
         version: 4.1.17
       typescript:
-        specifier: ^5.9.3
+        specifier: 5.9.3
         version: 5.9.3
       uuid:
-        specifier: ^13.0.0
+        specifier: 13.0.0
         version: 13.0.0
       vite:
-        specifier: ^7.2.2
+        specifier: 7.2.2
         version: 7.2.2(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.1)
       vitest:
-        specifier: ^4.0.8
+        specifier: 4.0.9
         version: 4.0.9(@types/debug@4.1.12)(@types/node@24.10.1)(@vitest/ui@4.0.9)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.1)
 
 packages:
