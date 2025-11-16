@@ -28,10 +28,6 @@ export async function GET(req: Request) {
     if (source) where.source = source;
     if (message) where.message = { contains: message, mode: 'insensitive' };
     if (requestIdParam) where.requestId = { equals: requestIdParam };
-    if (metadata) {
-      // Search for text within the stringified metadata JSON
-      where.metadata = { string_contains: metadata };
-    }
     if (from || to) {
       where.timestamp = {};
       if (from) {
@@ -46,15 +42,49 @@ export async function GET(req: Request) {
 
     const skip = (page - 1) * pageSize;
 
-    const [items, total] = await Promise.all([
-      db.log.findMany({
-        where,
-        orderBy: { timestamp: 'desc' },
-        skip,
-        take: pageSize,
-      }),
-      db.log.count({ where }),
-    ]);
+    let items, total;
+
+    if (metadata) {
+      // Use raw SQL for JSONB text search since Prisma doesn't support it directly
+      const metadataFilter = `%${metadata}%`;
+      items = await db.$queryRaw`
+        SELECT * FROM "Log"
+        WHERE 
+          (${severity ? `severity = ${severity}` : 'TRUE'})
+          AND (${source ? `source = ${source}` : 'TRUE'})
+          AND (${message ? `message ILIKE ${`%${message}%`}` : 'TRUE'})
+          AND (${requestIdParam ? `"requestId" = ${requestIdParam}` : 'TRUE'})
+          AND (${from ? `timestamp >= ${new Date(from)}::timestamp` : 'TRUE'})
+          AND (${to ? `timestamp <= ${new Date(to)}::timestamp` : 'TRUE'})
+          AND metadata::text ILIKE ${metadataFilter}
+        ORDER BY timestamp DESC
+        LIMIT ${pageSize}
+        OFFSET ${skip}
+      `;
+
+      const [countResult] = await db.$queryRaw<[{ count: bigint }]>`
+        SELECT COUNT(*)::int as count FROM "Log"
+        WHERE 
+          (${severity ? `severity = ${severity}` : 'TRUE'})
+          AND (${source ? `source = ${source}` : 'TRUE'})
+          AND (${message ? `message ILIKE ${`%${message}%`}` : 'TRUE'})
+          AND (${requestIdParam ? `"requestId" = ${requestIdParam}` : 'TRUE'})
+          AND (${from ? `timestamp >= ${new Date(from)}::timestamp` : 'TRUE'})
+          AND (${to ? `timestamp <= ${new Date(to)}::timestamp` : 'TRUE'})
+          AND metadata::text ILIKE ${metadataFilter}
+      `;
+      total = Number(countResult.count);
+    } else {
+      [items, total] = await Promise.all([
+        db.log.findMany({
+          where,
+          orderBy: { timestamp: 'desc' },
+          skip,
+          take: pageSize,
+        }),
+        db.log.count({ where }),
+      ]);
+    }
     log.info(`[app/api/logs/search/route] Retrieved log search results ${total}`, {
       action: `fetch_logs`,
       timestamp: new Date().toISOString(),
