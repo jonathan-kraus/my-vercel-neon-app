@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
       commitMessage: deployment.payload?.commit_message || deployment.description,
       deploymentUrl: deploymentStatus.target_url,
       creator: deployment.creator?.login,
+      pusher: deployment.payload?.pusher?.name || payload.sender?.login,
       requestId,
     });
   }

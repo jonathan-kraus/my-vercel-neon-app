@@ -20,6 +20,7 @@ export async function GET(req: Request) {
     const source = params.get('source') || undefined;
     const message = params.get('message') || undefined;
     const requestIdParam = params.get('requestId') || undefined;
+    const metadata = params.get('metadata') || undefined;
     const from = params.get('from') || undefined;
     const to = params.get('to') || undefined;
     const where: any = {};
@@ -27,6 +28,10 @@ export async function GET(req: Request) {
     if (source) where.source = source;
     if (message) where.message = { contains: message, mode: 'insensitive' };
     if (requestIdParam) where.requestId = { equals: requestIdParam };
+    if (metadata) {
+      // Search for text within the stringified metadata JSON
+      where.metadata = { string_contains: metadata };
+    }
     if (from || to) {
       where.timestamp = {};
       if (from) {
