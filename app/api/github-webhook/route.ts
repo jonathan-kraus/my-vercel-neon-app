@@ -35,13 +35,13 @@ export async function POST(req: NextRequest) {
   const event = req.headers.get('x-github-event');
   const payload = JSON.parse(body);
   // --- 👀 THIS IS THE KEY PART 👀 ---
-  console.log(`\n--- RECEIVED GITHUB EVENT: ${event} ---`);
+  log.info(`\n--- RECEIVED GITHUB EVENT: ${event} ---`);
   log.info(`Received GitHub event: ${event}`, { requestId });
 
-  console.log(`--- BEGIN PAYLOAD ---`);
-  console.log(JSON.stringify(payload, null, 2)); // Log the entire payload object, formatted nicely
+  log.info(`--- BEGIN PAYLOAD ---`);
+  log.info(JSON.stringify(payload, null, 2)); // Log the entire payload object, formatted nicely
   log.info('Payload event', { payload, event });
-  console.log(`--- END PAYLOAD ---\n`);
+  log.info(`--- END PAYLOAD ---\n`);
   // ------------------------------------
   async function fetchCommitMessage(sha: string) {
     const res = await fetch(
