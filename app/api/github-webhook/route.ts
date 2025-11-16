@@ -106,5 +106,30 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  if (event === 'workflow_run') {
+    const workflow = payload.workflow_run;
+    await log.info('workflow.run', {
+      workflowName: workflow.name,
+      status: workflow.status,
+      conclusion: workflow.conclusion,
+      event: workflow.event,
+      branch: workflow.head_branch,
+      sha: workflow.head_sha?.substring(0, 7),
+      actor: workflow.actor?.login,
+      runUrl: workflow.html_url,
+      requestId,
+    });
+  }
+
+  // Log any other events we haven't specifically handled
+  if (event && !['deployment_status', 'pull_request', 'workflow_run'].includes(event)) {
+    await log.info('webhook.unhandled', {
+      event,
+      action: payload.action,
+      keys: Object.keys(payload),
+      requestId,
+    });
+  }
+
   return new Response('OK', { status: 200 });
 }
