@@ -74,6 +74,8 @@ export async function POST(req: NextRequest) {
     event,
     action: payload.action,
     requestId,
+
+    // Normalized fields for dashboard consistency
     sha: payload.after || payload.pull_request?.head?.sha || payload.workflow_run?.head_sha,
     branch:
       payload.ref?.replace('refs/heads/', '') ||
@@ -94,37 +96,14 @@ export async function POST(req: NextRequest) {
       payload.workflow_run?.conclusion ||
       payload.check_suite?.conclusion ||
       payload.check_run?.conclusion,
-    // Full raw payload for inspection
-    //raw: payload,
+    workflowName: payload.workflow_run?.name,
+    runUrl:
+      payload.workflow_run?.html_url ||
+      payload.check_run?.html_url ||
+      payload.deployment_status?.target_url,
 
-    // Normalized fields for dashboard consistency
-    normalized: {
-      sha: payload.after || payload.pull_request?.head?.sha || payload.workflow_run?.head_sha,
-      branch:
-        payload.ref?.replace('refs/heads/', '') ||
-        payload.pull_request?.head?.ref ||
-        payload.workflow_run?.head_branch,
-      actor: payload.sender?.login || payload.workflow_run?.actor?.login,
-      description:
-        payload.head_commit?.message ||
-        payload.pull_request?.title ||
-        payload.deployment?.description,
-      status:
-        payload.status ||
-        payload.workflow_run?.status ||
-        payload.check_suite?.status ||
-        payload.check_run?.status,
-      conclusion:
-        payload.conclusion ||
-        payload.workflow_run?.conclusion ||
-        payload.check_suite?.conclusion ||
-        payload.check_run?.conclusion,
-      workflowName: payload.workflow_run?.name,
-      runUrl:
-        payload.workflow_run?.html_url ||
-        payload.check_run?.html_url ||
-        payload.deployment_status?.target_url,
-    },
+    // Optional: include raw payload for debugging
+    raw: payload,
   });
 
   if (event === 'check_run') {
