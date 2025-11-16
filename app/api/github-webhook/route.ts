@@ -121,8 +121,36 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  if (event === 'deployment') {
+    const deployment = payload.deployment;
+    await log.info('deployment.created', {
+      environment: deployment.environment,
+      sha: deployment.sha?.substring(0, 7),
+      ref: deployment.ref,
+      task: deployment.task,
+      creator: deployment.creator?.login,
+      description: deployment.description,
+      requestId,
+    });
+  }
+
+  if (event === 'status') {
+    await log.info('commit.status', {
+      state: payload.state,
+      context: payload.context,
+      description: payload.description,
+      sha: payload.sha?.substring(0, 7),
+      targetUrl: payload.target_url,
+      branches: payload.branches?.map((b: any) => b.name).join(', '),
+      requestId,
+    });
+  }
+
   // Log any other events we haven't specifically handled
-  if (event && !['deployment_status', 'pull_request', 'workflow_run'].includes(event)) {
+  if (
+    event &&
+    !['deployment_status', 'pull_request', 'workflow_run', 'deployment', 'status'].includes(event)
+  ) {
     await log.info('webhook.unhandled', {
       event,
       action: payload.action,
