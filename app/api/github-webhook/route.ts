@@ -41,6 +41,21 @@ export async function POST(req: NextRequest) {
     requestId,
   });
 
+  if (event === 'deployment_status') {
+    const deployment = payload.deployment;
+    const deploymentStatus = payload.deployment_status;
+
+    await log.info('deployment.status', {
+      state: deploymentStatus.state,
+      environment: deployment.environment,
+      sha: deployment.sha?.substring(0, 7),
+      commitMessage: deployment.payload?.commit_message || deployment.description,
+      deploymentUrl: deploymentStatus.target_url,
+      creator: deployment.creator?.login,
+      requestId,
+    });
+  }
+
   if (event === 'pull_request') {
     const pr = payload.pull_request;
     const isRenovate = pr.user?.login === 'renovate[bot]';
