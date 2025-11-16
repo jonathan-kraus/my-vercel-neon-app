@@ -167,7 +167,6 @@ export async function POST(req: NextRequest) {
         deployment.payload?.commit_message ||
         deployment.description ||
         payload.commits?.[0]?.message,
-      cm: deployment.payload?.commit.message,
       deploymentUrl: deploymentStatus.target_url,
       creator: deployment.creator?.login,
       pusher: deployment.payload?.pusher?.name || payload.sender?.login,
