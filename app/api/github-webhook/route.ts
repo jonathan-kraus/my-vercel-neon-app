@@ -249,6 +249,23 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  if (event === 'workflow_job') {
+    const job = payload.workflow_job;
+    await log.info('workflow.job', {
+      jobName: job.name,
+      action: payload.action,
+      status: job.status,
+      conclusion: job.conclusion,
+      startedAt: job.started_at,
+      completedAt: job.completed_at,
+      runId: job.run_id,
+      runUrl: job.html_url,
+      runnerName: job.runner_name,
+      labels: job.labels?.join(', '),
+      requestId,
+    });
+  }
+
   if (event === 'deployment') {
     const deployment = payload.deployment;
     await log.info('deployment.created', {
@@ -277,7 +294,17 @@ export async function POST(req: NextRequest) {
   // Log any other events we haven't specifically handled
   if (
     event &&
-    !['deployment_status', 'pull_request', 'workflow_run', 'deployment', 'status'].includes(event)
+    ![
+      'deployment_status',
+      'pull_request',
+      'workflow_run',
+      'workflow_job',
+      'deployment',
+      'status',
+      'check_run',
+      'check_suite',
+      'push',
+    ].includes(event)
   ) {
     await log.info('webhook.unhandled', {
       event,
