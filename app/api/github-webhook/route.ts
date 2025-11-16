@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
-import { getCommitMessage } from '@/app/utils/github';
+import { getCommitMessage, getSha } from '@/app/utils/github';
 import crypto from 'crypto';
 
 async function verifySignature(req: NextRequest, body: string): Promise<boolean> {
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
   const event = req.headers.get('x-github-event');
   const payload = JSON.parse(body);
-  const description = await getCommitMessage(payload);
+
   async function fetchCommitMessage(sha: string) {
     const res = await fetch(
       `https://api.github.com/repos/jonathan-kraus/my-vercel-neon-app/commits/${sha}`,
@@ -56,13 +56,16 @@ export async function POST(req: NextRequest) {
     return data?.commit?.message;
   }
 
-  const sha =
+  const sha2 =
     payload.after || // push events
     payload.pull_request?.head?.sha || // PR events
     payload.workflow_run?.head_sha || // workflow_run events
     payload.check_suite?.head_sha || // check_suite events
     payload.check_run?.head_sha || // check_run events
     payload.sha; // <-- status/deployment events often put it here
+  console.log('sha2 candidate:', sha2);
+  const sha = getSha(payload);
+  const description = await getCommitMessage(payload);
 
   let description2 = 'D2';
   console.log('sha candidate:', sha);
@@ -112,7 +115,7 @@ export async function POST(req: NextRequest) {
       payload.deployment_status?.target_url,
 
     // Optional: include raw payload for debugging
-    raw: payload,
+    //raw: payload,
   });
 
   if (event === 'check_run') {
