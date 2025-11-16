@@ -273,6 +273,20 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  if (event === 'repository') {
+    const repository = payload.repository;
+    console.log('repository event payload:', repository);
+    await log.info('repository', {
+      environment: repository.environment,
+      sha: repository.sha?.substring(0, 7),
+      id: repository.id,
+      task: repository.name,
+      creator: repository.full_name,
+      description: repository.description,
+      owner_login: repository.owner?.login,
+      requestId,
+    });
+  }
   if (event === 'deployment') {
     const deployment = payload.deployment;
     await log.info('deployment.created', {
@@ -308,6 +322,7 @@ export async function POST(req: NextRequest) {
       'deployment_status',
       'pull_request',
       'push',
+      'repository',
       'status',
       'workflow_job',
       'workflow_run',
