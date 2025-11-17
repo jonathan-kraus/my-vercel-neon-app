@@ -32,11 +32,14 @@ export async function POST(req: NextRequest) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  const event = req.headers.get('x-github-event');
   const payload = JSON.parse(body);
-
   const je = req.headers.get('x-github-event');
-
+  const sha = getSha(payload);
+  const commitMessage = getCommitMessage(payload);
+  log.info('Verifying webhook signature', {
+    sha,
+    commitMessage,
+  });
   switch (je) {
     case 'check_run':
       {
