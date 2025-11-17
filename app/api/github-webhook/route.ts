@@ -120,21 +120,23 @@ export async function POST(req: NextRequest) {
       break;
     case 'deployment':
     case 'deployment_status':
-      const deploymentStatus = payload.deployment_status;
-      const deployment = payload.deployment;
-      await log.info('deployment.status', {
-        state: deploymentStatus.state,
-        environment: deployment.environment,
-        sha: deployment.sha?.substring(0, 7),
-        commitMessage:
-          deployment.payload?.commit_message ||
-          deployment.description ||
-          payload.commits?.[0]?.message,
-        deploymentUrl: deploymentStatus.target_url,
-        creator: deployment.creator?.login,
-        pusher: deployment.payload?.pusher?.name || payload.sender?.login,
-        requestId,
-      });
+      {
+        const deploymentStatus = payload.deployment_status;
+        const deployment = payload.deployment;
+        await log.info('deployment.status', {
+          state: deploymentStatus.state,
+          environment: deployment.environment,
+          sha: deployment.sha?.substring(0, 7),
+          commitMessage:
+            deployment.payload?.commit_message ||
+            deployment.description ||
+            payload.commits?.[0]?.message,
+          deploymentUrl: deploymentStatus.target_url,
+          creator: deployment.creator?.login,
+          pusher: deployment.payload?.pusher?.name || payload.sender?.login,
+          requestId,
+        });
+      }
       break;
     case 'pull_request':
     case 'push':
