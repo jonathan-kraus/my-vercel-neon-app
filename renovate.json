@@ -4,11 +4,12 @@
   "includePaths": ["**/package.json"],
   "automerge": true,
   "automergeType": "branch",
-  "branchConcurrentLimit": 10,
+  "branchConcurrentLimit": 12,
   "packageRules": [
     {
       "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true
+      "automerge": true,
+      "schedule": ["0 22 * * *"] // 5 PM EST = 10 PM UTC
     },
     {
       "matchUpdateTypes": ["major"],
