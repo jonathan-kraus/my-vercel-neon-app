@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
   switch (je) {
     case '✅ check_run ✅':
       const run = payload.check_run;
-      await log.info('check.run', {
+      await log.info('✅ check.run ✅', {
         id: run.id,
         name: run.name,
         status: run.status,
