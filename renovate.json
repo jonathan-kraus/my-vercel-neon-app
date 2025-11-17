@@ -2,11 +2,6 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:best-practices", "config:recommended"],
   "includePaths": ["**/package.json"],
-  "printConfig": true,
-  "lockFileMaintenance": {
-    "enabled": true,
-    "automerge": true
-  },
   "automerge": true,
   "automergeType": "branch",
   "branchConcurrentLimit": 10,
