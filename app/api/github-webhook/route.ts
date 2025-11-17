@@ -88,35 +88,40 @@ export async function POST(req: NextRequest) {
     // ...other fields
   });
   const je = req.headers.get('x-github-event');
-  const run = payload.check_run;
-  const suite = payload.check_suite;
+
   switch (je) {
     case 'check_run':
-      await log.info('✅ check.run ✅', {
-        id: run.id,
-        name: run.name,
-        status: run.status,
-        conclusion: run.conclusion,
-        startedAt: run.started_at,
-        completedAt: run.completed_at,
-        headSha: run.head_sha?.substring(0, 7),
-        externalId: run.external_id,
-        app: run.app?.name,
-        requestId,
-      });
+      {
+        const run = payload.check_run;
+        await log.info('✅ check.run ✅', {
+          id: run.id,
+          name: run.name,
+          status: run.status,
+          conclusion: run.conclusion,
+          startedAt: run.started_at,
+          completedAt: run.completed_at,
+          headSha: run.head_sha?.substring(0, 7),
+          externalId: run.external_id,
+          app: run.app?.name,
+          requestId,
+        });
+      }
       log.info(`Handled event: ${je}`, { requestId });
       break;
     case 'check_suite':
-      await log.info('✅ ${je} ✅', {
-        id: suite.id,
-        status: suite.status,
-        conclusion: suite.conclusion,
-        headBranch: suite.head_branch,
-        headSha: suite.head_sha?.substring(0, 7),
-        app: suite.app?.name,
-        requestId,
-      });
-
+      {
+        const suite = payload.check_suite;
+        await log.info(`✅ ${je} ✅`, {
+          id: suite.id,
+          status: suite.status,
+          conclusion: suite.conclusion,
+          headBranch: suite.head_branch,
+          headSha: suite.head_sha?.substring(0, 7),
+          app: suite.app?.name,
+          requestId,
+        });
+        log.info(`Handled event: ${je}`, { requestId });
+      }
       break;
     case 'deployment':
     case 'deployment_status':
