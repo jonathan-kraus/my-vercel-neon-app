@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
       break;
     default:
       // Log the entire payload for unhandled events
-      log.info('Unhandled event payload', { payload, requestId });
+      log.info(`❌ Unhandled event ${je}`, { payload, requestId });
   }
   // Log all webhook events received
   await log.info('webhook.received', {
