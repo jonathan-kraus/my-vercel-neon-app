@@ -111,6 +111,7 @@ export async function POST(req: NextRequest) {
         const issue = payload.issue;
         await log.info('issue.comment', {
           event: je,
+          payload: payload,
           //           action: payload.action,
           //           changes: payload.changes,
           //           issue : issue.number,
@@ -126,6 +127,7 @@ export async function POST(req: NextRequest) {
         const issue = payload.issue;
         await log.info('issue.event', {
           event: je,
+          payload: payload,
           // action: payload.action,
           // issue: issue.number,
           // title: issue.title,
