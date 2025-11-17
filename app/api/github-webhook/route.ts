@@ -91,15 +91,16 @@ export async function POST(req: NextRequest) {
   });
   const je = req.headers.get('x-github-event');
   switch (je) {
-    case 'push':
-    case 'pull_request':
-    case 'workflow_run':
     case 'check_run':
     case 'check_suite':
-    case 'deployment_status':
     case 'deployment':
-    case 'status':
+    case 'deployment_status':
+    case 'pull_request':
+    case 'push':
     case 'repository':
+    case 'status':
+    case 'workflow_job':
+    case 'workflow_run':
       log.info(`Handled event: ${je}`, { requestId });
       break;
     default:
