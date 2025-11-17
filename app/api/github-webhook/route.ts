@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
     case 'deployment':
     case 'status':
     case 'repository':
-      log.info(`Handled event: ${je}`, { payload, requestId });
+      log.info(`Handled event: ${je}`, { requestId });
       break;
     default:
       // Log the entire payload for unhandled events
