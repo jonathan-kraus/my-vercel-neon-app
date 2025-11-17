@@ -90,7 +90,23 @@ export async function POST(req: NextRequest) {
   const je = req.headers.get('x-github-event');
   switch (je) {
     case 'check_run':
+      const run = payload.check_run;
+      await log.info('check.run', {
+        id: run.id,
+        name: run.name,
+        status: run.status,
+        conclusion: run.conclusion,
+        startedAt: run.started_at,
+        completedAt: run.completed_at,
+        headSha: run.head_sha?.substring(0, 7),
+        externalId: run.external_id,
+        app: run.app?.name,
+        requestId,
+      });
+      log.info(`Handled event: ${je}`, { requestId });
+      break;
     case 'check_suite':
+      log.info(`check.suite: ${je}`, { requestId });
     case 'deployment':
     case 'deployment_status':
     case 'pull_request':
@@ -140,22 +156,6 @@ export async function POST(req: NextRequest) {
     // Optional: include raw payload for debugging
     //raw: payload,
   });
-
-  if (event === 'check_run') {
-    const run = payload.check_run;
-    await log.info('check.run', {
-      id: run.id,
-      name: run.name,
-      status: run.status,
-      conclusion: run.conclusion,
-      startedAt: run.started_at,
-      completedAt: run.completed_at,
-      headSha: run.head_sha?.substring(0, 7),
-      externalId: run.external_id,
-      app: run.app?.name,
-      requestId,
-    });
-  }
 
   if (event === 'check_suite') {
     const suite = payload.check_suite;
