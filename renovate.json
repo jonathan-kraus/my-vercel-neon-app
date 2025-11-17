@@ -9,7 +9,7 @@
     {
       "matchUpdateTypes": ["patch", "minor"],
       "automerge": true,
-      "schedule": ["0 22 * * *"] // 5 PM EST = 10 PM UTC
+      "schedule": ["after 10pm"]
     },
     {
       "matchUpdateTypes": ["major"],
