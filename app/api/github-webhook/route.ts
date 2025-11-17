@@ -105,6 +105,34 @@ export async function POST(req: NextRequest) {
         });
       }
       break;
+    case 'issue_comment':
+      {
+        const comment = payload.comment;
+        const issue = payload.issue;
+        await log.info('issue.comment', {
+          event: je,
+          //           action: payload.action,
+          //           changes: payload.changes,
+          //           issue : issue.number,
+          // {         comment: comment.id,
+          //           repository: payload.repository?.full_name,
+          //           sender: payload.sender?.login,
+          //           // requestId,
+        });
+      }
+      break;
+    case 'issues': // not sure if needed
+      {
+        const issue = payload.issue;
+        await log.info('issue.event', {
+          event: je,
+          // action: payload.action,
+          // issue: issue.number,
+          // title: issue.title,
+          // state: issue.state,
+        });
+      }
+      break;
     case 'pull_request':
       {
         const pr = payload.pull_request;
