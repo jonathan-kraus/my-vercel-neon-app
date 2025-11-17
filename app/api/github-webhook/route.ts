@@ -88,9 +88,9 @@ export async function POST(req: NextRequest) {
     // ...other fields
   });
   const je = req.headers.get('x-github-event');
+  const run = payload.check_run;
   switch (je) {
     case 'check_run':
-      const run = payload.check_run;
       await log.info('✅ check.run ✅', {
         id: run.id,
         name: run.name,
