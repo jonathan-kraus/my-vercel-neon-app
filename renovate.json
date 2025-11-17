@@ -1,23 +1,21 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:best-practices"],
-
+  "extends": ["config:best-practices", "config:recommended"],
   "includePaths": ["**/package.json"],
-
   "printConfig": true,
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true
   },
+  "automerge": true,
+  "automergeType": "branch",
+  "deleteBranchAfterMerge": true,
+  "branchConcurrentLimit": 10,
+  "schedule": ["every day"],
   "packageRules": [
     {
       "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true,
-      "automergeType": "branch",
-      "extends": ["config:base"],
-      "schedule": ["daily"],
-      "deleteBranchAfterMerge": true,
-      "branchConcurrentLimit": 10
+      "automerge": true
     },
     {
       "matchUpdateTypes": ["major"],
