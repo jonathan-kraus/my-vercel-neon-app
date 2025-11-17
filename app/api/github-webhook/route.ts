@@ -35,58 +35,6 @@ export async function POST(req: NextRequest) {
   const event = req.headers.get('x-github-event');
   const payload = JSON.parse(body);
 
-  log.info(`👀 RECEIVED GITHUB EVENT 👀 ${event} ${requestId} ---`);
-
-  //log.info(JSON.stringify(payload, null, 2)); // Log the entire payload object, formatted nicely
-  //log.info('Payload event', { payload, event });
-
-  // ------------------------------------
-  async function fetchCommitMessage(sha: string) {
-    const res = await fetch(
-      `https://api.github.com/repos/jonathan-kraus/my-vercel-neon-app/commits/${sha}`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-          Accept: 'application/vnd.github+json',
-        },
-      }
-    );
-
-    if (!res.ok) {
-      console.error('GitHub API error:', res.status, await res.text());
-      return undefined;
-    }
-
-    const data = await res.json();
-    console.log('Commit data:', data);
-    return data?.commit?.message;
-  }
-
-  const sha2 =
-    payload.after || // push events
-    payload.pull_request?.head?.sha || // PR events
-    payload.workflow_run?.head_sha || // workflow_run events
-    payload.check_suite?.head_sha || // check_suite events
-    payload.check_run?.head_sha || // check_run events
-    payload.sha; // <-- status/deployment events often put it here
-  console.log('sha2 candidate:', sha2);
-  const sha = getSha(payload);
-  const description = await getCommitMessage(payload);
-
-  let description2 = 'D2';
-  console.log('sha candidate:', sha);
-  console.log('description before fetch:', description);
-  if (!description && sha) {
-    description2 = await fetchCommitMessage(sha);
-  }
-  console.log('description2 after fetch:', description2);
-  await log.info('JKworkflow.run', {
-    sha: sha?.substring(0, 7),
-    description,
-    event,
-    action: payload.action,
-    // ...other fields
-  });
   const je = req.headers.get('x-github-event');
 
   switch (je) {
@@ -106,7 +54,6 @@ export async function POST(req: NextRequest) {
           requestId,
         });
       }
-      log.info(`Handled event: ${je}`, { requestId });
       break;
     case 'check_suite':
       {
@@ -120,7 +67,6 @@ export async function POST(req: NextRequest) {
           app: suite.app?.name,
           requestId,
         });
-        log.info(`Handled event: ${je}`, { requestId });
       }
       break;
     case 'deployment':
@@ -157,214 +103,133 @@ export async function POST(req: NextRequest) {
       }
       break;
     case 'pull_request':
-    case 'push':
-    case 'repository':
-    case 'status':
-    case 'workflow_job':
-    case 'workflow_run':
-      log.info(`Handled event: ${je}`, { requestId });
+      {
+        const pr = payload.pull_request;
+        const isRenovate = pr.user?.login === 'renovate[bot]';
+
+        if (isRenovate) {
+          const branch = pr.head.ref;
+          const title = pr.title;
+          const packageGroup = branch.replace('renovate/', '');
+          const severity = title.includes('major') ? 'warning' : 'info';
+
+          if (payload.action === 'opened') {
+            await log.info('dependency.update.opened', {
+              source: 'renovate',
+              packageGroup,
+              branch,
+              title,
+              createdAt: pr.created_at,
+              severity,
+              prUrl: pr.html_url,
+              requestId,
+            });
+          } else if (payload.action === 'closed' && pr.merged) {
+            await log.info('dependency.update.merged', {
+              source: 'renovate',
+              packageGroup,
+              branch,
+              title,
+              severity,
+              prUrl: pr.html_url,
+              mergedAt: pr.merged_at,
+              requestId,
+            });
+          } else if (payload.action === 'synchronize') {
+            await log.info('dependency.update.synchronized', {
+              source: 'renovate',
+              packageGroup,
+              branch,
+              title,
+              severity,
+              prUrl: pr.html_url,
+              requestId,
+            });
+          }
+        }
+      }
       break;
-    default:
-      // Log the entire payload for unhandled events
-      log.info(`❌ Unhandled event ${je}`, { payload, requestId });
-  }
-  // Log all webhook events received
-  await log.info('webhook.received', {
-    event: req.headers.get('x-github-event'),
-    action: payload.action,
-    requestId,
-
-    sha: payload.after || payload.pull_request?.head?.sha || payload.workflow_run?.head_sha,
-    branch:
-      payload.ref?.replace('refs/heads/', '') ||
-      payload.pull_request?.head?.ref ||
-      payload.workflow_run?.head_branch,
-    actor: payload.sender?.login || payload.workflow_run?.actor?.login,
-    description:
-      payload.head_commit?.message ||
-      payload.pull_request?.title ||
-      payload.deployment?.description,
-    status:
-      payload.status ||
-      payload.workflow_run?.status ||
-      payload.check_suite?.status ||
-      payload.check_run?.status,
-    conclusion:
-      payload.conclusion ||
-      payload.workflow_run?.conclusion ||
-      payload.check_suite?.conclusion ||
-      payload.check_run?.conclusion,
-    workflowName: payload.workflow_run?.name,
-    runUrl:
-      payload.workflow_run?.html_url ||
-      payload.check_run?.html_url ||
-      payload.deployment_status?.target_url,
-
-    // Optional: include raw payload for debugging
-    //raw: payload,
-  });
-
-  console.log('event', event);
-  console.log('payload', payload);
-
-  if (event === 'pull_request') {
-    const pr = payload.pull_request;
-    const isRenovate = pr.user?.login === 'renovate[bot]';
-
-    if (isRenovate) {
-      const branch = pr.head.ref;
-      const title = pr.title;
-      const createdAt = pr.created_at;
-      const prUrl = pr.html_url;
-      const merged = pr.merged;
-
-      const packageGroup = branch.replace('renovate/', '');
-      const severity = title.includes('major') ? 'warning' : 'info';
-
-      if (payload.action === 'opened') {
-        await log.info('dependency.update.opened', {
-          source: 'renovate',
-          packageGroup,
-          branch,
-          title,
-          createdAt,
-          severity,
-          prUrl,
-          requestId,
-        });
-      } else if (payload.action === 'closed' && merged) {
-        await log.info('dependency.update.merged', {
-          source: 'renovate',
-          packageGroup,
-          branch,
-          title,
-          severity,
-          prUrl,
-          mergedAt: pr.merged_at,
-          requestId,
-        });
-      } else if (payload.action === 'synchronize') {
-        await log.info('dependency.update.synchronized', {
-          source: 'renovate',
-          packageGroup,
-          branch,
-          title,
-          severity,
-          prUrl,
+    case 'push':
+      {
+        const commits = payload.commits || [];
+        for (const commit of commits) {
+          await log.info('commit.pushed', {
+            sha: commit.id.substring(0, 7),
+            message: commit.message,
+            author: commit.author?.name,
+            email: commit.author?.email,
+            branch: payload.ref?.replace('refs/heads/', ''),
+            pusher: payload.pusher?.name,
+            requestId,
+          });
+        }
+      }
+      break;
+    case 'repository':
+      {
+        const repository = payload.repository;
+        await log.info('repository.event', {
+          id: repository.id,
+          name: repository.name,
+          fullName: repository.full_name,
+          description: repository.description,
+          ownerLogin: repository.owner?.login,
           requestId,
         });
       }
-    }
-  }
-
-  if (event === 'push') {
-    const commits = payload.commits || [];
-    for (const commit of commits) {
-      await log.info('commit.pushed', {
-        sha: commit.id.substring(0, 7),
-        message: commit.message,
-        author: commit.author?.name,
-        email: commit.author?.email,
-        branch: payload.ref?.replace('refs/heads/', ''),
-        pusher: payload.pusher?.name,
+      break;
+    case 'status':
+      await log.info('commit.status', {
+        state: payload.state,
+        context: payload.context,
+        description: payload.description,
+        sha: payload.sha?.substring(0, 7),
+        targetUrl: payload.target_url,
+        branches: payload.branches?.map((b: any) => b.name).join(', '),
         requestId,
       });
-    }
-  }
-
-  if (event === 'workflow_run') {
-    const workflow = payload.workflow_run;
-    await log.info('workflow.run', {
-      workflowName: workflow.name,
-      status: workflow.status,
-      conclusion: workflow.conclusion,
-      event: workflow.event,
-      branch: workflow.head_branch,
-      sha: workflow.head_sha?.substring(0, 7),
-      actor: workflow.actor?.login,
-      runUrl: workflow.html_url,
-      requestId,
-    });
-  }
-
-  if (event === 'workflow_job') {
-    const job = payload.workflow_job;
-    await log.info('workflow.job', {
-      jobName: job.name,
-      action: payload.action,
-      status: job.status,
-      conclusion: job.conclusion,
-      startedAt: job.started_at,
-      completedAt: job.completed_at,
-      runId: job.run_id,
-      runUrl: job.html_url,
-      runnerName: job.runner_name,
-      labels: job.labels?.join(', '),
-      requestId,
-    });
-  }
-
-  if (event === 'repository') {
-    const repository = payload.repository;
-    log.info('repository event payload:', repository);
-    await log.info('repository', {
-      //environment: repository.environment,
-      //sha: repository.sha?.substring(0, 7),
-      id: repository.id,
-      task: repository.name,
-      creator: repository.full_name,
-      description: repository.description,
-      owner_login: repository.owner?.login,
-      requestId,
-    });
-  }
-  if (event === 'deployment') {
-    const deployment = payload.deployment;
-    await log.info('deployment.created', {
-      environment: deployment.environment,
-      sha: deployment.sha?.substring(0, 7),
-      ref: deployment.ref,
-      task: deployment.task,
-      creator: deployment.creator?.login,
-      description: deployment.description,
-      requestId,
-    });
-  }
-
-  if (event === 'status') {
-    await log.info('commit.status', {
-      state: payload.state,
-      context: payload.context,
-      description: payload.description,
-      sha: payload.sha?.substring(0, 7),
-      targetUrl: payload.target_url,
-      branches: payload.branches?.map((b: any) => b.name).join(', '),
-      requestId,
-    });
-  }
-
-  // Log any other events we haven't specifically handled
-  if (
-    event &&
-    ![
-      'check_run',
-      'check_suite',
-      'deployment',
-      'deployment_status',
-      'pull_request',
-      'push',
-      'repository',
-      'status',
-      'workflow_job',
-      'workflow_run',
-    ].includes(event)
-  ) {
-    await log.info('webhook.unhandled', {
-      event,
-      action: payload.action,
-      keys: Object.keys(payload),
-      requestId,
-    });
+      break;
+    case 'workflow_job':
+      {
+        const job = payload.workflow_job;
+        await log.info('workflow.job', {
+          jobName: job.name,
+          action: payload.action,
+          status: job.status,
+          conclusion: job.conclusion,
+          startedAt: job.started_at,
+          completedAt: job.completed_at,
+          runId: job.run_id,
+          runUrl: job.html_url,
+          runnerName: job.runner_name,
+          labels: job.labels?.join(', '),
+          requestId,
+        });
+      }
+      break;
+    case 'workflow_run':
+      {
+        const workflow = payload.workflow_run;
+        await log.info('workflow.run', {
+          workflowName: workflow.name,
+          status: workflow.status,
+          conclusion: workflow.conclusion,
+          event: workflow.event,
+          branch: workflow.head_branch,
+          sha: workflow.head_sha?.substring(0, 7),
+          actor: workflow.actor?.login,
+          runUrl: workflow.html_url,
+          requestId,
+        });
+      }
+      break;
+    default:
+      await log.info('webhook.unhandled', {
+        event: je,
+        action: payload.action,
+        keys: Object.keys(payload),
+        requestId,
+      });
   }
 
   return new Response('OK', { status: 200 });
