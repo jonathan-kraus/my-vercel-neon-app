@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
     case 'check_run':
       {
         const run = payload.check_run;
-        await log.info('✅ check.run ✅', {
+        await log.info('✅ check.run 🏃', {
           id: run.id,
           name: run.name,
           status: run.status,
@@ -124,6 +124,19 @@ export async function POST(req: NextRequest) {
       }
       break;
     case 'deployment':
+      {
+        const deployment = payload.deployment;
+        await log.info('deployment.created', {
+          environment: deployment.environment,
+          sha: deployment.sha?.substring(0, 7),
+          ref: deployment.ref,
+          task: deployment.task,
+          creator: deployment.creator?.login,
+          description: deployment.description,
+          requestId,
+        });
+      }
+      break;
     case 'deployment_status':
       {
         const deploymentStatus = payload.deployment_status;
@@ -191,24 +204,6 @@ export async function POST(req: NextRequest) {
     //raw: payload,
   });
 
-  if (event === 'deployment_status') {
-    const deployment = payload.deployment;
-    const deploymentStatus = payload.deployment_status;
-
-    await log.info('deployment.status', {
-      state: deploymentStatus.state,
-      environment: deployment.environment,
-      sha: deployment.sha?.substring(0, 7),
-      commitMessage:
-        deployment.payload?.commit_message ||
-        deployment.description ||
-        payload.commits?.[0]?.message,
-      deploymentUrl: deploymentStatus.target_url,
-      creator: deployment.creator?.login,
-      pusher: deployment.payload?.pusher?.name || payload.sender?.login,
-      requestId,
-    });
-  }
   console.log('event', event);
   console.log('payload', payload);
 
