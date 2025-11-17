@@ -9,9 +9,7 @@
   },
   "automerge": true,
   "automergeType": "branch",
-  "deleteBranchAfterMerge": true,
   "branchConcurrentLimit": 10,
-  "schedule": ["every day"],
   "packageRules": [
     {
       "matchUpdateTypes": ["patch", "minor"],
