@@ -89,13 +89,29 @@ export async function POST(req: NextRequest) {
     action: payload.action,
     // ...other fields
   });
+  const je = req.headers.get('x-github-event');
+  switch (je) {
+    case 'push':
+    case 'pull_request':
+    case 'workflow_run':
+    case 'check_run':
+    case 'check_suite':
+    case 'deployment_status':
+    case 'deployment':
+    case 'status':
+    case 'repository':
+      log.info(`Handled event: ${je}`, { payload, requestId });
+      break;
+    default:
+      // Log the entire payload for unhandled events
+      log.info('Unhandled event payload', { payload, requestId });
+  }
   // Log all webhook events received
   await log.info('webhook.received', {
     event: req.headers.get('x-github-event'),
     action: payload.action,
     requestId,
 
-    // Normalized fields for dashboard consistency
     sha: payload.after || payload.pull_request?.head?.sha || payload.workflow_run?.head_sha,
     branch:
       payload.ref?.replace('refs/heads/', '') ||
