@@ -116,8 +116,11 @@ export async function POST(req: NextRequest) {
           //           changes: payload.changes,
           issue_ID: issue.id,
           issue_url: issue.url,
-          state: payload.state,
-          title: payload.title,
+          state: issue.state,
+          title: issue.title,
+          comment_ID: comment.id,
+          comment_body: comment.body,
+          commenter: comment.user?.login,
           payload: payload,
           // {         comment: comment.id,
           //           repository: payload.repository?.full_name,
@@ -129,7 +132,7 @@ export async function POST(req: NextRequest) {
     case 'issues': // not sure if needed
       {
         const issue = payload.issue;
-        await log.info('issue.event', {
+        await log.info('issues', {
           event: je,
           payload: payload,
           // action: payload.action,
