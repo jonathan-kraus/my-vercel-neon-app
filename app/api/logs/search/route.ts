@@ -2,11 +2,11 @@ import { NextResponse } from 'next/server';
 import { createLogger } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
-const FEATURE_VERBOSE_LOGGING = process.env.NODE_ENV === 'development';
+import { isFeatureEnabled } from '@/app/utils/featureFlags';
 export async function GET(req: Request) {
   const requestId = generateUUID();
   const log = createLogger('app/api/logs/search/route', requestId);
-  if (FEATURE_VERBOSE_LOGGING) {
+  if (isFeatureEnabled('VERBOSE_LOGGING')) {
     log.info(`[app/api/logs/search/route] Initialized log search route`, {
       action: `init`,
       timestamp: new Date().toISOString(),
@@ -109,11 +109,13 @@ export async function GET(req: Request) {
         db.log.count({ where }),
       ]);
     }
-    log.info(`[app/api/logs/search/route] Retrieved log search results ${total}`, {
-      action: `fetch_logs`,
-      timestamp: new Date().toISOString(),
-      totalItems: total,
-    });
+    if (isFeatureEnabled('VERBOSE_LOGGING')) {
+      log.info(`[app/api/logs/search/route] Retrieved log search results ${total}`, {
+        action: `fetch_logs`,
+        timestamp: new Date().toISOString(),
+        totalItems: total,
+      });
+    }
     return NextResponse.json({ items, total, page, pageSize });
   } catch (err) {
     await log.error('Error in log search', { error: String(err) });
