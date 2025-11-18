@@ -111,21 +111,14 @@ export async function POST(req: NextRequest) {
         const issue = payload.issue;
         await log.info('issue.comment', {
           event: je,
-
-          //           action: payload.action,
-          //           changes: payload.changes,
+          commenter: comment.user?.login,
+          comment_body: comment.body,
+          comment_ID: comment.id,
           issue_ID: issue.id,
           issue_url: issue.url,
           state: issue.state,
           title: issue.title,
-          comment_ID: comment.id,
-          comment_body: comment.body,
-          commenter: comment.user?.login,
-          payload: payload,
-          // {         comment: comment.id,
-          //           repository: payload.repository?.full_name,
-          //           sender: payload.sender?.login,
-          //           // requestId,
+          requestId,
         });
       }
       break;
