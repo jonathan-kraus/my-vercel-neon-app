@@ -128,6 +128,9 @@ export async function POST(req: NextRequest) {
         await log.info('issues', {
           event: je,
           payload: payload,
+          state: issue.state,
+          title: issue.title,
+          requestId,
           // action: payload.action,
           // issue: issue.number,
           // title: issue.title,
