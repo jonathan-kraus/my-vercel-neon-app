@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Status Checker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for dark mode aesthetic */
+        body {
+            background-color: #1a202c;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 min-h-screen">
+    <div class="max-w-xl mx-auto bg-gray-800 p-6 sm:p-8 rounded-xl shadow-2xl">
+        <h1 class="text-3xl font-extrabold mb-4 text-white">GitHub Commit Status Lookup</h1>
+        <p class="text-gray-400 mb-6">
+            Retrieve the full status and details for a specific commit SHA from the repository: 
+            <code class="font-mono text-sm text-yellow-300">jonathan-kraus/my-vercel-neon-app</code>
+        </p>
+
+        <!-- Input Fields -->
+        <div class="space-y-4 mb-6">
+            <div>
+                <label for="pat" class="block text-sm font-medium text-gray-300 mb-1">Personal Access Token (PAT)</label>
+                <input type="password" id="pat" placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxx" 
+                       class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150 shadow-inner">
+                <p class="text-xs text-gray-500 mt-1">
+                    Your PAT is used only for this request and is not stored. It needs 'repo' or 'status' scope.
+                </p>
+            </div>
+            <div>
+                <label for="commitSha" class="block text-sm font-medium text-gray-300 mb-1">Commit SHA (e.g., d29a6efe...)</label>
+                <input type="text" id="commitSha" placeholder="Paste the full commit ID here" 
+                       class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition duration-150 shadow-inner">
+            </div>
+        </div>
+
+        <!-- Action Button -->
+        <button id="fetchStatus" 
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg shadow-lg transition duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50">
+            Fetch Commit Status
+        </button>
+
+        <!-- Status and Output Area -->
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold mb-3 text-white">Result:</h2>
+            <div id="loadingIndicator" class="hidden text-center text-blue-400">
+                <div class="animate-spin inline-block w-6 h-6 border-4 border-blue-400 border-t-transparent rounded-full"></div>
+                <p class="mt-2">Fetching data from GitHub API...</p>
+            </div>
+            
+            <pre id="output" class="bg-gray-900 p-4 rounded-lg overflow-x-auto text-sm text-green-400 border border-gray-700 whitespace-pre-wrap"></pre>
+        </div>
+    </div>
+
+    <script>
+        const REPO_OWNER = 'jonathan-kraus';
+        const REPO_NAME = 'my-vercel-neon-app';
+
+        const patInput = document.getElementById('pat');
+        const commitShaInput = document.getElementById('commitSha');
+        const fetchButton = document.getElementById('fetchStatus');
+        const outputArea = document.getElementById('output');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+
+        // Helper function for exponential backoff retry logic
+        async function fetchWithRetry(url, options, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    
+                    // If successful (2xx status), return response
+                    if (response.ok) {
+                        return response;
+                    }
+                    
+                    // If rate-limited (403), pause and retry
+                    if (response.status === 403 || response.status === 429) {
+                        const delay = Math.pow(2, i) * 1000 + (Math.random() * 1000); // 1s, 2s, 4s, plus jitter
+                        console.warn(`Rate limit encountered (Attempt ${i + 1}/${retries}). Retrying in ${Math.round(delay / 1000)}s...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    }
+
+                    // For other errors (4xx, 5xx), throw to be caught below
+                    throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+
+                } catch (error) {
+                    if (i === retries - 1) {
+                        throw error; // Throw after final attempt
+                    }
+                    const delay = Math.pow(2, i) * 1000 + (Math.random() * 1000);
+                    console.error(`Fetch failed (Attempt ${i + 1}/${retries}):`, error.message);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+        }
+
+
+        fetchButton.addEventListener('click', async () => {
+            const pat = patInput.value.trim();
+            const commitSha = commitShaInput.value.trim();
+
+            outputArea.textContent = '';
+            outputArea.classList.remove('text-red-400');
+            loadingIndicator.classList.remove('hidden');
+            fetchButton.disabled = true;
+
+            if (!pat || !commitSha) {
+                outputArea.textContent = 'Error: PAT and Commit SHA are required.';
+                outputArea.classList.add('text-red-400');
+                loadingIndicator.classList.add('hidden');
+                fetchButton.disabled = false;
+                return;
+            }
+
+            // GitHub endpoint to get the combined status for a single commit
+            const apiUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/commits/${commitSha}/status`;
+
+            const fetchOptions = {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Authorization': `Bearer ${pat}`,
+                    'X-GitHub-Api-Version': '2022-11-28'
+                }
+            };
+
+            try {
+                const response = await fetchWithRetry(apiUrl, fetchOptions);
+                const data = await response.json();
+                
+                // Check if GitHub returned an error object
+                if (data.message && response.status !== 200) {
+                    throw new Error(data.message);
+                }
+
+                // Format the output
+                const statusMessage = `STATUS: ${data.state.toUpperCase()}\n\n`;
+                const statuses = data.statuses.map(s => 
+                    `  - Context: ${s.context}\n    State: ${s.state}\n    Description: ${s.description}\n    URL: ${s.target_url || 'N/A'}`
+                ).join('\n\n');
+
+                outputArea.textContent = statusMessage + '--- Individual Statuses ---\n\n' + statuses;
+                outputArea.classList.add('text-green-400'); // Success color
+
+            } catch (error) {
+                outputArea.textContent = `Error during API request: ${error.message}. Please check your PAT, SHA, and repository name.`;
+                outputArea.classList.add('text-red-400'); // Error color
+            } finally {
+                loadingIndicator.classList.add('hidden');
+                fetchButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

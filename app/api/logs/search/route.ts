@@ -2,15 +2,16 @@ import { NextResponse } from 'next/server';
 import { createLogger } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
-
+const FEATURE_VERBOSE_LOGGING = process.env.NODE_ENV === 'development';
 export async function GET(req: Request) {
   const requestId = generateUUID();
   const log = createLogger('app/api/logs/search/route', requestId);
-  log.info(`[app/api/logs/search/route] Initialized log search route`, {
-    action: `init`,
-    timestamp: new Date().toISOString(),
-  });
-
+  if (FEATURE_VERBOSE_LOGGING) {
+    log.info(`[app/api/logs/search/route] Initialized log search route`, {
+      action: `init`,
+      timestamp: new Date().toISOString(),
+    });
+  }
   try {
     const url = new URL(req.url);
     const params = url.searchParams;
