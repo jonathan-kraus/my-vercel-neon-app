@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
+import { clearFeatureFlagsCache } from '@/app/utils/featureFlags';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,6 +29,9 @@ export async function POST(req: Request) {
       where: { name },
       data: { enabled },
     });
+
+    // Clear the cache so changes take effect immediately
+    clearFeatureFlagsCache();
 
     return NextResponse.json(updated);
   } catch (error) {

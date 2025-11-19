@@ -13,6 +13,15 @@ let lastFetch = 0;
 const CACHE_TTL = 60000; // 60 seconds
 
 /**
+ * Clear the feature flags cache (for server-side cache invalidation)
+ */
+export function clearFeatureFlagsCache(): void {
+  cachedFlags = {};
+  lastFetch = 0;
+  log.info('Feature flags cache cleared');
+}
+
+/**
  * Fetch feature flags from database with caching
  */
 async function fetchFlagsFromDB(): Promise<Record<string, boolean>> {
