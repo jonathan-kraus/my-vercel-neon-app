@@ -15,6 +15,7 @@
       "automerge": true
     },
     {
+      "matchPackagePatterns": ["*"],
       "schedule": ["* 0-4,22-23 * * 1-5", "* * * * 0,6"]
     },
     {
