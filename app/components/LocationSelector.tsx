@@ -14,8 +14,11 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
 
   useEffect(() => {
     (async () => {
+      console.log('LocationSelector: Fetching locations...');
       const locations = await getAvailableLocations();
       const active = await getActiveLocation();
+      console.log('LocationSelector: Available locations:', locations);
+      console.log('LocationSelector: Active location:', active);
       setAvailableLocations(locations);
       setActiveLocation(active);
       setLoading(false);
