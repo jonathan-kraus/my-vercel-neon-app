@@ -1,7 +1,5 @@
 import js from '@eslint/js';
 import nextConfig from 'eslint-config-next';
-import parser from '@typescript-eslint/parser';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
 
 // ESLint configuration updated to disable specific rules for problematic files
 
@@ -23,17 +21,6 @@ const config = [
   js.configs.recommended,
   {
     files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      parser,
-      parserOptions: {
-        project: './tsconfig.json',
-        sourceType: 'module',
-        ecmaVersion: 'latest',
-      },
-    },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-    },
     rules: {
       'react/react-in-jsx-scope': 'off',
       'no-unused-vars': 'off',
