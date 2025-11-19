@@ -155,10 +155,6 @@ export async function isFeatureEnabled(flag: FeatureFlag): Promise<boolean> {
       const response = await fetch('/api/feature-flags');
       if (response.ok) {
         const flags = await response.json();
-        log.info('Fetched feature flags from API');
-        {
-          flags[flag] ?? FEATURE_FLAGS[flag] ?? false;
-        }
 
         return flags[flag] ?? FEATURE_FLAGS[flag] ?? false;
       }
