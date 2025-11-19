@@ -28,6 +28,7 @@ function generateMockWeather(requestId: string, location: Location) {
     rainAccumulationMin: 0,
     rainAccumulationSum: Math.random() * 0.2,
     location: location.displayName,
+    locationName: location.displayName, // Add for components
     locationDetails: {
       city: location.displayName.split(',')[0],
       town: undefined,
@@ -170,6 +171,7 @@ export async function fetchWeather(requestId?: string, location?: Location) {
     rainAccumulationMin: values.rainAccumulationMin ?? 0,
     rainAccumulationSum: values.rainAccumulationSum ?? 0,
     location: location2 ?? 'Unknown',
+    locationName: locationToUse.displayName, // Add displayName for components
     locationDetails, // Add detailed location info
     emailSent: false, // No automatic email
     lastEmailTimestamp: null, // No automatic email
