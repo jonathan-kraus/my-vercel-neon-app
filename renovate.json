@@ -22,6 +22,11 @@
       "matchUpdateTypes": ["major"],
       "automerge": false,
       "labels": ["major-update", "needs-review"]
+    },
+    {
+      "matchPackageNames": ["prisma", "@prisma/client"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
     }
   ]
 }
