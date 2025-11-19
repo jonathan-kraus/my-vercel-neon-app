@@ -44,8 +44,8 @@ describe('Neon API routes', () => {
   it('limits returns max/active/total connections and utilization', async () => {
     // Prepare sequential returns: first for pg_settings, second for pg_stat_activity
     const { db } = await import('@/app/lib/db');
-    db.$queryRaw.mockImplementationOnce(async () => [{ setting: '120' }]);
-    db.$queryRaw.mockImplementationOnce(async () => [{ active: 6, total: 8 }]);
+    (db.$queryRaw as any).mockImplementationOnce(async () => [{ setting: '120' }]);
+    (db.$queryRaw as any).mockImplementationOnce(async () => [{ active: 6, total: 8 }]);
 
     const req = new Request('http://localhost/api/neon/limits');
     const res = await limitsGET(req as any);
@@ -58,7 +58,7 @@ describe('Neon API routes', () => {
 
   it('health returns ok and latencyMs', async () => {
     const { db } = await import('@/app/lib/db');
-    db.$queryRaw.mockImplementationOnce(async () => [1]);
+    (db.$queryRaw as any).mockImplementationOnce(async () => [1]);
     const req = new Request('http://localhost/api/neon/health');
     const res = await healthGET(req as any);
     const data = await res.json();
@@ -70,7 +70,7 @@ describe('Neon API routes', () => {
   it('slow-queries returns pg_stat_statements results when available', async () => {
     const stmtRows = [{ query: 'SELECT 1', calls: 10, total_time: 100, mean_time: 10 }];
     const { db } = await import('@/app/lib/db');
-    db.$queryRaw.mockImplementationOnce(async () => stmtRows);
+    (db.$queryRaw as any).mockImplementationOnce(async () => stmtRows);
     const req = new Request('http://localhost/api/neon/slow-queries');
     const res = await slowGET(req as any);
     const data = await res.json();
@@ -94,7 +94,7 @@ describe('Neon API routes', () => {
   it('explain returns plan for SELECT queries', async () => {
     // mock $queryRawUnsafe to return rows that include plan text
     const { db } = await import('@/app/lib/db');
-    db.$queryRawUnsafe.mockImplementationOnce(async () => [
+    (db.$queryRawUnsafe as any).mockImplementationOnce(async () => [
       { plan: 'Plan line 1' },
       { plan: 'Plan line 2' },
     ]);

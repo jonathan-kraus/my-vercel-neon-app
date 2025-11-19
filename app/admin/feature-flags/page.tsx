@@ -31,7 +31,7 @@ export default function FeatureFlagsPage() {
       setFlags(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
-      log.error('Failed to fetch feature flags', { error: String(err) });
+      log.error('😡 Failed to fetch feature flags', { error: String(err) });
     } finally {
       setLoading(false);
     }

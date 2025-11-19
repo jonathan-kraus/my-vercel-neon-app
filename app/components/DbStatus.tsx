@@ -67,6 +67,11 @@ type ConsumptionData = {
 
 console.log('[DbStatus] DbStatus component loaded');
 
+// Framer-motion typing: create simple any-typed aliases for motion.div
+// so we can freely pass HTML attributes like `className` without complex generics.
+const MDiv = motion.div as unknown as any;
+const MPanel = motion.div as unknown as any;
+
 function RegionBadge({ region }: { region: string }) {
   return (
     <span className="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded">
@@ -668,7 +673,7 @@ export default function DbStatus() {
           <h2 className="text-xl font-bold mt-6 pt-6 border-t border-gray-300">Slow Queries</h2>
           <div className="space-y-2">
             {slowQueries.map((q: any, idx: number) => (
-              <motion.div
+              <MDiv
                 key={idx}
                 initial={{ opacity: 0, y: -6 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -746,7 +751,7 @@ export default function DbStatus() {
                   {(explainPlans[idx] && explainPlans[idx].length > 0) ||
                   explainLoading[idx] ||
                   explainErrors[idx] ? (
-                    <motion.div
+                    <MPanel
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
@@ -762,10 +767,10 @@ export default function DbStatus() {
                           {explainPlans[idx].join('\n')}
                         </pre>
                       )}
-                    </motion.div>
+                    </MPanel>
                   ) : null}
                 </AnimatePresence>
-              </motion.div>
+              </MDiv>
             ))}
           </div>
         </>
