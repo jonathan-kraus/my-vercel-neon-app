@@ -58,7 +58,10 @@ export async function POST(request: Request) {
       await createLogger('app/api/neon/explain/route.ts', requestId).error('Explain failed', {
         error: String(error),
       });
-    } catch {}
+    } catch (logErr) {
+      // If logging fails, surface to server console for diagnostics
+      console.warn('Failed to log explain error', logErr);
+    }
     return NextResponse.json({ error: 'Explain failed', details: String(error) }, { status: 500 });
   }
 }

@@ -20,7 +20,9 @@ export async function GET(request: Request) {
   } catch (error) {
     try {
       await log.error('Neon health check failed', { error: String(error) });
-    } catch {}
+    } catch (logErr) {
+      console.warn('Failed to log health check error', logErr);
+    }
     return NextResponse.json({ ok: false, error: String(error) }, { status: 500 });
   }
 }

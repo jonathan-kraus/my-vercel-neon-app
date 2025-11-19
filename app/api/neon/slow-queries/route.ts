@@ -22,6 +22,12 @@ export async function GET(request: Request) {
       await log.info('Fetched slow queries from pg_stat_statements', { count: rows.length });
       return NextResponse.json({ source: 'pg_stat_statements', queries: rows });
     } catch (err) {
+      // If pg_stat_statements is not available or fails, log and fallback to pg_stat_activity
+      try {
+        await log.warn('pg_stat_statements not available', { error: String(err) });
+      } catch (logErr) {
+        console.warn('Failed to log pg_stat_statements error', logErr);
+      }
       // Fallback to pg_stat_activity to show long running queries
       const rows: Array<{ pid: number; duration_ms: number; state: string; query: string }> =
         await db.$queryRaw`
@@ -39,7 +45,9 @@ export async function GET(request: Request) {
   } catch (error) {
     try {
       await log.error('Failed to fetch slow queries', { error: String(error) });
-    } catch {}
+    } catch (logErr) {
+      console.warn('Failed to log slow queries error', logErr);
+    }
     return NextResponse.json({ error: 'Failed to fetch slow queries' }, { status: 500 });
   }
 }

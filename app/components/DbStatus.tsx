@@ -724,6 +724,14 @@ export default function DbStatus() {
                             await log.current.info('Slow query copied', { neonRequestId, idx });
                           } catch (err) {
                             toast.error('Copy failed');
+                            try {
+                              await log.current.error('Failed to copy slow query', {
+                                neonRequestId,
+                                error: String(err),
+                              });
+                            } catch (logErr) {
+                              console.warn('Failed to log copy error', logErr);
+                            }
                           }
                         }}
                         className="px-2 py-1 rounded text-sm bg-gray-200"

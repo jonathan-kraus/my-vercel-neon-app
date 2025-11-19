@@ -37,7 +37,9 @@ export async function GET(request: Request) {
   } catch (error) {
     try {
       await log.error('Failed to fetch neon limits', { error: String(error) });
-    } catch {}
+    } catch (logErr) {
+      console.warn('Failed to log neon limits error', logErr);
+    }
     return NextResponse.json({ error: 'Failed to fetch neon limits' }, { status: 500 });
   }
 }

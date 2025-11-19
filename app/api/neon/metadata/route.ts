@@ -30,8 +30,13 @@ export async function GET(request: Request) {
           // assume first part is branch
           result.branch = hostParts[0];
         }
-      } catch (err) {
+      } catch (e) {
         result.host = 'Unable to parse DATABASE_URL';
+        try {
+          await log.warn('Failed to parse DATABASE_URL', { error: String(e) });
+        } catch (logErr) {
+          console.warn('Failed to log parse error', logErr);
+        }
       }
     }
 
@@ -43,7 +48,9 @@ export async function GET(request: Request) {
       await createLogger('app/api/neon/metadata/route.ts', requestId).error('Failed', {
         error: String(error),
       });
-    } catch {}
+    } catch (logErr) {
+      console.warn('Failed to log metadata error', logErr);
+    }
     return NextResponse.json({ error: 'Failed to fetch neon metadata' }, { status: 500 });
   }
 }
