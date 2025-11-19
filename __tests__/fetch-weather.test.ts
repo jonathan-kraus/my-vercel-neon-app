@@ -231,6 +231,7 @@ describe('fetchWeather', () => {
         rainAccumulationMin: 0,
         rainAccumulationSum: 0.2,
         location: expect.any(Object),
+        locationName: 'King of Prussia, PA',
         locationDetails: expect.any(Object),
         emailSent: false,
         lastEmailTimestamp: null,
