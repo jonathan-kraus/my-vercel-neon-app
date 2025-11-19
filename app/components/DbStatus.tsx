@@ -253,15 +253,17 @@ export default function DbStatus() {
 
   // Auto-send once after status loads (only in browser, not during build)
   useEffect(() => {
-    if (
-      status &&
-      !emailSentRef.current &&
-      typeof window !== 'undefined' &&
-      isFeatureEnabled('EMAIL_NOTIFICATIONS')
-    ) {
-      emailSentRef.current = true;
-      sendStatusEmail();
-    }
+    (async () => {
+      if (
+        status &&
+        !emailSentRef.current &&
+        typeof window !== 'undefined' &&
+        (await isFeatureEnabled('EMAIL_NOTIFICATIONS'))
+      ) {
+        emailSentRef.current = true;
+        sendStatusEmail();
+      }
+    })();
   }, [status, sendStatusEmail]);
 
   if (!status) return <p>Loading DB status...</p>;

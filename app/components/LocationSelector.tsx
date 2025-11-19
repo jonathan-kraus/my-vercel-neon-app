@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getAvailableLocations, getActiveLocation, Location } from '@/app/utils/locations';
 
 interface LocationSelectorProps {
@@ -8,8 +8,19 @@ interface LocationSelectorProps {
 }
 
 export default function LocationSelector({ onLocationChange }: LocationSelectorProps) {
-  const [availableLocations] = useState<Location[]>(() => getAvailableLocations());
-  const [activeLocation, setActiveLocation] = useState<Location | null>(() => getActiveLocation());
+  const [availableLocations, setAvailableLocations] = useState<Location[]>([]);
+  const [activeLocation, setActiveLocation] = useState<Location | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const locations = await getAvailableLocations();
+      const active = await getActiveLocation();
+      setAvailableLocations(locations);
+      setActiveLocation(active);
+      setLoading(false);
+    })();
+  }, []);
 
   const handleLocationSelect = (location: Location) => {
     setActiveLocation(location);
@@ -17,6 +28,10 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
     // In a real app, this would update user preferences or feature flags
     console.log(`Location changed to: ${location.displayName}`);
   };
+
+  if (loading) {
+    return <div className="mb-4 text-sm text-gray-600">Loading locations...</div>;
+  }
 
   if (availableLocations.length <= 1) {
     // Show a message if no locations are available but we have a fallback

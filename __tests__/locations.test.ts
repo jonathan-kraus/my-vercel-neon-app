@@ -20,12 +20,12 @@ describe('Location Utilities', () => {
   });
 
   describe('getAvailableLocations', () => {
-    it('returns only locations with enabled feature flags', () => {
+    it('returns only locations with enabled feature flags', async () => {
       vi.mocked(isFeatureEnabled).mockImplementation((flag: string) => {
-        return flag === 'LOCATION_KOP' || flag === 'LOCATION_NEW_YORK';
+        return Promise.resolve(flag === 'LOCATION_KOP' || flag === 'LOCATION_NEW_YORK');
       });
 
-      const available = getAvailableLocations();
+      const available = await getAvailableLocations();
 
       expect(available).toHaveLength(2);
       expect(available).toContainEqual(LOCATIONS.kop);
@@ -33,18 +33,18 @@ describe('Location Utilities', () => {
       expect(available).not.toContainEqual(LOCATIONS.sanFrancisco);
     });
 
-    it('returns empty array when no locations are enabled', () => {
-      vi.mocked(isFeatureEnabled).mockReturnValue(false);
+    it('returns empty array when no locations are enabled', async () => {
+      vi.mocked(isFeatureEnabled).mockResolvedValue(false);
 
-      const available = getAvailableLocations();
+      const available = await getAvailableLocations();
 
       expect(available).toHaveLength(0);
     });
 
-    it('returns all locations when all flags are enabled', () => {
-      vi.mocked(isFeatureEnabled).mockReturnValue(true);
+    it('returns all locations when all flags are enabled', async () => {
+      vi.mocked(isFeatureEnabled).mockResolvedValue(true);
 
-      const available = getAvailableLocations();
+      const available = await getAvailableLocations();
 
       expect(available).toHaveLength(5); // kop, newYork, sanFrancisco, brookline, williamstown
       expect(available).toContainEqual(LOCATIONS.kop);
@@ -56,26 +56,28 @@ describe('Location Utilities', () => {
   });
 
   describe('getActiveLocation', () => {
-    it('returns first available location when locations are enabled', () => {
-      vi.mocked(isFeatureEnabled).mockImplementation((flag: string) => flag === 'LOCATION_KOP');
+    it('returns first available location when locations are enabled', async () => {
+      vi.mocked(isFeatureEnabled).mockImplementation((flag: string) =>
+        Promise.resolve(flag === 'LOCATION_KOP')
+      );
 
-      const active = getActiveLocation();
-
-      expect(active).toEqual(LOCATIONS.kop);
-    });
-
-    it('returns King of Prussia as fallback when no locations are enabled', () => {
-      vi.mocked(isFeatureEnabled).mockReturnValue(false);
-
-      const active = getActiveLocation();
+      const active = await getActiveLocation();
 
       expect(active).toEqual(LOCATIONS.kop);
     });
 
-    it('returns first location in priority order', () => {
-      vi.mocked(isFeatureEnabled).mockReturnValue(true);
+    it('returns King of Prussia as fallback when no locations are enabled', async () => {
+      vi.mocked(isFeatureEnabled).mockResolvedValue(false);
 
-      const active = getActiveLocation();
+      const active = await getActiveLocation();
+
+      expect(active).toEqual(LOCATIONS.kop);
+    });
+
+    it('returns first location in priority order', async () => {
+      vi.mocked(isFeatureEnabled).mockResolvedValue(true);
+
+      const active = await getActiveLocation();
 
       // Should return the first location (kop) since all are enabled
       expect(active).toEqual(LOCATIONS.kop);

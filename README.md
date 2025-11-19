@@ -166,92 +166,88 @@ If you want these dev tools documented further (or prefer the dev updater to req
 
 ## Feature Flags
 
-This project uses a dual feature flag system that works differently on the client vs server:
+This project uses a database-backed feature flag system that works seamlessly on both client and server:
 
 ### How it works
 
-- **Server-side (API routes, server components)**: Feature flags are controlled by environment variables in your `.env` file
-- **Client-side (React components with `'use client'`)**: Feature flags can be overridden in the browser using localStorage, falling back to environment variables
+- **Database-backed**: All feature flags are stored in the `FeatureFlag` table with a 60-second server-side cache
+- **No redeploy needed**: Toggle flags instantly via the admin UI at `/admin/feature-flags`
+- **Client and server**: Both environments read from the same database source
+- **Environment variable fallback**: If database is unavailable, falls back to `FEATURE_*` env vars
 
-### Available flags
+### Managing flags
 
-All flags are defined in `app/utils/featureFlags.ts`:
+Visit `/admin/feature-flags` to:
 
-**Weather features**
+- View all feature flags grouped by category
+- Toggle flags on/off with instant effect
+- See flag descriptions and last update time
 
-- `WEATHER_AUTO_REFRESH` — Auto-refresh weather data
-- `WEATHER_LOCATION_DISPLAY` — Show location names on weather cards
-- `WEATHER_MOCK_DATA` — Use mock weather data instead of API calls
+Changes take effect immediately:
 
-**Location features**
-
-- `LOCATION_KOP` — Enable King of Prussia location
-- `LOCATION_NEW_YORK` — Enable New York location (default: true)
-- `LOCATION_SAN_FRANCISCO` — Enable San Francisco location
-- `LOCATION_BROOKLINE` — Enable Brookline location
-- `LOCATION_WILLIAMSTOWN` — Enable Williamstown location
-
-**Logging features**
-
-- `VERBOSE_LOGGING` — Enable detailed debug logs
-- `LOG_REQUEST_TRACING` — Enable request ID tracing
-
-**Admin features**
-
-- `ADMIN_TOOLS` — Enable admin tools UI
-- `ADVANCED_ANALYTICS` — Enable advanced analytics features
-
-**Email features**
-
-- `EMAIL_NOTIFICATIONS` — Enable email notifications
-- `EMAIL_TEMPLATES` — Enable email template system
-
-**UI features**
-
-- `DARK_MODE` — Enable dark mode
-- `NEW_UI_COMPONENTS` — Enable experimental UI components
-
-**Performance features**
-
-- `CACHING` — Enable caching
-- `LAZY_LOADING` — Enable lazy loading
-
-### Setting flags in .env
-
-Add to your `.env` file (set to `'true'` to enable):
-
-```bash
-# Enable verbose logging for development
-FEATURE_VERBOSE_LOGGING=true
-
-# Enable request tracing
-FEATURE_LOG_REQUEST_TRACING=true
-
-# Enable New York location
-FEATURE_LOCATION_NEW_YORK=true
-```
-
-**Important**: Restart your dev server after changing `.env` for server-side code to pick up changes.
+- Server routes pick up changes within 60 seconds (cache TTL)
+- Client components get updates on next page load or fetch
 
 ### Using flags in code
 
-Import and use the `isFeatureEnabled()` function:
+**Server-side (API routes, server components):**
 
 ```typescript
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
-// Server-side (API routes, server components)
-// Reads from process.env only
-if (isFeatureEnabled('VERBOSE_LOGGING')) {
+// Synchronous - uses cached database values
+if (await isFeatureEnabled('VERBOSE_LOGGING')) {
   log.info('Detailed debug information');
 }
+```
 
-// Client-side (React components)
-// Checks localStorage first, then falls back to env vars
-if (isFeatureEnabled('DARK_MODE')) {
+**Client-side (React components):**
+
+```typescript
+import { isFeatureEnabled } from '@/app/utils/featureFlags';
+
+// Fetches from /api/feature-flags
+if (await isFeatureEnabled('DARK_MODE')) {
   return <DarkModeUI />;
 }
 ```
+
+### Database schema
+
+```prisma
+model FeatureFlag {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  enabled     Boolean  @default(false)
+  description String?
+  category    String?
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+}
+```
+
+### Adding new flags
+
+1. Add to database via seed script `prisma/seed-feature-flags.ts`
+2. Run: `npx tsx prisma/seed-feature-flags.ts`
+3. Update TypeScript types in `app/utils/featureFlags.ts`
+
+### Environment variable fallback
+
+If the database is unavailable, the system falls back to environment variables:
+
+```bash
+FEATURE_VERBOSE_LOGGING=true
+FEATURE_LOG_REQUEST_TRACING=true
+FEATURE_LOCATION_NEW_YORK=true
+```
+
+This provides a safety net during database outages or for local development without seeding.
+if (isFeatureEnabled('DARK_MODE')) {
+return <DarkModeUI />;
+}
+
+````
 
 ### Browser localStorage overrides (client-side only)
 
@@ -270,7 +266,7 @@ setFeatureFlagOverride('DARK_MODE', false);
 // Clear all overrides
 import { clearFeatureFlagOverrides } from '@/app/utils/featureFlags';
 clearFeatureFlagOverrides();
-```
+````
 
 **Note**: localStorage overrides only affect client-side code. Server-side API routes and server components always read from environment variables.
 

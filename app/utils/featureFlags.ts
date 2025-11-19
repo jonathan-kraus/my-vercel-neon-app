@@ -1,8 +1,42 @@
 // utils/featureFlags.ts
+import { db } from '@/app/lib/db';
+
 const FEATURE_FLAG_STORAGE_KEY = 'feature-flag-overrides';
 
+// Cache for database flags (server-side only)
+let cachedFlags: Record<string, boolean> = {};
+let lastFetch = 0;
+const CACHE_TTL = 60000; // 60 seconds
+
 /**
- * Get feature flag overrides from localStorage
+ * Fetch feature flags from database with caching
+ */
+async function fetchFlagsFromDB(): Promise<Record<string, boolean>> {
+  const now = Date.now();
+
+  // Return cached flags if still fresh
+  if (now - lastFetch < CACHE_TTL && Object.keys(cachedFlags).length > 0) {
+    return cachedFlags;
+  }
+
+  try {
+    const flags = await db.featureFlag.findMany({
+      select: { name: true, enabled: true },
+    });
+
+    cachedFlags = flags.reduce((acc, f) => ({ ...acc, [f.name]: f.enabled }), {});
+    lastFetch = now;
+
+    return cachedFlags;
+  } catch (error) {
+    console.error('Failed to fetch feature flags from database:', error);
+    // Return cached flags even if stale, or empty object
+    return cachedFlags;
+  }
+}
+
+/**
+ * Get feature flag overrides from localStorage (client-side only)
  */
 function getFeatureFlagOverrides(): Record<string, boolean> {
   if (typeof window === 'undefined') return {};
@@ -16,9 +50,9 @@ function getFeatureFlagOverrides(): Record<string, boolean> {
 }
 
 /**
- * Set a feature flag override in localStorage
+ * Set a feature flag override in localStorage (client-side only)
  */
-export function setFeatureFlagOverride(flag: FeatureFlag, enabled: boolean): void {
+export function setFeatureFlagOverride(flag: string, enabled: boolean): void {
   if (typeof window === 'undefined') return;
 
   try {
@@ -31,7 +65,7 @@ export function setFeatureFlagOverride(flag: FeatureFlag, enabled: boolean): voi
 }
 
 /**
- * Clear all feature flag overrides
+ * Clear all feature flag overrides from localStorage
  */
 export function clearFeatureFlagOverrides(): void {
   if (typeof window === 'undefined') return;
@@ -42,6 +76,11 @@ export function clearFeatureFlagOverrides(): void {
     console.warn('Failed to clear feature flag overrides:', error);
   }
 }
+
+/**
+ * Environment variable fallback (legacy support)
+ * @deprecated - Now using database-backed flags
+ */
 export const FEATURE_FLAGS = {
   // Weather features
   WEATHER_AUTO_REFRESH: process.env.FEATURE_WEATHER_AUTO_REFRESH === 'true',
@@ -80,8 +119,49 @@ export type FeatureFlag = keyof typeof FEATURE_FLAGS;
 
 /**
  * Check if a feature flag is enabled
+ * - Client-side: checks localStorage overrides first, then fetches from DB via API
+ * - Server-side: fetches from database with 60-second cache
  */
-export function isFeatureEnabled(flag: FeatureFlag): boolean {
+export async function isFeatureEnabled(flag: FeatureFlag): Promise<boolean> {
+  // Client-side: check localStorage overrides first
+  if (typeof window !== 'undefined') {
+    const overrides = getFeatureFlagOverrides();
+    if (flag in overrides) {
+      return overrides[flag];
+    }
+
+    // Fetch from API (which will query the database)
+    try {
+      const response = await fetch('/api/feature-flags');
+      if (response.ok) {
+        const flags = await response.json();
+        return flags[flag] ?? FEATURE_FLAGS[flag] ?? false;
+      }
+    } catch (error) {
+      console.warn('Failed to fetch feature flags from API:', error);
+    }
+
+    // Fall back to environment variables
+    return FEATURE_FLAGS[flag] ?? false;
+  }
+
+  // Server-side: fetch from database with caching
+  try {
+    const dbFlags = await fetchFlagsFromDB();
+    return dbFlags[flag] ?? FEATURE_FLAGS[flag] ?? false;
+  } catch (error) {
+    console.error('Failed to check feature flag:', error);
+    // Fall back to environment variables
+    return FEATURE_FLAGS[flag] ?? false;
+  }
+}
+
+/**
+ * Synchronous version for backward compatibility
+ * Only works with localStorage overrides or environment variables
+ * @deprecated - Use async isFeatureEnabled() for database-backed flags
+ */
+export function isFeatureEnabledSync(flag: FeatureFlag): boolean {
   // Check localStorage overrides first (client-side only)
   if (typeof window !== 'undefined') {
     const overrides = getFeatureFlagOverrides();
@@ -95,16 +175,24 @@ export function isFeatureEnabled(flag: FeatureFlag): boolean {
 }
 
 /**
- * Get all enabled feature flags
+ * Get all enabled feature flags (synchronous, uses cache or env vars)
  */
 export function getEnabledFeatures(): FeatureFlag[] {
+  // Server-side: use cached DB flags if available
+  if (typeof window === 'undefined' && Object.keys(cachedFlags).length > 0) {
+    return Object.entries(cachedFlags)
+      .filter(([_, enabled]) => enabled)
+      .map(([name]) => name as FeatureFlag);
+  }
+
+  // Fall back to environment variables
   return Object.keys(FEATURE_FLAGS).filter(
     (flag) => FEATURE_FLAGS[flag as FeatureFlag]
   ) as FeatureFlag[];
 }
 
 /**
- * Get all feature flags with their status
+ * Get all feature flags with their status (synchronous)
  */
 export function getAllFeatureFlags() {
   return FEATURE_FLAGS;

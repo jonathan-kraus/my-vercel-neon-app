@@ -56,3 +56,13 @@ model Log {
   metadata  Json?
   timestamp DateTime @default(now())
 }
+
+model FeatureFlag {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  enabled     Boolean  @default(false)
+  description String?
+  category    String?  // e.g., "weather", "logging", "admin", "email", "ui", "performance", "location"
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+}

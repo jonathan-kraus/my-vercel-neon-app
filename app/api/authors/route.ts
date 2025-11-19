@@ -27,7 +27,7 @@ export async function GET(req: Request) {
       subject: 'Authors Route Page Clicked',
       requestId: requestId,
     };
-    if (isFeatureEnabled('EMAIL_NOTIFICATIONS')) {
+    if (await isFeatureEnabled('EMAIL_NOTIFICATIONS')) {
       const { success, message } = await sendConfirmationEmail(emailData);
       if (success) {
         await log.info('Email sent successfully', { message });

@@ -51,7 +51,7 @@ const calllog = async (requestId: string) => {
   if (process.env.NEXT_PHASE === 'phase-production-build') return;
   const log = createLogger('app/components/SideNav.tsx', requestId);
   try {
-    if (isFeatureEnabled('VERBOSE_LOGGING')) {
+    if (await isFeatureEnabled('VERBOSE_LOGGING')) {
       await log.info('Sidenav initialized', {
         action: 'init',
         timestamp: new Date().toISOString(),
@@ -252,10 +252,12 @@ export default function SideNav() {
   // Log the render count (runs on every render, but doesn't cause infinite loop)
   useEffect(() => {
     const log = createLogger('app/components/SideNav.tsx', requestId);
-    if (isFeatureEnabled('VERBOSE_LOGGING')) {
-      log.info(`SideNav rendered (count: ${renderCountRef.current})`);
-      console.log(`SideNav rendered (count: ${renderCountRef.current})`);
-    }
+    (async () => {
+      if (await isFeatureEnabled('VERBOSE_LOGGING')) {
+        log.info(`SideNav rendered (count: ${renderCountRef.current})`);
+        console.log(`SideNav rendered (count: ${renderCountRef.current})`);
+      }
+    })();
   }); // No dependency array = runs after every render
 
   const handleHoverPrefetch = (href: string) => {

@@ -50,15 +50,21 @@ export const LOCATIONS: Record<string, Location> = {
 /**
  * Get all available locations
  */
-export function getAvailableLocations(): Location[] {
-  return Object.values(LOCATIONS).filter((location) => isFeatureEnabled(location.flag as any));
+export async function getAvailableLocations(): Promise<Location[]> {
+  const locations = await Promise.all(
+    Object.values(LOCATIONS).map(async (location) => ({
+      location,
+      enabled: await isFeatureEnabled(location.flag as any),
+    }))
+  );
+  return locations.filter(({ enabled }) => enabled).map(({ location }) => location);
 }
 
 /**
  * Get the currently active location (first enabled one, or default to King of Prussia)
  */
-export function getActiveLocation(): Location {
-  const available = getAvailableLocations();
+export async function getActiveLocation(): Promise<Location> {
+  const available = await getAvailableLocations();
   return available.length > 0 ? available[0] : LOCATIONS.kop;
 }
 

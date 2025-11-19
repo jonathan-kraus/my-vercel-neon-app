@@ -7,7 +7,7 @@ import { isFeatureEnabled } from '@/app/utils/featureFlags';
 export async function GET(req: Request) {
   const requestId = generateUUID();
   const log = createLogger('app/api/logs/search/route', requestId);
-  if (isFeatureEnabled('VERBOSE_LOGGING')) {
+  if (await isFeatureEnabled('VERBOSE_LOGGING')) {
     log.info(`[app/api/logs/search/route] Initialized log search route`, {
       action: `init`,
       timestamp: new Date().toISOString(),
@@ -110,7 +110,7 @@ export async function GET(req: Request) {
         db.log.count({ where }),
       ]);
     }
-    if (isFeatureEnabled('VERBOSE_LOGGING')) {
+    if (await isFeatureEnabled('VERBOSE_LOGGING')) {
       log.info(`[app/api/logs/search/route] Retrieved log search results ${total}`, {
         action: `fetch_logs`,
         timestamp: new Date().toISOString(),

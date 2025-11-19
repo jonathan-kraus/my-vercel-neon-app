@@ -28,7 +28,15 @@ export default function WeatherPage() {
   const [requestId] = useState(() => generateUUID());
   const log = createLogger('JKapp/admin/weather/page.tsx', requestId);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(getActiveLocation());
-  const useNewUI = isFeatureEnabled('NEW_UI_COMPONENTS');
+  const [useNewUI, setUseNewUI] = useState(false);
+
+  // Fetch feature flag
+  useEffect(() => {
+    (async () => {
+      const enabled = await isFeatureEnabled('NEW_UI_COMPONENTS');
+      setUseNewUI(enabled);
+    })();
+  }, []);
 
   const onLog = useCallback(
     async (severity: 'info' | 'error', message: string, metadata?: Record<string, any>) => {

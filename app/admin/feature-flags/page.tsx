@@ -1,149 +1,196 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
-import {
-  FEATURE_FLAGS,
-  FeatureFlag,
-  isFeatureEnabled,
-  setFeatureFlagOverride,
-  clearFeatureFlagOverrides,
-} from '@/app/utils/featureFlags';
+
 const requestId = generateUUID();
 const log = createLogger('app/admin/feature-flags/page.tsx', requestId);
 
+type FeatureFlag = {
+  id: number;
+  name: string;
+  enabled: boolean;
+  description: string | null;
+  category: string | null;
+  updatedAt: Date;
+  createdAt: Date;
+};
+
 export default function FeatureFlagsPage() {
-  const [featureStates, setFeatureStates] = useState<Record<FeatureFlag, boolean>>(() => {
-    // Initialize with current values
-    const states: Record<FeatureFlag, boolean> = {} as Record<FeatureFlag, boolean>;
-    Object.keys(FEATURE_FLAGS).forEach((flag) => {
-      states[flag as FeatureFlag] = isFeatureEnabled(flag as FeatureFlag);
-    });
-    return states;
-  });
+  const [flags, setFlags] = useState<FeatureFlag[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  log.info('FeatureFlagsPage rendered', { featureStates });
-  const enabledCount = Object.values(featureStates).filter(Boolean).length;
-
-  const toggleFlag = (flag: FeatureFlag) => {
-    const newValue = !featureStates[flag];
-    setFeatureFlagOverride(flag, newValue);
-    setFeatureStates((prev) => ({
-      ...prev,
-      [flag]: newValue,
-    }));
+  const fetchFlags = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/feature-flags');
+      if (!response.ok) throw new Error('Failed to fetch feature flags');
+      const data = await response.json();
+      setFlags(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      log.error('Failed to fetch feature flags', { error: String(err) });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const resetToDefaults = () => {
-    clearFeatureFlagOverrides();
-    // Reset to environment variable defaults
-    const defaultStates: Record<FeatureFlag, boolean> = {} as Record<FeatureFlag, boolean>;
-    Object.keys(FEATURE_FLAGS).forEach((flag) => {
-      defaultStates[flag as FeatureFlag] = FEATURE_FLAGS[flag as FeatureFlag];
-    });
-    setFeatureStates(defaultStates);
+  useEffect(() => {
+    fetchFlags();
+  }, []);
+
+  const toggleFlag = async (name: string, currentValue: boolean) => {
+    try {
+      const response = await fetch('/api/admin/feature-flags', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, enabled: !currentValue }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update feature flag');
+
+      // Optimistically update UI
+      setFlags((prev) => prev.map((f) => (f.name === name ? { ...f, enabled: !currentValue } : f)));
+
+      log.info('Feature flag toggled', { name, enabled: !currentValue });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      log.error('Failed to toggle feature flag', { error: String(err) });
+    }
   };
+
+  const enabledCount = flags.filter((f) => f.enabled).length;
+
+  // Group flags by category
+  const groupedFlags = flags.reduce(
+    (acc, flag) => {
+      const category = flag.category || 'other';
+      if (!acc[category]) acc[category] = [];
+      acc[category].push(flag);
+      return acc;
+    },
+    {} as Record<string, FeatureFlag[]>
+  );
+
+  if (loading) {
+    return (
+      <div className="p-6 max-w-6xl mx-auto">
+        <div className="flex items-center gap-2">
+          <svg
+            className="animate-spin h-5 w-5 text-gray-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
+          </svg>
+          <span>Loading feature flags...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 max-w-6xl mx-auto">
+        <div className="bg-red-50 border border-red-200 rounded p-4">
+          <h2 className="text-red-800 font-semibold mb-2">Error</h2>
+          <p className="text-red-600">{error}</p>
+          <button
+            onClick={() => fetchFlags()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 max-w-6xl mx-auto">
       <div className="mb-6">
         <h1 className="text-3xl font-bold mb-2">Feature Flags</h1>
         <p className="text-gray-600">
           Control application features without code deployments. Currently {enabledCount} of{' '}
-          {Object.keys(FEATURE_FLAGS).length} features are enabled.
+          {flags.length} features are enabled. Changes take effect immediately across all server and
+          client components.
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {Object.entries(featureStates).map(([flag, enabled]) => (
-          <div key={flag} className="border rounded-lg p-4 bg-white shadow-sm">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-lg">{flag.replace(/_/g, ' ')}</h3>
-              <button
-                onClick={() => toggleFlag(flag as FeatureFlag)}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                  enabled
-                    ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                }`}
+      {Object.entries(groupedFlags).map(([category, categoryFlags]) => (
+        <div key={category} className="mb-8">
+          <h2 className="text-xl font-semibold mb-4 capitalize">{category} Features</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {categoryFlags.map((flag) => (
+              <div
+                key={flag.id}
+                className="border rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow"
               >
-                {enabled ? 'Enabled' : 'Disabled'}
-              </button>
-            </div>
-            <p className="text-sm text-gray-600 mb-3">{getFlagDescription(flag as FeatureFlag)}</p>
-            <div className="text-xs text-gray-500">
-              Environment variable: <code className="bg-gray-100 px-1 rounded">FEATURE_{flag}</code>
-              {FEATURE_FLAGS[flag as FeatureFlag] !== enabled && (
-                <span className="ml-2 text-orange-600">(overridden)</span>
-              )}
-            </div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-semibold text-sm">{flag.name.replace(/_/g, ' ')}</h3>
+                  <button
+                    onClick={() => toggleFlag(flag.name, flag.enabled)}
+                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                      flag.enabled
+                        ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    {flag.enabled ? 'Enabled' : 'Disabled'}
+                  </button>
+                </div>
+                {flag.description && (
+                  <p className="text-sm text-gray-600 mb-2">{flag.description}</p>
+                )}
+                <div className="text-xs text-gray-500">
+                  <div>Updated: {new Date(flag.updatedAt).toLocaleString()}</div>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
 
       <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">Feature Flag Management</h2>
-          <button
-            onClick={resetToDefaults}
-            className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 text-sm"
-          >
-            Reset to Defaults
-          </button>
-        </div>
+        <h2 className="font-semibold mb-4">How Feature Flags Work</h2>
         <div className="text-sm space-y-2">
           <p>
-            <strong>How it works:</strong> Feature flags are stored in localStorage and override
-            environment variables. Changes persist across page reloads but are reset when you clear
-            browser data.
+            <strong>Database-backed:</strong> All feature flags are now stored in the database with
+            a 60-second cache. Changes are immediately reflected across all instances without
+            requiring a redeploy.
           </p>
           <p>
-            <strong>In your code:</strong>
+            <strong>Server-side usage (async):</strong>
           </p>
           <pre className="bg-white p-2 rounded text-xs overflow-x-auto">
             {`import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
-if (isFeatureEnabled('WEATHER_AUTO_REFRESH')) {
-  // Enable auto-refresh logic
-  log.info('Auto-refresh is enabled', featureStates);
+// API routes and server components
+if (await isFeatureEnabled('VERBOSE_LOGGING')) {
+  log.info('Detailed logging enabled');
 }`}
           </pre>
           <p>
-            <strong>Environment variables (for production):</strong>
+            <strong>Client-side usage:</strong> The client fetches flags from{' '}
+            <code>/api/feature-flags</code> with automatic caching.
           </p>
-          <pre className="bg-white p-2 rounded text-xs">
-            {`FEATURE_WEATHER_AUTO_REFRESH=true
-FEATURE_VERBOSE_LOGGING=false
-FEATURE_ADMIN_TOOLS=true`}
-          </pre>
         </div>
       </div>
     </div>
   );
-}
-
-function getFlagDescription(flag: FeatureFlag): string {
-  const descriptions: Record<FeatureFlag, string> = {
-    WEATHER_AUTO_REFRESH: 'Automatically refresh weather data every few minutes',
-    WEATHER_LOCATION_DISPLAY: 'Show detailed location information with weather data',
-    WEATHER_MOCK_DATA:
-      'Use mock weather data instead of API calls (for development/testing). Note: Enable at least one location flag to see weather.',
-    LOCATION_KOP: 'Enable King of Prussia as an available weather location',
-    LOCATION_NEW_YORK: 'Enable New York City as an available weather location',
-    LOCATION_SAN_FRANCISCO: 'Enable San Francisco as an available weather location',
-    LOCATION_BROOKLINE: 'Enable Brookline as an available weather location :)',
-    LOCATION_WILLIAMSTOWN: 'Enable Williamstown, MA as an available weather location',
-    VERBOSE_LOGGING: 'Enable detailed logging for debugging and monitoring',
-    LOG_REQUEST_TRACING: 'Add request IDs to all log entries for better tracing',
-    ADMIN_TOOLS: 'Enable advanced administrative features and tools',
-    ADVANCED_ANALYTICS: 'Show detailed analytics and performance metrics',
-    EMAIL_NOTIFICATIONS: 'Send email notifications for important events',
-    EMAIL_TEMPLATES: 'Use enhanced email templates with better styling',
-    DARK_MODE: 'Enable dark mode theme for the application',
-    NEW_UI_COMPONENTS: 'Use new experimental UI components',
-    CACHING: 'Enable aggressive caching for better performance',
-    LAZY_LOADING: 'Load components and data lazily for faster initial page loads',
-  };
-  return descriptions[flag] || 'No description available';
 }

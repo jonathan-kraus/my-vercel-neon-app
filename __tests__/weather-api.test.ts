@@ -37,7 +37,7 @@ describe('getDailyForecast', () => {
 
   describe('Mock Data Mode', () => {
     beforeEach(() => {
-      vi.mocked(isFeatureEnabled).mockReturnValue(true); // WEATHER_MOCK_DATA enabled
+      vi.mocked(isFeatureEnabled).mockResolvedValue(true); // WEATHER_MOCK_DATA enabled
     });
 
     it('returns mock forecast data when WEATHER_MOCK_DATA is enabled', async () => {
@@ -77,7 +77,7 @@ describe('getDailyForecast', () => {
 
   describe('Real API Mode', () => {
     beforeEach(() => {
-      vi.mocked(isFeatureEnabled).mockReturnValue(false); // WEATHER_MOCK_DATA disabled
+      vi.mocked(isFeatureEnabled).mockResolvedValue(false); // WEATHER_MOCK_DATA disabled
     });
 
     it('throws error when TOMORROW_API_KEY is not set', async () => {
@@ -193,7 +193,7 @@ describe('getDailyForecast', () => {
 
   describe('Location Parameter', () => {
     beforeEach(() => {
-      vi.mocked(isFeatureEnabled).mockReturnValue(false); // Real API mode
+      vi.mocked(isFeatureEnabled).mockResolvedValue(false); // Real API mode
     });
 
     it('accepts and uses location parameter', async () => {

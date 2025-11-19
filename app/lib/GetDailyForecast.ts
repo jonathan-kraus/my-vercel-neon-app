@@ -104,7 +104,7 @@ export async function getDailyForecast(
   if (!requestId) requestId = generateUUID();
   const log = createLogger('app/lib/GetDailyForecast.ts', requestId);
 
-  const useMockData = isFeatureEnabled('WEATHER_MOCK_DATA');
+  const useMockData = await isFeatureEnabled('WEATHER_MOCK_DATA');
 
   await log.info('getDailyForecast started', {
     useMockData,

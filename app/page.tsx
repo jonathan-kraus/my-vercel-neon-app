@@ -49,7 +49,7 @@ export default async function Home() {
   const requestId = generateUUID();
   const log = createLogger('app/page', requestId);
 
-  if (isFeatureEnabled('VERBOSE_LOGGING')) {
+  if (await isFeatureEnabled('VERBOSE_LOGGING')) {
     log.info('Home page rendering started', { action: 'page_load' });
   }
   const posts = await db.post.findMany({
@@ -64,7 +64,7 @@ export default async function Home() {
     include: { author: true },
     orderBy: { followUpDate: 'asc' },
   });
-  if (followUpPosts.length > 0 && isFeatureEnabled('VERBOSE_LOGGING')) {
+  if (followUpPosts.length > 0 && (await isFeatureEnabled('VERBOSE_LOGGING'))) {
     log.info('[app/page] Follow-up posts detected', { followUpCount: followUpPosts.length });
   }
   log.info('[app/page] Posts fetched from database', { postCount: posts.length });
