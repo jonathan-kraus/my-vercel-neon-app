@@ -1,5 +1,9 @@
 // utils/featureFlags.ts
 import { db } from '@/app/lib/db';
+import { createLogger } from './logger';
+import { generateUUID } from '@/uuidj';
+
+const log = createLogger('app/utils/featureFlags.ts', generateUUID());
 
 const FEATURE_FLAG_STORAGE_KEY = 'feature-flag-overrides';
 
@@ -135,6 +139,11 @@ export async function isFeatureEnabled(flag: FeatureFlag): Promise<boolean> {
       const response = await fetch('/api/feature-flags');
       if (response.ok) {
         const flags = await response.json();
+        log.info('Fetched feature flags from API');
+        {
+          flags[flag] ?? FEATURE_FLAGS[flag] ?? false;
+        }
+
         return flags[flag] ?? FEATURE_FLAGS[flag] ?? false;
       }
     } catch (error) {
