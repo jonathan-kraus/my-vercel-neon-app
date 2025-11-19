@@ -1,37 +1,12 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/app/lib/db';
+import { getAllFeatureFlagsFromDB } from '@/app/utils/featureFlags';
 
 export const dynamic = 'force-dynamic';
 
-// Cache for server-side requests
-let cachedFlags: Record<string, boolean> = {};
-let lastFetch = 0;
-const CACHE_TTL = 60000; // 60 seconds
-
 export async function GET() {
   try {
-    const now = Date.now();
-
-    // Return cached flags if still fresh
-    if (now - lastFetch < CACHE_TTL && Object.keys(cachedFlags).length > 0) {
-      return NextResponse.json(cachedFlags);
-    }
-
-    // Fetch from database
-    const flags = await db.featureFlag.findMany({
-      select: { name: true, enabled: true },
-    });
-
-    cachedFlags = flags.reduce(
-      (acc: Record<string, boolean>, f: { name: string; enabled: boolean }) => ({
-        ...acc,
-        [f.name]: f.enabled,
-      }),
-      {}
-    );
-    lastFetch = now;
-
-    return NextResponse.json(cachedFlags);
+    const flags = await getAllFeatureFlagsFromDB();
+    return NextResponse.json(flags);
   } catch (error) {
     console.error('Failed to fetch feature flags:', error);
     return NextResponse.json({ error: 'Failed to fetch feature flags' }, { status: 500 });
@@ -46,14 +21,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
     }
 
+    const { db } = await import('@/app/lib/db');
+    const { clearFeatureFlagsCache } = await import('@/app/utils/featureFlags');
+
     const updated = await db.featureFlag.update({
       where: { name },
       data: { enabled },
     });
 
-    // Clear cache
-    cachedFlags = {};
-    lastFetch = 0;
+    // Clear the shared cache
+    clearFeatureFlagsCache();
 
     return NextResponse.json(updated);
   } catch (error) {

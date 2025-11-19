@@ -49,6 +49,13 @@ async function fetchFlagsFromDB(): Promise<Record<string, boolean>> {
 }
 
 /**
+ * Get all feature flags from database (for API routes)
+ */
+export async function getAllFeatureFlagsFromDB(): Promise<Record<string, boolean>> {
+  return fetchFlagsFromDB();
+}
+
+/**
  * Get feature flag overrides from localStorage (client-side only)
  */
 function getFeatureFlagOverrides(): Record<string, boolean> {
