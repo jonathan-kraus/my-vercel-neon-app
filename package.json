@@ -51,7 +51,7 @@
     "eslint-plugin-react": "7.37.5",
     "husky": "9.1.7",
     "lint-staged": "16.2.6",
-    "neonctl": "2.18.0",
+    "neonctl": "2.18.1",
     "postcss": "8.5.6",
     "prettier": "3.6.2",
     "prisma": "6.19.0",
