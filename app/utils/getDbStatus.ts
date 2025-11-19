@@ -5,6 +5,27 @@ import { createLogger } from './logger';
 import { generateUUID } from '@/uuidj';
 const prisma = db; // For clarity in this file
 
+/**
+ * Extract AWS region from Neon database host
+ * Example: ep-twilight-sunset-adx2o0ca-pooler.c-2.us-east-1.aws.neon.tech -> us-east-1
+ */
+function extractRegionFromDbHost(): string {
+  try {
+    if (!process.env.DATABASE_URL) return 'Unknown';
+    const url = new URL(process.env.DATABASE_URL);
+    const host = url.hostname;
+
+    // Match pattern like ".us-east-1.aws.neon.tech" or ".eu-west-1.aws.neon.tech"
+    const regionMatch = host.match(/\.(us|eu|ap|ca|sa|me|af)-([a-z]+)-(\d+)\.aws\.neon\.tech$/);
+    if (regionMatch) {
+      return `${regionMatch[1]}-${regionMatch[2]}-${regionMatch[3]}`;
+    }
+    return 'Unknown';
+  } catch {
+    return 'Unknown';
+  }
+}
+
 async function getLastDatabaseActivity() {
   try {
     // Check current active connections
@@ -85,11 +106,14 @@ export async function getDbStatus(requestId?: string) {
   ]);
   const latencyMs = Date.now() - start;
 
+  const region = extractRegionFromDbHost();
+
   await log.info('Database status retrieved', {
     latencyMs,
     postCount,
     logCount,
     activeConnections: lastActivity.activeConnections,
+    region,
   });
   return {
     version: (version as { version: string }[])[0].version,
@@ -100,5 +124,6 @@ export async function getDbStatus(requestId?: string) {
     logCount,
     latencyMs,
     lastActivity,
+    region,
   };
 }

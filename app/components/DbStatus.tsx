@@ -89,7 +89,7 @@ export default function DbStatus() {
     message: string;
   }>({ type: null, message: '' });
 
-  const region = process.env.NEXT_PUBLIC_DB_REGION || 'Unknown';
+  const region = status?.region || 'Unknown';
 
   console.log(`🔍 DbStatus using requestId: ${requestId}`);
 
