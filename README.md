@@ -163,3 +163,121 @@ Security notes and optional hardening
 - Consider adding an ESLint rule to disallow top-level Prisma writes in `app/` files. If you'd like, I can add an example ESLint configuration that flags `await` or `prisma` usage in module scope.
 
 If you want these dev tools documented further (or prefer the dev updater to require a token), tell me which option you prefer and I will update the README and implement the guard.
+
+## Feature Flags
+
+This project uses a dual feature flag system that works differently on the client vs server:
+
+### How it works
+
+- **Server-side (API routes, server components)**: Feature flags are controlled by environment variables in your `.env` file
+- **Client-side (React components with `'use client'`)**: Feature flags can be overridden in the browser using localStorage, falling back to environment variables
+
+### Available flags
+
+All flags are defined in `app/utils/featureFlags.ts`:
+
+**Weather features**
+
+- `WEATHER_AUTO_REFRESH` — Auto-refresh weather data
+- `WEATHER_LOCATION_DISPLAY` — Show location names on weather cards
+- `WEATHER_MOCK_DATA` — Use mock weather data instead of API calls
+
+**Location features**
+
+- `LOCATION_KOP` — Enable King of Prussia location
+- `LOCATION_NEW_YORK` — Enable New York location (default: true)
+- `LOCATION_SAN_FRANCISCO` — Enable San Francisco location
+- `LOCATION_BROOKLINE` — Enable Brookline location
+- `LOCATION_WILLIAMSTOWN` — Enable Williamstown location
+
+**Logging features**
+
+- `VERBOSE_LOGGING` — Enable detailed debug logs
+- `LOG_REQUEST_TRACING` — Enable request ID tracing
+
+**Admin features**
+
+- `ADMIN_TOOLS` — Enable admin tools UI
+- `ADVANCED_ANALYTICS` — Enable advanced analytics features
+
+**Email features**
+
+- `EMAIL_NOTIFICATIONS` — Enable email notifications
+- `EMAIL_TEMPLATES` — Enable email template system
+
+**UI features**
+
+- `DARK_MODE` — Enable dark mode
+- `NEW_UI_COMPONENTS` — Enable experimental UI components
+
+**Performance features**
+
+- `CACHING` — Enable caching
+- `LAZY_LOADING` — Enable lazy loading
+
+### Setting flags in .env
+
+Add to your `.env` file (set to `'true'` to enable):
+
+```bash
+# Enable verbose logging for development
+FEATURE_VERBOSE_LOGGING=true
+
+# Enable request tracing
+FEATURE_LOG_REQUEST_TRACING=true
+
+# Enable New York location
+FEATURE_LOCATION_NEW_YORK=true
+```
+
+**Important**: Restart your dev server after changing `.env` for server-side code to pick up changes.
+
+### Using flags in code
+
+Import and use the `isFeatureEnabled()` function:
+
+```typescript
+import { isFeatureEnabled } from '@/app/utils/featureFlags';
+
+// Server-side (API routes, server components)
+// Reads from process.env only
+if (isFeatureEnabled('VERBOSE_LOGGING')) {
+  log.info('Detailed debug information');
+}
+
+// Client-side (React components)
+// Checks localStorage first, then falls back to env vars
+if (isFeatureEnabled('DARK_MODE')) {
+  return <DarkModeUI />;
+}
+```
+
+### Browser localStorage overrides (client-side only)
+
+You can override flags in the browser console without restarting the server:
+
+```javascript
+// In browser console
+import { setFeatureFlagOverride } from '@/app/utils/featureFlags';
+
+// Enable a flag
+setFeatureFlagOverride('VERBOSE_LOGGING', true);
+
+// Disable a flag
+setFeatureFlagOverride('DARK_MODE', false);
+
+// Clear all overrides
+import { clearFeatureFlagOverrides } from '@/app/utils/featureFlags';
+clearFeatureFlagOverrides();
+```
+
+**Note**: localStorage overrides only affect client-side code. Server-side API routes and server components always read from environment variables.
+
+### Feature flag UI
+
+Visit `/admin/feature-flags` to view and toggle feature flags in the browser.
+
+```
+
+```

@@ -3,6 +3,7 @@ import { createLogger } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
+
 export async function GET(req: Request) {
   const requestId = generateUUID();
   const log = createLogger('app/api/logs/search/route', requestId);

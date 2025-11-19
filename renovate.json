@@ -4,12 +4,18 @@
   "includePaths": ["**/package.json"],
   "automerge": true,
   "automergeType": "branch",
+  "dependencyDashboard": true,
+  "dependencyDashboardAutoclose": true,
   "branchConcurrentLimit": 12,
+  "timezone": "America/New_York",
   "packageRules": [
     {
       "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true,
-      "schedule": ["after 10pm"]
+      "dependencyDashboardApproval": false,
+      "automerge": true
+    },
+    {
+      "schedule": ["* 0-4,22-23 * * 1-5", "* * * * 0,6"]
     },
     {
       "matchUpdateTypes": ["major"],
