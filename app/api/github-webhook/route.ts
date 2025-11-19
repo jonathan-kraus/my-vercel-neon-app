@@ -122,12 +122,14 @@ export async function POST(req: NextRequest) {
         });
       }
       break;
-    case 'issues': // not sure if needed
+    case 'issues':
       {
         const issue = payload.issue;
         await log.info('issues', {
           event: je,
-          payload: payload,
+          action: payload.action,
+          issue_ID: issue.id,
+          issue_url: issue.url,
           state: issue.state,
           title: issue.title,
           requestId,
