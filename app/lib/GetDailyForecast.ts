@@ -118,7 +118,7 @@ export async function getDailyForecast(
   const apiKey = process.env.TOMORROW_API_KEY;
   if (!apiKey) throw new Error('TOMORROW_API_KEY not set in environment variables');
 
-  const locationToUse = location || getActiveLocation();
+  const locationToUse = location || (await getActiveLocation());
   const locationParam = formatLocationForTomorrowIO(locationToUse);
 
   const url = `https://api.tomorrow.io/v4/weather/forecast?location=${locationParam}&timesteps=1d&units=imperial&fields=temperatureMax,temperatureMin,precipitationProbability,weatherCodeMax,weatherCodeMin,rainAccumulationAvg,rainAccumulationMax,rainAccumulationMin,rainAccumulationSum,sunriseTime,sunsetTime,moonriseTime,moonsetTime&apikey=${apiKey}`;

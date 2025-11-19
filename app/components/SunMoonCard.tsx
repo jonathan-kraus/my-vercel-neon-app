@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
-import { getActiveLocation, Location } from '@/app/utils/locations';
+import { Location } from '@/app/utils/locations';
 import { getMoonPhase, getTimeUntil } from '@/app/utils/weatherUtils';
 
 interface SunMoonCardProps {
@@ -133,7 +133,7 @@ export default function SunMoonCard({ forecast, location }: SunMoonCardProps) {
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              {location?.displayName || getActiveLocation().displayName}
+              {location?.displayName || 'Loading...'}
             </span>
           </div>
         )}
