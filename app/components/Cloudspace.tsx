@@ -111,7 +111,7 @@ export default function Cloudspace() {
               };
             }
           }
-        } catch (err) {
+        } catch {
           console.log('Consumption metrics not available');
         }
 
@@ -236,7 +236,9 @@ export default function Cloudspace() {
             {data.vercel.commitMessage !== 'N/A' && (
               <div className="pt-2">
                 <p className="text-gray-600 font-medium mb-1">Message:</p>
-                <p className="text-gray-900 text-sm italic">"{data.vercel.commitMessage}"</p>
+                <p className="text-gray-900 text-sm italic">
+                  &quot;{data.vercel.commitMessage}&quot;
+                </p>
               </div>
             )}
             {data.vercel.commitAuthor !== 'N/A' && (
