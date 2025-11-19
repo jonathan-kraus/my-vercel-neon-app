@@ -1,10 +1,12 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 import { useRequestId } from '@/app/contexts/RequestIdContext';
 import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
+import { generateUUID } from '@/uuidj';
 
 type DbStatusType = {
   version: string;
@@ -77,6 +79,18 @@ export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
   const [envInfo, setEnvInfo] = useState<EnvInfoType | null>(null);
   const [consumption, setConsumption] = useState<ConsumptionData | null>(null);
+  const [neonMeta, setNeonMeta] = useState<any | null>(null);
+  const [neonLimits, setNeonLimits] = useState<any | null>(null);
+  const [healthResult, setHealthResult] = useState<{
+    ok: boolean;
+    latencyMs?: number;
+    error?: string;
+  } | null>(null);
+  const [neonRequestId, setNeonRequestId] = useState<string | null>(null);
+  const [slowQueries, setSlowQueries] = useState<any[] | null>(null);
+  const [explainLoading, setExplainLoading] = useState<Record<number, boolean>>({});
+  const [explainPlans, setExplainPlans] = useState<Record<number, string[]>>({});
+  const [explainErrors, setExplainErrors] = useState<Record<number, string>>({});
 
   // 🆔 Get the SHARED requestId from context!
   const requestId = useRequestId();
@@ -168,6 +182,77 @@ export default function DbStatus() {
     };
 
     fetchConsumption();
+  }, []);
+
+  // Fetch neon metadata
+  useEffect(() => {
+    // Generate a single neonRequestId and reuse it for all neon-related calls
+    const id = generateUUID();
+    setNeonRequestId(id);
+
+    const fetchMeta = async () => {
+      try {
+        await log.current.info('Fetching neon metadata', { neonRequestId: id });
+        const res = await fetch('/api/neon/metadata', { headers: { 'x-request-id': id } });
+        if (res.ok) {
+          const data = await res.json();
+          setNeonMeta(data);
+          await log.current.info('Neon metadata received', { neonRequestId: id, host: data.host });
+        }
+      } catch (err) {
+        console.error('Failed to fetch neon metadata:', err);
+        await log.current.error('Failed to fetch neon metadata', {
+          neonRequestId: id,
+          error: String(err),
+        });
+      }
+    };
+
+    const fetchLimits = async () => {
+      try {
+        await log.current.info('Fetching neon limits', { neonRequestId: id });
+        const res = await fetch('/api/neon/limits', { headers: { 'x-request-id': id } });
+        if (res.ok) {
+          const data = await res.json();
+          setNeonLimits(data);
+          await log.current.info('Neon limits received', {
+            neonRequestId: id,
+            utilization: data.utilization,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch neon limits:', err);
+        await log.current.error('Failed to fetch neon limits', {
+          neonRequestId: id,
+          error: String(err),
+        });
+      }
+    };
+
+    const fetchSlow = async () => {
+      try {
+        await log.current.info('Fetching slow queries', { neonRequestId: id });
+        const res = await fetch('/api/neon/slow-queries', { headers: { 'x-request-id': id } });
+        if (res.ok) {
+          const data = await res.json();
+          setSlowQueries(data.queries || []);
+          await log.current.info('Slow queries received', {
+            neonRequestId: id,
+            source: data.source,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch slow queries:', err);
+        await log.current.error('Failed to fetch slow queries', {
+          neonRequestId: id,
+          error: String(err),
+        });
+      }
+    };
+
+    fetchMeta();
+    fetchLimits();
+    fetchSlow();
   }, []);
 
   // Email sender
@@ -266,6 +351,83 @@ export default function DbStatus() {
     })();
   }, [status, sendStatusEmail]);
 
+  // Health check action
+  const runHealthCheck = useCallback(async () => {
+    try {
+      setHealthResult(null);
+      const headers: Record<string, string> = {};
+      if (neonRequestId) headers['x-request-id'] = neonRequestId;
+      const res = await fetch('/api/neon/health', { headers });
+      if (res.ok) {
+        const data = await res.json();
+        setHealthResult(data);
+        toast.success(`Health OK — ${data.latencyMs} ms`);
+        await log.current.info('Health check executed', {
+          neonRequestId,
+          latencyMs: data.latencyMs,
+        });
+      } else {
+        const data = await res.json();
+        setHealthResult(data);
+        toast.error('Health check failed');
+        await log.current.error('Health check failed', { neonRequestId, error: data.error });
+      }
+    } catch (err) {
+      console.error('Health check error', err);
+      setHealthResult({ ok: false, error: String(err) });
+      toast.error('Health check error');
+      await log.current.error('Health check exception', { neonRequestId, error: String(err) });
+    }
+  }, [neonRequestId]);
+
+  // Explain query
+  const runExplain = useCallback(
+    async (query: string, idx: number) => {
+      try {
+        setExplainLoading((s) => ({ ...s, [idx]: true }));
+        setExplainErrors((s) => ({ ...s, [idx]: '' }));
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (neonRequestId) headers['x-request-id'] = neonRequestId;
+
+        await log.current.info('Requesting explain plan', {
+          neonRequestId,
+          idx,
+          preview: query.slice(0, 200),
+        });
+
+        const res = await fetch('/api/neon/explain', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ query }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: 'Unknown' }));
+          setExplainErrors((s) => ({ ...s, [idx]: err.error || 'Explain failed' }));
+          await log.current.error('Explain failed', {
+            neonRequestId,
+            idx,
+            error: err.error || 'Explain failed',
+          });
+        } else {
+          const data = await res.json();
+          setExplainPlans((s) => ({ ...s, [idx]: data.plan || [] }));
+          await log.current.info('Explain succeeded', {
+            neonRequestId,
+            idx,
+            lines: (data.plan || []).length,
+          });
+        }
+      } catch (err) {
+        setExplainErrors((s) => ({ ...s, [idx]: String(err) }));
+        await log.current.error('Explain exception', { neonRequestId, idx, error: String(err) });
+      } finally {
+        setExplainLoading((s) => ({ ...s, [idx]: false }));
+      }
+    },
+    [neonRequestId]
+  );
+
   if (!status) return <p>Loading DB status...</p>;
 
   return (
@@ -304,6 +466,31 @@ export default function DbStatus() {
       <p>
         <strong>Latency:</strong> {status.latencyMs} ms
       </p>
+      {neonLimits && (
+        <>
+          <h3 className="mt-4 font-semibold">Connection Limits</h3>
+          <p>
+            <strong>Max Connections:</strong> {neonLimits.maxConnections ?? 'N/A'}
+          </p>
+          <p>
+            <strong>Active Connections:</strong> {neonLimits.activeConnections ?? 0}
+          </p>
+          <p>
+            <strong>Utilization:</strong>{' '}
+            <span
+              className={`px-2 py-1 rounded text-xs font-semibold ${
+                neonLimits.utilization >= 80
+                  ? 'bg-red-100 text-red-800'
+                  : neonLimits.utilization >= 50
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-green-100 text-green-800'
+              }`}
+            >
+              {neonLimits.utilization != null ? `${neonLimits.utilization}%` : 'N/A'}
+            </span>
+          </p>
+        </>
+      )}
       <p>
         <strong>Active Connections:</strong> {status.lastActivity?.activeConnections || 0}
       </p>
@@ -394,6 +581,52 @@ export default function DbStatus() {
               <strong>Database Name:</strong> {envInfo.databaseName}
             </p>
           )}
+          {neonMeta && (
+            <>
+              <h3 className="mt-4 font-semibold">Neon Metadata</h3>
+              <p>
+                <strong>Host:</strong> {neonMeta.host}
+              </p>
+              <p>
+                <strong>Branch:</strong> {neonMeta.branch || 'N/A'}
+              </p>
+              <p>
+                <strong>User:</strong> {neonMeta.username}
+              </p>
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={async () => {
+                    const toCopy = `${neonMeta.username}@${neonMeta.host}/${neonMeta.database}`;
+                    try {
+                      await navigator.clipboard.writeText(toCopy);
+                      toast.success('Connection info copied to clipboard');
+                      await log.current.info('Masked connection copied', {
+                        neonRequestId,
+                        host: neonMeta.host,
+                      });
+                    } catch (err) {
+                      toast.error('Failed to copy');
+                      await log.current.error('Failed copying masked connection', {
+                        neonRequestId,
+                        error: String(err),
+                      });
+                    }
+                  }}
+                  className="px-3 py-1 bg-gray-200 rounded"
+                >
+                  Copy masked connection
+                </button>
+                <a
+                  href={neonMeta.neonConsoleUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1 bg-blue-500 text-white rounded"
+                >
+                  Open Neon Console
+                </a>
+              </div>
+            </>
+          )}
         </>
       ) : (
         <p className="text-gray-500">Loading environment information...</p>
@@ -430,9 +663,112 @@ export default function DbStatus() {
         </>
       )}
 
+      {slowQueries && slowQueries.length > 0 && (
+        <>
+          <h2 className="text-xl font-bold mt-6 pt-6 border-t border-gray-300">Slow Queries</h2>
+          <div className="space-y-2">
+            {slowQueries.map((q: any, idx: number) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.28, delay: idx * 0.06 }}
+                className="p-3 border rounded bg-white shadow-sm"
+              >
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <pre className="whitespace-pre-wrap text-sm overflow-hidden text-ellipsis max-h-28">
+                      {q.query?.length > 800 ? q.query.slice(0, 800) + '…' : q.query}
+                    </pre>
+                  </div>
+                  <div className="text-right text-xs text-gray-600 flex flex-col items-end gap-2">
+                    {q.mean_time != null ? (
+                      <div>
+                        <div>
+                          <strong>Mean:</strong> {Number(q.mean_time).toFixed(2)} ms
+                        </div>
+                        <div>
+                          <strong>Calls:</strong> {q.calls}
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div>
+                          <strong>Duration:</strong>{' '}
+                          {q.duration_ms ? `${Math.round(q.duration_ms)} ms` : 'N/A'}
+                        </div>
+                        <div>
+                          <strong>State:</strong> {q.state || 'N/A'}
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        onClick={() => runExplain(q.query, idx)}
+                        disabled={!!explainLoading[idx]}
+                        className={`px-2 py-1 rounded text-sm ${
+                          explainLoading[idx]
+                            ? 'bg-gray-300 text-gray-700'
+                            : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                        }`}
+                      >
+                        {explainLoading[idx] ? 'Explaining…' : 'Explain'}
+                      </button>
+                      <button
+                        onClick={async () => {
+                          try {
+                            const copy = q.query?.slice(0, 1000) || '';
+                            await navigator.clipboard.writeText(copy);
+                            toast.success('Query copied');
+                            await log.current.info('Slow query copied', { neonRequestId, idx });
+                          } catch (err) {
+                            toast.error('Copy failed');
+                          }
+                        }}
+                        className="px-2 py-1 rounded text-sm bg-gray-200"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <AnimatePresence>
+                  {(explainPlans[idx] && explainPlans[idx].length > 0) ||
+                  explainLoading[idx] ||
+                  explainErrors[idx] ? (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="mt-3 p-3 bg-gray-50 border rounded text-sm text-gray-800"
+                    >
+                      {explainLoading[idx] ? (
+                        <div>Running explain...</div>
+                      ) : explainErrors[idx] ? (
+                        <div className="text-red-600">Error: {explainErrors[idx]}</div>
+                      ) : (
+                        <pre className="whitespace-pre-wrap text-xs">
+                          {explainPlans[idx].join('\n')}
+                        </pre>
+                      )}
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </div>
+        </>
+      )}
+
       <div className="flex gap-4">
         <button onClick={() => toast('DbStatus toast!')} className="px-3 py-1 bg-gray-200 rounded">
           Make me a toast!
+        </button>
+        <button onClick={runHealthCheck} className="px-3 py-1 bg-indigo-500 text-white rounded">
+          Run DB Health Check
         </button>
         <div className="flex flex-col gap-2">
           <button
@@ -489,6 +825,16 @@ export default function DbStatus() {
           )}
         </div>
       </div>
+      {healthResult && (
+        <div className="mt-2">
+          <strong>Health:</strong>{' '}
+          {healthResult.ok ? (
+            <span className="text-green-600">OK — {healthResult.latencyMs} ms</span>
+          ) : (
+            <span className="text-red-600">Failed — {healthResult.error}</span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

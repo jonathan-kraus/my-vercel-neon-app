@@ -1,3 +1,5 @@
+[![CI](https://github.com/jonathan-kraus/my-vercel-neon-app/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jonathan-kraus/my-vercel-neon-app/actions/workflows/ci.yml)
+
 ![Vercel with Neon](./assets/home.png)
 
 -> View demo: [vercel-marketplace-neon.vercel.app](https://vercel-marketplace-neon.vercel.app/)
