@@ -205,7 +205,7 @@ export default function Cloudspace() {
         {/* Vercel Deployment Info */}
         <InfoCard title="🚀 Vercel Deployment">
           <InfoRow label="Deployment URL" value={data.vercel.deploymentUrl} />
-          <InfoRow label="Region" value={data.vercel.region} badge={data.vercel.region} />
+          <InfoRow label="Region" badge={data.vercel.region} />
           {data.vercel.deploymentId !== 'N/A' && (
             <InfoRow label="Deployment ID" value={data.vercel.deploymentId} />
           )}
@@ -223,7 +223,7 @@ export default function Cloudspace() {
           {data.neon.databaseName !== 'N/A' && (
             <InfoRow label="Database" value={data.neon.databaseName} />
           )}
-          <InfoRow label="Region" value={data.neon.region} badge={data.neon.region} />
+          <InfoRow label="Region" badge={data.neon.region} />
           <InfoRow label="PostgreSQL Version" value={data.neon.version} />
           <InfoRow label="Latency" value={`${data.neon.latencyMs} ms`} />
           <InfoRow label="Active Connections" value={String(data.neon.activeConnections)} />
