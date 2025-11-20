@@ -187,6 +187,50 @@ export async function POST(req: NextRequest) {
         }
       }
       break;
+    case 'pull_request_review':
+      {
+        const review = payload.review;
+        const pr = payload.pull_request;
+        await log.info('pull_request.review', {
+          event: je,
+          action: payload.action,
+          keys: Object.keys(payload),
+          repository: payload.repository?.full_name,
+          sender: payload.sender?.login,
+          reviewer: review?.user?.login,
+          review_state: review?.state,
+          review_body: review?.body,
+          review_id: review?.id,
+          pr_number: pr?.number,
+          pr_url: pr?.html_url,
+          pr_author: pr?.user?.login,
+          timestamp: new Date().toISOString(),
+          requestId,
+        });
+      }
+      break;
+    case 'pull_request_review_comment':
+      {
+        const comment = payload.comment;
+        const pr = payload.pull_request;
+        await log.info('pull_request.review_comment', {
+          event: je,
+          action: payload.action,
+          keys: Object.keys(payload),
+          repository: payload.repository?.full_name,
+          sender: payload.sender?.login,
+          commenter: comment?.user?.login,
+          comment_body: comment?.body,
+          comment_id: comment?.id,
+          path: comment?.path,
+          position: comment?.position,
+          pr_number: pr?.number,
+          pr_url: pr?.html_url,
+          timestamp: new Date().toISOString(),
+          requestId,
+        });
+      }
+      break;
     case 'push':
       {
         const commits = payload.commits || [];
