@@ -10,12 +10,20 @@
   "timezone": "America/New_York",
   "packageRules": [
     {
-      "matchUpdateTypes": ["patch", "minor"],
       "dependencyDashboardApproval": false,
-      "automerge": true
+      "automerge": true,
+      "automergeType": "branch",
+      "packageRules": [
+        {
+          "matchUpdateTypes": ["minor"],
+          "automerge": true,
+          "automergeType": "pr",
+          "targetBranch": "main"
+        }
+      ]
     },
     {
-      "schedule": ["* 0-22 * * 1-5", "* * * * 0,6"],
+      "schedule": ["* 4-22 * * 1-5", "* * * * 0,6"],
       "matchPackageNames": ["*"]
     },
     {
