@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build, lint and audit
+    name: Build, lint, test, and audit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -33,7 +33,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/package.json','**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
@@ -42,16 +42,18 @@ jobs:
 
       - name: Check for outdated dependencies
         run: pnpm outdated || true
-      - name: Run tests
-        env:
-          CI: true
-        run: pnpm test
 
       - name: Security audit
+        if: github.event_name == 'push'
         run: pnpm audit
 
       - name: Lint
         run: pnpm lint
+
+      - name: Run tests
+        env:
+          CI: true
+        run: pnpm test --silent
 
       - name: Build
         run: pnpm build
