@@ -67,8 +67,6 @@ type ConsumptionData = {
 
 console.log('[DbStatus] DbStatus component loaded');
 
-// Framer-motion typing: create simple any-typed aliases for motion.div
-// so we can freely pass HTML attributes like `className` without complex generics.
 const MDiv = motion.div as unknown as any;
 const MPanel = motion.div as unknown as any;
 
