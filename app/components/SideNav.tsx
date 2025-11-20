@@ -236,6 +236,7 @@ export default function SideNav() {
       '/admin/db-status',
       '/admin/weather',
       '/dev/update-post',
+      '/cloudspace',
     ];
     for (const t of targets) {
       try {
@@ -350,6 +351,12 @@ export default function SideNav() {
             <NavItem
               href="/"
               label="* Home *"
+              currentPath={pathname}
+              onHoverPrefetch={handleHoverPrefetch}
+            />
+            <NavItem
+              href="/cloudspace"
+              label="☁️ Cloudspace"
               currentPath={pathname}
               onHoverPrefetch={handleHoverPrefetch}
             />
