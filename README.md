@@ -175,7 +175,6 @@ This project uses a database-backed feature flag system that works seamlessly on
 - **Database-backed**: All feature flags are stored in the `FeatureFlag` table with a 60-second server-side cache
 - **No redeploy needed**: Toggle flags instantly via the admin UI at `/admin/feature-flags`
 - **Client and server**: Both environments read from the same database source
-- **Environment variable fallback**: If database is unavailable, falls back to `FEATURE_*` env vars
 
 ### Managing flags
 

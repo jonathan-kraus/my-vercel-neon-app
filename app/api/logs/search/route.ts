@@ -10,6 +10,7 @@ export async function GET(req: Request) {
   if (await isFeatureEnabled('VERBOSE_LOGGING')) {
     log.info(`[app/api/logs/search/route] Initialized log search route`, {
       action: `init`,
+      request: Request,
       timestamp: new Date().toISOString(),
     });
   }
@@ -99,6 +100,15 @@ export async function GET(req: Request) {
         ...queryParams.slice(0, paramIndex - 1)
       );
       total = Number(countResult.count);
+      log.info(`[app/api/logs/search/route] Executed raw SQL log search`, {
+        action: `raw_sql_search`,
+        query,
+        queryParams,
+        totalItems: total,
+        requestId: req.headers.get('x-request-id') ?? generateUUID(),
+        countQuery: countQuery,
+        timestamp: new Date().toISOString(),
+      });
     } else {
       [items, total] = await Promise.all([
         db.log.findMany({
@@ -113,6 +123,9 @@ export async function GET(req: Request) {
     if (await isFeatureEnabled('VERBOSE_LOGGING')) {
       log.info(`[app/api/logs/search/route] Retrieved log search results ${total}`, {
         action: `fetch_logs`,
+        itemsFetched: items,
+        page,
+        pageSize,
         timestamp: new Date().toISOString(),
         totalItems: total,
       });

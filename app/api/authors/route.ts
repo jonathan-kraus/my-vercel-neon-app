@@ -30,9 +30,9 @@ export async function GET(req: Request) {
     if (await isFeatureEnabled('EMAIL_NOTIFICATIONS')) {
       const { success, message } = await sendConfirmationEmail(emailData);
       if (success) {
-        await log.info('Email sent successfully', { message });
+        await log.info('Email sent successfully', { success, message });
       } else {
-        await log.error('Email failed', { message });
+        await log.error('Email failed', { success, message });
       }
     }
   }
