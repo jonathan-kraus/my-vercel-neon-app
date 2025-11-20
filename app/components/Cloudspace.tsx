@@ -1,5 +1,6 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { motion } from 'motion/react';
 import { useRequestId } from '@/app/contexts/RequestIdContext';
 
 type CloudspaceData = {
@@ -34,21 +35,68 @@ type CloudspaceData = {
   };
 };
 
+function NumberCounter({ value }: { value: number }) {
+  const ref = useRef<number | null>(null);
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    const duration = 600;
+    const start = performance.now();
+    const from = 0;
+    const to = value;
+
+    const step = (ts: number) => {
+      const t = Math.min(1, (ts - start) / duration);
+      const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      const cur = Math.round(from + (to - from) * eased);
+      setDisplay(cur);
+      if (t < 1) ref.current = requestAnimationFrame(step);
+    };
+
+    ref.current = requestAnimationFrame(step);
+    return () => {
+      if (ref.current) cancelAnimationFrame(ref.current);
+    };
+  }, [value]);
+
+  return <span className="text-gray-900 font-bold">{display}</span>;
+}
+
 function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.02, y: -4 }}
+      transition={{ duration: 0.28 }}
+      className="bg-white rounded-lg shadow-md border border-gray-200 p-6"
+    >
       <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">{title}</h3>
       <div className="space-y-3">{children}</div>
-    </div>
+    </motion.div>
   );
 }
 
-function InfoRow({ label, value, badge }: { label: string; value: string; badge?: string }) {
+function InfoRow({
+  label,
+  value,
+  badge,
+  children,
+}: {
+  label: string;
+  value: string;
+  badge?: string;
+  children?: React.ReactNode;
+}) {
   return (
     <div className="flex justify-between items-center">
       <span className="text-gray-600 font-medium">{label}:</span>
       <div className="flex items-center gap-2">
-        <span className="text-gray-900">{value}</span>
+        {children ? (
+          <div className="text-gray-900">{children}</div>
+        ) : (
+          <span className="text-gray-900">{value}</span>
+        )}
         {badge && (
           <span className="px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded">
             {badge}
@@ -184,7 +232,7 @@ export default function Cloudspace() {
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-lg p-8">
+      <div className="bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg shadow-lg p-8">
         <h1 className="text-4xl font-bold mb-2">☁️ Cloudspace</h1>
         <p className="text-blue-100 text-lg">Your cloud infrastructure overview - Vercel + Neon</p>
       </div>
@@ -249,11 +297,16 @@ export default function Cloudspace() {
 
         {/* Database Statistics */}
         <InfoCard title="📊 Database Statistics">
-          <InfoRow label="Total Posts" value={String(data.neon.postCount)} />
-          <InfoRow label="Total Logs" value={String(data.neon.logCount)} />
+          <InfoRow label="Total Posts" value="">
+            <NumberCounter value={data.neon.postCount} />
+          </InfoRow>
+          <InfoRow label="Total Logs" value="">
+            <NumberCounter value={data.neon.logCount} />
+          </InfoRow>
           <div className="pt-2 border-t border-gray-200">
             <p className="text-gray-600 text-sm">
-              Database is running smoothly with {data.neon.activeConnections} active connection
+              Database is running smoothly with{' '}
+              <NumberCounter value={data.neon.activeConnections} /> active connection
               {data.neon.activeConnections !== 1 ? 's' : ''}
             </p>
           </div>
