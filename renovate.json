@@ -10,25 +10,14 @@
   "timezone": "America/New_York",
   "packageRules": [
     {
-      "dependencyDashboardApproval": false,
+      "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
-      "automergeType": "branch",
-      "packageRules": [
-        {
-          "matchUpdateTypes": ["minor", "patch"],
-          "automerge": true,
-          "automergeType": "pr",
-          "targetBranch": "main"
-        }
-      ]
-    },
-    {
-      "schedule": ["* 4-22 * * 1-5", "* * * * 0,6"],
-      "matchPackageNames": ["*"]
+      "automergeType": "pr"
     },
     {
       "matchUpdateTypes": ["major"],
       "automerge": false,
+      "dependencyDashboardApproval": true,
       "labels": ["major-update", "needs-review"]
     },
     {
