@@ -4,9 +4,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
-import DailyForecastCard from '@/app/components/DailyForecastCard';
 import DailyForecastCardNew from '@/app/components/DailyForecastCardNew';
-import WeatherCard from '@/app/components/WeatherCard';
 import WeatherCardNew from '@/app/components/WeatherCardNew';
 import HourlyForecastChart from '@/app/components/HourlyForecastChart';
 import SunMoonCard from '@/app/components/SunMoonCard';
@@ -28,13 +26,10 @@ export default function WeatherPage() {
   const [requestId] = useState(() => generateUUID());
   const log = createLogger('JKapp/admin/weather/page.tsx', requestId);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
-  const [useNewUI, setUseNewUI] = useState(false);
 
-  // Fetch feature flag and active location
+  // Fetch active location
   useEffect(() => {
     (async () => {
-      const enabled = await isFeatureEnabled('NEW_UI_COMPONENTS');
-      setUseNewUI(enabled);
       const location = await getActiveLocation();
       setSelectedLocation(location);
     })();
@@ -103,8 +98,8 @@ export default function WeatherPage() {
     );
   }
 
-  const WeatherComponent = useNewUI ? WeatherCardNew : WeatherCard;
-  const ForecastComponent = useNewUI ? DailyForecastCardNew : DailyForecastCard;
+  const WeatherComponent = WeatherCardNew;
+  const ForecastComponent = DailyForecastCardNew;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 animate-fade-in">
