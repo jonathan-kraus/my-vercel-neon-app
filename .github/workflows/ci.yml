@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build, lint, test, and audit
+    name: Check outdated, audit, lint, test, and build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
