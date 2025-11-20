@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
+import { useCallback } from 'react';
 type LocationDetails = {
   city?: string;
   town?: string;
@@ -37,7 +38,71 @@ export default function WeatherCardNew({
   location?: { name: string; lat: number; lon: number; displayName: string; flag: string };
 } = {}) {
   const [weather, setWeather] = useState<WeatherType | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Small numeric animator used across Cloudspace and Weather cards
+  function NumberCounter({ value }: { value: number }) {
+    const ref = useRef<number | null>(null);
+    const [display, setDisplay] = useState(0);
+
+    useEffect(() => {
+      const duration = 500;
+      const start = performance.now();
+      const from = display;
+      const to = value;
+
+      const step = (ts: number) => {
+        const t = Math.min(1, (ts - start) / duration);
+        const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        const cur = Math.round(from + (to - from) * eased);
+        setDisplay(cur);
+        if (t < 1) ref.current = requestAnimationFrame(step);
+      };
+
+      ref.current = requestAnimationFrame(step);
+      return () => {
+        if (ref.current) cancelAnimationFrame(ref.current);
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [value]);
+
+    return <span className="text-2xl md:text-3xl font-bold">{display}</span>;
+  }
+
+  function Sparkline({
+    value,
+    max = 100,
+    color = 'blue',
+  }: {
+    value: number;
+    max?: number;
+    color?: string;
+  }) {
+    const pts = new Array(8).fill(0).map((_, i) => {
+      const norm = Math.max(
+        0,
+        Math.min(1, (value / Math.max(1, max)) * (0.5 + 0.5 * Math.sin(i + value)))
+      );
+      const x = (i / 7) * 100;
+      const y = 100 - norm * 100;
+      return `${x},${y}`;
+    });
+    const d = 'M ' + pts.join(' L ');
+    const stroke = color === 'blue' ? '#ffffff' : color === 'purple' ? '#e9d5ff' : '#a7f3d0';
+    return (
+      <svg width="64" height="20" viewBox="0 0 100 100" preserveAspectRatio="none" className="ml-3">
+        <path
+          d={d}
+          fill="none"
+          stroke={stroke}
+          strokeWidth={3}
+          strokeOpacity={0.9}
+          strokeLinecap="round"
+        />
+      </svg>
+    );
+  }
 
   const fetchWeather = useCallback(async () => {
     try {
@@ -46,6 +111,7 @@ export default function WeatherCardNew({
       if (!res.ok) throw new Error('API response not OK');
       const data: WeatherType = await res.json();
       setWeather(data);
+      setLastUpdated(Date.now());
       console.log(`Weather received [${data.requestId}]:`, data);
       console.log(
         `[${data.requestId}] Weather received for ${data.locationName} at ${data.lastEmailTimestamp}:`,
@@ -147,10 +213,9 @@ export default function WeatherCardNew({
 
         {/* Temperature */}
         <div className="flex items-baseline space-x-2">
-          <span className="text-6xl md:text-7xl font-bold drop-shadow-lg">
-            {Math.round(weather.temperature)}
-          </span>
+          <NumberCounter value={Math.round(weather.temperature)} />
           <span className="text-3xl md:text-4xl font-light opacity-90">°F</span>
+          <Sparkline value={Math.round(weather.temperature)} max={120} color="purple" />
         </div>
 
         {/* Feels Like */}
@@ -179,7 +244,11 @@ export default function WeatherCardNew({
               </svg>
               <span className="text-xs md:text-sm font-medium text-white/90">Humidity</span>
             </div>
-            <p className="text-2xl md:text-3xl font-bold">{weather.humidity}%</p>
+            <div className="flex items-center gap-3">
+              <NumberCounter value={Math.round(weather.humidity)} />
+              <span className="text-sm text-white/80">%</span>
+              <Sparkline value={Math.round(weather.humidity)} max={100} color="blue" />
+            </div>
           </div>
 
           <div
@@ -196,7 +265,11 @@ export default function WeatherCardNew({
               </svg>
               <span className="text-xs md:text-sm font-medium text-white/90">Wind</span>
             </div>
-            <p className="text-2xl md:text-3xl font-bold">{Math.round(weather.windSpeed)} mph</p>
+            <div className="flex items-center gap-3">
+              <NumberCounter value={Math.round(weather.windSpeed)} />
+              <span className="text-sm text-white/80">mph</span>
+              <Sparkline value={Math.round(weather.windSpeed)} max={60} color="green" />
+            </div>
             <p className="text-xs text-white/80 mt-1">Gusts: {Math.round(weather.windGust)} mph</p>
           </div>
 
@@ -269,6 +342,12 @@ export default function WeatherCardNew({
         {/* Additional Stats Row */}
         {weather.visibility && (
           <div className="grid grid-cols-1 gap-3 md:gap-4 pt-4 border-t border-white/30">
+            {/* aria-live status for assistive tech */}
+            {lastUpdated && (
+              <div className="sr-only" aria-live="polite">
+                Updated at {new Date(lastUpdated).toLocaleTimeString()}
+              </div>
+            )}
             <div className="bg-white/20 backdrop-blur-md rounded-2xl p-4 md:p-5 transition-all duration-300 hover:bg-white/30 hover:scale-105 border border-white/20">
               <div className="flex items-center space-x-2 mb-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
