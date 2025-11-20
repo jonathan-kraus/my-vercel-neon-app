@@ -1,7 +1,9 @@
 'use client';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { useRequestId } from '@/app/contexts/RequestIdContext';
+import NumberCounter from './NumberCounter';
+import Sparkline from './Sparkline';
 
 type CloudspaceData = {
   vercel: {
@@ -35,71 +37,7 @@ type CloudspaceData = {
   };
 };
 
-function NumberCounter({ value }: { value: number }) {
-  const ref = useRef<number | null>(null);
-  const [display, setDisplay] = useState(0);
-
-  useEffect(() => {
-    const duration = 600;
-    const start = performance.now();
-    const from = 0;
-    const to = value;
-
-    const step = (ts: number) => {
-      const t = Math.min(1, (ts - start) / duration);
-      const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-      const cur = Math.round(from + (to - from) * eased);
-      setDisplay(cur);
-      if (t < 1) ref.current = requestAnimationFrame(step);
-    };
-
-    ref.current = requestAnimationFrame(step);
-    return () => {
-      if (ref.current) cancelAnimationFrame(ref.current);
-    };
-  }, [value]);
-
-  return <span className="text-gray-900 font-bold">{display}</span>;
-}
-
-function Sparkline({
-  value,
-  max = 1,
-  color = 'blue',
-}: {
-  value: number;
-  max?: number;
-  color?: string;
-}) {
-  const pts = new Array(8).fill(0).map((_, i) => {
-    const norm = Math.max(0, Math.min(1, (value / max) * (0.6 + 0.4 * Math.sin(i + value))));
-    const x = (i / 7) * 100;
-    const y = 100 - norm * 100;
-    return `${x},${y}`;
-  });
-  const d = 'M ' + pts.join(' L ');
-  const stroke =
-    color === 'blue'
-      ? '#1e3a8a'
-      : color === 'purple'
-        ? '#6b21a8'
-        : color === 'green'
-          ? '#065f46'
-          : '#1e3a8a';
-  return (
-    <svg width="80" height="24" viewBox="0 0 100 100" preserveAspectRatio="none" className="ml-2">
-      <path
-        d={d}
-        fill="none"
-        stroke={stroke}
-        strokeWidth={3}
-        strokeOpacity={0.9}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+// `NumberCounter` and `Sparkline` moved to shared components
 
 function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (

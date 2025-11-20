@@ -2,7 +2,8 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { getIcon, getLabel } from '@/app/utils/weatherUtils';
-import { useCallback } from 'react';
+import NumberCounter from '@/app/components/NumberCounter';
+import Sparkline from '@/app/components/Sparkline';
 type LocationDetails = {
   city?: string;
   town?: string;
@@ -41,68 +42,7 @@ export default function WeatherCardNew({
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Small numeric animator used across Cloudspace and Weather cards
-  function NumberCounter({ value }: { value: number }) {
-    const ref = useRef<number | null>(null);
-    const [display, setDisplay] = useState(0);
-
-    useEffect(() => {
-      const duration = 500;
-      const start = performance.now();
-      const from = display;
-      const to = value;
-
-      const step = (ts: number) => {
-        const t = Math.min(1, (ts - start) / duration);
-        const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-        const cur = Math.round(from + (to - from) * eased);
-        setDisplay(cur);
-        if (t < 1) ref.current = requestAnimationFrame(step);
-      };
-
-      ref.current = requestAnimationFrame(step);
-      return () => {
-        if (ref.current) cancelAnimationFrame(ref.current);
-      };
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [value]);
-
-    return <span className="text-2xl md:text-3xl font-bold">{display}</span>;
-  }
-
-  function Sparkline({
-    value,
-    max = 100,
-    color = 'blue',
-  }: {
-    value: number;
-    max?: number;
-    color?: string;
-  }) {
-    const pts = new Array(8).fill(0).map((_, i) => {
-      const norm = Math.max(
-        0,
-        Math.min(1, (value / Math.max(1, max)) * (0.5 + 0.5 * Math.sin(i + value)))
-      );
-      const x = (i / 7) * 100;
-      const y = 100 - norm * 100;
-      return `${x},${y}`;
-    });
-    const d = 'M ' + pts.join(' L ');
-    const stroke = color === 'blue' ? '#ffffff' : color === 'purple' ? '#e9d5ff' : '#a7f3d0';
-    return (
-      <svg width="64" height="20" viewBox="0 0 100 100" preserveAspectRatio="none" className="ml-3">
-        <path
-          d={d}
-          fill="none"
-          stroke={stroke}
-          strokeWidth={3}
-          strokeOpacity={0.9}
-          strokeLinecap="round"
-        />
-      </svg>
-    );
-  }
+  // NumberCounter and Sparkline moved to shared components
 
   const fetchWeather = useCallback(async () => {
     try {
@@ -213,7 +153,10 @@ export default function WeatherCardNew({
 
         {/* Temperature */}
         <div className="flex items-baseline space-x-2">
-          <NumberCounter value={Math.round(weather.temperature)} />
+          <NumberCounter
+            value={Math.round(weather.temperature)}
+            className="text-2xl md:text-3xl font-bold"
+          />
           <span className="text-3xl md:text-4xl font-light opacity-90">°F</span>
           <Sparkline value={Math.round(weather.temperature)} max={120} color="purple" />
         </div>
@@ -245,7 +188,10 @@ export default function WeatherCardNew({
               <span className="text-xs md:text-sm font-medium text-white/90">Humidity</span>
             </div>
             <div className="flex items-center gap-3">
-              <NumberCounter value={Math.round(weather.humidity)} />
+              <NumberCounter
+                value={Math.round(weather.humidity)}
+                className="text-2xl md:text-3xl font-bold"
+              />
               <span className="text-sm text-white/80">%</span>
               <Sparkline value={Math.round(weather.humidity)} max={100} color="blue" />
             </div>
@@ -266,7 +212,10 @@ export default function WeatherCardNew({
               <span className="text-xs md:text-sm font-medium text-white/90">Wind</span>
             </div>
             <div className="flex items-center gap-3">
-              <NumberCounter value={Math.round(weather.windSpeed)} />
+              <NumberCounter
+                value={Math.round(weather.windSpeed)}
+                className="text-2xl md:text-3xl font-bold"
+              />
               <span className="text-sm text-white/80">mph</span>
               <Sparkline value={Math.round(weather.windSpeed)} max={60} color="green" />
             </div>

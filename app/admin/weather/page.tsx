@@ -14,7 +14,7 @@ import SendForecastEmailButton from '@/app/components/SendForecastEmailButton';
 import { Location, getActiveLocation } from '@/app/utils/locations';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
-import { isFeatureEnabled } from '@/app/utils/featureFlags';
+// unused: feature flags are no longer checked here
 
 type ForecastResult = {
   forecast: DailyForecastPoint[];
