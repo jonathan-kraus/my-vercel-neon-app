@@ -15,7 +15,7 @@
       "automergeType": "branch",
       "packageRules": [
         {
-          "matchUpdateTypes": ["minor"],
+          "matchUpdateTypes": ["minor", "patch"],
           "automerge": true,
           "automergeType": "pr",
           "targetBranch": "main"
