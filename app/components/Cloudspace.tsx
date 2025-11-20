@@ -62,6 +62,45 @@ function NumberCounter({ value }: { value: number }) {
   return <span className="text-gray-900 font-bold">{display}</span>;
 }
 
+function Sparkline({
+  value,
+  max = 1,
+  color = 'blue',
+}: {
+  value: number;
+  max?: number;
+  color?: string;
+}) {
+  const pts = new Array(8).fill(0).map((_, i) => {
+    const norm = Math.max(0, Math.min(1, (value / max) * (0.6 + 0.4 * Math.sin(i + value))));
+    const x = (i / 7) * 100;
+    const y = 100 - norm * 100;
+    return `${x},${y}`;
+  });
+  const d = 'M ' + pts.join(' L ');
+  const stroke =
+    color === 'blue'
+      ? '#1e3a8a'
+      : color === 'purple'
+        ? '#6b21a8'
+        : color === 'green'
+          ? '#065f46'
+          : '#1e3a8a';
+  return (
+    <svg width="80" height="24" viewBox="0 0 100 100" preserveAspectRatio="none" className="ml-2">
+      <path
+        d={d}
+        fill="none"
+        stroke={stroke}
+        strokeWidth={3}
+        strokeOpacity={0.9}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <motion.div
@@ -273,8 +312,19 @@ export default function Cloudspace() {
           )}
           <InfoRow label="Region" value=" " badge={data.neon.region} />
           <InfoRow label="PostgreSQL Version" value={data.neon.version} />
-          <InfoRow label="Latency" value={`${data.neon.latencyMs} ms`} />
-          <InfoRow label="Active Connections" value={String(data.neon.activeConnections)} />
+          <InfoRow label="Latency" value="">
+            <div className="flex items-center">
+              <NumberCounter value={Math.round(data.neon.latencyMs)} />
+              <span className="text-sm text-gray-600 ml-1">ms</span>
+              <Sparkline value={data.neon.latencyMs} max={500} color="purple" />
+            </div>
+          </InfoRow>
+          <InfoRow label="Active Connections" value="">
+            <div className="flex items-center">
+              <NumberCounter value={data.neon.activeConnections} />
+              <Sparkline value={data.neon.activeConnections} max={100} color="green" />
+            </div>
+          </InfoRow>
         </InfoCard>
 
         {/* Git Commit Info */}
@@ -317,36 +367,46 @@ export default function Cloudspace() {
       {data.consumption && (
         <InfoCard title="📈 Resource Consumption (Last 7 Days)">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="bg-blue-50 rounded p-3">
+            <motion.div whileHover={{ scale: 1.02 }} className="bg-blue-50 rounded p-3">
               <p className="text-xs text-blue-600 font-semibold mb-1">Active Time</p>
-              <p className="text-lg font-bold text-blue-900">
-                {data.consumption.activeTimeHours} hrs
-              </p>
-            </div>
-            <div className="bg-purple-50 rounded p-3">
+              <div className="flex items-center">
+                <NumberCounter value={data.consumption.activeTimeHours} />
+                <span className="ml-2 text-sm text-gray-600">hrs</span>
+                <Sparkline value={data.consumption.activeTimeHours} max={168} color="blue" />
+              </div>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} className="bg-purple-50 rounded p-3">
               <p className="text-xs text-purple-600 font-semibold mb-1">Compute Time</p>
-              <p className="text-lg font-bold text-purple-900">
-                {data.consumption.computeTimeHours} hrs
-              </p>
-            </div>
-            <div className="bg-green-50 rounded p-3">
+              <div className="flex items-center">
+                <NumberCounter value={data.consumption.computeTimeHours} />
+                <span className="ml-2 text-sm text-gray-600">hrs</span>
+                <Sparkline value={data.consumption.computeTimeHours} max={168} color="purple" />
+              </div>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} className="bg-green-50 rounded p-3">
               <p className="text-xs text-green-600 font-semibold mb-1">Data Written</p>
-              <p className="text-lg font-bold text-green-900">
-                {data.consumption.dataWrittenMB} MB
-              </p>
-            </div>
-            <div className="bg-orange-50 rounded p-3">
+              <div className="flex items-center">
+                <NumberCounter value={Math.round(data.consumption.dataWrittenMB)} />
+                <span className="ml-2 text-sm text-gray-600">MB</span>
+                <Sparkline value={data.consumption.dataWrittenMB} max={1024} color="green" />
+              </div>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} className="bg-orange-50 rounded p-3">
               <p className="text-xs text-orange-600 font-semibold mb-1">Data Transfer</p>
-              <p className="text-lg font-bold text-orange-900">
-                {data.consumption.dataTransferMB} MB
-              </p>
-            </div>
-            <div className="bg-pink-50 rounded p-3">
+              <div className="flex items-center">
+                <NumberCounter value={Math.round(data.consumption.dataTransferMB)} />
+                <span className="ml-2 text-sm text-gray-600">MB</span>
+                <Sparkline value={data.consumption.dataTransferMB} max={1024} color="orange" />
+              </div>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} className="bg-pink-50 rounded p-3">
               <p className="text-xs text-pink-600 font-semibold mb-1">Storage</p>
-              <p className="text-lg font-bold text-pink-900">
-                {data.consumption.storageGBHours} GB-hrs
-              </p>
-            </div>
+              <div className="flex items-center">
+                <NumberCounter value={Math.round(data.consumption.storageGBHours)} />
+                <span className="ml-2 text-sm text-gray-600">GB-hrs</span>
+                <Sparkline value={data.consumption.storageGBHours} max={500} color="pink" />
+              </div>
+            </motion.div>
           </div>
         </InfoCard>
       )}
