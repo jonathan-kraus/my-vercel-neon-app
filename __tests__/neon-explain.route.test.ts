@@ -36,8 +36,7 @@ describe('neon explain route', () => {
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
     // logger.error should have been called for missing query
-    expect(createLogger('test')).toBeDefined();
-    expect(createLogger('test')).toHaveProperty('error');
+    expect(loggerMock.error).toHaveBeenCalled();
   });
 
   it('rejects non-SELECT queries with 400', async () => {
