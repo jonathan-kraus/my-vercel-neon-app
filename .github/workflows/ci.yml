@@ -95,10 +95,14 @@ jobs:
           fail_ci_if_error: false
           verbose: true
 
-      - name: Enforce coverage threshold
-        if: always()
-        # allow this step to fail during iterative work; make strict later
+      - name: Enforce coverage threshold (PRs - tolerant)
+        if: always() && github.event_name == 'pull_request'
         continue-on-error: true
+        run: |
+          node ./scripts/check-coverage.mjs 70
+
+      - name: Enforce coverage threshold (push to main - strict)
+        if: always() && github.event_name == 'push'
         run: |
           node ./scripts/check-coverage.mjs 70
 
