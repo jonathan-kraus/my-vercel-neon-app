@@ -34,7 +34,9 @@ jobs:
 
           if [ -z "$PR_NUMBER" ]; then
             echo "No PR number available. If running manually, pass 'pr_number' as workflow input." >&2
-            exit 1
+            # Don't fail the job when executed on push or other events without a PR number.
+            # Exiting 0 keeps this workflow from marking the run as failed/unstable.
+            exit 0
           fi
 
           echo "Fetching PR node id for #${PR_NUMBER}..."
