@@ -58,8 +58,29 @@ jobs:
                     console.log(`Enabled auto-merge (squash) on PR #${pr}`);
                     return;
                   } catch (err) {
-                    console.log(`Enable request failed: ${err.message}`);
-                    // continue to retry in case of transient API errors
+                    // Log full error for diagnosis
+                    try {
+                      console.log('Enable request failed (full):', JSON.stringify(err, Object.getOwnPropertyNames(err)));
+                    } catch (e) {
+                      console.log(`Enable request failed: ${err.message}`);
+                    }
+
+                    // Try GraphQL fallback using the PR node id (node_id is in prData.node_id)
+                    try {
+                      const prNodeId = prData.node_id || null;
+                      if (prNodeId) {
+                        console.log(`Attempting GraphQL fallback with PR node id ${prNodeId}`);
+                        const gql = `mutation($prId:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$prId,mergeMethod:SQUASH}){clientMutationId}}`;
+                        await github.graphql(gql, { prId: prNodeId });
+                        console.log(`Enabled auto-merge via GraphQL on PR #${pr}`);
+                        return;
+                      } else {
+                        console.log('No PR node id available for GraphQL fallback.');
+                      }
+                    } catch (gerr) {
+                      console.log('GraphQL fallback failed:', gerr.message || JSON.stringify(gerr));
+                    }
+                    // continue to retry in case of transient API errors or until fallback succeeds
                   }
                 } else {
                   console.log('PR not mergeable yet.');
