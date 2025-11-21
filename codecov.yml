@@ -14,7 +14,7 @@ status:
   project:
     default:
       # Use Codecov's heuristic target (auto) or set a numeric value like '80%'
-      target: auto
+      target: 82%
       # Allowed delta before failing the status check (0% = fail on any drop)
       threshold: 0%
       # Compare against PR/base automatically
