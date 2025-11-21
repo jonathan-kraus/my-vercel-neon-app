@@ -93,8 +93,9 @@ describe('logs search route', () => {
 
   it('calls verbose logging when feature flag enabled', async () => {
     // enable verbose logging
+    // enable verbose logging for all checks
     // @ts-ignore
-    isFeatureEnabled.mockResolvedValueOnce(true);
+    isFeatureEnabled.mockResolvedValue(true);
     // @ts-ignore
     db.log.findMany.mockResolvedValue([]);
     // @ts-ignore
@@ -105,6 +106,64 @@ describe('logs search route', () => {
     const res: any = await GET(req);
 
     expect(isFeatureEnabled).toHaveBeenCalled();
+    expect(isFeatureEnabled).toHaveBeenCalledTimes(2);
     expect(res.status).toBe(200);
+  });
+
+  it('clamps page/pageSize and ignores invalid from/to dates', async () => {
+    // @ts-ignore
+    db.log.findMany.mockResolvedValue([{ id: 9 }]);
+    // @ts-ignore
+    db.log.count.mockResolvedValue(1);
+
+    const req: any = {
+      url: 'http://localhost/api/logs/search?page=0&pageSize=500&from=not-a-date&to=also-bad',
+      headers: new Headers(),
+    };
+
+    const res: any = await GET(req);
+
+    expect(res.status).toBe(200);
+    expect(res.body.page).toBe(1);
+    expect(res.body.pageSize).toBe(200);
+
+    // verify db.findMany received clamped take and skip
+    // @ts-ignore
+    const callArg = db.log.findMany.mock.calls[0][0];
+    expect(callArg.take).toBe(200);
+    expect(callArg.skip).toBe(0);
+  });
+
+  it('builds raw SQL with severity/source/requestId/from/to when metadata present', async () => {
+    // first call returns items
+    // @ts-ignore
+    db.$queryRawUnsafe.mockResolvedValueOnce([{ id: 11 }]);
+    // count query returns array with { count: bigint }
+    // @ts-ignore
+    db.$queryRawUnsafe.mockResolvedValueOnce([{ count: BigInt(7) }]);
+
+    const req: any = {
+      url: 'http://localhost/api/logs/search?metadata=meta&severity=warn&source=svc&requestId=req-1&from=2025-01-01&to=2025-01-02&pageSize=5&page=1',
+      headers: new Headers({ 'x-request-id': 'hdr-1' }),
+    };
+
+    const res: any = await GET(req);
+
+    expect(db.$queryRawUnsafe).toHaveBeenCalled();
+    // first call arg is the query string
+    // @ts-ignore
+    const firstCall = db.$queryRawUnsafe.mock.calls[0];
+    const queryString = firstCall[0] as string;
+    expect(queryString).toContain('metadata::text ILIKE');
+    // params should include metadata pattern and severity and source and requestId and timestamps
+    // @ts-ignore
+    const params = firstCall.slice(1);
+    expect(params[0]).toContain('%meta%');
+    expect(params).toContain('warn');
+    expect(params).toContain('svc');
+    expect(params).toContain('req-1');
+
+    expect(res.status).toBe(200);
+    expect(res.body.total).toBe(7);
   });
 });

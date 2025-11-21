@@ -14,6 +14,15 @@ vi.mock('@/app/lib/db', () => {
   };
 });
 
+// Mock logger so we can assert warn/error branches without noisy output
+vi.mock('@/app/utils/logger', () => ({
+  createLogger: () => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+  }),
+}));
+
 import { GET as metadataGET } from '@/app/api/neon/metadata/route';
 import { GET as limitsGET } from '@/app/api/neon/limits/route';
 import { GET as healthGET } from '@/app/api/neon/health/route';
@@ -111,5 +120,37 @@ describe('Neon API routes', () => {
     expect(data).toHaveProperty('plan');
     expect(Array.isArray(data.plan)).toBe(true);
     expect(data.plan.length).toBeGreaterThan(0);
+  });
+
+  it('metadata returns N/A when DATABASE_URL is missing', async () => {
+    // ensure no DATABASE_URL
+    delete process.env.DATABASE_URL;
+    const req = new Request('http://localhost/api/neon/metadata');
+    const res = await metadataGET(req as any);
+    const data = await res.json();
+    expect(data).toHaveProperty('host', 'N/A');
+    expect(data).toHaveProperty('database', 'N/A');
+    expect(data).toHaveProperty('neonConsoleUrl');
+  });
+
+  it('metadata handles malformed DATABASE_URL gracefully', async () => {
+    process.env.DATABASE_URL = 'not-a-url';
+    const req = new Request('http://localhost/api/neon/metadata');
+    const res = await metadataGET(req as any);
+    const data = await res.json();
+    expect(data.host).toBe('Unable to parse DATABASE_URL');
+  });
+
+  it('health returns 500 on DB error and reports failure', async () => {
+    const { db } = await import('@/app/lib/db');
+    (db.$queryRaw as any).mockImplementationOnce(async () => {
+      throw new Error('connection failed');
+    });
+
+    const req = new Request('http://localhost/api/neon/health');
+    const res = await healthGET(req as any);
+    const data = await res.json();
+    expect(res.status).toBe(500);
+    expect(data).toHaveProperty('error');
   });
 });
