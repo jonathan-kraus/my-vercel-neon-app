@@ -601,6 +601,28 @@ export default function DbStatus() {
         </section>
       )}
 
+      {healthResult && (
+        <section className="mt-6 p-4 bg-white border rounded">
+          <h3 className="text-lg font-semibold">Health Check Result</h3>
+          <div className="mt-2">
+            <p className="text-sm text-gray-600">
+              Status:{' '}
+              <span
+                className={
+                  healthResult.ok ? 'text-green-600 font-semibold' : 'text-yellow-600 font-semibold'
+                }
+              >
+                {healthResult.ok ? 'OK' : 'Degraded'}
+              </span>
+            </p>
+            <p className="text-sm text-gray-600">Latency: {healthResult.latencyMs ?? 'N/A'} ms</p>
+            {healthResult.error && (
+              <p className="text-sm text-red-600">Error: {healthResult.error}</p>
+            )}
+          </div>
+        </section>
+      )}
+
       <div className="mt-6 flex gap-3">
         <button onClick={runHealthCheck} className="px-3 py-2 bg-indigo-600 text-white rounded">
           Run DB Health Check
