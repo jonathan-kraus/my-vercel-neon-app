@@ -1,0 +1,17 @@
+# Codecov configuration
+# See: https://docs.codecov.com/docs/codecov-yaml
+
+coverage:
+  precision: 2
+
+status:
+  project:
+    default:
+      # Use Codecov's heuristic target (auto) or set a numeric value like '80%'
+      target: auto
+      # Allowed delta before failing the status check (0% = fail on any drop)
+      threshold: 0%
+      # Compare against PR/base automatically
+      base: auto
+
+# You can add more configuration here (flags, comment, etc.)
