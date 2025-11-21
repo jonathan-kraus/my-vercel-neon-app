@@ -20,6 +20,7 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const repo = context.repo.repo;
+
             // Determine PR number depending on event (pull_request or check_suite)
             let pr = null;
             if (context.payload.pull_request && context.payload.pull_request.number) {
@@ -27,18 +28,48 @@ jobs:
             } else if (context.payload.check_suite && Array.isArray(context.payload.check_suite.pull_requests) && context.payload.check_suite.pull_requests.length) {
               pr = context.payload.check_suite.pull_requests[0].number;
             }
+
             if (!pr) {
               console.log('No associated PR found for this event — nothing to do.');
               return;
             }
-            try {
-              await github.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/auto-merge', {
-                owner,
-                repo,
-                pull_number: pr,
-                merge_method: 'squash'
-              });
-              console.log(`Enabled auto-merge (squash) on PR #${pr}`);
-            } catch (err) {
-              console.log(`Could not enable auto-merge on PR #${pr}: ${err.message}`);
+
+            const maxAttempts = 6;
+            const delayMs = 10000; // 10s between checks
+
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+              try {
+                const { data: prData } = await github.rest.pulls.get({ owner, repo, pull_number: pr });
+                const mergeable = prData.mergeable; // true/false/null
+                const mergeable_state = prData.mergeable_state; // 'clean', 'dirty', etc.
+                console.log(`Attempt ${attempt}/${maxAttempts}: mergeable=${mergeable} mergeable_state=${mergeable_state}`);
+
+                // Consider PR ready when GitHub reports mergeable true or mergeable_state === 'clean'
+                if (mergeable === true || mergeable_state === 'clean') {
+                  try {
+                    await github.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/auto-merge', {
+                      owner,
+                      repo,
+                      pull_number: pr,
+                      merge_method: 'squash'
+                    });
+                    console.log(`Enabled auto-merge (squash) on PR #${pr}`);
+                    return;
+                  } catch (err) {
+                    console.log(`Enable request failed: ${err.message}`);
+                    // continue to retry in case of transient API errors
+                  }
+                } else {
+                  console.log('PR not mergeable yet.');
+                }
+              } catch (err) {
+                console.log(`Error checking PR status: ${err.message}`);
+              }
+
+              if (attempt < maxAttempts) {
+                console.log(`Waiting ${delayMs / 1000}s before retrying...`);
+                await new Promise(resolve => setTimeout(resolve, delayMs));
+              }
             }
+
+            console.log(`Could not enable auto-merge on PR #${pr} after ${maxAttempts} attempts.`);
