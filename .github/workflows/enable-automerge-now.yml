@@ -12,12 +12,13 @@ jobs:
   enable:
     runs-on: ubuntu-latest
     steps:
-      - name: Enable auto-merge for PR #32
+      - name: Enable auto-merge for PR #34
         env:
           GITHUB_API: https://api.github.com/graphql
-          PR_NUMBER: 32
+          PR_NUMBER: 34
           REPO_OWNER: jonathan-kraus
           REPO_NAME: my-vercel-neon-app
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           echo "Fetching PR node id for #${PR_NUMBER}..."
