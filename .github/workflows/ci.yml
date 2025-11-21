@@ -66,10 +66,10 @@ jobs:
       - name: Lint (no warnings)
         run: pnpm lint -- --max-warnings=0
 
-      - name: Run tests
+      - name: Run tests (with coverage)
         env:
           CI: true
-        run: pnpm test -- --run
+        run: pnpm test -- --run --coverage
 
       - name: Upload JUnit test report
         if: always()
