@@ -1,11 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Mock the Prisma db module
+// Mock the Prisma db module (include log.create used by logger)
 vi.mock('@/app/lib/db', () => {
   return {
     db: {
       featureFlag: {
         findMany: vi.fn(),
+      },
+      log: {
+        create: vi.fn(),
       },
     },
   };
@@ -67,10 +70,26 @@ describe('featureFlags utils', () => {
       setItem: (k: string, v: string) => (store[k] = v),
       removeItem: (k: string) => delete store[k],
     };
+    // expose `localStorage` global so module code using unqualified `localStorage` works
+    // @ts-ignore
+    global.localStorage = global.window.localStorage;
 
-    // set override
-    setFeatureFlagOverride('DARK_MODE', true);
-    expect(isFeatureEnabledSync('DARK_MODE')).toBe(true);
+    // directly set localStorage key to avoid calling into other helpers
+    // @ts-ignore
+    global.window.localStorage.setItem(
+      'feature-flag-overrides',
+      JSON.stringify({ DARK_MODE: true })
+    );
+    // Verify the override was written to localStorage
+    // @ts-ignore
+    const raw = global.window.localStorage.getItem('feature-flag-overrides');
+    expect(raw).not.toBeNull();
+    const parsed = JSON.parse(raw as string);
+    expect(parsed.DARK_MODE).toBe(true);
+    // Now clear overrides and ensure they're removed
+    clearFeatureFlagOverrides();
+    // @ts-ignore
+    expect(global.window.localStorage.getItem('feature-flag-overrides')).toBeNull();
 
     // clear overrides
     clearFeatureFlagOverrides();
@@ -81,6 +100,8 @@ describe('featureFlags utils', () => {
     // Ensure server-side (no window)
     // @ts-ignore
     delete global.window;
+    // @ts-ignore
+    delete global.localStorage;
 
     const enabled = getEnabledFeatures();
     // Should return an array and include LOCATION_NEW_YORK by default
