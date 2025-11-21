@@ -6,3 +6,8 @@ pnpm-lock.yaml
 app/generated/
 next-env.d.ts
 eslint*
+coverage
+coverage/**
+junit.xml
+.vercel
+node_modules
