@@ -37,23 +37,68 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      - name: Cache project pnpm files
+        uses: actions/cache@v4
+        with:
+          path: |
+            .pnpm
+            node_modules
+          key: ${{ runner.os }}-pnpm-project-${{ hashFiles('**/package.json','**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-project-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Check for outdated dependencies
         run: pnpm outdated || true
 
+      - name: Prettier check
+        run: pnpm run prettier:check
+
+      - name: Type check
+        run: pnpm run type-check
+
       - name: Security audit
         if: github.event_name == 'push'
         run: pnpm audit
 
-      - name: Lint
-        run: pnpm lint
+      - name: Lint (no warnings)
+        run: pnpm lint -- --max-warnings=0
 
       - name: Run tests
         env:
           CI: true
-        run: pnpm test
+        run: pnpm test -- --run
+
+      - name: Upload JUnit test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report
+          path: junit.xml
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+
+      - name: Upload to Codecov (GitHub App)
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage/lcov.info
+          flags: unittests
+          # Do not fail the CI if upload fails when using the GitHub App
+          fail_ci_if_error: false
+          verbose: true
+
+      - name: Enforce coverage threshold
+        if: always()
+        run: |
+          node ./scripts/check-coverage.mjs 70
 
       - name: Build
         run: pnpm build
