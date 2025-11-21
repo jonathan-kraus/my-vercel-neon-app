@@ -1,0 +1,22 @@
+# Codecov configuration
+# See: https://docs.codecov.com/docs/codecov-yaml
+comment: #this is a top-level key
+  layout: ' diff, flags, files'
+  behavior: default
+  require_changes: false # if true: only post the comment if coverage changes
+  require_base: false # [true :: must have a base report to post]
+  require_head: true # [true :: must have a head report to post]
+  hide_project_coverage: false # [true :: only show coverage on the git diff aka patch coverage]]
+coverage:
+  precision: 2
+
+status:
+  project:
+    default:
+      # Use Codecov's heuristic target (auto) or set a numeric value like '80%'
+      target: 82%
+      # Allowed delta before failing the status check (0% = fail on any drop)
+      threshold: 0%
+      # Compare against PR/base automatically
+      base: auto
+# You can add more configuration here (flags, comment, etc.)
