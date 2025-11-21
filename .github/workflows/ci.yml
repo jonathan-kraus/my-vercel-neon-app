@@ -69,7 +69,7 @@ jobs:
       - name: Run tests (with coverage)
         env:
           CI: true
-        run: pnpm test -- --run --coverage
+        run: pnpm test -- --coverage
 
       - name: Upload JUnit test report
         if: always()
