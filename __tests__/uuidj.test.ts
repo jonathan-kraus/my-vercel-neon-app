@@ -34,13 +34,15 @@ describe('uuidj utilities', () => {
 
     const res = uuidj(req);
 
-    expect(res.headers.get('x-request-id')).toBe('fixed-uuid-123');
-    expect(res.request.headers.get('x-request-id')).toBe('fixed-uuid-123');
+    const anyRes = res as any;
+    expect(anyRes.headers.get('x-request-id')).toBe('fixed-uuid-123');
+    expect(anyRes.request.headers.get('x-request-id')).toBe('fixed-uuid-123');
   });
 
   it('uuidj sets header when none existed before', () => {
     const req = { headers: new Headers() } as any;
     const res = uuidj(req);
-    expect(res.headers.get('x-request-id')).toBe('fixed-uuid-123');
+    const anyRes = res as any;
+    expect(anyRes.headers.get('x-request-id')).toBe('fixed-uuid-123');
   });
 });
