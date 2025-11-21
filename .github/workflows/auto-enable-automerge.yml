@@ -26,39 +26,7 @@ jobs:
                 pull_number: pr,
                 merge_method: 'squash'
               });
-              core.info(`Enabled auto-merge (squash) on PR #${pr}`);
+              console.log(`Enabled auto-merge (squash) on PR #${pr}`);
             } catch (err) {
-              core.info(`Could not enable auto-merge on PR #${pr}: ${err.message}`);
-            }
-name: Enable Auto-Merge on New PRs
-
-on:
-  pull_request:
-    types: [opened, reopened, ready_for_review, synchronize]
-
-permissions:
-  pull-requests: write
-
-jobs:
-  enable-auto-merge:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Enable auto-merge (squash)
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const pr = context.payload.pull_request.number;
-            try {
-              await github.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/auto-merge', {
-                owner,
-                repo,
-                pull_number: pr,
-                merge_method: 'squash'
-              });
-              core.info(`Enabled auto-merge (squash) on PR #${pr}`);
-            } catch (err) {
-              core.info(`Could not enable auto-merge on PR #${pr}: ${err.message}`);
+              console.log(`Could not enable auto-merge on PR #${pr}: ${err.message}`);
             }
