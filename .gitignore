@@ -47,3 +47,7 @@ next-env.d.ts
 
 # Test artifacts
 junit.xml
+
+# Local tools and downloaded uploaders
+codecov.exe
+tools/
