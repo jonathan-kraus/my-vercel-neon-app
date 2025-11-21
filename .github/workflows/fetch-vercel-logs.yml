@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       preview_url:
-        description: 'Vercel preview URL or deployment domain'
+        description: 'Vercel preview URL or deployment domain component'
         required: true
         default: 'https://vercel.com/jonathan-kraus-projects/my-vercel-neon-app/FmtX8H3FxqGJjvpZr93xuTHGTb54'
   push:
@@ -25,7 +25,9 @@ jobs:
       - name: Fetch Vercel logs
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          PREVIEW_URL: ${{ github.event.inputs.preview_url || env.PREVIEW_URL }}
+          PREVIEW_URL: ${{ github.event.inputs.preview_url || 'https://vercel.com/jonathan-kraus-projects/my-vercel-neon-app/FmtX8H3FxqGJjvpZr93xuTHGTb54' }}
         run: |
-          echo "Fetching Vercel logs for ${PREVIEW_URL:-$PREVIEW_URL}"
-          vercel logs "${PREVIEW_URL:-$PREVIEW_URL}" --token "$VERCEL_TOKEN" --since 1h --limit 500 || true
+          echo "Fetching Vercel logs for $PREVIEW_URL"
+          # The Vercel CLI requires exactly one argument (deployment URL or ID).
+          # Remove deprecated flags (--since, --limit) and pass the preview URL.
+          vercel logs "$PREVIEW_URL" --token "$VERCEL_TOKEN" --json || true
