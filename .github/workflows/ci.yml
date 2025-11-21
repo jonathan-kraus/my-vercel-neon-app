@@ -94,17 +94,27 @@ jobs:
           # Do not fail the CI if upload fails when using the GitHub App
           fail_ci_if_error: false
           verbose: true
+        continue-on-error: true
 
       - name: Enforce coverage threshold (PRs - tolerant)
         if: always() && github.event_name == 'pull_request'
         continue-on-error: true
         run: |
-          node ./scripts/check-coverage.mjs 70
+          if [ -f coverage/lcov.info ]; then
+            node ./scripts/check-coverage.mjs 70
+          else
+            echo "No coverage/lcov.info found — skipping coverage enforcement for PR"
+          fi
 
       - name: Enforce coverage threshold (push to main - strict)
         if: always() && github.event_name == 'push'
         run: |
-          node ./scripts/check-coverage.mjs 70
+          if [ -f coverage/lcov.info ]; then
+            node ./scripts/check-coverage.mjs 70
+          else
+            echo "No coverage/lcov.info found — failing because this is a push to main"
+            exit 2
+          fi
 
       - name: Build
         run: pnpm build
