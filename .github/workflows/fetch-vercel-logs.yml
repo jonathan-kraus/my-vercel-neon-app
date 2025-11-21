@@ -7,6 +7,7 @@ on:
         description: 'Vercel preview URL or deployment domain'
         required: true
         default: 'https://vercel.com/jonathan-kraus-projects/my-vercel-neon-app/FmtX8H3FxqGJjvpZr93xuTHGTb54'
+  push:
 
 permissions:
   contents: read
@@ -24,37 +25,7 @@ jobs:
       - name: Fetch Vercel logs
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          PREVIEW_URL: ${{ github.event.inputs.preview_url }}
+          PREVIEW_URL: ${{ github.event.inputs.preview_url || env.PREVIEW_URL }}
         run: |
-          echo "Fetching Vercel logs for $PREVIEW_URL"
-          vercel logs "$PREVIEW_URL" --token "$VERCEL_TOKEN" --since 1h --limit 500 || true
-name: Fetch Vercel Preview Logs
-
-on:
-  workflow_dispatch:
-    inputs:
-      preview_url:
-        description: 'Vercel preview URL or deployment domain'
-        required: true
-        default: 'https://vercel.com/jonathan-kraus-projects/my-vercel-neon-app/FmtX8H3FxqGJjvpZr93xuTHGTb54'
-
-permissions:
-  contents: read
-
-jobs:
-  fetch:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout (no code needed)
-        uses: actions/checkout@v4
-
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-
-      - name: Fetch Vercel logs
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          PREVIEW_URL: ${{ github.event.inputs.preview_url }}
-        run: |
-          echo "Fetching Vercel logs for $PREVIEW_URL"
-          vercel logs "$PREVIEW_URL" --token "$VERCEL_TOKEN" --since 1h --limit 500 || true
+          echo "Fetching Vercel logs for ${PREVIEW_URL:-$PREVIEW_URL}"
+          vercel logs "${PREVIEW_URL:-$PREVIEW_URL}" --token "$VERCEL_TOKEN" --since 1h --limit 500 || true
