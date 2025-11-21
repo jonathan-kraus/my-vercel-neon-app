@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="76" failures="0" errors="0" time="0.1280437">
-    <testsuite name="__tests__/api-posts.test.ts" timestamp="2025-11-21T01:17:13.876Z" hostname="Dell081022" tests="5" failures="0" errors="0" skipped="0" time="0.0065419">
-        <testcase classname="__tests__/api-posts.test.ts" name="CreatePostSchema &gt; should validate valid input" time="0.0023701">
+<testsuites name="vitest tests" tests="76" failures="0" errors="0" time="0.1187714">
+    <testsuite name="__tests__/api-posts.test.ts" timestamp="2025-11-21T01:18:44.301Z" hostname="Dell081022" tests="5" failures="0" errors="0" skipped="0" time="0.0066462">
+        <testcase classname="__tests__/api-posts.test.ts" name="CreatePostSchema &gt; should validate valid input" time="0.0032789">
         </testcase>
-        <testcase classname="__tests__/api-posts.test.ts" name="CreatePostSchema &gt; should reject missing title" time="0.0008363">
+        <testcase classname="__tests__/api-posts.test.ts" name="CreatePostSchema &gt; should reject missing title" time="0.0009712">
         </testcase>
-        <testcase classname="__tests__/api-posts.test.ts" name="CreatePostSchema &gt; should reject empty title" time="0.0004777">
+        <testcase classname="__tests__/api-posts.test.ts" name="CreatePostSchema &gt; should reject empty title" time="0.0004075">
         </testcase>
-        <testcase classname="__tests__/api-posts.test.ts" name="CreatePostSchema &gt; should reject missing body" time="0.0005626">
+        <testcase classname="__tests__/api-posts.test.ts" name="CreatePostSchema &gt; should reject missing body" time="0.0002564">
         </testcase>
-        <testcase classname="__tests__/api-posts.test.ts" name="CreatePostSchema &gt; should reject empty body" time="0.0004165">
+        <testcase classname="__tests__/api-posts.test.ts" name="CreatePostSchema &gt; should reject empty body" time="0.0002296">
         </testcase>
     </testsuite>
-    <testsuite name="__tests__/feature-flags.test.ts" timestamp="2025-11-21T01:17:13.879Z" hostname="Dell081022" tests="20" failures="0" errors="0" skipped="0" time="0.0267291">
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; returns environment variable default when no localStorage override" time="0.0032403">
+    <testsuite name="__tests__/feature-flags.test.ts" timestamp="2025-11-21T01:18:44.303Z" hostname="Dell081022" tests="20" failures="0" errors="0" skipped="0" time="0.0248075">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; returns environment variable default when no localStorage override" time="0.0025588">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; returns localStorage override when present" time="0.0003739">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; returns localStorage override when present" time="0.000454">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; prioritizes localStorage over environment defaults" time="0.0003503">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; prioritizes localStorage over environment defaults" time="0.0004478">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; returns environment default when localStorage override is invalid JSON" time="0.0003122">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; returns environment default when localStorage override is invalid JSON" time="0.0003329">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; handles non-existent feature flags gracefully" time="0.0002768">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; handles non-existent feature flags gracefully" time="0.0003497">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; works in server environment (no window)" time="0.0002613">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; isFeatureEnabled &gt; works in server environment (no window)" time="0.000358">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; setFeatureFlagOverride &gt; saves override to localStorage" time="0.0023801">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; setFeatureFlagOverride &gt; saves override to localStorage" time="0.0019521">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; setFeatureFlagOverride &gt; merges with existing overrides" time="0.0005024">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; setFeatureFlagOverride &gt; merges with existing overrides" time="0.0005028">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; setFeatureFlagOverride &gt; handles localStorage errors gracefully" time="0.0087002">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; setFeatureFlagOverride &gt; handles localStorage errors gracefully" time="0.0080492">
             <system-err>
 Failed to save feature flag override: Error: Storage quota exceeded
     at Object.&lt;anonymous&gt; (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/__tests__/feature-flags.test.ts:210:15)
@@ -45,11 +45,11 @@ Failed to save feature flag override: Error: Storage quota exceeded
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; setFeatureFlagOverride &gt; does nothing in server environment" time="0.0003967">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; setFeatureFlagOverride &gt; does nothing in server environment" time="0.0005762">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; clearFeatureFlagOverrides &gt; removes overrides from localStorage" time="0.0003408">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; clearFeatureFlagOverrides &gt; removes overrides from localStorage" time="0.0003674">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; clearFeatureFlagOverrides &gt; handles localStorage errors gracefully" time="0.0011635">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; clearFeatureFlagOverrides &gt; handles localStorage errors gracefully" time="0.0016832">
             <system-err>
 Failed to clear feature flag overrides: Error: Storage error
     at Object.&lt;anonymous&gt; (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/__tests__/feature-flags.test.ts:242:15)
@@ -65,27 +65,27 @@ Failed to clear feature flag overrides: Error: Storage error
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; clearFeatureFlagOverrides &gt; does nothing in server environment" time="0.0002767">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; clearFeatureFlagOverrides &gt; does nothing in server environment" time="0.0003136">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; getEnabledFeatures &gt; returns array of enabled feature flag names" time="0.0009131">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; getEnabledFeatures &gt; returns array of enabled feature flag names" time="0.0010722">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; getEnabledFeatures &gt; respects localStorage overrides" time="0.0005268">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; getEnabledFeatures &gt; respects localStorage overrides" time="0.0005247">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; getAllFeatureFlags &gt; returns all feature flags with their current values" time="0.0006661">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; getAllFeatureFlags &gt; returns all feature flags with their current values" time="0.000555">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; getAllFeatureFlags &gt; returns a copy, not the original object" time="0.0002999">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; getAllFeatureFlags &gt; returns a copy, not the original object" time="0.0003146">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; FEATURE_FLAGS constant &gt; contains expected feature flags" time="0.0002976">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; FEATURE_FLAGS constant &gt; contains expected feature flags" time="0.0003881">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; FEATURE_FLAGS constant &gt; all flags have boolean values" time="0.0017316">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; FEATURE_FLAGS constant &gt; all flags have boolean values" time="0.000582">
         </testcase>
-        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; FEATURE_FLAGS constant &gt; includes location flags for all defined locations" time="0.0011094">
+        <testcase classname="__tests__/feature-flags.test.ts" name="Feature Flags &gt; FEATURE_FLAGS constant &gt; includes location flags for all defined locations" time="0.0009395">
         </testcase>
     </testsuite>
-    <testsuite name="__tests__/feature-flags.util.test.ts" timestamp="2025-11-21T01:17:13.890Z" hostname="Dell081022" tests="5" failures="0" errors="0" skipped="0" time="0.0091106">
-        <testcase classname="__tests__/feature-flags.util.test.ts" name="featureFlags utils &gt; returns DB flag on server-side when present" time="0.002785">
+    <testsuite name="__tests__/feature-flags.util.test.ts" timestamp="2025-11-21T01:18:44.308Z" hostname="Dell081022" tests="5" failures="0" errors="0" skipped="0" time="0.0104067">
+        <testcase classname="__tests__/feature-flags.util.test.ts" name="featureFlags utils &gt; returns DB flag on server-side when present" time="0.0028776">
         </testcase>
-        <testcase classname="__tests__/feature-flags.util.test.ts" name="featureFlags utils &gt; falls back to env when DB fails on server-side" time="0.0035123">
+        <testcase classname="__tests__/feature-flags.util.test.ts" name="featureFlags utils &gt; falls back to env when DB fails on server-side" time="0.0044154">
             <system-err>
 Failed to fetch feature flags from database: Error: db error
     at C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/__tests__/feature-flags.util.test.ts:54:47
@@ -101,15 +101,15 @@ Failed to fetch feature flags from database: Error: db error
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/feature-flags.util.test.ts" name="featureFlags utils &gt; isFeatureEnabledSync reads localStorage override on client" time="0.0005119">
+        <testcase classname="__tests__/feature-flags.util.test.ts" name="featureFlags utils &gt; isFeatureEnabledSync reads localStorage override on client" time="0.0008396">
         </testcase>
-        <testcase classname="__tests__/feature-flags.util.test.ts" name="featureFlags utils &gt; getEnabledFeatures falls back to env when no cache" time="0.0008313">
+        <testcase classname="__tests__/feature-flags.util.test.ts" name="featureFlags utils &gt; getEnabledFeatures falls back to env when no cache" time="0.0008938">
         </testcase>
-        <testcase classname="__tests__/feature-flags.util.test.ts" name="featureFlags utils &gt; getAllFeatureFlags returns object shape" time="0.0001808">
+        <testcase classname="__tests__/feature-flags.util.test.ts" name="featureFlags utils &gt; getAllFeatureFlags returns object shape" time="0.0001895">
         </testcase>
     </testsuite>
-    <testsuite name="__tests__/fetch-weather.test.ts" timestamp="2025-11-21T01:17:13.893Z" hostname="Dell081022" tests="13" failures="0" errors="0" skipped="0" time="0.0309343">
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Successful API calls &gt; fetches weather data from Tomorrow.io API" time="0.0088449">
+    <testsuite name="__tests__/fetch-weather.test.ts" timestamp="2025-11-21T01:18:44.310Z" hostname="Dell081022" tests="13" failures="0" errors="0" skipped="0" time="0.0289847">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Successful API calls &gt; fetches weather data from Tomorrow.io API" time="0.0104534">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -121,7 +121,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Successful API calls &gt; fetches location details from Nominatim API" time="0.0014765">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Successful API calls &gt; fetches location details from Nominatim API" time="0.0017964">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -133,7 +133,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Successful API calls &gt; logs weather data to database" time="0.0021059">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Successful API calls &gt; logs weather data to database" time="0.0021668">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -145,7 +145,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Successful API calls &gt; logs API call to database" time="0.0028974">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Successful API calls &gt; logs API call to database" time="0.0027228">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -157,7 +157,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Successful API calls &gt; returns complete weather data structure" time="0.0011822">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Successful API calls &gt; returns complete weather data structure" time="0.0010262">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -169,7 +169,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; API Error Handling &gt; throws error when Tomorrow.io API fails" time="0.0026116">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; API Error Handling &gt; throws error when Tomorrow.io API fails" time="0.0017505">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -179,7 +179,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; API Error Handling &gt; handles Nominatim API failure with fallback location details" time="0.0018662">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; API Error Handling &gt; handles Nominatim API failure with fallback location details" time="0.0012768">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -191,7 +191,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; API Error Handling &gt; handles malformed Nominatim response" time="0.0017534">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; API Error Handling &gt; handles malformed Nominatim response" time="0.0008877">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -203,7 +203,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Custom Location Parameter &gt; uses provided location instead of active location" time="0.0018043">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Custom Location Parameter &gt; uses provided location instead of active location" time="0.0011084">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -219,7 +219,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Custom Location Parameter &gt; uses custom location for fallback location details" time="0.0013383">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Custom Location Parameter &gt; uses custom location for fallback location details" time="0.0011146">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -235,7 +235,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Environment Variables &gt; throws error when TOMORROW_API_KEY is not set" time="0.0010324">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Environment Variables &gt; throws error when TOMORROW_API_KEY is not set" time="0.0010023">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -245,7 +245,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Request ID Handling &gt; generates request ID when not provided" time="0.0010643">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Request ID Handling &gt; generates request ID when not provided" time="0.0010125">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -257,7 +257,7 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
 
             </system-err>
         </testcase>
-        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Request ID Handling &gt; uses provided request ID" time="0.0008098">
+        <testcase classname="__tests__/fetch-weather.test.ts" name="fetchWeather &gt; Request ID Handling &gt; uses provided request ID" time="0.0009061">
             <system-err>
 Failed to fetch feature flags from database: TypeError: Cannot read properties of undefined (reading &apos;findMany&apos;)
     at fetchFlagsFromDB (C:/Users/jonat/Documents/git/jnode/neonone/my-vercel-neon-app/app/utils/featureFlags.ts:36:40)
@@ -270,76 +270,76 @@ Failed to fetch feature flags from database: TypeError: Cannot read properties o
             </system-err>
         </testcase>
     </testsuite>
-    <testsuite name="__tests__/locations.test.ts" timestamp="2025-11-21T01:17:13.900Z" hostname="Dell081022" tests="17" failures="0" errors="0" skipped="0" time="0.0120108">
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getAvailableLocations &gt; returns only locations with enabled feature flags" time="0.0038064">
+    <testsuite name="__tests__/locations.test.ts" timestamp="2025-11-21T01:18:44.318Z" hostname="Dell081022" tests="17" failures="0" errors="0" skipped="0" time="0.0135628">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getAvailableLocations &gt; returns only locations with enabled feature flags" time="0.0028155">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getAvailableLocations &gt; returns empty array when no locations are enabled" time="0.0003087">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getAvailableLocations &gt; returns empty array when no locations are enabled" time="0.0006725">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getAvailableLocations &gt; returns all locations when all flags are enabled" time="0.0003378">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getAvailableLocations &gt; returns all locations when all flags are enabled" time="0.0008964">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getActiveLocation &gt; returns first available location when locations are enabled" time="0.0005738">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getActiveLocation &gt; returns first available location when locations are enabled" time="0.0007608">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getActiveLocation &gt; returns King of Prussia as fallback when no locations are enabled" time="0.0002036">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getActiveLocation &gt; returns King of Prussia as fallback when no locations are enabled" time="0.0003412">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getActiveLocation &gt; returns first location in priority order" time="0.000162">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getActiveLocation &gt; returns first location in priority order" time="0.0002996">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getLocationByName &gt; returns correct location for valid name" time="0.0002632">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getLocationByName &gt; returns correct location for valid name" time="0.0004599">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getLocationByName &gt; returns undefined for invalid name" time="0.0001241">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getLocationByName &gt; returns undefined for invalid name" time="0.0003208">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getLocationByName &gt; returns correct location for all defined locations" time="0.0002261">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; getLocationByName &gt; returns correct location for all defined locations" time="0.0006336">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; formatLocationForTomorrowIO &gt; formats location as &quot;lat,lon&quot; string" time="0.0001355">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; formatLocationForTomorrowIO &gt; formats location as &quot;lat,lon&quot; string" time="0.0002943">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; formatLocationForTomorrowIO &gt; handles negative coordinates correctly" time="0.0000808">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; formatLocationForTomorrowIO &gt; handles negative coordinates correctly" time="0.000133">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; formatLocationForTomorrowIO &gt; preserves coordinate precision" time="0.000069">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; formatLocationForTomorrowIO &gt; preserves coordinate precision" time="0.0001309">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; formatLocationForOSM &gt; returns object with lat and lon properties" time="0.0001686">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; formatLocationForOSM &gt; returns object with lat and lon properties" time="0.0002344">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; formatLocationForOSM &gt; handles all location types" time="0.0007972">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; formatLocationForOSM &gt; handles all location types" time="0.0009025">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; LOCATIONS constant &gt; contains all expected locations" time="0.0002867">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; LOCATIONS constant &gt; contains all expected locations" time="0.0003047">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; LOCATIONS constant &gt; each location has required properties" time="0.0015157">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; LOCATIONS constant &gt; each location has required properties" time="0.0013289">
         </testcase>
-        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; LOCATIONS constant &gt; location coordinates are reasonable" time="0.0010578">
-        </testcase>
-    </testsuite>
-    <testsuite name="__tests__/neon-api.test.ts" timestamp="2025-11-21T01:17:13.904Z" hostname="Dell081022" tests="6" failures="0" errors="0" skipped="0" time="0.0176146">
-        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; metadata returns parsed DATABASE_URL info" time="0.0080755">
-        </testcase>
-        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; limits returns max/active/total connections and utilization" time="0.0018737">
-        </testcase>
-        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; health returns ok and latencyMs" time="0.0013192">
-        </testcase>
-        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; slow-queries returns pg_stat_statements results when available" time="0.0019955">
-        </testcase>
-        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; explain rejects non-SELECT queries" time="0.0015647">
-        </testcase>
-        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; explain returns plan for SELECT queries" time="0.0014286">
+        <testcase classname="__tests__/locations.test.ts" name="Location Utilities &gt; LOCATIONS constant &gt; location coordinates are reasonable" time="0.0008413">
         </testcase>
     </testsuite>
-    <testsuite name="__tests__/weather-api.test.ts" timestamp="2025-11-21T01:17:13.905Z" hostname="Dell081022" tests="10" failures="0" errors="0" skipped="0" time="0.0251024">
-        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Mock Data Mode &gt; returns mock forecast data when WEATHER_MOCK_DATA is enabled" time="0.007179">
+    <testsuite name="__tests__/neon-api.test.ts" timestamp="2025-11-21T01:18:44.323Z" hostname="Dell081022" tests="6" failures="0" errors="0" skipped="0" time="0.0147638">
+        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; metadata returns parsed DATABASE_URL info" time="0.0067882">
         </testcase>
-        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Mock Data Mode &gt; includes requestId in mock forecast data" time="0.0007952">
+        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; limits returns max/active/total connections and utilization" time="0.0013898">
         </testcase>
-        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Mock Data Mode &gt; returns error object indicating mock data usage" time="0.0011357">
+        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; health returns ok and latencyMs" time="0.0011493">
         </testcase>
-        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; throws error when TOMORROW_API_KEY is not set" time="0.0019219">
+        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; slow-queries returns pg_stat_statements results when available" time="0.0014469">
         </testcase>
-        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; handles API rate limit errors gracefully" time="0.0006783">
+        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; explain rejects non-SELECT queries" time="0.0011592">
         </testcase>
-        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; handles network errors gracefully" time="0.0037456">
+        <testcase classname="__tests__/neon-api.test.ts" name="Neon API routes &gt; explain returns plan for SELECT queries" time="0.001648">
         </testcase>
-        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; handles API server errors (5xx)" time="0.0014873">
+    </testsuite>
+    <testsuite name="__tests__/weather-api.test.ts" timestamp="2025-11-21T01:18:44.326Z" hostname="Dell081022" tests="10" failures="0" errors="0" skipped="0" time="0.0195997">
+        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Mock Data Mode &gt; returns mock forecast data when WEATHER_MOCK_DATA is enabled" time="0.0052946">
         </testcase>
-        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; processes valid API response correctly" time="0.0014391">
+        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Mock Data Mode &gt; includes requestId in mock forecast data" time="0.0005752">
         </testcase>
-        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; handles malformed API response" time="0.0009594">
+        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Mock Data Mode &gt; returns error object indicating mock data usage" time="0.0006943">
         </testcase>
-        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Location Parameter &gt; accepts and uses location parameter" time="0.0035202">
+        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; throws error when TOMORROW_API_KEY is not set" time="0.0016403">
+        </testcase>
+        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; handles API rate limit errors gracefully" time="0.0007164">
+        </testcase>
+        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; handles network errors gracefully" time="0.0039487">
+        </testcase>
+        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; handles API server errors (5xx)" time="0.0011773">
+        </testcase>
+        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; processes valid API response correctly" time="0.0012767">
+        </testcase>
+        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Real API Mode &gt; handles malformed API response" time="0.0009209">
+        </testcase>
+        <testcase classname="__tests__/weather-api.test.ts" name="getDailyForecast &gt; Location Parameter &gt; accepts and uses location parameter" time="0.0015568">
         </testcase>
     </testsuite>
 </testsuites>
