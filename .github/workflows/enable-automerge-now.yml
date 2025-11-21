@@ -1,0 +1,35 @@
+name: Enable Auto-merge Now
+
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  enable:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enable auto-merge for PR #32
+        env:
+          GITHUB_API: https://api.github.com/graphql
+          PR_NUMBER: 32
+          REPO_OWNER: jonathan-kraus
+          REPO_NAME: my-vercel-neon-app
+        run: |
+          set -euo pipefail
+          echo "Fetching PR node id for #${PR_NUMBER}..."
+          PR_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -X POST "$GITHUB_API" -d "{\"query\":\"query($owner:String!,$name:String!,$number:Int!){repository(owner:$owner,name:$name){pullRequest(number:$number){id}}}\",\"variables\":{\"owner\":\"${REPO_OWNER}\",\"name\":\"${REPO_NAME}\",\"number\":${PR_NUMBER}}}" | jq -r '.data.repository.pullRequest.id')
+          if [ -z "$PR_ID" ] || [ "$PR_ID" = "null" ]; then
+            echo "Could not fetch PR id. Full response:" >&2
+            echo "$PR_ID" >&2
+            exit 1
+          fi
+          echo "PR node id: $PR_ID"
+
+          echo "Enabling auto-merge (SQUASH) on PR #${PR_NUMBER}..."
+          ENABLE_RESP=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -X POST "$GITHUB_API" -d "{\"query\":\"mutation($prId:ID!){enablePullRequestAutoMerge(input:{pullRequestId:$prId,mergeMethod:SQUASH}){clientMutationId}}\",\"variables\":{\"prId\":\"${PR_ID}\"}}")
+          echo "Response: $ENABLE_RESP"
+          echo "Done."
