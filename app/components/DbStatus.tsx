@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';

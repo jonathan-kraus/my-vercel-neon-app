@@ -1,0 +1,6 @@
+coverage
+coverage/**
+junit.xml
+node_modules
+.next
+.vercel

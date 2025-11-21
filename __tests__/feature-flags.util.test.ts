@@ -17,7 +17,6 @@ vi.mock('@/app/lib/db', () => {
 import {
   isFeatureEnabled,
   isFeatureEnabledSync,
-  setFeatureFlagOverride,
   clearFeatureFlagOverrides,
   getEnabledFeatures,
   getAllFeatureFlags,
