@@ -94,7 +94,7 @@ export async function GET(req: Request) {
       query += ` ORDER BY timestamp DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
       queryParams.push(pageSize, skip);
 
-      items = await db.$queryRawUnsafe(query, ...queryParams);
+      items = await db.$queryRawUnsafe<any[]>(query, ...queryParams);
       const [countResult] = await db.$queryRawUnsafe<[{ count: bigint }]>(
         countQuery,
         ...queryParams.slice(0, paramIndex - 1)
@@ -123,7 +123,7 @@ export async function GET(req: Request) {
     if (await isFeatureEnabled('VERBOSE_LOGGING')) {
       log.info(`[app/api/logs/search/route] Retrieved log search results ${total}`, {
         action: `fetch_logs`,
-        itemsFetched: items,
+        itemsFetched: items.length,
         page,
         timestamp: new Date().toISOString(),
         totalItems: total,
