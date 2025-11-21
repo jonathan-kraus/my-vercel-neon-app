@@ -39,7 +39,7 @@ export async function GET(request: Request) {
     }
 
     // Log the actual URL being called for debugging
-    await log.info('Calling Neon API', {
+    await log.info('Calling Neon API ', {
       url: apiUrl.toString(),
       params: { from, to, limit, granularity },
     });
