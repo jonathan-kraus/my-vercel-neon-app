@@ -22,7 +22,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Fetching PR node id for #${PR_NUMBER}..."
-          PR_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -X POST "$GITHUB_API" -d "{\"query\":\"query(\\$owner:String!,\\$name:String!,\\$number:Int!){repository(owner:\\$owner,name:\\$name){pullRequest(number:\\$number){id}}}\",\"variables\":{\"owner\":\"${REPO_OWNER}\",\"name\":\"${REPO_NAME}\",\"number\":${PR_NUMBER}}}")
+          PR_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" -X POST "$GITHUB_API" -d "{\"query\":\"query(\\$owner:String!,\\$name:String!,\\$number:Int!){repository(owner:\\$owner,name:\\$name){pullRequest(number:\\$number){id}}}\",\"variables\":{\"owner\":\"${REPO_OWNER}\",\"name\":\"${REPO_NAME}\",\"number\":${PR_NUMBER}}}" | jq -r '.data.repository.pullRequest.id')
           if [ -z "$PR_ID" ] || [ "$PR_ID" = "null" ]; then
             echo "Could not fetch PR id. Full response:" >&2
             echo "$PR_ID" >&2
