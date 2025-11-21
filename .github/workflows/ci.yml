@@ -64,7 +64,7 @@ jobs:
         run: pnpm audit
 
       - name: Lint (no warnings)
-        run: pnpm lint -- --max-warnings=0
+        run: pnpm lint --max-warnings=0
 
       - name: Run tests (with coverage)
         env:

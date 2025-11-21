@@ -10,7 +10,7 @@
     "security": "pnpm audit",
     "type-check": "tsc --noEmit",
     "start": "next start",
-    "lint": "eslint . --max-warnings=0",
+    "lint": "eslint .",
     "postinstall": "prisma generate",
     "test": "vitest run",
     "prepare": "husky"
