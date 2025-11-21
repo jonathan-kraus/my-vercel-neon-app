@@ -125,7 +125,6 @@ export async function GET(req: Request) {
         action: `fetch_logs`,
         itemsFetched: items,
         page,
-        pageSize,
         timestamp: new Date().toISOString(),
         totalItems: total,
       });
