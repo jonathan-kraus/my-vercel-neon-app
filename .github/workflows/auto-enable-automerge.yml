@@ -36,13 +36,15 @@ jobs:
 
             const maxAttempts = 6;
             const delayMs = 10000; // 10s between checks
+            let lastState = 'unknown';
 
             for (let attempt = 1; attempt <= maxAttempts; attempt++) {
               try {
                 const { data: prData } = await github.rest.pulls.get({ owner, repo, pull_number: pr });
                 const mergeable = prData.mergeable; // true/false/null
                 const mergeable_state = prData.mergeable_state; // 'clean', 'dirty', etc.
-                console.log(`Attempt ${attempt}/${maxAttempts}: mergeable=${mergeable} mergeable_state=${mergeable_state}`);
+                lastState = `mergeable=${mergeable} mergeable_state=${mergeable_state}`;
+                console.log(`Attempt ${attempt}/${maxAttempts}: ${lastState}`);
 
                 // Consider PR ready when GitHub reports mergeable true or mergeable_state === 'clean'
                 if (mergeable === true || mergeable_state === 'clean') {
@@ -73,3 +75,12 @@ jobs:
             }
 
             console.log(`Could not enable auto-merge on PR #${pr} after ${maxAttempts} attempts.`);
+
+            // Post a comment on the PR to surface the failure and last-known mergeable state
+            try {
+              const body = `Automated auto-merge could not be enabled after ${maxAttempts} attempts. Last observed: ${lastState}. Please ensure required checks have completed successfully.`;
+              await github.rest.issues.createComment({ owner, repo, issue_number: pr, body });
+              console.log(`Posted comment to PR #${pr}`);
+            } catch (err) {
+              console.log(`Failed to post comment to PR #${pr}: ${err.message}`);
+            }
