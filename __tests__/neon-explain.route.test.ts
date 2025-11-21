@@ -36,8 +36,8 @@ describe('neon explain route', () => {
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
     // logger.error should have been called for missing query
-    expect(createLogger()).toBeDefined();
-    expect(createLogger()).toHaveProperty('error');
+    expect(createLogger('test')).toBeDefined();
+    expect(createLogger('test')).toHaveProperty('error');
   });
 
   it('rejects non-SELECT queries with 400', async () => {
@@ -47,8 +47,8 @@ describe('neon explain route', () => {
 
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
-    expect(createLogger()).toBeDefined();
-    expect(createLogger().warn).toHaveBeenCalled();
+    expect(createLogger('test')).toBeDefined();
+    expect(createLogger('test').warn).toHaveBeenCalled();
   });
 
   it('runs EXPLAIN for SELECT and returns plan lines', async () => {
@@ -64,7 +64,7 @@ describe('neon explain route', () => {
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('plan');
     expect(res.body.plan).toEqual(['PLAN 1', 'PLAN 2']);
-    expect(createLogger().info).toHaveBeenCalled();
+    expect(createLogger('test').info).toHaveBeenCalled();
   });
 
   it('returns 500 when DB throws', async () => {
