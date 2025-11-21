@@ -78,15 +78,32 @@ jobs:
           name: junit-report
           path: junit.xml
 
-      - name: Upload coverage
+      - name: Show workspace files for diagnostics
         if: always()
+        run: |
+          echo "Working directory: $(pwd)"
+          echo "List root files:"; ls -la
+          echo "List coverage dir (if present):"; ls -la coverage || true
+
+      - name: Check for coverage file
+        id: coverage-check
+        if: always()
+        run: |
+          if [ -f coverage/lcov.info ]; then
+            echo "coverage_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "coverage_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload coverage
+        if: always() && steps.coverage-check.outputs.coverage_exists == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage
 
       - name: Upload to Codecov (GitHub App)
-        if: always()
+        if: always() && steps.coverage-check.outputs.coverage_exists == 'true'
         uses: codecov/codecov-action@v4
         with:
           files: coverage/lcov.info
