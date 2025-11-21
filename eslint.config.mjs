@@ -10,10 +10,13 @@ const config = [
       'fixpost.js',
       'node_modules/**',
       '.next/**',
+      '.vercel/**',
       'out/**',
       'build/**',
       'next-env.d.ts',
       'app/generated/prisma/**',
+      'coverage/**',
+      'junit.xml',
 
     ],
   },
