@@ -169,6 +169,22 @@ If you want these dev tools documented further (or prefer the dev updater to req
 
 ## Feature Flags
 
+## Running tests with coverage (locally)
+
+To generate coverage reports locally, run the CI test command which invokes Vitest with the v8 coverage provider:
+
+```bash
+pnpm run test:ci
+```
+
+This writes `coverage/lcov.info` and an HTML report at `coverage/lcov-report/index.html`.
+
+If you prefer npm:
+
+```bash
+npm run test:ci
+```
+
 This project uses a database-backed feature flag system that works seamlessly on both client and server:
 
 ### How it works
