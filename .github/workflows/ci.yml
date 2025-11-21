@@ -118,7 +118,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f coverage/lcov.info ]; then
-            node ./scripts/check-coverage.mjs 70
+            node ./scripts/check-coverage.mjs 80
           else
             echo "No coverage/lcov.info found — skipping coverage enforcement for PR"
           fi
@@ -127,7 +127,7 @@ jobs:
         if: always() && github.event_name == 'push'
         run: |
           if [ -f coverage/lcov.info ]; then
-            node ./scripts/check-coverage.mjs 70
+            node ./scripts/check-coverage.mjs 80
           else
             echo "No coverage/lcov.info found — failing because this is a push to main"
             exit 2
