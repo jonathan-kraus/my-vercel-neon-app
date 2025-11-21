@@ -92,7 +92,6 @@ describe('logs search route', () => {
   });
 
   it('calls verbose logging when feature flag enabled', async () => {
-    // enable verbose logging
     // enable verbose logging for all checks
     // @ts-ignore
     isFeatureEnabled.mockResolvedValue(true);
