@@ -19,17 +19,21 @@ export async function GET(request: Request) {
   try {
     // Try to use pg_stat_statements if available
     try {
-      const rows: Array<{ query: string; calls: number; total_time: number; mean_time: number }> =
-        await db.$queryRaw`
-        SELECT query, calls, total_time, mean_time
+      const rows: Array<{
+        query: string;
+        calls: number;
+        total_exec_time: number;
+        mean_exec_time: number;
+      }> = await db.$queryRaw`
+        SELECT query, calls, total_exec_time, mean_exec_time
         FROM pg_stat_statements
-        ORDER BY mean_time DESC
+        ORDER BY mean_exec_time DESC
         LIMIT 5;
       `;
 
       await log.info('Fetched slow queries from pg_stat_statements', {
         count: rows.length,
-        mean: rows.reduce((acc, row) => acc + row.mean_time, 0) / rows.length,
+        mean: rows.reduce((acc, row) => acc + row.mean_exec_time, 0) / rows.length,
       });
 
       // Store each query in history
@@ -38,7 +42,7 @@ export async function GET(request: Request) {
           data: {
             queryHash: hashQuery(row.query),
             query: row.query,
-            meanTime: row.mean_time,
+            meanTime: row.mean_exec_time,
             calls: row.calls,
             source: 'pg_stat_statements',
             requestId,
