@@ -10,6 +10,9 @@ vi.mock('@/app/lib/db', () => {
       log: {
         create: vi.fn(async (_: any) => ({})),
       },
+      slowQueryHistory: {
+        create: vi.fn().mockResolvedValue({}),
+      },
     },
   };
 });
