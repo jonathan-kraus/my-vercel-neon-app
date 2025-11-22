@@ -31,6 +31,8 @@ type WeatherType = {
   rainAccumulationMin: number;
   rainAccumulationSum: number;
   locationDetails?: LocationDetails;
+  cached?: boolean;
+  cacheAge?: number;
 };
 
 export default function WeatherCardNew({
@@ -44,30 +46,43 @@ export default function WeatherCardNew({
 
   // NumberCounter and Sparkline moved to shared components
 
-  const fetchWeather = useCallback(async () => {
-    try {
-      const url = location ? `/api/getWeather?location=${location.name}` : '/api/getWeather';
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('API response not OK');
-      const data: WeatherType = await res.json();
-      setWeather(data);
-      setLastUpdated(Date.now());
-      console.log(`Weather received [${data.requestId}]:`, data);
-      console.log(
-        `[${data.requestId}] Weather received for ${data.locationName} at ${data.lastEmailTimestamp}:`,
-        data
-      );
+  const fetchWeather = useCallback(
+    async (forceRefresh = false) => {
+      try {
+        const params = new URLSearchParams();
+        if (location) params.append('location', location.name);
+        if (forceRefresh) params.append('forceRefresh', 'true');
 
-      if (data.emailSent) {
-        toast.success(`[${data.requestId}] 📧 Weather email success!`);
-      } else {
-        toast(`[${data.requestId}] ⏱️ Email already sent today`, { icon: '⏳' });
+        const url = `/api/getWeather${params.toString() ? '?' + params.toString() : ''}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('API response not OK');
+        const data: WeatherType = await res.json();
+        setWeather(data);
+        setLastUpdated(Date.now());
+        console.log(`Weather received [${data.requestId}]:`, data);
+        console.log(
+          `[${data.requestId}] Weather received for ${data.locationName} at ${data.lastEmailTimestamp}:`,
+          data
+        );
+
+        if (data.cached && !forceRefresh) {
+          toast(`📦 Cached data (${data.cacheAge}s old)`, { icon: '💾' });
+        } else if (forceRefresh) {
+          toast.success('🔄 Fresh data loaded!');
+        }
+
+        if (data.emailSent) {
+          toast.success(`[${data.requestId}] 📧 Weather email success!`);
+        } else {
+          toast(`[${data.requestId}] ⏱️ Email already sent today`, { icon: '⏳' });
+        }
+      } catch (err) {
+        console.error('Failed to fetch current weather:', err);
+        toast.error('❌ Failed to load weather');
       }
-    } catch (err) {
-      console.error('Failed to fetch current weather:', err);
-      toast.error('❌ Failed to load weather');
-    }
-  }, [location]);
+    },
+    [location]
+  );
 
   useEffect(() => {
     fetchWeather();
@@ -140,14 +155,35 @@ export default function WeatherCardNew({
                 />
               </svg>
               {locationDisplay}
+              {weather.cached && (
+                <span className="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full">
+                  💾 Cached ({weather.cacheAge}s)
+                </span>
+              )}
             </p>
           </div>
-          <div
-            className="text-6xl md:text-7xl transform transition-transform duration-300 hover:scale-110 drop-shadow-2xl"
-            role="img"
-            aria-label={weatherLabel}
-          >
-            {weatherIcon}
+          <div className="flex flex-col items-end gap-2">
+            <button
+              onClick={() => fetchWeather(true)}
+              className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors duration-200"
+              title="Force refresh from API"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </button>
+            <div
+              className="text-6xl md:text-7xl transform transition-transform duration-300 hover:scale-110 drop-shadow-2xl"
+              role="img"
+              aria-label={weatherLabel}
+            >
+              {weatherIcon}
+            </div>
           </div>
         </div>
 

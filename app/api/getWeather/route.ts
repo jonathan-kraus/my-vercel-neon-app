@@ -10,10 +10,11 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const locationName = url.searchParams.get('location');
+  const forceRefresh = url.searchParams.get('forceRefresh') === 'true';
   const location = locationName ? getLocationByName(locationName) : undefined;
 
   try {
-    const weather = await fetchWeather(requestId, location);
+    const weather = await fetchWeather(requestId, location, forceRefresh);
     return NextResponse.json({ ...weather, requestId });
   } catch (err) {
     await log.error('Error fetching weather', { error: String(err) });

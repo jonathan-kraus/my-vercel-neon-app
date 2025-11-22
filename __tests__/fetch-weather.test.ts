@@ -10,6 +10,10 @@ vi.mock('../app/lib/db', () => ({
     weatherLog: {
       create: vi.fn().mockResolvedValue({}),
     },
+    weatherCache: {
+      findUnique: vi.fn().mockResolvedValue(null),
+      upsert: vi.fn().mockResolvedValue({}),
+    },
   },
 }));
 
@@ -236,6 +240,7 @@ describe('fetchWeather', () => {
         emailSent: false,
         lastEmailTimestamp: null,
         requestId: 'test-request-id',
+        cached: false,
       });
     });
   });

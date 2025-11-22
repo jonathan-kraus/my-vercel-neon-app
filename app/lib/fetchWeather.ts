@@ -43,7 +43,7 @@ function generateMockWeather(requestId: string, location: Location) {
   };
 }
 
-export async function fetchWeather(requestId?: string, location?: Location) {
+export async function fetchWeather(requestId?: string, location?: Location, forceRefresh = false) {
   if (!requestId) requestId = 'requestid-not-passed';
   const log = createLogger('fetchWeather', requestId);
 
@@ -52,6 +52,53 @@ export async function fetchWeather(requestId?: string, location?: Location) {
 
   if (useMockData) {
     return generateMockWeather(requestId, locationToUse);
+  }
+
+  // Check cache first (unless force refresh)
+  if (!forceRefresh) {
+    const CACHE_TTL = 15 * 60 * 1000; // 15 minutes
+    const cachedWeather = await db.weatherCache.findUnique({
+      where: { location: locationToUse.name },
+    });
+
+    if (cachedWeather) {
+      const cacheAge = Date.now() - cachedWeather.updatedAt.getTime();
+      if (cacheAge < CACHE_TTL) {
+        await log
+          .info('Returning cached weather data', {
+            location: locationToUse.name,
+            cacheAge: Math.round(cacheAge / 1000) + 's',
+          })
+          .catch(() => console.warn('[fetchWeather] Failed to log cache hit'));
+
+        return {
+          temperature: cachedWeather.temperature,
+          feelsLike: cachedWeather.feelsLike,
+          humidity: cachedWeather.humidity,
+          windSpeed: cachedWeather.windSpeed,
+          windGust: cachedWeather.windGust,
+          precipitationProbability: cachedWeather.precipitationProbability,
+          pressure: cachedWeather.pressure,
+          visibility: cachedWeather.visibility,
+          conditions: {
+            day: cachedWeather.weatherCode,
+            night: cachedWeather.weatherCode,
+          },
+          rainAccumulationAvg: cachedWeather.rainAccumulationAvg,
+          rainAccumulationMax: cachedWeather.rainAccumulationMax,
+          rainAccumulationMin: cachedWeather.rainAccumulationMin,
+          rainAccumulationSum: cachedWeather.rainAccumulationSum,
+          location: locationToUse.displayName,
+          locationName: locationToUse.displayName,
+          locationDetails: cachedWeather.locationDetails as any,
+          emailSent: false,
+          lastEmailTimestamp: null,
+          requestId,
+          cached: true,
+          cacheAge: Math.round(cacheAge / 1000),
+        };
+      }
+    }
   }
 
   const apiKey = process.env.TOMORROW_API_KEY;
@@ -153,6 +200,44 @@ export async function fetchWeather(requestId?: string, location?: Location) {
     },
   });
 
+  // Update cache
+  await db.weatherCache.upsert({
+    where: { location: locationToUse.name },
+    create: {
+      location: locationToUse.name,
+      temperature: values.temperature,
+      feelsLike: values.temperatureApparent ?? values.temperature,
+      humidity: values.humidity,
+      windSpeed: values.windSpeed,
+      windGust: values.windGust,
+      precipitationProbability: values.precipitationProbability,
+      pressure: values.pressureSurfaceLevel,
+      visibility: values.visibility,
+      weatherCode: values.weatherCode ?? -1,
+      rainAccumulationAvg: values.rainAccumulationAvg ?? 0,
+      rainAccumulationMax: values.rainAccumulationMax ?? 0,
+      rainAccumulationMin: values.rainAccumulationMin ?? 0,
+      rainAccumulationSum: values.rainAccumulationSum ?? 0,
+      locationDetails: locationDetails,
+    },
+    update: {
+      temperature: values.temperature,
+      feelsLike: values.temperatureApparent ?? values.temperature,
+      humidity: values.humidity,
+      windSpeed: values.windSpeed,
+      windGust: values.windGust,
+      precipitationProbability: values.precipitationProbability,
+      pressure: values.pressureSurfaceLevel,
+      visibility: values.visibility,
+      weatherCode: values.weatherCode ?? -1,
+      rainAccumulationAvg: values.rainAccumulationAvg ?? 0,
+      rainAccumulationMax: values.rainAccumulationMax ?? 0,
+      rainAccumulationMin: values.rainAccumulationMin ?? 0,
+      rainAccumulationSum: values.rainAccumulationSum ?? 0,
+      locationDetails: locationDetails,
+    },
+  });
+
   return {
     temperature: values.temperature,
     feelsLike: values.temperatureApparent ?? values.temperature,
@@ -176,5 +261,6 @@ export async function fetchWeather(requestId?: string, location?: Location) {
     emailSent: false, // No automatic email
     lastEmailTimestamp: null, // No automatic email
     requestId,
+    cached: false,
   };
 }
