@@ -90,8 +90,12 @@ export default function DbStatus() {
     latencyMs?: number;
     error?: string;
   } | null>(null);
+  const [healthCheckTimestamp, setHealthCheckTimestamp] = useState<number | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  const autoRefreshInterval = useRef<NodeJS.Timeout | null>(null);
   const [neonRequestId, setNeonRequestId] = useState<string | null>(null);
   const [slowQueries, setSlowQueries] = useState<any[] | null>(null);
+  const [queryTrends, setQueryTrends] = useState<any[] | null>(null);
   const [explainLoading, setExplainLoading] = useState<Record<number, boolean>>({});
   const [explainPlans, setExplainPlans] = useState<Record<number, string[]>>({});
   const [explainErrors, setExplainErrors] = useState<Record<number, string>>({});
@@ -259,6 +263,25 @@ export default function DbStatus() {
     fetchSlow();
   }, []);
 
+  // Fetch query trends
+  useEffect(() => {
+    const fetchTrends = async () => {
+      try {
+        const res = await fetch('/api/neon/query-trends?hours=24');
+        if (res.ok) {
+          const data = await res.json();
+          setQueryTrends(data.trends || []);
+          await log.current.info('Query trends received', { count: data.trends?.length || 0 });
+        }
+      } catch (err) {
+        console.error('Failed to fetch query trends:', err);
+        await log.current.error('Failed to fetch query trends', { error: String(err) });
+      }
+    };
+
+    fetchTrends();
+  }, []);
+
   // Email sender
   const sendStatusEmail = useCallback(async () => {
     // Only send emails in browser environment
@@ -365,6 +388,7 @@ export default function DbStatus() {
       if (res.ok) {
         const data = await res.json();
         setHealthResult(data);
+        setHealthCheckTimestamp(Date.now());
         toast.success(`Health OK — ${data.latencyMs} ms`);
         await log.current.info('Health check executed', {
           neonRequestId,
@@ -373,16 +397,71 @@ export default function DbStatus() {
       } else {
         const data = await res.json();
         setHealthResult(data);
+        setHealthCheckTimestamp(Date.now());
         toast.error('Health check failed');
         await log.current.error('Health check failed', { neonRequestId, error: data.error });
       }
     } catch (err) {
       console.error('Health check error', err);
       setHealthResult({ ok: false, error: String(err) });
+      setHealthCheckTimestamp(Date.now());
       toast.error('Health check error');
       await log.current.error('Health check exception', { neonRequestId, error: String(err) });
     }
   }, [neonRequestId]);
+
+  // Auto-refresh effect
+  useEffect(() => {
+    if (autoRefresh) {
+      autoRefreshInterval.current = setInterval(() => {
+        runHealthCheck();
+      }, 30000); // refresh every 30s
+    } else {
+      if (autoRefreshInterval.current) {
+        clearInterval(autoRefreshInterval.current);
+        autoRefreshInterval.current = null;
+      }
+    }
+    return () => {
+      if (autoRefreshInterval.current) {
+        clearInterval(autoRefreshInterval.current);
+      }
+    };
+  }, [autoRefresh, runHealthCheck]);
+
+  // Export metrics as JSON
+  const exportMetrics = useCallback(() => {
+    const metricsSnapshot = {
+      timestamp: new Date().toISOString(),
+      status,
+      envInfo,
+      consumption,
+      neonMeta,
+      neonLimits,
+      healthResult,
+      healthCheckTimestamp: healthCheckTimestamp
+        ? new Date(healthCheckTimestamp).toISOString()
+        : null,
+      slowQueries,
+    };
+    const blob = new Blob([JSON.stringify(metricsSnapshot, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `db-metrics-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Metrics exported!');
+  }, [
+    status,
+    envInfo,
+    consumption,
+    neonMeta,
+    neonLimits,
+    healthResult,
+    healthCheckTimestamp,
+    slowQueries,
+  ]);
 
   // Explain query
   const runExplain = useCallback(
@@ -598,12 +677,66 @@ export default function DbStatus() {
               </MDiv>
             ))}
           </div>
+
+          {/* Slow Query Trend Chart */}
+          <div className="mt-4 p-4 bg-gray-50 border rounded">
+            <h4 className="text-sm font-semibold text-gray-700">Query Performance Trend (24h)</h4>
+            {queryTrends && queryTrends.length > 0 ? (
+              <div className="mt-3 space-y-3">
+                {queryTrends.slice(0, 3).map((trend, idx) => (
+                  <div key={idx} className="p-3 bg-white border rounded">
+                    <div className="flex justify-between items-center">
+                      <div className="flex-1">
+                        <p className="text-xs font-mono text-gray-700 truncate">
+                          {trend.query.slice(0, 60)}...
+                        </p>
+                      </div>
+                      <div className="text-right ml-4">
+                        <p className="text-xs text-gray-600">
+                          Avg: {trend.avgMeanTime.toFixed(2)} ms
+                        </p>
+                        <p className="text-xs text-gray-600">
+                          Max: {trend.maxMeanTime.toFixed(2)} ms
+                        </p>
+                        <p className="text-xs text-gray-500">{trend.dataPoints.length} samples</p>
+                      </div>
+                    </div>
+                    {/* Simple bar chart visualization */}
+                    <div className="mt-2 h-8 bg-gray-100 rounded overflow-hidden flex items-end gap-0.5">
+                      {trend.dataPoints.slice(-20).map((point: any, pidx: number) => {
+                        const pct = (point.value / trend.maxMeanTime) * 100;
+                        return (
+                          <div
+                            key={pidx}
+                            className="flex-1 bg-indigo-500"
+                            style={{ height: `${pct}%`, minHeight: '2px' }}
+                            title={`${point.value.toFixed(2)}ms at ${new Date(point.timestamp).toLocaleTimeString()}`}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-500 mt-2">
+                No historical data yet. Trends will appear after slow queries are logged.
+              </p>
+            )}
+          </div>
         </section>
       )}
 
       {healthResult && (
         <section className="mt-6 p-4 bg-white border rounded">
-          <h3 className="text-lg font-semibold">Health Check Result</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Health Check Result</h3>
+            {healthCheckTimestamp && (
+              <p className="text-xs text-gray-500">
+                Last checked {Math.round((Date.now() - healthCheckTimestamp) / 1000)}s ago
+              </p>
+            )}
+          </div>
           <div className="mt-2">
             <p className="text-sm text-gray-600">
               Status:{' '}
@@ -623,7 +756,7 @@ export default function DbStatus() {
         </section>
       )}
 
-      <div className="mt-6 flex gap-3">
+      <div className="mt-6 flex flex-wrap gap-3">
         <button onClick={runHealthCheck} className="px-3 py-2 bg-indigo-600 text-white rounded">
           Run DB Health Check
         </button>
@@ -634,6 +767,18 @@ export default function DbStatus() {
         >
           {emailLoading ? 'Sending…' : 'Send Status Email'}
         </button>
+        <button onClick={exportMetrics} className="px-3 py-2 bg-gray-600 text-white rounded">
+          Export Metrics JSON
+        </button>
+        <label className="flex items-center gap-2 px-3 py-2 bg-white border rounded cursor-pointer">
+          <input
+            type="checkbox"
+            checked={autoRefresh}
+            onChange={(e) => setAutoRefresh(e.target.checked)}
+            className="w-4 h-4"
+          />
+          <span className="text-sm">Auto-refresh (30s)</span>
+        </label>
       </div>
     </div>
   );

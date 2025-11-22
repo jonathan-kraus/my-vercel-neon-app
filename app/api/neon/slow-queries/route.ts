@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
 import { createLogger } from '@/app/utils/logger';
+import crypto from 'crypto';
+
+// Helper to normalize and hash queries for grouping
+function hashQuery(query: string): string {
+  // Normalize: remove extra whitespace, lowercase
+  const normalized = query.replace(/\s+/g, ' ').trim().toLowerCase();
+  return crypto.createHash('sha256').update(normalized).digest('hex').slice(0, 16);
+}
 
 export async function GET(request: Request) {
   const headerId = request.headers.get('x-request-id');
@@ -20,6 +28,22 @@ export async function GET(request: Request) {
       `;
 
       await log.info('Fetched slow queries from pg_stat_statements', { count: rows.length });
+
+      // Store each query in history
+      const historyPromises = rows.map((row) =>
+        db.slowQueryHistory.create({
+          data: {
+            queryHash: hashQuery(row.query),
+            query: row.query,
+            meanTime: row.mean_time,
+            calls: row.calls,
+            source: 'pg_stat_statements',
+            requestId,
+          },
+        })
+      );
+      await Promise.allSettled(historyPromises);
+
       return NextResponse.json({ source: 'pg_stat_statements', queries: rows });
     } catch (err) {
       // If pg_stat_statements is not available or fails, log and fallback to pg_stat_activity
@@ -40,6 +64,21 @@ export async function GET(request: Request) {
       await log.info('Fetched slow queries from pg_stat_activity (fallback)', {
         count: rows.length,
       });
+
+      // Store fallback queries in history
+      const historyPromises = rows.map((row) =>
+        db.slowQueryHistory.create({
+          data: {
+            queryHash: hashQuery(row.query),
+            query: row.query,
+            durationMs: row.duration_ms,
+            source: 'pg_stat_activity',
+            requestId,
+          },
+        })
+      );
+      await Promise.allSettled(historyPromises);
+
       return NextResponse.json({ source: 'pg_stat_activity', queries: rows });
     }
   } catch (error) {
