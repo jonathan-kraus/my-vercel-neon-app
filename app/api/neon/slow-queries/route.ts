@@ -51,7 +51,17 @@ export async function GET(request: Request) {
       );
       await Promise.allSettled(historyPromises);
 
-      return NextResponse.json({ source: 'pg_stat_statements', queries: rows });
+      const safeRows = rows.map((row) => ({
+        ...row,
+        calls: typeof row.calls === 'bigint' ? Number(row.calls) : row.calls,
+        total_exec_time:
+          typeof row.total_exec_time === 'bigint'
+            ? Number(row.total_exec_time)
+            : row.total_exec_time,
+        mean_exec_time:
+          typeof row.mean_exec_time === 'bigint' ? Number(row.mean_exec_time) : row.mean_exec_time,
+      }));
+      return NextResponse.json({ source: 'pg_stat_statements', queries: safeRows });
     } catch (err) {
       // If pg_stat_statements is not available or fails, log and fallback to pg_stat_activity
       try {
