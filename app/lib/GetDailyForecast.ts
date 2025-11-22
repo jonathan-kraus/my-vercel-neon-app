@@ -4,6 +4,52 @@ import { generateUUID } from '@/uuidj';
 import { getActiveLocation, formatLocationForTomorrowIO, Location } from '../utils/locations';
 import { isFeatureEnabled } from '../utils/featureFlags';
 import { createLogger } from '../utils/logger';
+import { db } from './db';
+// Returns DailyForecastResult using only cached weather data (no API calls)
+export async function getCachedDailyForecast(
+  requestId?: string,
+  location?: Location
+): Promise<DailyForecastResult> {
+  if (!requestId) requestId = generateUUID();
+  const log = createLogger('getCachedDailyForecast', requestId);
+  const locationToUse = location || (await getActiveLocation());
+  // Try to get up to 7 days of cached weather for the location
+  const cached = await db.weatherCache.findMany({
+    where: { location: locationToUse.name },
+    orderBy: { updatedAt: 'desc' },
+    take: 7,
+  });
+  if (!cached || cached.length === 0) {
+    await log.warn('No cached weather data found', { location: locationToUse.name });
+    return {
+      forecast: [],
+      maxRainAccumulation: 0,
+      error: { type: 'unknown', message: 'No cached weather data found' },
+    };
+  }
+  const forecast = cached.map((cw) => ({
+    requestId,
+    time: cw.updatedAt.toISOString(),
+    temperatureMax: cw.temperature,
+    temperatureMin: cw.feelsLike,
+    precipitation: cw.precipitationProbability,
+    conditions: {
+      day: cw.weatherCode,
+      night: cw.weatherCode,
+    },
+    rainAccumulationAvg: cw.rainAccumulationAvg,
+    rainAccumulationMax: cw.rainAccumulationMax,
+    rainAccumulationMin: cw.rainAccumulationMin,
+    rainAccumulationSum: cw.rainAccumulationSum,
+    sunriseTime: undefined,
+    sunsetTime: undefined,
+    moonriseTime: undefined,
+    moonsetTime: undefined,
+  }));
+  const maxRainAccumulation = Math.max(...forecast.map((f) => f.rainAccumulationSum));
+  await log.info('Returning cached daily forecast', { count: forecast.length });
+  return { forecast, maxRainAccumulation };
+}
 
 export type DailyForecastPoint = {
   requestId?: string;

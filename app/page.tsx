@@ -12,7 +12,7 @@ import CreatePostForm from './components/CreatePostForm';
 import { CompleteButton } from '@/app/components/CompleteButton';
 import { MarkCompleteButton } from './components/MarkCompleteButton';
 import WeatherSection from './components/WeatherSection';
-import { getDailyForecast } from './lib/GetDailyForecast';
+import { getCachedDailyForecast } from './lib/GetDailyForecast';
 import { createLogger } from './utils/logger';
 import { generateUUID } from '../uuidj';
 import { isFeatureEnabled } from './utils/featureFlags';
@@ -70,7 +70,7 @@ export default async function Home() {
   log.info('[app/page] Posts fetched from database', { postCount: posts.length });
   log.info('[app/page] Follow-up posts fetched', { followUpCount: followUpPosts.length });
 
-  const forecastResult = await getDailyForecast(requestId);
+  const forecastResult = await getCachedDailyForecast(requestId);
 
   log.info('[app/page] Weather Forecast data fetched', {
     forecastDays: forecastResult.forecast.length,
