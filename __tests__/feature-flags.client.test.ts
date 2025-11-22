@@ -89,6 +89,60 @@ describe('featureFlags client & server focused tests', () => {
     expect(global.fetch).toHaveBeenCalled();
   });
 
+  it('client: uses API value when flag exists in API response (line 176)', async () => {
+    // @ts-ignore
+    global.window = {};
+    // @ts-ignore
+    global.window.localStorage = { getItem: () => null };
+    // @ts-ignore
+    global.localStorage = global.window.localStorage;
+
+    // mock fetch to return flags with CACHING enabled
+    // @ts-ignore
+    global.fetch = vi.fn(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve({ CACHING: true }) })
+    );
+
+    const v = await isFeatureEnabled('CACHING');
+    expect(v).toBe(true);
+  });
+
+  it('client: falls back to env default when flag missing from API (line 176)', async () => {
+    // @ts-ignore
+    global.window = {};
+    // @ts-ignore
+    global.window.localStorage = { getItem: () => null };
+    // @ts-ignore
+    global.localStorage = global.window.localStorage;
+
+    // mock fetch to return flags without LOCATION_NEW_YORK
+    // @ts-ignore
+    global.fetch = vi.fn(() =>
+      Promise.resolve({ ok: true, json: () => Promise.resolve({ DARK_MODE: false }) })
+    );
+
+    const v = await isFeatureEnabled('LOCATION_NEW_YORK');
+    // Should fall back to env default (true for LOCATION_NEW_YORK)
+    expect(v).toBe(true);
+  });
+
+  it('client: returns false when flag missing from both API and env (line 176)', async () => {
+    // @ts-ignore
+    global.window = {};
+    // @ts-ignore
+    global.window.localStorage = { getItem: () => null };
+    // @ts-ignore
+    global.localStorage = global.window.localStorage;
+
+    // mock fetch to return empty flags
+    // @ts-ignore
+    global.fetch = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve({}) }));
+
+    // Test a flag that has env default of false
+    const v = await isFeatureEnabled('DARK_MODE');
+    expect(v).toBe(false);
+  });
+
   it('client: fetch failure falls back to env', async () => {
     // @ts-ignore
     global.window = {};
@@ -146,6 +200,26 @@ describe('featureFlags client & server focused tests', () => {
     expect(() => clearFeatureFlagOverrides()).not.toThrow();
     expect(warnSpy).toHaveBeenCalled();
     warnSpy.mockRestore();
+  });
+
+  it('getFeatureFlagOverrides handles localStorage.getItem errors gracefully (line 68)', async () => {
+    // @ts-ignore
+    global.window = {};
+    // simulate getItem throwing
+    // @ts-ignore
+    global.window.localStorage = {
+      getItem: () => {
+        throw new Error('Storage read error');
+      },
+      setItem: () => {},
+      removeItem: () => {},
+    };
+    // @ts-ignore
+    global.localStorage = global.window.localStorage;
+
+    // isFeatureEnabled should handle the error and fall back to env
+    const v = await isFeatureEnabled('LOCATION_NEW_YORK');
+    expect(v).toBe(true); // Should fall back to env default
   });
 
   it('server: getAllFeatureFlagsFromDB caches results and clearFeatureFlagsCache invalidates', async () => {

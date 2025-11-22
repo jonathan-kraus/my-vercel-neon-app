@@ -58,6 +58,34 @@ describe('featureFlags utils', () => {
     expect(v).toBe(true);
   });
 
+  it('returns false for unknown flag when DB fails (line 190)', async () => {
+    // Simulate DB error
+    // @ts-ignore
+    db.featureFlag.findMany.mockRejectedValue(new Error('db error'));
+
+    // Test with a flag that doesn't have a default value
+    // @ts-ignore
+    const v = await isFeatureEnabled('UNKNOWN_FLAG');
+    expect(v).toBe(false);
+  });
+
+  it('getEnabledFeatures uses cached DB flags on server (lines 204-206)', async () => {
+    // First, populate the cache via isFeatureEnabled or getAllFeatureFlagsFromDB
+    // @ts-ignore
+    db.featureFlag.findMany.mockResolvedValue([
+      { name: 'DARK_MODE', enabled: true },
+      { name: 'CACHING', enabled: true },
+    ]);
+
+    // Trigger cache population
+    await isFeatureEnabled('DARK_MODE');
+
+    // Now call getEnabledFeatures - should use cached flags
+    const enabled = getEnabledFeatures();
+    expect(enabled).toContain('DARK_MODE');
+    expect(enabled).toContain('CACHING');
+  });
+
   it('isFeatureEnabledSync reads localStorage override on client', () => {
     // Provide a minimal window + localStorage
     // @ts-ignore
