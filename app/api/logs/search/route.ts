@@ -10,7 +10,11 @@ export async function GET(req: Request) {
   if (await isFeatureEnabled('VERBOSE_LOGGING')) {
     log.info(`[app/api/logs/search/route] Initialized log search route`, {
       action: `init`,
-      request: Request,
+      request: {
+        url: req.url,
+        method: req.method,
+        headers: Object.fromEntries(req.headers.entries()),
+      },
       timestamp: new Date().toISOString(),
     });
   }
