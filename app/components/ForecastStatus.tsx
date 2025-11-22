@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { getDailyForecast, DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
 import { generateUUID } from '../../uuidj';
@@ -75,7 +75,6 @@ export default function ForecastStatus() {
         ))}
       </ul>
       <button onClick={handleSendEmail}>Send Forecast Email</button>
-      <Toaster />
     </div>
   );
 }

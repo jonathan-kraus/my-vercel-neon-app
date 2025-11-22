@@ -404,8 +404,6 @@ export default function SideNav() {
             />
           </nav>
         </div>
-
-        {/* Toaster is provided once at the app root (ClientShell) to avoid duplicate containers */}
       </div>
     </aside>
   );

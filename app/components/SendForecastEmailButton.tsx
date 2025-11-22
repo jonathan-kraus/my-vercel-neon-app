@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import { sendForecastEmail } from '@/app/lib/sendForecastEmail';
 import type { DailyForecastPoint } from '@/app/lib/GetDailyForecast';
 
@@ -40,11 +40,8 @@ export default function SendForecastEmailButton({
   }, [forecast, requestId, onLog]);
 
   return (
-    <>
-      <button onClick={handleSendEmail} className="px-3 py-1 bg-blue-500 text-white rounded">
-        Send Forecast Email
-      </button>
-      <Toaster />
-    </>
+    <button onClick={handleSendEmail} className="px-3 py-1 bg-blue-500 text-white rounded">
+      Send Forecast Email
+    </button>
   );
 }

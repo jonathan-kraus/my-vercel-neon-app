@@ -27,7 +27,10 @@ export async function GET(request: Request) {
         LIMIT 5;
       `;
 
-      await log.info('Fetched slow queries from pg_stat_statements', { count: rows.length });
+      await log.info('Fetched slow queries from pg_stat_statements', {
+        count: rows.length,
+        mean: rows.reduce((acc, row) => acc + row.mean_time, 0) / rows.length,
+      });
 
       // Store each query in history
       const historyPromises = rows.map((row) =>

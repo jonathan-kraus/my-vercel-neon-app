@@ -346,7 +346,7 @@ export default function DbStatus() {
           type: 'throttled',
           message: 'Email throttled - too soon since last send',
         });
-        toast('Email throttled - please wait before sending again', { icon: '⏱️' });
+        toast.error('Email throttled - please wait before sending again', { icon: '⏱️' });
       } else {
         setEmailStatus({ type: 'error', message: 'Email send failed' });
         toast.error('Email send failed');
