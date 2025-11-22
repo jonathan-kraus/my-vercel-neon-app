@@ -70,12 +70,6 @@ export default function WeatherCardNew({
         } else if (forceRefresh) {
           toast.success('🔄 Fresh data loaded!');
         }
-
-        if (data.emailSent) {
-          toast.success(`[${data.requestId}] 📧 Weather email success!`);
-        } else {
-          toast(`[${data.requestId}] ⏱️ Email already sent today`, { icon: '⏳' });
-        }
       } catch (err) {
         console.error('Failed to fetch current weather:', err);
         toast.error('❌ Failed to load weather');
