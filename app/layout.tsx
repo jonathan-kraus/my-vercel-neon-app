@@ -3,6 +3,7 @@ import ClientShell from '@/app/components/ClientShell';
 import { RequestIdProvider } from './contexts/RequestIdContext';
 import './globals.css';
 import './app.css';
+import { Toaster } from 'react-hot-toast';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main className="flex-1">{children}</main>
           </div>
           <ClientShell />
+          <Toaster position="top-right" />
         </RequestIdProvider>
       </body>
     </html>
