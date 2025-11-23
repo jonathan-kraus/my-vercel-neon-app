@@ -21,6 +21,10 @@
       "labels": ["major-update", "needs-review"]
     },
     {
+      "matchPackageNames": ["node-domexception"],
+      "enabled": false
+    },
+    {
       "matchPackageNames": ["prisma", "@prisma/client"],
       "matchUpdateTypes": ["major"],
       "enabled": false
