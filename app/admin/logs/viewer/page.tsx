@@ -368,7 +368,6 @@ export default function LogViewerPage() {
           }}
           className="input"
         >
-          <option value="75">75</option>
           <option value="125">125</option>
           <option value="250">250</option>
           <option value="500">500</option>
