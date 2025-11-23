@@ -3,6 +3,7 @@ import { createLogger } from '@/app/utils/logger';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
+import { hostname } from 'os';
 
 export async function GET(req: Request) {
   const requestId = generateUUID();
@@ -13,7 +14,12 @@ export async function GET(req: Request) {
       request: {
         url: req.url,
         method: req.method,
-        headers: Object.fromEntries(req.headers.entries()),
+        country: req.headers.get('x-vercel-ip-country') || 'unknown',
+        city: req.headers.get('x-vercel-ip-city') || 'unknown',
+        region: req.headers.get('x-vercel-ip-country-region') || 'unknown',
+        hostname: hostname(),
+        hostnames: req.headers.get('host') || 'unknown',
+        //headers: Object.fromEntries(req.headers.entries()),
       },
       timestamp: new Date().toISOString(),
     });
