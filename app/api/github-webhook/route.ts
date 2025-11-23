@@ -20,7 +20,7 @@ async function verifySignature(req: NextRequest, body: string): Promise<boolean>
 
 export async function POST(req: NextRequest) {
   const requestId = generateUUID();
-  const log = createLogger('app/api/github-webhook/route.ts', requestId);
+  const log = createLogger('app/api/github-webhook/route.ts');
 
   // Get raw body for signature verification
   const body = await req.text();

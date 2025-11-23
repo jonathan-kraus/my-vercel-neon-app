@@ -5,7 +5,7 @@ import { createLogger } from '@/app/utils/logger';
 
 export async function GET() {
   const requestId = generateUUID();
-  const log = createLogger('app/api/logs/route.ts', requestId);
+  const log = createLogger('app/api/logs/route.ts');
 
   try {
     const logs = await db.log.findMany({

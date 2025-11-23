@@ -4,7 +4,7 @@ import { createLogger } from '@/app/utils/logger';
 
 export async function GET(request: Request) {
   const requestId = generateUUID();
-  const log = createLogger('app/api/neon-consumption/route.ts', requestId);
+  const log = createLogger('app/api/neon-consumption/route.ts');
 
   try {
     const apiKey = process.env.NEON_API_KEY;

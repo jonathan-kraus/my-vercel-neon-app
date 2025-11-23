@@ -6,7 +6,7 @@ import { createLogger } from '@/app/utils/logger';
 export async function GET(request: Request) {
   const headerId = request.headers.get('x-request-id');
   const requestId = headerId || generateUUID();
-  const log = createLogger('app/api/neon/query-trends/route.ts', requestId);
+  const log = createLogger('app/api/neon/query-trends/route.ts');
 
   try {
     const url = new URL(request.url);

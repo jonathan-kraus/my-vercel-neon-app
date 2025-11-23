@@ -7,7 +7,7 @@ import { createLogger } from '@/app/utils/logger';
 
 export async function GET(req: Request) {
   const requestId = req.headers.get('x-request-id') ?? generateUUID();
-  const log = createLogger('app/api/authors/route.ts', requestId);
+  const log = createLogger('app/api/authors/route.ts');
 
   try {
     // Include a posts count for each user so clients can render badges without extra queries

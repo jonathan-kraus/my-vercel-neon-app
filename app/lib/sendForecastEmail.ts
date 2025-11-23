@@ -5,7 +5,7 @@ import { createLogger } from '../utils/logger';
 export async function sendForecastEmail(forecast: DailyForecastPoint[], requestId: string) {
   if (!forecast || forecast.length === 0) return;
 
-  const log = createLogger('app/lib/sendForecastEmail.ts', requestId);
+  const log = createLogger('app/lib/sendForecastEmail.ts');
   await log.info('Sending forecast email', {
     forecastLength: forecast.length,
   });

@@ -8,7 +8,7 @@ import { triggerEmail } from '../components/actions';
 
 export async function createPost(formData: FormData) {
   const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
-  const log = createLogger('app/actions/createPost.ts', requestId);
+  const log = createLogger('app/actions/createPost.ts');
 
   try {
     const title = formData.get('title') as string;

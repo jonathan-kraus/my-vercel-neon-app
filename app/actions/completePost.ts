@@ -9,7 +9,7 @@ type CompletePostResult = { success: true } | { success: false; error: string };
 
 export async function completePost(formData: FormData): Promise<CompletePostResult> {
   const requestId = crypto?.randomUUID?.() ?? `${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
-  const log = createLogger('app/actions/completePost', requestId);
+  const log = createLogger('app/actions/completePost');
 
   // Check for authenticated user
   const cookieStore = await cookies();

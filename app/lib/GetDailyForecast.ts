@@ -11,7 +11,7 @@ export async function getCachedDailyForecast(
   location?: Location
 ): Promise<DailyForecastResult> {
   if (!requestId) requestId = generateUUID();
-  const log = createLogger('getCachedDailyForecast', requestId);
+  const log = createLogger('getCachedDailyForecast');
   const locationToUse = location || (await getActiveLocation());
   // Try to get up to 7 days of cached weather for the location
   const cached = await db.weatherCache.findMany({
@@ -148,7 +148,7 @@ export async function getDailyForecast(
   location?: Location
 ): Promise<DailyForecastResult> {
   if (!requestId) requestId = generateUUID();
-  const log = createLogger('app/lib/GetDailyForecast.ts', requestId);
+  const log = createLogger('app/lib/GetDailyForecast.ts');
 
   const useMockData = await isFeatureEnabled('WEATHER_MOCK_DATA');
 

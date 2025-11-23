@@ -42,7 +42,7 @@ const EmailSchema = z.object({
 // Route Handlers use standard Web API Request/Response objects
 export async function POST(request: Request) {
   const requestId = generateUUID();
-  const log = createLogger('app/api/send-email/route.ts', requestId);
+  const log = createLogger('app/api/send-email/route.ts');
 
   try {
     const body = await request.json();

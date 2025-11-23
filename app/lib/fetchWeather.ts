@@ -45,7 +45,7 @@ function generateMockWeather(requestId: string, location: Location) {
 
 export async function fetchWeather(requestId?: string, location?: Location, forceRefresh = false) {
   if (!requestId) requestId = 'requestid-not-passed';
-  const log = createLogger('fetchWeather', requestId);
+  const log = createLogger('fetchWeather');
 
   const locationToUse = location || (await getActiveLocation());
   const useMockData = await isFeatureEnabled('WEATHER_MOCK_DATA');

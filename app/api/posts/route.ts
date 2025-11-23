@@ -26,7 +26,7 @@ function parseCookies(cookieHeader: string | null): Record<string, string> {
 
 export async function GET(request: Request) {
   const requestId = generateUUID();
-  const log = createLogger('app/api/posts/route.ts', requestId);
+  const log = createLogger('app/api/posts/route.ts');
 
   try {
     const url = new URL(request.url);
@@ -70,7 +70,7 @@ export async function GET(request: Request) {
 
 export async function POST(req: Request) {
   const requestId = generateUUID();
-  const log = createLogger('app/api/posts/route.ts', requestId);
+  const log = createLogger('app/api/posts/route.ts');
 
   try {
     const payload = await req.json();

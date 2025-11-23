@@ -20,7 +20,7 @@ function parseCookies(cookieHeader: string | null): Record<string, string> {
 // DELETE handler: extract id from the request URL to avoid typing mismatch on the second param
 export async function DELETE(req: Request) {
   const requestId = generateUUID();
-  const log = createLogger('app/api/posts/[id]/route.ts', requestId);
+  const log = createLogger('app/api/posts/[id]/route.ts');
 
   try {
     const url = new URL(req.url);

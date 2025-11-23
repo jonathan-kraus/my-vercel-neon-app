@@ -14,7 +14,7 @@ function hashQuery(query: string): string {
 export async function GET(request: Request) {
   const headerId = request.headers.get('x-request-id');
   const requestId = headerId || generateUUID();
-  const log = createLogger('app/api/neon/slow-queries/route.ts', requestId);
+  const log = createLogger('app/api/neon/slow-queries/route.ts');
 
   try {
     // Try to use pg_stat_statements if available

@@ -5,7 +5,7 @@ import { createLogger } from '@/app/utils/logger';
 export async function GET(request: Request) {
   const headerId = request.headers.get('x-request-id');
   const requestId = headerId || generateUUID();
-  const log = createLogger('app/api/neon/metadata/route.ts', requestId);
+  const log = createLogger('app/api/neon/metadata/route.ts');
 
   try {
     const result: Record<string, string | null> = {
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
     return NextResponse.json(result);
   } catch (error) {
     try {
-      await createLogger('app/api/neon/metadata/route.ts', requestId).error('Failed', {
+      await createLogger('app/api/neon/metadata/route.ts').error('Failed', {
         error: String(error),
       });
     } catch (logErr) {

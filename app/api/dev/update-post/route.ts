@@ -5,7 +5,7 @@ import { createLogger } from '@/app/utils/logger';
 
 export async function POST(req: Request) {
   const requestId = generateUUID();
-  const log = createLogger('app/api/dev/update-post/route.ts', requestId);
+  const log = createLogger('app/api/dev/update-post/route.ts');
 
   // Prevent accidental production use
   // if (process.env.NODE_ENV === 'production') {

@@ -75,7 +75,7 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
     });
 
     const minutesSince = recent ? (now.getTime() - recent.timestamp.getTime()) / 60000 : Infinity;
-    const log = createLogger(source, requestId);
+    const log = createLogger(source);
     await log.info('Checking email throttle', {
       safeMessage,
       minutesSince: Math.round(minutesSince),
@@ -108,7 +108,7 @@ export async function sendWithDedup(opts: SendWithDedupOptions) {
   } catch (err) {
     // Log the failure but don't throw to caller
     try {
-      const log = createLogger(source, requestId);
+      const log = createLogger(source);
       await log.error(`Email send failure: ${safeMessage}`, {
         action: 'error',
         error: safeSerialize(err),

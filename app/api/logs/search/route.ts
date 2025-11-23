@@ -6,7 +6,7 @@ import { isFeatureEnabled } from '@/app/utils/featureFlags';
 
 export async function GET(req: Request) {
   const requestId = generateUUID();
-  const log = createLogger('app/api/logs/search/route', requestId);
+  const log = createLogger('app/api/logs/search/route');
   if (await isFeatureEnabled('VERBOSE_LOGGING')) {
     log.info(`[app/api/logs/search/route] Initialized log search route`, {
       action: `init`,

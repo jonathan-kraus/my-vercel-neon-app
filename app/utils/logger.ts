@@ -1,5 +1,6 @@
 // utils/logger.ts
 import { db } from '@/app/lib/db';
+import { getRequestId } from './requestContext';
 
 export type LogPayload = {
   severity: 'info' | 'warning' | 'error';
@@ -59,15 +60,15 @@ export async function logger(payload: LogPayload) {
   });
 }
 
-export const createLogger = (source: string, requestId?: string) => {
+export function createLogger(source: string) {
   return {
     info: (message: string, metadata?: Record<string, any>) =>
-      logger({ severity: 'info', source, message, requestId, metadata }),
+      logger({ severity: 'info', source, message, requestId: getRequestId(), metadata }),
 
     warn: (message: string, metadata?: Record<string, any>) =>
-      logger({ severity: 'warning', source, message, requestId, metadata }),
+      logger({ severity: 'warning', source, message, requestId: getRequestId(), metadata }),
 
     error: (message: string, metadata?: Record<string, any>) =>
-      logger({ severity: 'error', source, message, requestId, metadata }),
+      logger({ severity: 'error', source, message, requestId: getRequestId(), metadata }),
   };
-};
+}

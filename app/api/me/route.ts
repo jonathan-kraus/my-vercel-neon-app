@@ -26,7 +26,7 @@ function decodeJwtPayload(
   const parts = token.split('.');
   if (parts.length < 2) return null;
   try {
-    const log = createLogger('app/api/me/route.ts', requestId);
+    const log = createLogger('app/api/me/route.ts');
     log.info(`[app/api/me/route.ts]  Decoding JWT payload`, { Metadata: parts[1] });
     const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
     const padded = payload + '==='.slice((payload.length + 3) % 4);
@@ -39,7 +39,7 @@ function decodeJwtPayload(
 
 export async function GET(req: Request) {
   const requestId = generateUUID();
-  const log = createLogger('app/api/me/route.ts', requestId);
+  const log = createLogger('app/api/me/route.ts');
 
   const cookieHeader = req.headers.get('cookie');
   const cookies = parseCookies(cookieHeader);

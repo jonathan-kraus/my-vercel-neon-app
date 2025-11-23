@@ -4,7 +4,7 @@ import { createLogger } from '@/app/utils/logger';
 
 export async function GET() {
   const requestId = generateUUID();
-  const log = createLogger('app/api/weather/route.ts', requestId);
+  const log = createLogger('app/api/weather/route.ts');
 
   try {
     await log.info(`Weather cron ran at ${new Date().toISOString()}`);

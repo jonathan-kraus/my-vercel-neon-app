@@ -7,7 +7,7 @@ import { createLogger } from '@/app/utils/logger';
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
   const requestId = generateUUID();
-  const log = createLogger('app/api/posts/[id]/complete/route.ts', requestId);
+  const log = createLogger('app/api/posts/[id]/complete/route.ts');
 
   const cookieStore = await cookies();
   const user = cookieStore.get('authorizedUser')?.value;

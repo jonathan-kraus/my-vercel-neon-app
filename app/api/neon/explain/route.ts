@@ -10,7 +10,7 @@ type ExplainRequest = {
 export async function POST(request: Request) {
   const headerId = request.headers.get('x-request-id');
   const requestId = headerId || generateUUID();
-  const log = createLogger('app/api/neon/explain/route.ts', requestId);
+  const log = createLogger('app/api/neon/explain/route.ts');
 
   try {
     const body = (await request.json()) as ExplainRequest;
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ plan: planLines });
   } catch (error) {
     try {
-      await createLogger('app/api/neon/explain/route.ts', requestId).error('Explain failed', {
+      await createLogger('app/api/neon/explain/route.ts').error('Explain failed', {
         error: String(error),
       });
     } catch (logErr) {
