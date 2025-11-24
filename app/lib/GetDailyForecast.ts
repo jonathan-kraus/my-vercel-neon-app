@@ -113,8 +113,12 @@ export async function getCachedDailyForecast(
       error: { type: 'unknown', message: 'Cached forecast validation failed' },
     };
   }
-
-  await log.info('Returning cached daily forecast', {
+  console.log('[GetDailyForecast] Returning cached daily forecast', {
+    count: mapped.length,
+    location: locationToUse.name,
+    data: safe.data,
+  });
+  await log.info('[GetDailyForecast] Returning cached daily forecast', {
     count: mapped.length,
     location: locationToUse.name,
     data: safe.data,
