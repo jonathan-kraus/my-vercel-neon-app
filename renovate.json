@@ -7,6 +7,8 @@
   "dependencyDashboard": true,
   "dependencyDashboardAutoclose": true,
   "branchConcurrentLimit": 12,
+  "minimumReleaseAge": "1 day",
+  "minimumReleaseAgeBehaviour": "timestamp-optional",
   "timezone": "America/New_York",
   "packageRules": [
     {

@@ -5,6 +5,7 @@ import { getActiveLocation, formatLocationForTomorrowIO, Location } from '../uti
 import { isFeatureEnabled } from '../utils/featureFlags';
 import { createLogger } from '../utils/logger';
 import { db } from './db';
+import type { WeatherCache } from '@prisma/client';
 // Returns DailyForecastResult using only cached weather data (no API calls)
 export async function getCachedDailyForecast(
   requestId?: string,
@@ -27,7 +28,7 @@ export async function getCachedDailyForecast(
       error: { type: 'unknown', message: 'No cached weather data found' },
     };
   }
-  const forecast = cached.map((cw) => ({
+  const forecast = cached.map((cw: WeatherCache) => ({
     requestId,
     time: cw.updatedAt.toISOString(),
     temperatureMax: cw.temperature,
