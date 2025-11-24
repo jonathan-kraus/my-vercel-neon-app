@@ -1,11 +1,56 @@
 'use server';
 
+import { z } from 'zod';
 import { generateUUID } from '@/uuidj';
 import { getActiveLocation, formatLocationForTomorrowIO, Location } from '../utils/locations';
 import { isFeatureEnabled } from '../utils/featureFlags';
 import { createLogger } from '../utils/logger';
 import { db } from './db';
 import type { WeatherCache } from '@prisma/client';
+
+// Zod schemas
+const ConditionsSchema = z.object({
+  day: z.number(),
+  night: z.number(),
+});
+
+const DailyForecastPointSchema = z.object({
+  requestId: z.string().optional(),
+  time: z.string(),
+  temperatureMax: z.number(),
+  temperatureMin: z.number(),
+  precipitation: z.number(),
+  conditions: ConditionsSchema,
+  rainAccumulationAvg: z.number(),
+  rainAccumulationMax: z.number(),
+  rainAccumulationMin: z.number(),
+  rainAccumulationSum: z.number(),
+  sunriseTime: z.string().optional().nullable(),
+  sunsetTime: z.string().optional().nullable(),
+  moonriseTime: z.string().optional().nullable(),
+  moonsetTime: z.string().optional().nullable(),
+});
+
+const DailyForecastResultSchema = z.object({
+  forecast: z.array(DailyForecastPointSchema),
+  maxRainAccumulation: z.number(),
+  error: z
+    .object({
+      type: z.union([
+        z.literal('rate_limit'),
+        z.literal('network'),
+        z.literal('api_error'),
+        z.literal('unknown'),
+      ]),
+      message: z.string(),
+      statusCode: z.number().optional(),
+    })
+    .optional(),
+});
+
+export type DailyForecastPoint = z.infer<typeof DailyForecastPointSchema>;
+export type DailyForecastResult = z.infer<typeof DailyForecastResultSchema>;
+
 // Returns DailyForecastResult using only cached weather data (no API calls)
 export async function getCachedDailyForecast(
   requestId?: string,
@@ -14,21 +59,26 @@ export async function getCachedDailyForecast(
   if (!requestId) requestId = generateUUID();
   const log = createLogger('getCachedDailyForecast', requestId);
   const locationToUse = location || (await getActiveLocation());
+
   // Try to get up to 7 days of cached weather for the location
   const cached = await db.weatherCache.findMany({
     where: { location: locationToUse.name },
     orderBy: { updatedAt: 'desc' },
     take: 7,
   });
+
   if (!cached || cached.length === 0) {
     await log.warn('No cached weather data found', { location: locationToUse.name });
-    return {
+    const result = {
       forecast: [],
       maxRainAccumulation: 0,
       error: { type: 'unknown', message: 'No cached weather data found' },
     };
+    return DailyForecastResultSchema.parse(result);
   }
-  const forecast = cached.map((cw: WeatherCache) => ({
+
+  // Map and validate each cached entry
+  const mapped = cached.map((cw: WeatherCache) => ({
     requestId,
     time: cw.updatedAt.toISOString(),
     temperatureMax: cw.temperature,
@@ -38,49 +88,40 @@ export async function getCachedDailyForecast(
       day: cw.weatherCode,
       night: cw.weatherCode,
     },
-    rainAccumulationAvg: cw.rainAccumulationAvg,
-    rainAccumulationMax: cw.rainAccumulationMax,
-    rainAccumulationMin: cw.rainAccumulationMin,
-    rainAccumulationSum: cw.rainAccumulationSum,
+    rainAccumulationAvg: cw.rainAccumulationAvg ?? 0,
+    rainAccumulationMax: cw.rainAccumulationMax ?? 0,
+    rainAccumulationMin: cw.rainAccumulationMin ?? 0,
+    rainAccumulationSum: cw.rainAccumulationSum ?? 0,
     sunriseTime: undefined,
     sunsetTime: undefined,
     moonriseTime: undefined,
     moonsetTime: undefined,
   }));
-  const maxRainAccumulation = Math.max(...forecast.map((f) => f.rainAccumulationSum));
-  await log.info('Returning cached daily forecast', { count: forecast.length });
-  return { forecast, maxRainAccumulation };
+
+  // Validate the array as a whole
+  const safe = DailyForecastResultSchema.safeParse({
+    forecast: mapped,
+    maxRainAccumulation: Math.max(...mapped.map((f) => f.rainAccumulationSum)),
+  });
+
+  if (!safe.success) {
+    await log.error('Cached forecast validation failed', { errors: safe.error.format() });
+    // Return a safe error result
+    return {
+      forecast: [],
+      maxRainAccumulation: 0,
+      error: { type: 'unknown', message: 'Cached forecast validation failed' },
+    };
+  }
+
+  await log.info('Returning cached daily forecast', {
+    count: mapped.length,
+    location: locationToUse.name,
+    data: safe.data,
+  });
+  return safe.data;
 }
 
-export type DailyForecastPoint = {
-  requestId?: string;
-  time: string;
-  temperatureMax: number;
-  temperatureMin: number;
-  precipitation: number;
-  conditions: {
-    day: number;
-    night: number;
-  };
-  rainAccumulationAvg: number;
-  rainAccumulationMax: number;
-  rainAccumulationMin: number;
-  rainAccumulationSum: number;
-  sunriseTime?: string;
-  sunsetTime?: string;
-  moonriseTime?: string;
-  moonsetTime?: string;
-};
-
-export type DailyForecastResult = {
-  forecast: DailyForecastPoint[];
-  maxRainAccumulation: number;
-  error?: {
-    type: 'rate_limit' | 'network' | 'api_error' | 'unknown';
-    message: string;
-    statusCode?: number;
-  };
-};
 type RawDailyEntry = {
   time: string;
   values: {
@@ -108,27 +149,24 @@ function generateMockForecast(requestId?: string): DailyForecastResult {
     const date = new Date(now);
     date.setDate(date.getDate() + i);
 
-    // Realistic sunrise/sunset times for EST/EDT (adjusted for local timezone)
-    // Sunrise around 6:30 AM EST = 11:30 UTC
-    // Sunset around 4:45 PM EST = 21:45 UTC (16:45 + 5 hours)
     forecast.push({
       requestId,
       time: date.toISOString().split('T')[0] + 'T11:00:00Z',
-      temperatureMax: 65 + Math.random() * 20, // 65-85°F
-      temperatureMin: 45 + Math.random() * 15, // 45-60°F
-      precipitation: Math.random() * 30, // 0-30% chance
+      temperatureMax: 65 + Math.random() * 20,
+      temperatureMin: 45 + Math.random() * 15,
+      precipitation: Math.random() * 30,
       conditions: {
-        day: Math.floor(Math.random() * 1000) + 1000, // Weather codes 1000-1999
+        day: Math.floor(Math.random() * 1000) + 1000,
         night: Math.floor(Math.random() * 1000) + 1000,
       },
       rainAccumulationAvg: Math.random() * 0.1,
       rainAccumulationMax: Math.random() * 0.5,
       rainAccumulationMin: 0,
       rainAccumulationSum: Math.random() * 0.3,
-      sunriseTime: date.toISOString().split('T')[0] + 'T11:30:00Z', // ~6:30 AM EST
-      sunsetTime: date.toISOString().split('T')[0] + 'T21:45:00Z', // ~4:45 PM EST
-      moonriseTime: date.toISOString().split('T')[0] + 'T23:15:00Z', // ~6:15 PM EST
-      moonsetTime: date.toISOString().split('T')[0] + 'T13:30:00Z', // ~8:30 AM EST
+      sunriseTime: date.toISOString().split('T')[0] + 'T11:30:00Z',
+      sunsetTime: date.toISOString().split('T')[0] + 'T21:45:00Z',
+      moonriseTime: date.toISOString().split('T')[0] + 'T23:15:00Z',
+      moonsetTime: date.toISOString().split('T')[0] + 'T13:30:00Z',
     });
   }
 
@@ -212,18 +250,10 @@ export async function getDailyForecast(
       return { forecast: [], maxRainAccumulation: 0 };
     }
 
+    // Validate and map API daily entries
     const daily: RawDailyEntry[] = data.timelines?.daily;
 
-    const maxRainAccumulation = Math.max(
-      ...daily.map((d) => d.values.rainAccumulationSum).filter((val) => typeof val === 'number')
-    );
-
-    await log.info('Forecast data retrieved', {
-      dailyEntries: daily.length,
-      maxRainAccumulation,
-    });
-
-    const forecast = daily.slice(0, 7).map((day): DailyForecastPoint => {
+    const mapped = daily.slice(0, 7).map((day): DailyForecastPoint => {
       return {
         requestId,
         time: day.time,
@@ -245,7 +275,27 @@ export async function getDailyForecast(
       };
     });
 
-    return { forecast, maxRainAccumulation };
+    const resultCandidate = {
+      forecast: mapped,
+      maxRainAccumulation: Math.max(...mapped.map((f) => f.rainAccumulationSum)),
+    };
+
+    const safe = DailyForecastResultSchema.safeParse(resultCandidate);
+    if (!safe.success) {
+      await log.error('API forecast validation failed', { errors: safe.error.format() });
+      return {
+        forecast: [],
+        maxRainAccumulation: 0,
+        error: { type: 'api_error', message: 'Invalid forecast data from API' },
+      };
+    }
+
+    await log.info('Forecast data retrieved', {
+      dailyEntries: daily.length,
+      maxRainAccumulation: resultCandidate.maxRainAccumulation,
+    });
+
+    return safe.data;
   } catch (error) {
     await log
       .error('Tomorrow.io network error', {
@@ -253,7 +303,6 @@ export async function getDailyForecast(
         stack: error instanceof Error ? error.stack : undefined,
       })
       .catch(() => {
-        // Fallback if logging fails
         console.warn('[getDailyForecast] Failed to log error:', error);
       });
 
