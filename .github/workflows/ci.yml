@@ -13,6 +13,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Clean workspace
+        run: git clean -fdx
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -49,9 +53,25 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      
+      - name: Generate Prisma client
+        run: npx prisma generate  
 
       - name: Check for outdated dependencies
         run: pnpm outdated || true
+
+      - name: Show generated files for diagnostics
+        run: |
+          echo "generated dir listing:"
+          ls -la generated || echo "no generated dir"
+          echo "generated/prisma listing:"
+          ls -la generated/prisma || echo "no generated/prisma dir"
+
+      - name: Show .prettierignore contents
+        run: |
+          echo ".prettierignore exists?"; test -f .prettierignore && echo "yes" || echo "no"
+          echo "Contents of .prettierignore:"
+          sed -n '1,200p' .prettierignore || true
 
       - name: Prettier check
         run: pnpm run prettier:check
