@@ -10,4 +10,4 @@ coverage
 coverage/**
 junit.xml
 .vercel
-node_modules
+node_modulesgenerated/prisma/
