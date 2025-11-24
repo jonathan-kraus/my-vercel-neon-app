@@ -17,7 +17,7 @@ const config = [
       'app/generated/prisma/**',
       'coverage/**',
       'junit.xml',
-
+      'generated/prisma/**',
     ],
   },
   ...nextConfig,
