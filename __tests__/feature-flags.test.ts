@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
-// Mock the featureFlags module
+//Mock the featureFlags module
 vi.mock('../app/utils/featureFlags', () => ({
   FEATURE_FLAGS: {
     WEATHER_AUTO_REFRESH: false,
