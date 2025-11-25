@@ -80,6 +80,8 @@ function RegionBadge({ region }: { region: string }) {
 }
 
 export default function DbStatus() {
+  const [prevLatency, setPrevLatency] = useState<number | null>(null);
+  const [latencyDirection, setLatencyDirection] = useState<'up' | 'down' | 'none'>('none');
   const [status, setStatus] = useState<DbStatusType | null>(null);
   const [envInfo, setEnvInfo] = useState<EnvInfoType | null>(null);
   const [consumption, setConsumption] = useState<ConsumptionData | null>(null);
@@ -387,6 +389,20 @@ export default function DbStatus() {
       const res = await fetch('/api/neon/health', { headers });
       if (res.ok) {
         const data = await res.json();
+        // Track latency direction
+        if (
+          typeof data.latencyMs === 'number' &&
+          healthResult &&
+          typeof healthResult.latencyMs === 'number'
+        ) {
+          if (data.latencyMs > healthResult.latencyMs) setLatencyDirection('up');
+          else if (data.latencyMs < healthResult.latencyMs) setLatencyDirection('down');
+          else setLatencyDirection('none');
+          setPrevLatency(healthResult.latencyMs);
+        } else {
+          setLatencyDirection('none');
+          setPrevLatency(null);
+        }
         setHealthResult(data);
         setHealthCheckTimestamp(Date.now());
         toast.success(`Health OK — ${data.latencyMs} ms`);
@@ -748,7 +764,38 @@ export default function DbStatus() {
                 {healthResult.ok ? 'OK' : 'Degraded'}
               </span>
             </p>
-            <p className="text-sm text-gray-600">Latency: {healthResult.latencyMs ?? 'N/A'} ms</p>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Latency:</span>
+              <MDiv
+                initial={{ scale: 1 }}
+                animate={{ scale: latencyDirection !== 'none' ? 1.2 : 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="inline-flex items-center font-semibold text-lg"
+                style={{
+                  color:
+                    latencyDirection === 'up'
+                      ? '#dc2626'
+                      : latencyDirection === 'down'
+                        ? '#16a34a'
+                        : '#374151',
+                }}
+              >
+                {healthResult.latencyMs ?? 'N/A'} ms
+                {latencyDirection === 'up' && (
+                  <span className="ml-1 text-red-600" title="Latency increased">
+                    ▲
+                  </span>
+                )}
+                {latencyDirection === 'down' && (
+                  <span className="ml-1 text-green-600" title="Latency decreased">
+                    ▼
+                  </span>
+                )}
+              </MDiv>
+              {typeof prevLatency === 'number' && (
+                <span className="text-xs text-gray-500 ml-2">(was {prevLatency} ms)</span>
+              )}
+            </div>
             {healthResult.error && (
               <p className="text-sm text-red-600">Error: {healthResult.error}</p>
             )}
