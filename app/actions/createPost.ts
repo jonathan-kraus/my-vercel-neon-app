@@ -11,38 +11,79 @@ export async function createPost(formData: FormData) {
   const log = createLogger('app/actions/createPost.ts', requestId);
 
   try {
-    const title = formData.get('title') as string;
-    const content = formData.get('content') as string;
-    const authorName = formData.get('authorName') as string;
-    const followUpDate = formData.get('followUpDate') as string;
-    const followUpNotes = formData.get('followUpNotes') as string;
+    const title =
+      typeof formData.get('title') === 'string' ? (formData.get('title') as string) : '';
+    const content =
+      typeof formData.get('content') === 'string' ? (formData.get('content') as string) : '';
+    const authorName =
+      typeof formData.get('authorName') === 'string' ? (formData.get('authorName') as string) : '';
+    const followUpDate =
+      typeof formData.get('followUpDate') === 'string'
+        ? (formData.get('followUpDate') as string)
+        : undefined;
+    const followUpNotes =
+      typeof formData.get('followUpNotes') === 'string'
+        ? (formData.get('followUpNotes') as string)
+        : undefined;
 
-    if (!title || !content || !authorName) {
-      throw new Error('Title, content, and author name are required');
+    // Zod schema for validation
+    const PostFormSchema = require('zod').z.object({
+      title: require('zod').z.string().min(1, 'Title is required'),
+      content: require('zod').z.string().min(1, 'Content is required'),
+      authorName: require('zod').z.string().min(1, 'Author name is required'),
+      followUpDate: require('zod').z.string().min(1).optional(),
+      followUpNotes: require('zod').z.string().min(1).optional(),
+    });
+
+    let parsed;
+    try {
+      parsed = PostFormSchema.safeParse({
+        title,
+        content,
+        authorName,
+        followUpDate,
+        followUpNotes,
+      });
+    } catch (zodErr) {
+      await log.error('Zod validation threw: ' + String(zodErr));
+      redirect('/?error=validation');
+      return;
     }
+    if (!parsed.success) {
+      await log.error('Post form validation failed: ' + JSON.stringify(parsed.error.format()));
+      redirect('/?error=validation');
+      return;
+    }
+    const {
+      title: validTitle,
+      content: validContent,
+      authorName: validAuthorName,
+      followUpDate: validFollowUpDate,
+      followUpNotes: validFollowUpNotes,
+    } = parsed.data;
 
     // Ensure user exists
-    let user = await db.user.findFirst({ where: { name: authorName } });
+    let user = await db.user.findFirst({ where: { name: validAuthorName } });
     if (!user) {
       user = await db.user.create({
-        data: { name: authorName, email: `${authorName}@example.local` },
+        data: { name: validAuthorName, email: `${validAuthorName}@example.local` },
       });
     }
 
     const postData: any = {
-      title,
-      content,
+      title: validTitle,
+      content: validContent,
       published: true,
-      needsFollowUp: !!followUpDate || !!followUpNotes, // Set needsFollowUp if any follow-up fields are provided
+      needsFollowUp: !!validFollowUpDate || !!validFollowUpNotes, // Set needsFollowUp if any follow-up fields are provided
       author: { connect: { id: user.id } },
     };
 
-    if (followUpDate) {
-      postData.followUpDate = new Date(followUpDate);
+    if (validFollowUpDate) {
+      postData.followUpDate = new Date(validFollowUpDate);
     }
 
-    if (followUpNotes) {
-      postData.followUpNotes = followUpNotes;
+    if (validFollowUpNotes) {
+      postData.followUpNotes = validFollowUpNotes;
     }
 
     const post = await db.post.create({
