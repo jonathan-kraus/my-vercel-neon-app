@@ -6,7 +6,7 @@ import { generateUUID } from '@/uuidj';
 import { z } from 'zod';
 
 const CreatePostSchema = z.object({
-  title: z.string().min(1),
+  title: z.never(),
   body: z.string().min(1),
 });
 
