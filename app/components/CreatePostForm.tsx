@@ -35,33 +35,32 @@ export default function CreatePostForm() {
     })();
   }, []);
 
-  // show toast when server indicates success (either via query param or helper cookie)
-  useEffect(() => {
+  // useTransition for pending state
+  const [isPending, startTransition] = useState(false);
+
+  // Client-side submit handler for toast feedback
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    setAuthorizedUser(formData.get('authorName') as string); // keep user in sync
+    // Show loading state
     try {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('posted') === '1') {
-        toast.success('Post created');
-        // remove query param to avoid repeated toasts
-        params.delete('posted');
-        const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
-        window.history.replaceState({}, '', newUrl);
+      startTransition(true);
+      const result = await createPost(formData);
+      if (!result) {
+        toast.error('No response from server');
         return;
       }
-
-      // cookie-based fallback: server can set post_status=success; show toast then clear it
-      const postCookie = document.cookie.split('; ').find((row) => row.startsWith('post_status='));
-      if (postCookie) {
-        const val = postCookie.split('=')[1];
-        if (val === 'success') {
-          toast.success('Post created');
-          // clear cookie
-          document.cookie = `post_status=; Path=/; Max-Age=0`;
-        }
+      if (result.success) {
+        toast.success(`Post created: ${result.postTitle}`);
+        e.currentTarget.reset();
+      } else {
+        toast.error(result.error || 'Failed to create post');
       }
-    } catch {
-      // ignore errors
+    } finally {
+      startTransition(false);
     }
-  }, []);
+  };
 
   if (!authorizedUser) {
     return <p>Please click 🍎 Apple to create a post.</p>;
@@ -69,9 +68,11 @@ export default function CreatePostForm() {
 
   return (
     <>
-      {/* When using a server action function as `action={createPost}`, do NOT set method/encType — React/Next handle that. */}
-      <form action={createPost} className="space-y-4 max-w-md mx-auto bg-white p-4 rounded shadow">
-        <input type="hidden" name="authorName" value={authorizedUser} />
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4 max-w-md mx-auto bg-white p-4 rounded shadow"
+      >
+        <input type="hidden" name="authorName" value={authorizedUser ?? ''} />
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-700">
             Title
@@ -106,8 +107,12 @@ export default function CreatePostForm() {
             placeholder="What needs to be done?"
           />
         </div>
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
-          Submit Post
+        <button
+          type="submit"
+          disabled={isPending}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          {isPending ? 'Submitting...' : 'Submit Post'}
         </button>
       </form>
     </>

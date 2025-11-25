@@ -31,8 +31,8 @@ export async function createPost(formData: FormData) {
       title: require('zod').z.string().min(1, 'Title is required'),
       content: require('zod').z.string().min(1, 'Content is required'),
       authorName: require('zod').z.string().min(1, 'Author name is required'),
-      followUpDate: require('zod').z.string().min(1).optional(),
-      followUpNotes: require('zod').z.string().min(1).optional(),
+      followUpDate: require('zod').z.string().optional().or(require('zod').z.undefined()),
+      followUpNotes: require('zod').z.string().optional().or(require('zod').z.undefined()),
     });
 
     let parsed;
@@ -117,9 +117,9 @@ export async function createPost(formData: FormData) {
     }
 
     revalidatePath('/');
-    redirect('/?posted=1');
+    return { success: true, postTitle: post.title };
   } catch (err) {
     console.error('CreatePost action error:', err);
-    redirect('/?error=1');
+    return { success: false, error: err instanceof Error ? err.message : String(err) };
   }
 }
