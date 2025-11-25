@@ -766,7 +766,7 @@ export default function DbStatus() {
               </span>
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">JLatency:</span>
+              <span className="text-sm text-gray-600">Latency:</span>
               <MDiv
                 initial={{ scale: 1 }}
                 animate={{ scale: latencyDirection !== 'none' ? 1.2 : 1 }}
