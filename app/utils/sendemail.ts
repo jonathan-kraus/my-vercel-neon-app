@@ -61,8 +61,7 @@ export async function logEvent(payload: LogPayload) {
         error: err instanceof Error ? err.message : String(err),
       })
       .catch(() => {
-        // Fallback if logging fails
-        console.warn('[sendemail] Failed to log event:', err);
+        log.warn('[sendemail] Failed to log event:', { err });
       });
   }
 }

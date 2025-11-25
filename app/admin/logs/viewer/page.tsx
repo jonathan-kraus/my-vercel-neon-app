@@ -1,6 +1,10 @@
 'use client';
 
+import { createLogger } from '@/app/utils/logger';
 import React, { useEffect, useState } from 'react';
+import { generateUUID } from '@/uuidj';
+
+const log = createLogger('app/admin/logs/viewer/page.tsx', generateUUID());
 
 type LogItem = {
   id: string;
@@ -56,6 +60,12 @@ export default function LogViewerPage() {
           .map((it: LogItem) => it.id);
 
         if (newItemIds.length > 0) {
+          log.info(`[LogViewerPage] New log items detected`, {
+            action: 'new_log_items',
+            newItemIds,
+            count: newItemIds.length,
+            timestamp: new Date().toISOString(),
+          });
           setNewIds((prevIds) => new Set([...prevIds, ...newItemIds]));
           setTimeout(() => {
             setNewIds((prevIds) => {
@@ -71,7 +81,7 @@ export default function LogViewerPage() {
 
       setTotal(data.total || 0);
     } catch (err) {
-      console.error('Failed to load logs', err);
+      log.error('Failed to load logs', { err });
       setItems([]);
       setTotal(0);
     } finally {
