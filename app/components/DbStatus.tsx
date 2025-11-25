@@ -768,9 +768,12 @@ export default function DbStatus() {
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Latency:</span>
               <MDiv
+                key={healthResult.latencyMs}
                 initial={{ scale: 1 }}
-                animate={{ scale: latencyDirection !== 'none' ? 1.2 : 1 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                animate={{
+                  scale: latencyDirection === 'up' ? 1.35 : latencyDirection === 'down' ? 0.85 : 1,
+                }}
+                transition={{ type: 'spring', stiffness: 400, damping: 18 }}
                 className="inline-flex items-center font-semibold text-lg"
                 style={{
                   color:
