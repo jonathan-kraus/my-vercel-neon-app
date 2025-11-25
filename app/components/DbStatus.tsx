@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
+<span className="text-sm text-gray-600">Latency:</span>;
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 import { useRequestId } from '@/app/contexts/RequestIdContext';
@@ -765,7 +766,7 @@ export default function DbStatus() {
               </span>
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Latency:</span>
+              <span className="text-sm text-gray-600">JLatency:</span>
               <MDiv
                 initial={{ scale: 1 }}
                 animate={{ scale: latencyDirection !== 'none' ? 1.2 : 1 }}
