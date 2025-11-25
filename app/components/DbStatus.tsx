@@ -92,7 +92,7 @@ export default function DbStatus() {
     ok: boolean;
     latencyMs?: number;
     error?: string;
-  } | null>(null);
+  }>({ ok: true });
   const [healthCheckTimestamp, setHealthCheckTimestamp] = useState<number | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(false);
   const autoRefreshInterval = useRef<NodeJS.Timeout | null>(null);
@@ -384,7 +384,7 @@ export default function DbStatus() {
   // Health check action
   const runHealthCheck = useCallback(async () => {
     try {
-      setHealthResult(null);
+      setHealthResult({ ok: true });
       const headers: Record<string, string> = {};
       if (neonRequestId) headers['x-request-id'] = neonRequestId;
       const res = await fetch('/api/neon/health', { headers });
