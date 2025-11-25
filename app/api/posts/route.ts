@@ -75,8 +75,18 @@ export async function POST(req: Request) {
   try {
     const payload = await req.json();
     await log.info('Verifying request', { payloadSize: JSON.stringify(payload).length });
-    const parsed = CreatePostSchema.safeParse(payload);
+    let parsed;
+    try {
+      parsed = CreatePostSchema.safeParse(payload);
+    } catch (zodErr) {
+      await log.error('Zod validation threw: ' + String(zodErr));
+      return NextResponse.json(
+        { error: 'Validation error', details: String(zodErr) },
+        { status: 400 }
+      );
+    }
     if (!parsed.success) {
+      await log.warn('Post payload validation failed: ' + JSON.stringify(parsed.error.format()));
       return NextResponse.json(
         { error: 'Invalid payload', details: parsed.error.format() },
         { status: 400 }
