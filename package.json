@@ -41,7 +41,7 @@
     "@prisma/client": "6.19.0",
     "@tailwindcss/postcss": "4.1.17",
     "@types/node": "24.10.1",
-    "@types/react": "19.2.6",
+    "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@typescript-eslint/eslint-plugin": "8.47.0",
     "@typescript-eslint/parser": "8.47.0",
