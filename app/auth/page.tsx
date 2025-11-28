@@ -106,7 +106,7 @@ export default function AuthPage() {
           userAction: 'login',
           user: name,
         });
-        // Reset loginAttempts after successful login
+        // Reset loginAttempts after successful login!
         localStorage.removeItem('loginAttempts');
         setLoginAttempts(0);
         router.push('/');
