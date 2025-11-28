@@ -106,15 +106,20 @@ export default function AuthPage() {
           userAction: 'login',
           user: name,
         });
-        // Reset loginAttempts after successful login!
+        // Reset loginAttempts after successful login
         localStorage.removeItem('loginAttempts');
         setLoginAttempts(0);
+        log.info('[app/auth/page] Reset login attempts after successful login', {
+          action: 'resetLoginAttempts',
+          user: name,
+          timestamp: new Date().toISOString(),
+        });
         router.push('/');
       } else {
         setError('[app/auth/page] Invalid credentials');
       }
     } catch (err) {
-      console.error('Login error', err);
+      log.error('Login error', { err, action: 'loginError', user: name });
       setError('[app/auth/page] Network error');
     }
   };
