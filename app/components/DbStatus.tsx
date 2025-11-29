@@ -703,19 +703,15 @@ export default function DbStatus() {
             <MDiv>
               {/* ... other Latency card content */}
               <div>
-                <div className="text-sm text-gray-500">JJJLatency</div>
-                <div className="mt-1 text-lg font-medium flex items-center gap-2">
-                  {status?.latencyMs ?? 'N/A'} ms
-                  {/* ⬅️ USE THE NEW LINE COMPONENT HERE */}
-                  <div className="ml-auto">
-                    <LineSparkline
-                      data={latencyHistory}
-                      width={60}
-                      height={25}
-                      strokeColor="#f97316" // Orange
-                      fillColor="#ffedd5" // Light orange area
-                    />
-                  </div>
+                {/* ⬅️ USE THE NEW LINE COMPONENT HERE */}
+                <div className="ml-auto">
+                  <LineSparkline
+                    data={latencyHistory}
+                    width={60}
+                    height={25}
+                    strokeColor="#f97316" // Orange
+                    fillColor="#ffedd5" // Light orange area
+                  />
                 </div>
               </div>
               {/* ... rest of the card */}
