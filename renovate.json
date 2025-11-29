@@ -8,13 +8,14 @@
   "dependencyDashboardAutoclose": true,
   "branchConcurrentLimit": 12,
   "minimumReleaseAge": "1 day",
-  "minimumReleaseAgeBehaviour": "timestamp-optional",
   "timezone": "America/New_York",
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
-      "automergeType": "pr"
+      "automergeType": "pr",
+      "automergeStrategy": "merge",
+      "stabilityDays": 1
     },
     {
       "matchUpdateTypes": ["major"],
