@@ -1,5 +1,5 @@
 'use client';
-import { useMemo, useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
@@ -14,34 +14,6 @@ const fmt = {
   timeAgo: (ts?: number) => (ts ? `${Math.round((Date.now() - ts) / 1000)}s ago` : 'never'),
   dateShort: (iso?: string) => (iso ? new Date(iso).toLocaleString() : 'N/A'),
 };
-
-function TinySparkline({ values, color = '#6366f1' }: { values: number[]; color?: string }) {
-  if (!values || values.length === 0) return null;
-  const w = 80;
-  const h = 20;
-  const max = Math.max(...values, 1);
-  const min = Math.min(...values, 0);
-  const range = max - min || 1;
-  const points = values
-    .map((v, i) => {
-      const x = (i / (values.length - 1 || 1)) * w;
-      const y = h - ((v - min) / range) * h;
-      return `${x},${y}`;
-    })
-    .join(' ');
-  return (
-    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="inline-block align-middle">
-      <polyline
-        fill="none"
-        stroke={color}
-        strokeWidth="2"
-        points={points}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 type DbStatusType = {
   version: string;
@@ -618,7 +590,7 @@ export default function DbStatus() {
         </div>
       </section>
       {/* End Health Check Section */}
-      /* --- Consumption cards (compact) --- */
+      {/* --- Consumption cards (compact) --- */}
       {consumption && consumption.periods && consumption.periods.length > 0 && (
         <section className="mt-6">
           <h3 className="text-lg font-semibold">Consumption (recent)</h3>
@@ -670,7 +642,7 @@ export default function DbStatus() {
           </div>
         </section>
       )}
-      /* --- Incidents & Slow Queries (compact list) --- */
+      {/* --- Incidents & Slow Queries (compact list) --- */}
       {slowQueries && slowQueries.length > 0 && (
         <section className="mt-6">
           <div className="flex items-center justify-between">
