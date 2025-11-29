@@ -7,7 +7,6 @@ import { useRequestId } from '@/app/contexts/RequestIdContext';
 import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 import { generateUUID } from '@/uuidj';
-import { tr } from 'zod/v4/locales';
 
 type DbStatusType = {
   version: string;
