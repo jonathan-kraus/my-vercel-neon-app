@@ -451,6 +451,7 @@ export default function DbStatus() {
         setLatencyDirection('none');
       }
 
+      // ⬅️ ADD: Update latency history for the line sparkline
       if (typeof newLatency === 'number') {
         setLatencyHistory((h) => {
           const nextHistory = [...h, newLatency];
@@ -701,7 +702,26 @@ export default function DbStatus() {
                 )}
               </AnimatePresence>
             </MDiv>
-
+            <MDiv>
+              {/* ... other Latency card content */}
+              <div>
+                <div className="text-sm text-gray-500">Latency</div>
+                <div className="mt-1 text-lg font-medium flex items-center gap-2">
+                  {status?.latencyMs ?? 'N/A'} ms
+                  {/* ⬅️ USE THE NEW LINE COMPONENT HERE */}
+                  <div className="ml-auto">
+                    <LineSparkline
+                      data={latencyHistory}
+                      width={60}
+                      height={25}
+                      strokeColor="#f97316" // Orange
+                      fillColor="#ffedd5" // Light orange area
+                    />
+                  </div>
+                </div>
+              </div>
+              {/* ... rest of the card */}
+            </MDiv>
             {/* Display previous latency */}
             {typeof prevLatency === 'number' && latencyDirection !== 'none' && (
               <span className="text-xs text-gray-500 ml-2">(was {prevLatency} ms)</span>
