@@ -1,6 +1,5 @@
 'use client';
-import { useEffect, useRef, useState, useCallback } from 'react';
-// 🛠️ FIX: Changed to framer-motion to resolve animation library errors and use standard props
+import { useMemo, useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
@@ -8,6 +7,41 @@ import { useRequestId } from '@/app/contexts/RequestIdContext';
 import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 import { generateUUID } from '@/uuidj';
+
+/* --- Helpers: formatting and tiny sparkline --- */
+const fmt = {
+  num: (n?: number, d = 0) => (typeof n === 'number' ? n.toFixed(d) : 'N/A'),
+  timeAgo: (ts?: number) => (ts ? `${Math.round((Date.now() - ts) / 1000)}s ago` : 'never'),
+  dateShort: (iso?: string) => (iso ? new Date(iso).toLocaleString() : 'N/A'),
+};
+
+function TinySparkline({ values, color = '#6366f1' }: { values: number[]; color?: string }) {
+  if (!values || values.length === 0) return null;
+  const w = 80;
+  const h = 20;
+  const max = Math.max(...values, 1);
+  const min = Math.min(...values, 0);
+  const range = max - min || 1;
+  const points = values
+    .map((v, i) => {
+      const x = (i / (values.length - 1 || 1)) * w;
+      const y = h - ((v - min) / range) * h;
+      return `${x},${y}`;
+    })
+    .join(' ');
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="inline-block align-middle">
+      <polyline
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        points={points}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 type DbStatusType = {
   version: string;
@@ -481,7 +515,6 @@ export default function DbStatus() {
   return (
     <div className="space-y-4 animate-fade-in delay-[index * 100]">
       <h2 className="text-xl font-bold">Database Status</h2>
-
       {/* 🛠️ New: Always Display Health Check Section */}
       <section className="p-4 bg-white border rounded shadow-md">
         <div className="flex items-center justify-between">
@@ -585,7 +618,112 @@ export default function DbStatus() {
         </div>
       </section>
       {/* End Health Check Section */}
+      /* --- Consumption cards (compact) --- */
+      {consumption && consumption.periods && consumption.periods.length > 0 && (
+        <section className="mt-6">
+          <h3 className="text-lg font-semibold">Consumption (recent)</h3>
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {consumption.periods.slice(0, 3).map((period: any) => (
+              <motion.div
+                key={period.period_id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.18 }}
+                className="p-3 bg-white border rounded shadow-sm"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs text-gray-500">Period</div>
+                    <div className="text-sm font-medium text-gray-800">{period.period_id}</div>
+                  </div>
+                  <div className="text-right text-xs text-gray-500">
+                    <div>
+                      {period.start_time ? new Date(period.start_time).toLocaleString() : '—'}
+                    </div>
+                  </div>
+                </div>
 
+                <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <div className="text-xs text-gray-500">Active time</div>
+                    <div className="font-semibold">
+                      {(period.active_time_seconds / 3600).toFixed(2)} h
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500">Compute</div>
+                    <div className="font-semibold">
+                      {(period.compute_time_seconds / 3600).toFixed(2)} h
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500">Queries</div>
+                    <div className="font-semibold">{period.query_count ?? 'N/A'}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500">Errors</div>
+                    <div className="font-semibold text-red-600">{period.error_count ?? 0}</div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+      /* --- Incidents & Slow Queries (compact list) --- */
+      {slowQueries && slowQueries.length > 0 && (
+        <section className="mt-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Incidents & Slow Queries</h3>
+            <div className="text-xs text-gray-500">{slowQueries.length} items</div>
+          </div>
+
+          <div className="mt-3 space-y-2">
+            {slowQueries.map((q: any, idx: number) => {
+              const mean = q.mean_time ?? q.duration_ms ?? 0;
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.12, delay: idx * 0.02 }}
+                  className="p-3 border rounded bg-white shadow-sm flex gap-3"
+                >
+                  <div className="w-12 shrink-0 flex flex-col items-center justify-center">
+                    <div className="text-xs text-gray-500">Avg</div>
+                    <div className="text-sm font-semibold">{fmt.num(mean, 0)} ms</div>
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="text-xs text-gray-500">Query</div>
+                    <pre className="whitespace-pre-wrap text-sm max-h-20 overflow-auto text-gray-800">
+                      {q.query?.length > 400 ? q.query.slice(0, 400) + '…' : q.query}
+                    </pre>
+                    <div className="mt-2 text-xs text-gray-500 flex items-center gap-3">
+                      <div>
+                        <strong>Calls:</strong> {q.calls ?? 'N/A'}
+                      </div>
+                      <div>
+                        <strong>Max:</strong> {q.max_time ? `${fmt.num(q.max_time, 0)} ms` : 'N/A'}
+                      </div>
+                      <div>
+                        <strong>Last:</strong>{' '}
+                        {q.last_seen ? new Date(q.last_seen).toLocaleString() : 'N/A'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="w-28 flex flex-col items-end gap-2">
+                    <div className="text-xs text-gray-500">Trend</div>
+                    <div className="text-sm font-medium text-gray-800">{fmt.num(mean, 0)} ms</div>
+                    <div className="text-xs text-gray-400">{q.calls ?? 0} calls</div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
+      )}
       <p className="flex items-center gap-2">
         <strong>Neon Region:</strong>
         <RegionBadge region={region} />
@@ -667,11 +805,9 @@ export default function DbStatus() {
       <p>
         <strong>Total Table Operations:</strong> {status.lastActivity?.totalOperations || 0}
       </p>
-
       <h2 className="text-xl font-bold mt-6 pt-6 border-t border-gray-300">
         Environment Information
       </h2>
-
       {envInfo ? (
         <>
           <p>
@@ -783,7 +919,6 @@ export default function DbStatus() {
       ) : (
         <p className="text-gray-500">Loading environment information...</p>
       )}
-
       {consumption && consumption.periods && consumption.periods.length > 0 && (
         <>
           <h2 className="text-xl font-bold mt-6 pt-6 border-t border-gray-300">
@@ -814,7 +949,6 @@ export default function DbStatus() {
           ))}
         </>
       )}
-
       {slowQueries && slowQueries.length > 0 && (
         <>
           <h2 className="text-xl font-bold mt-6 pt-6 border-t border-gray-300">Slow Queries</h2>
@@ -922,7 +1056,6 @@ export default function DbStatus() {
           </div>
         </>
       )}
-
       <div className="flex gap-4">
         <button onClick={() => toast('DbStatus toast!')} className="px-3 py-1 bg-gray-200 rounded">
           Make me a toast!
