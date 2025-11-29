@@ -1,74 +1,42 @@
 import React from 'react';
 
 interface SparklineProps {
-  /** The array of numbers to plot (e.g., latency history) */
-  data: number[];
-  /** Width of the SVG container (default: 100) */
-  width?: number;
-  /** Height of the SVG container (default: 30) */
+  /** The current value to display (e.g., utilization) */
+  value: number;
+  /** The maximum possible value (e.g., 100) */
+  max: number;
+  /** Color for the bar (default: blue) */
+  color?: string;
+  /** Height of the component (default: 8) */
   height?: number;
-  /** Color for the line and last point (default: indigo-600) */
-  strokeColor?: string;
-  /** Color for the area below the line (default: none) */
-  fillColor?: string;
-  /** Width of the line stroke (default: 2) */
-  strokeWidth?: number;
 }
 
 const Sparkline: React.FC<SparklineProps> = ({
-  data,
-  width = 100,
-  height = 30,
-  strokeColor = '#4f46e5', // indigo-600
-  strokeWidth = 2,
-  fillColor = 'none',
+  value,
+  max,
+  color = '#2563eb', // blue-600
+  height = 8,
 }) => {
-  if (!data || data.length < 2) {
-    return (
-      <svg width={width} height={height}>
-        <text x={width / 2} y={height / 2} fontSize="10" textAnchor="middle" fill="#9ca3af">
-          No Data
-        </text>
-      </svg>
-    );
-  }
+  const percentage = max > 0 ? (value / max) * 100 : 0;
 
-  // 1. Normalize data for SVG coordinates
-  const maxVal = Math.max(...data);
-  const minVal = Math.min(...data);
-  // Ensure range is at least 1 to prevent division by zero
-  const range = maxVal - minVal === 0 ? 1 : maxVal - minVal;
-
-  // 2. Map data points to SVG coordinates (x, y)
-  const points = data
-    .map((value, index) => {
-      // Scale x: Distribute points evenly across the width
-      const x = (index / (data.length - 1)) * width;
-      // Scale y: Invert value (min value is at the bottom, max value is at the top)
-      const y = height - ((value - minVal) / range) * height;
-      return `${x},${y}`;
-    })
-    .join(' ');
-
-  // 3. Define the area path for optional fill
-  const areaPath = `M ${points} L ${width},${height} L 0,${height} Z`;
-  const lastX = ((data.length - 1) / (data.length - 1)) * width;
-  const lastY = height - ((data[data.length - 1] - minVal) / range) * height;
+  // Ensure the percentage is between 0 and 100
+  const normalizedPercentage = Math.min(100, Math.max(0, percentage));
 
   return (
-    <svg
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      preserveAspectRatio="none"
+    <div
+      className="rounded-full bg-gray-200 overflow-hidden"
+      style={{ height: `${height}px`, width: '100%' }}
+      title={`${value} / ${max} (${normalizedPercentage.toFixed(1)}%)`}
     >
-      {/* Optional: Fill the area below the line */}
-      {fillColor !== 'none' && <path d={areaPath} fill={fillColor} stroke="none" />}
-      {/* The main sparkline plot */}
-      <polyline fill="none" stroke={strokeColor} strokeWidth={strokeWidth} points={points} />
-      {/* Highlight the latest data point */}
-      <circle cx={lastX} cy={lastY} r={2} fill={strokeColor} />
-    </svg>
+      <div
+        className="h-full"
+        style={{
+          width: `${normalizedPercentage}%`,
+          backgroundColor: color,
+          transition: 'width 0.5s ease-out',
+        }}
+      />
+    </div>
   );
 };
 
