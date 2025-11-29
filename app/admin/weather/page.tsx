@@ -24,6 +24,7 @@ type ForecastResult = {
 
 export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
+  const [precip, setPrecip] = useState<number | null>(null);
   const [requestId] = useState(() => generateUUID());
   const log = createLogger('JKapp/admin/weather/page.tsx', requestId);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
@@ -34,6 +35,16 @@ export default function WeatherPage() {
       const location = await getActiveLocation();
       setSelectedLocation(location);
     })();
+  }, []);
+
+  // Fetch precipitation value from API
+  useEffect(() => {
+    fetch('/api/getPrecip')
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Rain accumulation from API:', data.precip?.rainAccumulationSum);
+        setPrecip(data.precip?.rainAccumulationSum ?? 0);
+      });
   }, []);
 
   const onLog = useCallback(
@@ -131,41 +142,29 @@ export default function WeatherPage() {
       )}
 
       {/* Rain Alert using API precipitation value */}
-      {/* Use client-side fetch to get precipitation value and guard the banner */}
-      {(() => {
-        const [precip, setPrecip] = useState<number | null>(null);
-        useEffect(() => {
-          fetch('/api/getPrecip')
-            .then((res) => res.json())
-            .then((data) => {
-              console.log('Rain accumulation from API:', data.precip?.rainAccumulationSum);
-              setPrecip(data.precip?.rainAccumulationSum ?? 0);
-            });
-        }, []);
-        return precip && precip > 0 ? (
-          <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 text-blue-800 p-5 rounded-xl shadow-md">
-            <div className="flex items-start">
-              <div className="shrink-0">
-                <svg className="h-6 w-6 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3 flex-1">
-                <h3 className="text-sm font-bold mb-1">Rain Alert</h3>
-                <p className="text-sm">
-                  Maximum rain accumulation of{' '}
-                  <span className="font-semibold">{precip.toFixed(2)} inches</span> expected in the
-                  forecast period.
-                </p>
-              </div>
+      {precip && precip > 0 && (
+        <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 text-blue-800 p-5 rounded-xl shadow-md">
+          <div className="flex items-start">
+            <div className="shrink-0">
+              <svg className="h-6 w-6 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3 flex-1">
+              <h3 className="text-sm font-bold mb-1">Rain Alert</h3>
+              <p className="text-sm">
+                Maximum rain accumulation of{' '}
+                <span className="font-semibold">{precip.toFixed(2)} inches</span> expected in the
+                forecast period.
+              </p>
             </div>
           </div>
-        ) : null;
-      })()}
+        </div>
+      )}
 
       {/* Main Weather Cards Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
