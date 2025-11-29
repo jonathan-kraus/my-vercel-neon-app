@@ -15,7 +15,7 @@
       "automerge": true,
       "automergeType": "pr",
       "automergeStrategy": "merge",
-      "stabilityDays": 1
+      "minimumReleaseAge": "1 day"
     },
     {
       "matchUpdateTypes": ["major"],
