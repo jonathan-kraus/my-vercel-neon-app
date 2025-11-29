@@ -605,8 +605,6 @@ export default function DbStatus() {
           transition={{ duration: 0.5 }}
           className="p-4 bg-white border rounded shadow-sm"
         >
-          <div className="text-sm text-gray-500">Latency</div>
-          <div className="mt-1 text-lg font-medium">{status?.latencyMs ?? 'N/A'} ms</div>
           <div className="text-xs text-gray-500 mt-2">
             Active Connections:{' '}
             {neonLimits?.activeConnections ?? status?.lastActivity?.activeConnections ?? 0}
@@ -705,7 +703,7 @@ export default function DbStatus() {
             <MDiv>
               {/* ... other Latency card content */}
               <div>
-                <div className="text-sm text-gray-500">Latency</div>
+                <div className="text-sm text-gray-500">JJJLatency</div>
                 <div className="mt-1 text-lg font-medium flex items-center gap-2">
                   {status?.latencyMs ?? 'N/A'} ms
                   {/* ⬅️ USE THE NEW LINE COMPONENT HERE */}
