@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { motion } from 'motion/react';
-<span className="text-sm text-gray-600">Latency:</span>;
+import { motion, AnimatePresence } from 'motion/react';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 import { useRequestId } from '@/app/contexts/RequestIdContext';
@@ -81,8 +79,6 @@ function RegionBadge({ region }: { region: string }) {
 }
 
 export default function DbStatus() {
-  const [prevLatency, setPrevLatency] = useState<number | null>(null);
-  const [latencyDirection, setLatencyDirection] = useState<'up' | 'down' | 'none'>('none');
   const [status, setStatus] = useState<DbStatusType | null>(null);
   const [envInfo, setEnvInfo] = useState<EnvInfoType | null>(null);
   const [consumption, setConsumption] = useState<ConsumptionData | null>(null);
@@ -93,12 +89,8 @@ export default function DbStatus() {
     latencyMs?: number;
     error?: string;
   } | null>(null);
-  const [healthCheckTimestamp, setHealthCheckTimestamp] = useState<number | null>(null);
-  const [autoRefresh, setAutoRefresh] = useState(false);
-  const autoRefreshInterval = useRef<NodeJS.Timeout | null>(null);
   const [neonRequestId, setNeonRequestId] = useState<string | null>(null);
   const [slowQueries, setSlowQueries] = useState<any[] | null>(null);
-  const [queryTrends, setQueryTrends] = useState<any[] | null>(null);
   const [explainLoading, setExplainLoading] = useState<Record<number, boolean>>({});
   const [explainPlans, setExplainPlans] = useState<Record<number, string[]>>({});
   const [explainErrors, setExplainErrors] = useState<Record<number, string>>({});
@@ -266,25 +258,6 @@ export default function DbStatus() {
     fetchSlow();
   }, []);
 
-  // Fetch query trends
-  useEffect(() => {
-    const fetchTrends = async () => {
-      try {
-        const res = await fetch('/api/neon/query-trends?hours=24');
-        if (res.ok) {
-          const data = await res.json();
-          setQueryTrends(data.trends || []);
-          await log.current.info('Query trends received', { count: data.trends?.length || 0 });
-        }
-      } catch (err) {
-        console.error('Failed to fetch query trends:', err);
-        await log.current.error('Failed to fetch query trends', { error: String(err) });
-      }
-    };
-
-    fetchTrends();
-  }, []);
-
   // Email sender
   const sendStatusEmail = useCallback(async () => {
     // Only send emails in browser environment
@@ -349,7 +322,7 @@ export default function DbStatus() {
           type: 'throttled',
           message: 'Email throttled - too soon since last send',
         });
-        toast.error('Email throttled - please wait before sending again', { icon: '⏱️' });
+        toast('Email throttled - please wait before sending again', { icon: '⏱️' });
       } else {
         setEmailStatus({ type: 'error', message: 'Email send failed' });
         toast.error('Email send failed');
@@ -390,22 +363,7 @@ export default function DbStatus() {
       const res = await fetch('/api/neon/health', { headers });
       if (res.ok) {
         const data = await res.json();
-        // Track latency direction
-        if (
-          typeof data.latencyMs === 'number' &&
-          healthResult &&
-          typeof healthResult.latencyMs === 'number'
-        ) {
-          if (data.latencyMs > healthResult.latencyMs) setLatencyDirection('up');
-          else if (data.latencyMs < healthResult.latencyMs) setLatencyDirection('down');
-          else setLatencyDirection('none');
-          setPrevLatency(healthResult.latencyMs);
-        } else {
-          setLatencyDirection('none');
-          setPrevLatency(null);
-        }
         setHealthResult(data);
-        setHealthCheckTimestamp(Date.now());
         toast.success(`Health OK — ${data.latencyMs} ms`);
         await log.current.info('Health check executed', {
           neonRequestId,
@@ -414,71 +372,16 @@ export default function DbStatus() {
       } else {
         const data = await res.json();
         setHealthResult(data);
-        setHealthCheckTimestamp(Date.now());
         toast.error('Health check failed');
         await log.current.error('Health check failed', { neonRequestId, error: data.error });
       }
     } catch (err) {
       console.error('Health check error', err);
       setHealthResult({ ok: false, error: String(err) });
-      setHealthCheckTimestamp(Date.now());
       toast.error('Health check error');
       await log.current.error('Health check exception', { neonRequestId, error: String(err) });
     }
   }, [neonRequestId]);
-
-  // Auto-refresh effect
-  useEffect(() => {
-    if (autoRefresh) {
-      autoRefreshInterval.current = setInterval(() => {
-        runHealthCheck();
-      }, 30000); // refresh every 30s
-    } else {
-      if (autoRefreshInterval.current) {
-        clearInterval(autoRefreshInterval.current);
-        autoRefreshInterval.current = null;
-      }
-    }
-    return () => {
-      if (autoRefreshInterval.current) {
-        clearInterval(autoRefreshInterval.current);
-      }
-    };
-  }, [autoRefresh, runHealthCheck]);
-
-  // Export metrics as JSON
-  const exportMetrics = useCallback(() => {
-    const metricsSnapshot = {
-      timestamp: new Date().toISOString(),
-      status,
-      envInfo,
-      consumption,
-      neonMeta,
-      neonLimits,
-      healthResult,
-      healthCheckTimestamp: healthCheckTimestamp
-        ? new Date(healthCheckTimestamp).toISOString()
-        : null,
-      slowQueries,
-    };
-    const blob = new Blob([JSON.stringify(metricsSnapshot, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `db-metrics-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success('Metrics exported!');
-  }, [
-    status,
-    envInfo,
-    consumption,
-    neonMeta,
-    neonLimits,
-    healthResult,
-    healthCheckTimestamp,
-    slowQueries,
-  ]);
 
   // Explain query
   const runExplain = useCallback(
@@ -530,304 +433,419 @@ export default function DbStatus() {
 
   if (!status) return <p>Loading DB status...</p>;
 
-  // Determine an overall status for a cloud-style header
-  const overallStatus = (() => {
-    if (healthResult && !healthResult.ok) return { label: 'Degraded', color: 'yellow' };
-    if (neonLimits && neonLimits.utilization >= 80) return { label: 'Degraded', color: 'yellow' };
-    return { label: 'Operational', color: 'green' };
-  })();
-
   return (
-    <div className="space-y-6 animate-fade-in">
-      <header className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Database Status</h2>
-          <p className="text-sm text-gray-600">Live metrics and health for your Neon database</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+    <div className="space-y-4 animate-fade-in delay-[index * 100]">
+      <h2 className="text-xl font-bold">Database Status</h2>
+
+      <p className="flex items-center gap-2">
+        <strong>Neon Region:</strong>
+        <RegionBadge region={region} />
+      </p>
+      <p>
+        <strong>Compute Size:</strong> 0.5 ↔ 2 CU
+      </p>
+      <p>
+        <strong>History Retention:</strong> 1 day
+      </p>
+      <p>
+        <strong>PostgreSQL Version:</strong> {status.version}
+      </p>
+      <p>
+        <strong>Total Posts:</strong> {status.postCount}
+      </p>
+      <p>
+        <strong>Latest Post Date:</strong>{' '}
+        {status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
+      </p>
+      <p>
+        <strong>Latest Post Title:</strong> {status.latestPostTitle}
+      </p>
+      <p>
+        <strong>Latest Post Content:</strong> {status.latestPostContent}
+      </p>
+      <p>
+        <strong>Total Logs:</strong> {status.logCount}
+      </p>
+      <p>
+        <strong>Latency:</strong> {status.latencyMs} ms
+      </p>
+      {neonLimits && (
+        <>
+          <h3 className="mt-4 font-semibold">Connection Limits</h3>
+          <p>
+            <strong>Max Connections:</strong> {neonLimits.maxConnections ?? 'N/A'}
+          </p>
+          <p>
+            <strong>Active Connections:</strong> {neonLimits.activeConnections ?? 0}
+          </p>
+          <p>
+            <strong>Utilization:</strong>{' '}
             <span
-              className={
-                overallStatus.color === 'green'
-                  ? 'inline-block w-3 h-3 rounded-full bg-green-500'
-                  : 'inline-block w-3 h-3 rounded-full bg-yellow-500'
-              }
-            />
-            <span className="font-semibold">{overallStatus.label}</span>
-          </div>
-          <RegionBadge region={region} />
-        </div>
-      </header>
-
-      {/* Summary cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 bg-white border rounded shadow-sm">
-          <div className="text-sm text-gray-500">PostgreSQL</div>
-          <div className="mt-1 text-lg font-medium">{status.version}</div>
-          <div className="text-xs text-gray-500 mt-2">
-            Latest:{' '}
-            {status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
-          </div>
-        </div>
-
-        <div className="p-4 bg-white border rounded shadow-sm">
-          <div className="text-sm text-gray-500">Traffic</div>
-          <div className="mt-1 text-lg font-medium">{status.postCount.toLocaleString()} posts</div>
-          <div className="text-xs text-gray-500 mt-2">Logs: {status.logCount.toLocaleString()}</div>
-        </div>
-
-        <div className="p-4 bg-white border rounded shadow-sm">
-          <div className="text-sm text-gray-500">Latency</div>
-          <div className="mt-1 text-lg font-medium">{status.latencyMs ?? 'N/A'} ms</div>
-          <div className="text-xs text-gray-500 mt-2">
-            Active Connections:{' '}
-            {neonLimits?.activeConnections ?? status.lastActivity?.activeConnections ?? 0}
-          </div>
-        </div>
-      </div>
-
-      {/* Metrics grid - avoid duplicating active connections */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-4 bg-white border rounded shadow-sm">
-          <h3 className="text-sm font-semibold">Compute</h3>
-          <p className="text-sm text-gray-600 mt-1">Size: 0.5 ↔ 2 CU</p>
-          <p className="text-sm text-gray-600">History retention: 1 day</p>
-        </div>
-
-        <div className="p-4 bg-white border rounded shadow-sm">
-          <h3 className="text-sm font-semibold">Vacuum / Activity</h3>
-          <p className="text-sm text-gray-600 mt-1">
-            Last Activity:{' '}
-            {status.lastActivity?.lastActivity
-              ? new Date(status.lastActivity.lastActivity).toLocaleString()
-              : 'N/A'}
+              className={`px-2 py-1 rounded text-xs font-semibold ${
+                neonLimits.utilization >= 80
+                  ? 'bg-red-100 text-red-800'
+                  : neonLimits.utilization >= 50
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-green-100 text-green-800'
+              }`}
+            >
+              {neonLimits.utilization != null ? `${neonLimits.utilization}%` : 'N/A'}
+            </span>
           </p>
-          <p className="text-sm text-gray-600">
-            Last Vacuum:{' '}
-            {status.lastActivity?.lastVacuum
-              ? new Date(status.lastActivity.lastVacuum).toLocaleString()
-              : 'Never'}
-          </p>
-          <p className="text-sm text-gray-600">
-            Total ops: {status.lastActivity?.totalOperations ?? 0}
-          </p>
-        </div>
+        </>
+      )}
+      <p>
+        <strong>Active Connections:</strong> {status.lastActivity?.activeConnections || 0}
+      </p>
+      <p>
+        <strong>Last Database Activity:</strong>{' '}
+        {status.lastActivity?.lastActivity
+          ? new Date(status.lastActivity.lastActivity).toLocaleString()
+          : 'No recent activity detected'}
+      </p>
+      <p>
+        <strong>Last Vacuum:</strong>{' '}
+        {status.lastActivity?.lastVacuum
+          ? new Date(status.lastActivity.lastVacuum).toLocaleString()
+          : 'Never'}
+      </p>
+      <p>
+        <strong>Last Auto-Vacuum:</strong>{' '}
+        {status.lastActivity?.lastAutoVacuum
+          ? new Date(status.lastActivity.lastAutoVacuum).toLocaleString()
+          : 'Never'}
+      </p>
+      <p>
+        <strong>Total Table Operations:</strong> {status.lastActivity?.totalOperations || 0}
+      </p>
 
-        <div className="p-4 bg-white border rounded shadow-sm">
-          <h3 className="text-sm font-semibold">Limits</h3>
-          <p className="text-sm text-gray-600 mt-1">
-            Max Conns: {neonLimits?.maxConnections ?? 'N/A'}
-          </p>
-          <p className="text-sm text-gray-600">
-            Utilization: {neonLimits?.utilization != null ? `${neonLimits.utilization}%` : 'N/A'}
-          </p>
-        </div>
-      </div>
+      <h2 className="text-xl font-bold mt-6 pt-6 border-t border-gray-300">
+        Environment Information
+      </h2>
 
-      {/* Environment */}
-      <section className="mt-6">
-        <h3 className="text-lg font-semibold">Environment</h3>
-        {envInfo ? (
-          <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="p-3 bg-white border rounded">
-              <p className="text-sm text-gray-600">Deployment</p>
-              <p className="font-medium">{envInfo.deploymentUrl}</p>
-              <p className="text-xs text-gray-500">Region: {envInfo.vercelRegion}</p>
-            </div>
-            <div className="p-3 bg-white border rounded">
-              <p className="text-sm text-gray-600">Git</p>
-              <p className="font-medium">
-                {envInfo.gitCommitSha !== 'N/A' ? envInfo.gitCommitSha : 'N/A'}
+      {envInfo ? (
+        <>
+          <p>
+            <strong>Deployment URL:</strong> {envInfo.deploymentUrl}
+          </p>
+          <p className="flex items-center gap-2">
+            <strong>Environment:</strong>
+            <span
+              className={`px-2 py-1 rounded text-xs font-semibold ${
+                envInfo.environment === 'production'
+                  ? 'bg-green-100 text-green-800'
+                  : envInfo.environment === 'preview'
+                    ? 'bg-yellow-100 text-yellow-800'
+                    : 'bg-blue-100 text-blue-800'
+              }`}
+            >
+              {envInfo.environment}
+            </span>
+          </p>
+          <p>
+            <strong>Vercel Region:</strong> {envInfo.vercelRegion}
+          </p>
+          {envInfo.gitCommitSha !== 'N/A' && (
+            <p>
+              <strong>Git Commit:</strong> {envInfo.gitCommitSha}
+            </p>
+          )}
+          {envInfo.gitCommitMessage !== 'N/A' && (
+            <p>
+              <strong>Commit Message:</strong> {envInfo.gitCommitMessage}
+            </p>
+          )}
+          {envInfo.gitCommitAuthor !== 'N/A' && (
+            <p>
+              <strong>Author:</strong> {envInfo.gitCommitAuthor}
+            </p>
+          )}
+          {envInfo.VERCEL_DEPLOYMENT_ID !== 'N/A' && (
+            <p>
+              <strong>Deployment ID:</strong> {envInfo.VERCEL_DEPLOYMENT_ID}
+            </p>
+          )}
+          {envInfo.VERCEL_GIT_PROVIDER !== 'N/A' && (
+            <p>
+              <strong>Git Provider:</strong> {envInfo.VERCEL_GIT_PROVIDER}
+            </p>
+          )}
+          {envInfo.VERCEL_GIT_REPO_OWNER !== 'N/A' && envInfo.VERCEL_GIT_REPO_SLUG !== 'N/A' && (
+            <p>
+              <strong>Repository:</strong> {envInfo.VERCEL_GIT_REPO_OWNER}/
+              {envInfo.VERCEL_GIT_REPO_SLUG}
+            </p>
+          )}
+          <p>
+            <strong>Database Host:</strong> {envInfo.databaseHost}
+          </p>
+          {envInfo.databaseName !== 'N/A' && (
+            <p>
+              <strong>Database Name:</strong> {envInfo.databaseName}
+            </p>
+          )}
+          {neonMeta && (
+            <>
+              <h3 className="mt-4 font-semibold">Neon Metadata</h3>
+              <p>
+                <strong>Host:</strong> {neonMeta.host}
               </p>
-              <p className="text-xs text-gray-500">{envInfo.gitCommitMessage}</p>
-            </div>
-          </div>
-        ) : (
-          <p className="text-gray-500">Loading environment information...</p>
-        )}
-      </section>
-
-      {/* Consumption */}
-      {consumption && consumption.periods && consumption.periods.length > 0 && (
-        <section className="mt-6">
-          <h3 className="text-lg font-semibold">Consumption (recent)</h3>
-          <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-4">
-            {consumption.periods.slice(0, 1).map((period) => (
-              <div key={period.period_id} className="p-3 bg-white border rounded">
-                <p className="text-sm text-gray-600">Active Time</p>
-                <p className="font-medium">{(period.active_time_seconds / 3600).toFixed(2)} h</p>
-                <p className="text-sm text-gray-600">Compute</p>
-                <p className="font-medium">{(period.compute_time_seconds / 3600).toFixed(2)} h</p>
+              <p>
+                <strong>Branch:</strong> {neonMeta.branch || 'N/A'}
+              </p>
+              <p>
+                <strong>User:</strong> {neonMeta.username}
+              </p>
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={async () => {
+                    const toCopy = `${neonMeta.username}@${neonMeta.host}/${neonMeta.database}`;
+                    try {
+                      await navigator.clipboard.writeText(toCopy);
+                      toast.success('Connection info copied to clipboard');
+                      await log.current.info('Masked connection copied', {
+                        neonRequestId,
+                        host: neonMeta.host,
+                      });
+                    } catch (err) {
+                      toast.error('Failed to copy');
+                      await log.current.error('Failed copying masked connection', {
+                        neonRequestId,
+                        error: String(err),
+                      });
+                    }
+                  }}
+                  className="px-3 py-1 bg-gray-200 rounded"
+                >
+                  Copy masked connection
+                </button>
+                <a
+                  href={neonMeta.neonConsoleUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1 bg-blue-500 text-white rounded"
+                >
+                  Open Neon Console
+                </a>
               </div>
-            ))}
-          </div>
-        </section>
+            </>
+          )}
+        </>
+      ) : (
+        <p className="text-gray-500">Loading environment information...</p>
       )}
 
-      {/* Incidents / Slow Queries */}
+      {consumption && consumption.periods && consumption.periods.length > 0 && (
+        <>
+          <h2 className="text-xl font-bold mt-6 pt-6 border-t border-gray-300">
+            Consumption Metrics (Last 7 Days)
+          </h2>
+          {consumption.periods.slice(0, 1).map((period) => (
+            <div key={period.period_id} className="space-y-2">
+              <p>
+                <strong>Active Time:</strong> {(period.active_time_seconds / 3600).toFixed(2)} hours
+              </p>
+              <p>
+                <strong>Compute Time:</strong> {(period.compute_time_seconds / 3600).toFixed(2)}{' '}
+                hours
+              </p>
+              <p>
+                <strong>Data Written:</strong>{' '}
+                {(period.written_data_bytes / 1024 / 1024).toFixed(2)} MB
+              </p>
+              <p>
+                <strong>Data Transfer:</strong>{' '}
+                {(period.data_transfer_bytes / 1024 / 1024).toFixed(2)} MB
+              </p>
+              <p>
+                <strong>Storage (avg):</strong>{' '}
+                {(period.data_storage_bytes_hour / 1024 / 1024 / 1024).toFixed(4)} GB-hours
+              </p>
+            </div>
+          ))}
+        </>
+      )}
+
       {slowQueries && slowQueries.length > 0 && (
-        <section className="mt-6">
-          <h3 className="text-lg font-semibold">Incidents & Slow Queries</h3>
-          <div className="mt-3 space-y-2">
+        <>
+          <h2 className="text-xl font-bold mt-6 pt-6 border-t border-gray-300">Slow Queries</h2>
+          <div className="space-y-2">
             {slowQueries.map((q: any, idx: number) => (
-              <MDiv key={idx} className="p-3 border rounded bg-white shadow-sm">
-                <div className="flex justify-between">
+              <MDiv
+                key={idx}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.28, delay: idx * 0.06 }}
+                className="p-3 border rounded bg-white shadow-sm"
+              >
+                <div className="flex justify-between items-start gap-4">
                   <div className="flex-1">
-                    <pre className="whitespace-pre-wrap text-sm overflow-hidden max-h-28">
+                    <pre className="whitespace-pre-wrap text-sm overflow-hidden text-ellipsis max-h-28">
                       {q.query?.length > 800 ? q.query.slice(0, 800) + '…' : q.query}
                     </pre>
                   </div>
-                  <div className="text-right text-xs text-gray-600 ml-4">
-                    <div>
-                      <strong>Mean:</strong>{' '}
-                      {q.mean_time
-                        ? Number(q.mean_time).toFixed(2) + ' ms'
-                        : q.duration_ms
-                          ? `${Math.round(q.duration_ms)} ms`
-                          : 'N/A'}
-                    </div>
-                    <div>
-                      <strong>Calls:</strong> {q.calls ?? 'N/A'}
+                  <div className="text-right text-xs text-gray-600 flex flex-col items-end gap-2">
+                    {q.mean_time != null ? (
+                      <div>
+                        <div>
+                          <strong>Mean:</strong> {Number(q.mean_time).toFixed(2)} ms
+                        </div>
+                        <div>
+                          <strong>Calls:</strong> {q.calls}
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <div>
+                          <strong>Duration:</strong>{' '}
+                          {q.duration_ms ? `${Math.round(q.duration_ms)} ms` : 'N/A'}
+                        </div>
+                        <div>
+                          <strong>State:</strong> {q.state || 'N/A'}
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        onClick={() => runExplain(q.query, idx)}
+                        disabled={!!explainLoading[idx]}
+                        className={`px-2 py-1 rounded text-sm ${
+                          explainLoading[idx]
+                            ? 'bg-gray-300 text-gray-700'
+                            : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                        }`}
+                      >
+                        {explainLoading[idx] ? 'Explaining…' : 'Explain'}
+                      </button>
+                      <button
+                        onClick={async () => {
+                          try {
+                            const copy = q.query?.slice(0, 1000) || '';
+                            await navigator.clipboard.writeText(copy);
+                            toast.success('Query copied');
+                            await log.current.info('Slow query copied', { neonRequestId, idx });
+                          } catch (err) {
+                            toast.error('Copy failed');
+                            try {
+                              await log.current.error('Failed to copy slow query', {
+                                neonRequestId,
+                                error: String(err),
+                              });
+                            } catch (logErr) {
+                              console.warn('Failed to log copy error', logErr);
+                            }
+                          }
+                        }}
+                        className="px-2 py-1 rounded text-sm bg-gray-200"
+                      >
+                        Copy
+                      </button>
                     </div>
                   </div>
                 </div>
+
+                <AnimatePresence>
+                  {(explainPlans[idx] && explainPlans[idx].length > 0) ||
+                  explainLoading[idx] ||
+                  explainErrors[idx] ? (
+                    <MPanel
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="mt-3 p-3 bg-gray-50 border rounded text-sm text-gray-800"
+                    >
+                      {explainLoading[idx] ? (
+                        <div>Running explain...</div>
+                      ) : explainErrors[idx] ? (
+                        <div className="text-red-600">Error: {explainErrors[idx]}</div>
+                      ) : (
+                        <pre className="whitespace-pre-wrap text-xs">
+                          {explainPlans[idx].join('\n')}
+                        </pre>
+                      )}
+                    </MPanel>
+                  ) : null}
+                </AnimatePresence>
               </MDiv>
             ))}
           </div>
-
-          {/* Slow Query Trend Chart */}
-          <div className="mt-4 p-4 bg-gray-50 border rounded">
-            <h4 className="text-sm font-semibold text-gray-700">Query Performance Trend (24h)</h4>
-            {queryTrends && queryTrends.length > 0 ? (
-              <div className="mt-3 space-y-3">
-                {queryTrends.slice(0, 3).map((trend, idx) => (
-                  <div key={idx} className="p-3 bg-white border rounded">
-                    <div className="flex justify-between items-center">
-                      <div className="flex-1">
-                        <p className="text-xs font-mono text-gray-700 truncate">
-                          {trend.query.slice(0, 60)}...
-                        </p>
-                      </div>
-                      <div className="text-right ml-4">
-                        <p className="text-xs text-gray-600">
-                          Avg: {trend.avgMeanTime.toFixed(2)} ms
-                        </p>
-                        <p className="text-xs text-gray-600">
-                          Max: {trend.maxMeanTime.toFixed(2)} ms
-                        </p>
-                        <p className="text-xs text-gray-500">{trend.dataPoints.length} samples</p>
-                      </div>
-                    </div>
-                    {/* Simple bar chart visualization */}
-                    <div className="mt-2 h-8 bg-gray-100 rounded overflow-hidden flex items-end gap-0.5">
-                      {trend.dataPoints.slice(-20).map((point: any, pidx: number) => {
-                        const pct = (point.value / trend.maxMeanTime) * 100;
-                        return (
-                          <div
-                            key={pidx}
-                            className="flex-1 bg-indigo-500"
-                            style={{ height: `${pct}%`, minHeight: '2px' }}
-                            title={`${point.value.toFixed(2)}ms at ${new Date(point.timestamp).toLocaleTimeString()}`}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-gray-500 mt-2">
-                No historical data yet. Trends will appear after slow queries are logged.
-              </p>
-            )}
-          </div>
-        </section>
+        </>
       )}
 
-      {healthResult && (
-        <section className="mt-6 p-4 bg-white border rounded">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Health Check Result</h3>
-            {healthCheckTimestamp && (
-              <p className="text-xs text-gray-500">
-                Last checked {Math.round((Date.now() - healthCheckTimestamp) / 1000)}s ago
-              </p>
-            )}
-          </div>
-          <div className="mt-2">
-            <p className="text-sm text-gray-600">
-              Status:{' '}
-              <span
-                className={
-                  healthResult.ok ? 'text-green-600 font-semibold' : 'text-yellow-600 font-semibold'
-                }
-              >
-                {healthResult.ok ? 'OK' : 'Degraded'}
-              </span>
-            </p>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Latency:</span>
-              <MDiv
-                initial={{ scale: 1 }}
-                animate={{ scale: latencyDirection !== 'none' ? 1.2 : 1 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                className="inline-flex items-center font-semibold text-lg"
-                style={{
-                  color:
-                    latencyDirection === 'up'
-                      ? '#dc2626'
-                      : latencyDirection === 'down'
-                        ? '#16a34a'
-                        : '#374151',
-                }}
-              >
-                {healthResult.latencyMs ?? 'N/A'} ms
-                {latencyDirection === 'up' && (
-                  <span className="ml-1 text-red-600" title="Latency increased">
-                    ▲
-                  </span>
-                )}
-                {latencyDirection === 'down' && (
-                  <span className="ml-1 text-green-600" title="Latency decreased">
-                    ▼
-                  </span>
-                )}
-              </MDiv>
-              {typeof prevLatency === 'number' && (
-                <span className="text-xs text-gray-500 ml-2">(was {prevLatency} ms)</span>
-              )}
-            </div>
-            {healthResult.error && (
-              <p className="text-sm text-red-600">Error: {healthResult.error}</p>
-            )}
-          </div>
-        </section>
-      )}
-
-      <div className="mt-6 flex flex-wrap gap-3">
-        <button onClick={runHealthCheck} className="px-3 py-2 bg-indigo-600 text-white rounded">
+      <div className="flex gap-4">
+        <button onClick={() => toast('DbStatus toast!')} className="px-3 py-1 bg-gray-200 rounded">
+          Make me a toast!
+        </button>
+        <button onClick={runHealthCheck} className="px-3 py-1 bg-indigo-500 text-white rounded">
           Run DB Health Check
         </button>
-        <button
-          onClick={sendStatusEmail}
-          disabled={emailLoading}
-          className="px-3 py-2 bg-blue-500 text-white rounded"
-        >
-          {emailLoading ? 'Sending… ' : 'Send Status Email'}
-        </button>
-        <button onClick={exportMetrics} className="px-3 py-2 bg-gray-600 text-white rounded">
-          Export Metrics JSON
-        </button>
-        <label className="flex items-center gap-2 px-3 py-2 bg-white border rounded cursor-pointer">
-          <input
-            type="checkbox"
-            checked={autoRefresh}
-            onChange={(e) => setAutoRefresh(e.target.checked)}
-            className="w-4 h-4"
-          />
-          <span className="text-sm">Auto-refresh (30s)</span>
-        </label>
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={sendStatusEmail}
+            disabled={emailLoading}
+            className={`px-3 py-1 rounded flex items-center gap-2 transition-colors ${
+              emailLoading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : emailStatus.type === 'success'
+                  ? 'bg-green-500 text-white hover:bg-green-600'
+                  : emailStatus.type === 'throttled'
+                    ? 'bg-yellow-500 text-white hover:bg-yellow-600'
+                    : emailStatus.type === 'error'
+                      ? 'bg-red-500 text-white hover:bg-red-600'
+                      : 'bg-blue-500 text-white hover:bg-blue-600'
+            }`}
+          >
+            {emailLoading ? (
+              <>
+                <span className="animate-spin">⏳</span>
+                <span>Sending...</span>
+              </>
+            ) : emailStatus.type === 'success' ? (
+              <>
+                <span>✓</span>
+                <span>Email Sent</span>
+              </>
+            ) : emailStatus.type === 'throttled' ? (
+              <>
+                <span>⏱️</span>
+                <span>Throttled</span>
+              </>
+            ) : emailStatus.type === 'error' ? (
+              <>
+                <span>✗</span>
+                <span>Send Failed</span>
+              </>
+            ) : (
+              'Send Status Email'
+            )}
+          </button>
+          {emailStatus.type && emailStatus.message && (
+            <p
+              className={`text-sm ${
+                emailStatus.type === 'success'
+                  ? 'text-green-600'
+                  : emailStatus.type === 'throttled'
+                    ? 'text-yellow-600'
+                    : 'text-red-600'
+              }`}
+            >
+              {emailStatus.message}
+            </p>
+          )}
+        </div>
       </div>
+      {healthResult && (
+        <div className="mt-2">
+          <strong>Health:</strong>{' '}
+          {healthResult.ok ? (
+            <span className="text-green-600">OK — {healthResult.latencyMs} ms</span>
+          ) : (
+            <span className="text-red-600">Failed — {healthResult.error}</span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
