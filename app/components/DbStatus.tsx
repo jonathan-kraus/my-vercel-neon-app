@@ -527,7 +527,7 @@ export default function DbStatus() {
   //   [neonRequestId]
   // );
 
-  if (!status) return <p>Loading DB status...</p>;
+  // Always render the DB status box, show loading spinner/placeholder if status is not loaded
 
   // Determine an overall status for a cloud-style header
   const overallStatus = (() => {
