@@ -561,44 +561,46 @@ export default function DbStatus() {
       {/* Animated Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <MDiv
-          key={status.version}
+          key={status?.version}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
           className="p-4 bg-white border rounded shadow-sm"
         >
           <div className="text-sm text-gray-500">PostgreSQL</div>
-          <div className="mt-1 text-lg font-medium">{status.version}</div>
+          <div className="mt-1 text-lg font-medium">{status?.version}</div>
           <div className="text-xs text-gray-500 mt-2">
             Latest:{' '}
-            {status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
+            {status?.latestPostDate ? new Date(status?.latestPostDate).toLocaleString() : 'N/A'}
           </div>
         </MDiv>
 
         <MDiv
-          key={status.postCount}
+          key={status?.postCount}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
           className="p-4 bg-white border rounded shadow-sm"
         >
           <div className="text-sm text-gray-500">Traffic</div>
-          <div className="mt-1 text-lg font-medium">{status.postCount.toLocaleString()} posts</div>
-          <div className="text-xs text-gray-500 mt-2">Logs: {status.logCount.toLocaleString()}</div>
+          <div className="mt-1 text-lg font-medium">{status?.postCount.toLocaleString()} posts</div>
+          <div className="text-xs text-gray-500 mt-2">
+            Logs: {status?.logCount.toLocaleString()}
+          </div>
         </MDiv>
 
         <MDiv
-          key={status.latencyMs}
+          key={status?.latencyMs}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
           className="p-4 bg-white border rounded shadow-sm"
         >
           <div className="text-sm text-gray-500">Latency</div>
-          <div className="mt-1 text-lg font-medium">{status.latencyMs ?? 'N/A'} ms</div>
+          <div className="mt-1 text-lg font-medium">{status?.latencyMs ?? 'N/A'} ms</div>
           <div className="text-xs text-gray-500 mt-2">
             Active Connections:{' '}
-            {neonLimits?.activeConnections ?? status.lastActivity?.activeConnections ?? 0}
+            {neonLimits?.activeConnections ?? status?.lastActivity?.activeConnections ?? 0}
           </div>
         </MDiv>
       </div>
@@ -615,18 +617,18 @@ export default function DbStatus() {
           <h3 className="text-sm font-semibold">Vacuum / Activity</h3>
           <p className="text-sm text-gray-600 mt-1">
             Last Activity:{' '}
-            {status.lastActivity?.lastActivity
-              ? new Date(status.lastActivity.lastActivity).toLocaleString()
+            {status?.lastActivity?.lastActivity
+              ? new Date(status?.lastActivity.lastActivity).toLocaleString()
               : 'N/A'}
           </p>
           <p className="text-sm text-gray-600">
             Last Vacuum:{' '}
-            {status.lastActivity?.lastVacuum
-              ? new Date(status.lastActivity.lastVacuum).toLocaleString()
+            {status?.lastActivity?.lastVacuum
+              ? new Date(status?.lastActivity.lastVacuum).toLocaleString()
               : 'Never'}
           </p>
           <p className="text-sm text-gray-600">
-            Total ops: {status.lastActivity?.totalOperations ?? 0}
+            Total ops: {status?.lastActivity?.totalOperations ?? 0}
           </p>
         </div>
 
