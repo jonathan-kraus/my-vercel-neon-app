@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
-// 🛠️ FIX: Using framer-motion and importing AnimatePresence for directional arrow animation
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
@@ -8,6 +7,7 @@ import { useRequestId } from '@/app/contexts/RequestIdContext';
 import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 import { generateUUID } from '@/uuidj';
+import Sparkline from './Sparkline'; // ⬅️ ADD THIS IMPORT
 
 type DbStatusType = {
   version: string;
@@ -116,8 +116,7 @@ export default function DbStatus() {
   const [prevLatency, setPrevLatency] = useState<number | null>(null);
   const [latencyDirection, setLatencyDirection] = useState<'up' | 'down' | 'none'>('none');
 
-  // 🛠️ REMOVED unused state:
-  // const [latencyHistory, setLatencyHistory] = useState<number[]>([]);
+  const [latencyHistory, setLatencyHistory] = useState<number[]>([]);
   // const prevLatencyRef = useRef<number | null>(null);
 
   // 🛠️ REMOVED unused useEffect for latency history, logic moved to runHealthCheck
@@ -450,6 +449,14 @@ export default function DbStatus() {
       } else {
         setPrevLatency(null);
         setLatencyDirection('none');
+      }
+
+      if (typeof newLatency === 'number') {
+        setLatencyHistory((h) => {
+          const nextHistory = [...h, newLatency];
+          // Keep only the last 20 samples
+          return nextHistory.slice(-20);
+        });
       }
 
       setHealthResult(data);
