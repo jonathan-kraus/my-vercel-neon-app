@@ -98,9 +98,9 @@ export default function DbStatus() {
   const [neonRequestId, setNeonRequestId] = useState<string | null>(null);
   const [slowQueries, setSlowQueries] = useState<any[] | null>(null);
   const [queryTrends, setQueryTrends] = useState<any[] | null>(null);
-  const [explainLoading, setExplainLoading] = useState<Record<number, boolean>>({});
-  const [explainPlans, setExplainPlans] = useState<Record<number, string[]>>({});
-  const [explainErrors, setExplainErrors] = useState<Record<number, string>>({});
+  //const [explainLoading, setExplainLoading] = useState<Record<number, boolean>>({});
+  //const [explainPlans, setExplainPlans] = useState<Record<number, string[]>>({});
+  //const [explainErrors, setExplainErrors] = useState<Record<number, string>>({});
   // Track previous latency values for trend and animation
   const [latencyHistory, setLatencyHistory] = useState<number[]>([]);
   const prevLatencyRef = useRef<number | null>(null);
@@ -392,7 +392,8 @@ export default function DbStatus() {
       }
     })();
   }, [status, sendStatusEmail]);
-
+  const log2 = createLogger('app/components/DbStatus.tsx');
+  log2.info('[DbStatus] Rendering DbStatus component', { emailStatus });
   // Health check action
   const runHealthCheck = useCallback(async () => {
     try {
@@ -479,52 +480,52 @@ export default function DbStatus() {
   ]);
 
   // Explain query
-  const runExplain = useCallback(
-    async (query: string, idx: number) => {
-      try {
-        setExplainLoading((s) => ({ ...s, [idx]: true }));
-        setExplainErrors((s) => ({ ...s, [idx]: '' }));
-        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-        if (neonRequestId) headers['x-request-id'] = neonRequestId;
+  // const runExplain = useCallback(
+  //   async (query: string, idx: number) => {
+  //     try {
+  //       setExplainLoading((s) => ({ ...s, [idx]: true }));
+  //       setExplainErrors((s) => ({ ...s, [idx]: '' }));
+  //       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  //       if (neonRequestId) headers['x-request-id'] = neonRequestId;
 
-        await log.current.info('Requesting explain plan', {
-          neonRequestId,
-          idx,
-          preview: query.slice(0, 200),
-        });
+  //       await log.current.info('Requesting explain plan', {
+  //         neonRequestId,
+  //         idx,
+  //         preview: query.slice(0, 200),
+  //       });
 
-        const res = await fetch('/api/neon/explain', {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ query }),
-        });
+  //       const res = await fetch('/api/neon/explain', {
+  //         method: 'POST',
+  //         headers,
+  //         body: JSON.stringify({ query }),
+  //       });
 
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({ error: 'Unknown' }));
-          setExplainErrors((s) => ({ ...s, [idx]: err.error || 'Explain failed' }));
-          await log.current.error('Explain failed', {
-            neonRequestId,
-            idx,
-            error: err.error || 'Explain failed',
-          });
-        } else {
-          const data = await res.json();
-          setExplainPlans((s) => ({ ...s, [idx]: data.plan || [] }));
-          await log.current.info('Explain succeeded', {
-            neonRequestId,
-            idx,
-            lines: (data.plan || []).length,
-          });
-        }
-      } catch (err) {
-        setExplainErrors((s) => ({ ...s, [idx]: String(err) }));
-        await log.current.error('Explain exception', { neonRequestId, idx, error: String(err) });
-      } finally {
-        setExplainLoading((s) => ({ ...s, [idx]: false }));
-      }
-    },
-    [neonRequestId]
-  );
+  //       if (!res.ok) {
+  //         const err = await res.json().catch(() => ({ error: 'Unknown' }));
+  //         setExplainErrors((s) => ({ ...s, [idx]: err.error || 'Explain failed' }));
+  //         await log.current.error('Explain failed', {
+  //           neonRequestId,
+  //           idx,
+  //           error: err.error || 'Explain failed',
+  //         });
+  //       } else {
+  //         const data = await res.json();
+  //         setExplainPlans((s) => ({ ...s, [idx]: data.plan || [] }));
+  //         await log.current.info('Explain succeeded', {
+  //           neonRequestId,
+  //           idx,
+  //           lines: (data.plan || []).length,
+  //         });
+  //       }
+  //     } catch (err) {
+  //       setExplainErrors((s) => ({ ...s, [idx]: String(err) }));
+  //       await log.current.error('Explain exception', { neonRequestId, idx, error: String(err) });
+  //     } finally {
+  //       setExplainLoading((s) => ({ ...s, [idx]: false }));
+  //     }
+  //   },
+  //   [neonRequestId]
+  // );
 
   if (!status) return <p>Loading DB status...</p>;
 
