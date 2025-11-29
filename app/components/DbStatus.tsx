@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -65,8 +64,11 @@ type ConsumptionData = {
     cursor: string;
   };
 };
-
-console.log('[DbStatus] DbStatus component loaded');
+const log = createLogger('app/components/DbStatus.tsx');
+log.info('[DbStatus] DbStatus component loaded', {
+  action: 'init',
+  timestamp: new Date().toISOString(),
+});
 
 const MDiv = motion.div as unknown as any;
 const MPanel = motion.div as unknown as any;
@@ -99,7 +101,20 @@ export default function DbStatus() {
   const [explainLoading, setExplainLoading] = useState<Record<number, boolean>>({});
   const [explainPlans, setExplainPlans] = useState<Record<number, string[]>>({});
   const [explainErrors, setExplainErrors] = useState<Record<number, string>>({});
+  // Track previous latency values for trend and animation
+  const [latencyHistory, setLatencyHistory] = useState<number[]>([]);
+  const prevLatencyRef = useRef<number | null>(null);
 
+  useEffect(() => {
+    if (typeof healthResult?.latencyMs === 'number') {
+      setLatencyHistory((hist) => {
+        const next = [...hist, healthResult.latencyMs!];
+        return next.slice(-10);
+      });
+      prevLatencyRef.current =
+        latencyHistory.length > 0 ? latencyHistory[latencyHistory.length - 1] : null;
+    }
+  }, [healthResult?.latencyMs]);
   // 🆔 Get the SHARED requestId from context!
   const requestId = useRequestId();
 
@@ -751,7 +766,14 @@ export default function DbStatus() {
           initial={{ opacity: 0, scale: 0.95, backgroundColor: '#fff' }}
           animate={{
             opacity: 1,
-            scale: 1,
+            scale:
+              prevLatencyRef.current == null || typeof healthResult.latencyMs !== 'number'
+                ? 1
+                : healthResult.latencyMs! > prevLatencyRef.current!
+                  ? 1.08 // latency worse, scale up
+                  : healthResult.latencyMs! < prevLatencyRef.current!
+                    ? 0.92 // latency better, scale down
+                    : 1,
             backgroundColor: healthResult.ok ? '#e6fffa' : '#fffbea',
           }}
           transition={{ duration: 0.5 }}
@@ -776,7 +798,49 @@ export default function DbStatus() {
                 {healthResult.ok ? 'OK' : 'Degraded'}
               </span>
             </p>
-            <p className="text-sm text-gray-600">Latency: {healthResult.latencyMs ?? 'N/A'} ms</p>
+            <p className="text-sm text-gray-600 flex items-center gap-2">
+              Latency: {typeof healthResult.latencyMs === 'number' ? healthResult.latencyMs : 'N/A'}{' '}
+              ms
+              {prevLatencyRef.current != null && typeof healthResult.latencyMs === 'number' && (
+                <span>
+                  {healthResult.latencyMs! > prevLatencyRef.current! ? (
+                    <span className="text-red-500">▲</span>
+                  ) : healthResult.latencyMs! < prevLatencyRef.current! ? (
+                    <span className="text-green-500">▼</span>
+                  ) : (
+                    <span className="text-gray-400">■</span>
+                  )}
+                </span>
+              )}
+            </p>
+            {/* Latency history line */}
+            {latencyHistory.length > 1 && (
+              <div className="mt-2 flex items-center gap-1">
+                <span className="text-xs text-gray-500">Recent:</span>
+                <div className="flex gap-1">
+                  {latencyHistory.map((val, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-block w-6 text-center text-xs rounded bg-gray-100 px-1"
+                      style={{
+                        color:
+                          idx === latencyHistory.length - 1
+                            ? 'black'
+                            : val > latencyHistory[idx - 1]
+                              ? '#ef4444'
+                              : val < latencyHistory[idx - 1]
+                                ? '#22c55e'
+                                : '#6b7280',
+                        fontWeight: idx === latencyHistory.length - 1 ? 'bold' : 'normal',
+                      }}
+                    >
+                      {val}
+                    </span>
+                  ))}
+                </div>
+                <span className="text-xs text-gray-400 ml-2">ms</span>
+              </div>
+            )}
             {healthResult.error && (
               <p className="text-sm text-red-600">Error: {healthResult.error}</p>
             )}
