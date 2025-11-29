@@ -7,6 +7,7 @@ import { useRequestId } from '@/app/contexts/RequestIdContext';
 import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 import { generateUUID } from '@/uuidj';
+import { tr } from 'zod/v4/locales';
 
 type DbStatusType = {
   version: string;
@@ -402,7 +403,7 @@ export default function DbStatus() {
   // Health check action
   const runHealthCheck = useCallback(async () => {
     try {
-      setHealthResult(null);
+      setHealthResult({ ok: true });
       const headers: Record<string, string> = {};
       if (neonRequestId) headers['x-request-id'] = neonRequestId;
       const res = await fetch('/api/neon/health', { headers });
