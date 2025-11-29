@@ -542,31 +542,49 @@ export default function DbStatus() {
         </div>
       </header>
 
-      {/* Summary cards */}
+      {/* Animated Summary cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 bg-white border rounded shadow-sm">
+        <MDiv
+          key={status.version}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="p-4 bg-white border rounded shadow-sm"
+        >
           <div className="text-sm text-gray-500">PostgreSQL</div>
           <div className="mt-1 text-lg font-medium">{status.version}</div>
           <div className="text-xs text-gray-500 mt-2">
             Latest:{' '}
             {status.latestPostDate ? new Date(status.latestPostDate).toLocaleString() : 'N/A'}
           </div>
-        </div>
+        </MDiv>
 
-        <div className="p-4 bg-white border rounded shadow-sm">
+        <MDiv
+          key={status.postCount}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="p-4 bg-white border rounded shadow-sm"
+        >
           <div className="text-sm text-gray-500">Traffic</div>
           <div className="mt-1 text-lg font-medium">{status.postCount.toLocaleString()} posts</div>
           <div className="text-xs text-gray-500 mt-2">Logs: {status.logCount.toLocaleString()}</div>
-        </div>
+        </MDiv>
 
-        <div className="p-4 bg-white border rounded shadow-sm">
+        <MDiv
+          key={status.latencyMs}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="p-4 bg-white border rounded shadow-sm"
+        >
           <div className="text-sm text-gray-500">Latency</div>
           <div className="mt-1 text-lg font-medium">{status.latencyMs ?? 'N/A'} ms</div>
           <div className="text-xs text-gray-500 mt-2">
             Active Connections:{' '}
             {neonLimits?.activeConnections ?? status.lastActivity?.activeConnections ?? 0}
           </div>
-        </div>
+        </MDiv>
       </div>
 
       {/* Metrics grid - avoid duplicating active connections */}
@@ -728,7 +746,17 @@ export default function DbStatus() {
       )}
 
       {healthResult && (
-        <section className="mt-6 p-4 bg-white border rounded">
+        <MPanel
+          key={healthResult.latencyMs}
+          initial={{ opacity: 0, scale: 0.95, backgroundColor: '#fff' }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            backgroundColor: healthResult.ok ? '#e6fffa' : '#fffbea',
+          }}
+          transition={{ duration: 0.5 }}
+          className="mt-6 p-4 border rounded"
+        >
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Health Check Result</h3>
             {healthCheckTimestamp && (
@@ -753,7 +781,7 @@ export default function DbStatus() {
               <p className="text-sm text-red-600">Error: {healthResult.error}</p>
             )}
           </div>
-        </section>
+        </MPanel>
       )}
 
       <div className="mt-6 flex flex-wrap gap-3">
