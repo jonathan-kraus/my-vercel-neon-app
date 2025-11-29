@@ -472,7 +472,6 @@ export default function DbStatus() {
   // Auto-refresh effect
   useEffect(() => {
     if (autoRefresh) {
-      // 🛠️ FIX: Run initial check on toggle to prevent stale state before first interval
       runHealthCheck();
       autoRefreshInterval.current = setInterval(() => {
         runHealthCheck();
@@ -486,9 +485,10 @@ export default function DbStatus() {
     return () => {
       if (autoRefreshInterval.current) {
         clearInterval(autoRefreshInterval.current);
+        autoRefreshInterval.current = null;
       }
     };
-  }, [autoRefresh, runHealthCheck]);
+  }, [autoRefresh]);
 
   // Export metrics as JSON
   const exportMetrics = useCallback(() => {
