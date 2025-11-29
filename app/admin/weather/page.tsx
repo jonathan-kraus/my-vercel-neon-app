@@ -142,7 +142,7 @@ export default function WeatherPage() {
       )}
 
       {/* Rain Alert using API precipitation value */}
-      {precip && precip > 0 && (
+      {precip && precip === 0 && (
         <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 text-blue-800 p-5 rounded-xl shadow-md">
           <div className="flex items-start">
             <div className="shrink-0">
