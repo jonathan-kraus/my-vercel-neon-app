@@ -1,12 +1,9 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import toast from 'react-hot-toast';
+import { motion } from 'framer-motion';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 import { useRequestId } from '@/app/contexts/RequestIdContext';
 import { createLogger } from '@/app/utils/logger';
-import { isFeatureEnabled } from '@/app/utils/featureFlags';
-import { generateUUID } from '@/uuidj';
 
 /* --- Helpers: formatting and tiny sparkline --- */
 const fmt = {
@@ -33,45 +30,6 @@ type DbStatusType = {
   };
 };
 
-type EnvInfoType = {
-  deploymentUrl: string;
-  environment: string;
-  vercelRegion: string;
-  gitCommitSha: string;
-  gitCommitMessage: string;
-  gitCommitAuthor: string;
-  VERCEL_DEPLOYMENT_ID: string;
-  VERCEL_GIT_PROVIDER: string;
-  VERCEL_GIT_REPO_SLUG: string;
-  VERCEL_GIT_REPO_OWNER: string;
-  databaseHost: string;
-  databaseName: string;
-};
-
-type ConsumptionPeriod = {
-  period_id: string;
-  consumption: Array<{
-    timeframe_start: string;
-    timeframe_end: string;
-    active_time_seconds: number;
-    compute_time_seconds: number;
-    written_data_bytes: number;
-    synthetic_storage_size_bytes: number;
-  }>;
-  data_storage_bytes_hour: number;
-  data_transfer_bytes: number;
-  written_data_bytes: number;
-  compute_time_seconds: number;
-  active_time_seconds: number;
-};
-
-type ConsumptionData = {
-  periods: ConsumptionPeriod[];
-  pagination?: {
-    cursor: string;
-  };
-};
-
 // 🛠️ New Type: Define Health Check result type for non-null initial state
 type HealthResult = {
   ok: boolean | null;
@@ -81,20 +39,9 @@ type HealthResult = {
 
 console.log('[DbStatus] DbStatus component loaded');
 
-const MDiv = motion.div as unknown as any;
-const MPanel = motion.div as unknown as any;
-
-function RegionBadge({ region }: { region: string }) {
-  return (
-    <span className="inline-block px-2 py-1 text-xs font-semibold bg-blue-100 text-blue-800 rounded">
-      Region: {region}
-    </span>
-  );
-}
-
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
-  const [neonLimits, setNeonLimits] = useState<any | null>(null);
+  const [neonLimits] = useState<any | null>(null);
 
   // 🛠️ Updated State: Initialize to non-null object for persistent display
   const [healthResult, setHealthResult] = useState<HealthResult>({
@@ -170,7 +117,7 @@ export default function DbStatus() {
       } else {
         setLatencyDirection('none');
       }
-    } catch (error: any) {
+    } catch {
       setHealthResult({ ok: false });
       setLatencyDirection('none');
     }
@@ -281,8 +228,96 @@ export default function DbStatus() {
           </span>
         </motion.div>
       </div>
-      {/* ...existing environment info, consumption, slow queries, and buttons... */}
-      {/* ...existing code... */}
+      {/* Environment Information */}
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-2">Environment Information</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="p-3 bg-gray-50 border rounded">
+            <span className="text-xs text-gray-500">Region</span>
+            <span className="text-sm font-semibold">{status.region || 'Unknown'}</span>
+          </div>
+          <div className="p-3 bg-gray-50 border rounded">
+            <span className="text-xs text-gray-500">Version</span>
+            <span className="text-sm font-semibold">{status.version}</span>
+          </div>
+          <div className="p-3 bg-gray-50 border rounded">
+            <span className="text-xs text-gray-500">Active Connections</span>
+            <span className="text-sm font-semibold">
+              {status.lastActivity?.activeConnections ?? 'N/A'}
+            </span>
+          </div>
+          <div className="p-3 bg-gray-50 border rounded">
+            <span className="text-xs text-gray-500">Last Activity</span>
+            <span className="text-sm font-semibold">
+              {status.lastActivity?.lastActivity
+                ? fmt.dateShort(status.lastActivity.lastActivity.toString())
+                : 'N/A'}
+            </span>
+          </div>
+          <div className="p-3 bg-gray-50 border rounded">
+            <span className="text-xs text-gray-500">Last Vacuum</span>
+            <span className="text-sm font-semibold">
+              {status.lastActivity?.lastVacuum
+                ? fmt.dateShort(status.lastActivity.lastVacuum.toString())
+                : 'N/A'}
+            </span>
+          </div>
+          <div className="p-3 bg-gray-50 border rounded">
+            <span className="text-xs text-gray-500">Last Auto-Vacuum</span>
+            <span className="text-sm font-semibold">
+              {status.lastActivity?.lastAutoVacuum
+                ? fmt.dateShort(status.lastActivity.lastAutoVacuum.toString())
+                : 'N/A'}
+            </span>
+          </div>
+          <div className="p-3 bg-gray-50 border rounded">
+            <span className="text-xs text-gray-500">Total Table Operations</span>
+            <span className="text-sm font-semibold">
+              {status.lastActivity?.totalOperations ?? 'N/A'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Consumption Metrics (example, adapt as needed) */}
+      {/*
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-2">Consumption Metrics</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="p-3 bg-gray-50 border rounded">
+            <span className="text-xs text-gray-500">Compute Size</span>
+            <span className="text-sm font-semibold">0.5 → 2 CU</span>
+          </div>
+          <div className="p-3 bg-gray-50 border rounded">
+            <span className="text-xs text-gray-500">History Retention</span>
+            <span className="text-sm font-semibold">1 day</span>
+          </div>
+          <div className="p-3 bg-gray-50 border rounded">
+            <span className="text-xs text-gray-500">Max Connections</span>
+            <span className="text-sm font-semibold">901</span>
+          </div>
+        </div>
+      </div>
+      */}
+
+      {/* Slow Queries (example, adapt as needed) */}
+      {/*
+      <div className="mt-8">
+        <h2 className="text-xl font-bold mb-2">Slow Queries</h2>
+        <div className="space-y-2">
+          <div className="p-3 border rounded bg-white shadow-sm">
+            <pre className="whitespace-pre-wrap text-sm">SELECT ...</pre>
+            <div className="text-xs text-gray-600">Mean: 18 ms | Calls: 4</div>
+          </div>
+        </div>
+      </div>
+      */}
+
+      {/* Action Buttons (example, adapt as needed) */}
+      <div className="flex gap-4 mt-8">
+        <button className="px-3 py-1 bg-gray-200 rounded">Make me a toast!</button>
+        <button className="px-3 py-1 bg-blue-500 text-white rounded">Send Status Email</button>
+      </div>
     </div>
   );
 }
