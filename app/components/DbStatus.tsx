@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+// 🛠️ FIX: Changed to framer-motion to resolve animation library errors and use standard props
+import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 import { useRequestId } from '@/app/contexts/RequestIdContext';
@@ -65,6 +66,13 @@ type ConsumptionData = {
   };
 };
 
+// 🛠️ New Type: Define Health Check result type for non-null initial state
+type HealthResult = {
+  ok: boolean | null;
+  latencyMs?: number;
+  error?: string;
+};
+
 console.log('[DbStatus] DbStatus component loaded');
 
 const MDiv = motion.div as unknown as any;
@@ -84,11 +92,19 @@ export default function DbStatus() {
   const [consumption, setConsumption] = useState<ConsumptionData | null>(null);
   const [neonMeta, setNeonMeta] = useState<any | null>(null);
   const [neonLimits, setNeonLimits] = useState<any | null>(null);
-  const [healthResult, setHealthResult] = useState<{
-    ok: boolean;
-    latencyMs?: number;
-    error?: string;
-  } | null>(null);
+
+  // 🛠️ Updated State: Initialize to non-null object for persistent display
+  const [healthResult, setHealthResult] = useState<HealthResult>({
+    ok: null, // null means not yet checked/pending
+    latencyMs: undefined,
+    error: undefined,
+  });
+
+  // 🛠️ New State: For animation and change tracking
+  const [prevLatency, setPrevLatency] = useState<number | null>(null);
+  const [latencyDirection, setLatencyDirection] = useState<'up' | 'down' | 'none'>('none');
+  const [healthCheckTimestamp, setHealthCheckTimestamp] = useState<number | null>(null);
+
   const [neonRequestId, setNeonRequestId] = useState<string | null>(null);
   const [slowQueries, setSlowQueries] = useState<any[] | null>(null);
   const [explainLoading, setExplainLoading] = useState<Record<number, boolean>>({});
@@ -354,34 +370,63 @@ export default function DbStatus() {
     })();
   }, [status, sendStatusEmail]);
 
-  // Health check action
+  // 🛠️ Updated Health check action with animation logic
   const runHealthCheck = useCallback(async () => {
+    // 1. Store old latency before we update the loading state
+    const oldLatency = healthResult.latencyMs;
+
+    // 2. Set to loading state (ok:null) and reset animation
+    setHealthResult((s) => ({ ...s, ok: null, latencyMs: undefined }));
+    setLatencyDirection('none');
+
     try {
-      setHealthResult(null);
       const headers: Record<string, string> = {};
       if (neonRequestId) headers['x-request-id'] = neonRequestId;
       const res = await fetch('/api/neon/health', { headers });
-      if (res.ok) {
+
+      if (!res.ok) {
         const data = await res.json();
-        setHealthResult(data);
-        toast.success(`Health OK — ${data.latencyMs} ms`);
-        await log.current.info('Health check executed', {
-          neonRequestId,
-          latencyMs: data.latencyMs,
-        });
-      } else {
-        const data = await res.json();
-        setHealthResult(data);
+        setHealthResult({ ok: false, error: data.error });
+        setHealthCheckTimestamp(Date.now());
         toast.error('Health check failed');
         await log.current.error('Health check failed', { neonRequestId, error: data.error });
+        return;
       }
+
+      const data = await res.json();
+      const newLatency = data.latencyMs;
+
+      // 3. Logic to determine latency delta and animation direction
+      if (typeof newLatency === 'number' && typeof oldLatency === 'number') {
+        setPrevLatency(oldLatency);
+        if (newLatency > oldLatency) {
+          setLatencyDirection('up');
+        } else if (newLatency < oldLatency) {
+          setLatencyDirection('down');
+        } else {
+          setLatencyDirection('none');
+        }
+      } else {
+        setPrevLatency(null);
+        setLatencyDirection('none');
+      }
+
+      setHealthResult(data);
+      setHealthCheckTimestamp(Date.now()); // Set timestamp
+      toast.success(`Health OK — ${newLatency} ms`);
+      await log.current.info('Health check executed', {
+        neonRequestId,
+        latencyMs: newLatency,
+      });
     } catch (err) {
       console.error('Health check error', err);
       setHealthResult({ ok: false, error: String(err) });
+      setHealthCheckTimestamp(Date.now());
+      setLatencyDirection('none');
       toast.error('Health check error');
       await log.current.error('Health check exception', { neonRequestId, error: String(err) });
     }
-  }, [neonRequestId]);
+  }, [neonRequestId, healthResult.latencyMs]); // Dependency array updated
 
   // Explain query
   const runExplain = useCallback(
@@ -437,6 +482,110 @@ export default function DbStatus() {
     <div className="space-y-4 animate-fade-in delay-[index * 100]">
       <h2 className="text-xl font-bold">Database Status</h2>
 
+      {/* 🛠️ New: Always Display Health Check Section */}
+      <section className="p-4 bg-white border rounded shadow-md">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold flex items-center gap-2">
+            Database Health Check
+            <button
+              onClick={runHealthCheck}
+              className="px-2 py-1 text-xs bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors"
+            >
+              Run Check
+            </button>
+          </h3>
+          {healthCheckTimestamp && (
+            <p className="text-xs text-gray-500">
+              Last checked {Math.round((Date.now() - healthCheckTimestamp) / 1000)}s ago
+            </p>
+          )}
+        </div>
+
+        <div className="mt-3 space-y-2">
+          <p className="text-sm text-gray-600">
+            <strong>Status:</strong>{' '}
+            <span
+              className={`font-semibold ${
+                healthResult.ok === true
+                  ? 'text-green-600'
+                  : healthResult.ok === false
+                    ? 'text-red-600'
+                    : 'text-gray-500' // Pending/Not Checked
+              }`}
+            >
+              {healthResult.ok === true ? 'OK' : healthResult.ok === false ? 'Failed' : 'Pending'}
+            </span>
+          </p>
+
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">
+              <strong>Latency:</strong>
+            </span>
+
+            {/* 🛠️ Animated Latency Display (scale animation) */}
+            <MDiv
+              initial={{ scale: 1 }}
+              // Animate scale if direction is not 'none'
+              animate={{ scale: latencyDirection !== 'none' ? 1.2 : 1 }}
+              // Animation parameters for a 'pop' effect
+              transition={{ type: 'spring', stiffness: 300, damping: 20, duration: 0.3 }}
+              className="inline-flex items-center font-bold text-lg"
+              // Set base color
+              style={{
+                color:
+                  healthResult.ok === true
+                    ? '#16a34a'
+                    : healthResult.ok === false
+                      ? '#dc2626'
+                      : '#6b7280',
+              }}
+            >
+              {healthResult.latencyMs !== undefined ? `${healthResult.latencyMs} ms` : 'N/A'}
+
+              {/* Animation Indicators (fade and slide) */}
+              <AnimatePresence>
+                {latencyDirection === 'up' && (
+                  <motion.span
+                    key="up"
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 5 }}
+                    className="ml-1 text-red-600 text-sm"
+                    title="Latency increased"
+                  >
+                    ▲
+                  </motion.span>
+                )}
+                {latencyDirection === 'down' && (
+                  <motion.span
+                    key="down"
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 5 }}
+                    className="ml-1 text-green-600 text-sm"
+                    title="Latency decreased"
+                  >
+                    ▼
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </MDiv>
+
+            {/* Display previous latency */}
+            {typeof prevLatency === 'number' && latencyDirection !== 'none' && (
+              <span className="text-xs text-gray-500 ml-2">(was {prevLatency} ms)</span>
+            )}
+          </div>
+
+          {healthResult.error && (
+            <p className="text-sm text-red-600">
+              <strong>Error:</strong> {healthResult.error}
+            </p>
+          )}
+        </div>
+      </section>
+      {/* End Health Check Section */}
+
       <p className="flex items-center gap-2">
         <strong>Neon Region:</strong>
         <RegionBadge region={region} />
@@ -467,7 +616,7 @@ export default function DbStatus() {
         <strong>Total Logs:</strong> {status.logCount}
       </p>
       <p>
-        <strong>Latency:</strong> {status.latencyMs} ms
+        <strong>Latency (API):</strong> {status.latencyMs} ms
       </p>
       {neonLimits && (
         <>
@@ -778,9 +927,7 @@ export default function DbStatus() {
         <button onClick={() => toast('DbStatus toast!')} className="px-3 py-1 bg-gray-200 rounded">
           Make me a toast!
         </button>
-        <button onClick={runHealthCheck} className="px-3 py-1 bg-indigo-500 text-white rounded">
-          Run DB Health Check
-        </button>
+        {/* Removed redundant Run DB Health Check button as it's now in the new section */}
         <div className="flex flex-col gap-2">
           <button
             onClick={sendStatusEmail}
@@ -836,16 +983,18 @@ export default function DbStatus() {
           )}
         </div>
       </div>
-      {healthResult && (
-        <div className="mt-2">
-          <strong>Health:</strong>{' '}
-          {healthResult.ok ? (
-            <span className="text-green-600">OK — {healthResult.latencyMs} ms</span>
-          ) : (
-            <span className="text-red-600">Failed — {healthResult.error}</span>
-          )}
-        </div>
-      )}
+      {/* 🛠️ Removed old conditional healthResult display 
+        {healthResult && (
+          <div className="mt-2">
+            <strong>Health:</strong>{' '}
+            {healthResult.ok ? (
+              <span className="text-green-600">OK — {healthResult.latencyMs} ms</span>
+            ) : (
+              <span className="text-red-600">Failed — {healthResult.error}</span>
+            )}
+          </div>
+        )}
+      */}
     </div>
   );
 }
