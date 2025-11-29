@@ -188,9 +188,15 @@ export default function DbStatus() {
           <div className="p-3 rounded bg-gray-50 border flex flex-col items-center justify-center">
             <span className="text-xs text-gray-500">Utilization</span>
             <span
-              className={`text-xl font-bold ${neonLimits.utilization >= 80 ? 'text-red-600' : neonLimits.utilization >= 50 ? 'text-yellow-600' : 'text-green-600'}`}
+              className={`text-xl font-bold ${
+                neonLimits?.utilization >= 80
+                  ? 'text-red-600'
+                  : neonLimits?.utilization >= 50
+                    ? 'text-yellow-600'
+                    : 'text-green-600'
+              }`}
             >
-              {neonLimits.utilization != null ? `${neonLimits.utilization}%` : 'N/A'}
+              {typeof neonLimits?.utilization === 'number' ? `${neonLimits.utilization}%` : 'N/A'}
             </span>
           </div>
         </div>
