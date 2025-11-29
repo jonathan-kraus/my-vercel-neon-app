@@ -98,6 +98,11 @@ export default function DbStatus() {
   const [neonRequestId, setNeonRequestId] = useState<string | null>(null);
   const [slowQueries, setSlowQueries] = useState<any[] | null>(null);
   const [queryTrends, setQueryTrends] = useState<any[] | null>(null);
+  // Ensure slow query history is refreshed before trends are fetched
+  useEffect(() => {
+    // Call slow-queries endpoint to update history
+    fetch('/api/neon/slow-queries').catch(() => {});
+  }, []);
   //const [explainLoading, setExplainLoading] = useState<Record<number, boolean>>({});
   //const [explainPlans, setExplainPlans] = useState<Record<number, string[]>>({});
   //const [explainErrors, setExplainErrors] = useState<Record<number, string>>({});
