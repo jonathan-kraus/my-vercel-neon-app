@@ -813,7 +813,7 @@ export default function DbStatus() {
           disabled={emailLoading}
           className="px-3 py-2 bg-blue-500 text-white rounded"
         >
-          {emailLoading ? 'Sending…' : 'Send Status Email'}
+          {emailLoading ? 'Sending… ' : 'Send Status Email'}
         </button>
         <button onClick={exportMetrics} className="px-3 py-2 bg-gray-600 text-white rounded">
           Export Metrics JSON
