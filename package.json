@@ -48,6 +48,7 @@
     "@vitest/coverage-v8": "4.0.14",
     "@vitest/ui": "4.0.14",
     "autoprefixer": "10.4.22",
+    "baseline-browser-mapping": "^2.8.32",
     "eslint": "9.39.1",
     "eslint-config-next": "16.0.4",
     "eslint-plugin-next": "0.0.0",

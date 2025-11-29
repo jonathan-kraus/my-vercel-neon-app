@@ -94,9 +94,6 @@ function RegionBadge({ region }: { region: string }) {
 
 export default function DbStatus() {
   const [status, setStatus] = useState<DbStatusType | null>(null);
-  const [envInfo, setEnvInfo] = useState<EnvInfoType | null>(null);
-  const [consumption, setConsumption] = useState<ConsumptionData | null>(null);
-  const [neonMeta, setNeonMeta] = useState<any | null>(null);
   const [neonLimits, setNeonLimits] = useState<any | null>(null);
 
   // 🛠️ Updated State: Initialize to non-null object for persistent display
@@ -107,28 +104,17 @@ export default function DbStatus() {
   });
 
   // 🛠️ New State: For animation and change tracking
-  const [prevLatency, setPrevLatency] = useState<number | null>(null);
   const [latencyDirection, setLatencyDirection] = useState<'up' | 'down' | 'none'>('none');
   const [healthCheckTimestamp, setHealthCheckTimestamp] = useState<number | null>(null);
+  // Derived state for 'last checked' time
+  const [lastCheckedAgo, setLastCheckedAgo] = useState<string>('');
 
-  const [neonRequestId, setNeonRequestId] = useState<string | null>(null);
-  const [slowQueries, setSlowQueries] = useState<any[] | null>(null);
-  const [explainLoading, setExplainLoading] = useState<Record<number, boolean>>({});
-  const [explainPlans, setExplainPlans] = useState<Record<number, string[]>>({});
-  const [explainErrors, setExplainErrors] = useState<Record<number, string>>({});
+  // ...removed unused states...
 
   // 🆔 Get the SHARED requestId from context!
   const requestId = useRequestId();
 
   const log = useRef(createLogger('app/components/DbStatus.tsx', requestId));
-  const emailSentRef = useRef(false);
-  const [emailLoading, setEmailLoading] = useState(false);
-  const [emailStatus, setEmailStatus] = useState<{
-    type: 'success' | 'throttled' | 'error' | null;
-    message: string;
-  }>({ type: null, message: '' });
-
-  const region = status?.region || 'Unknown';
 
   console.log(`🔍 DbStatus using requestId: ${requestId}`);
 
@@ -152,13 +138,23 @@ export default function DbStatus() {
     jck();
   }, []);
 
+  // Update lastCheckedAgo every second if healthCheckTimestamp is set
+  useEffect(() => {
+    if (!healthCheckTimestamp) return;
+    const update = () => {
+      setLastCheckedAgo(`${Math.round((Date.now() - healthCheckTimestamp) / 1000)}s ago`);
+    };
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, [healthCheckTimestamp]);
+
   // Health check handler
   const runHealthCheck = useCallback(async () => {
     setHealthResult((prev) => ({ ...prev, ok: null }));
     setHealthCheckTimestamp(Date.now());
     try {
       const result = await getDbStatus();
-      setPrevLatency(healthResult.latencyMs ?? null);
       setHealthResult({
         ok: typeof result.latencyMs === 'number',
         latencyMs: result.latencyMs,
@@ -219,9 +215,7 @@ export default function DbStatus() {
             </button>
           </h3>
           {healthCheckTimestamp && (
-            <p className="text-xs text-gray-500">
-              Last checked {Math.round((Date.now() - healthCheckTimestamp) / 1000)}s ago
-            </p>
+            <p className="text-xs text-gray-500">Last checked {lastCheckedAgo}</p>
           )}
         </div>
         <div className="mt-3 grid grid-cols-2 gap-4">
