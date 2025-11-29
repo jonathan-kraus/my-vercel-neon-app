@@ -14,6 +14,7 @@ import SendForecastEmailButton from '@/app/components/SendForecastEmailButton';
 import { Location, getActiveLocation } from '@/app/utils/locations';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
+import { db } from '@/app/lib/db';
 // unused: feature flags are no longer checked here
 
 type ForecastResult = {
@@ -21,6 +22,12 @@ type ForecastResult = {
   maxRainAccumulation: number;
 };
 
+const latest = await db.weatherCache.findFirst({
+  where: { location: 'kop' },
+  orderBy: { updatedAt: 'desc' },
+  select: { rainAccumulationSum: true },
+});
+toast.success(`Latest rain accumulation: ${latest?.rainAccumulationSum ?? 'N/A'}`);
 export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const [requestId] = useState(() => generateUUID());
