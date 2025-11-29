@@ -82,7 +82,6 @@ type HealthResult = {
 
 // Framer Motion typed components
 const MDiv = motion.div as unknown as any;
-const MPanel = motion.div as unknown as any;
 
 function RegionBadge({ region }: { region: string }) {
   return (
