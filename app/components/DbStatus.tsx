@@ -8,6 +8,7 @@ import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 import { generateUUID } from '@/uuidj';
 import LineSparkline from './LineSparkline'; // ⬅️ IMPORT THE LINE CHART
+import { number } from 'zod';
 
 type DbStatusType = {
   version: string;
@@ -113,13 +114,11 @@ export default function DbStatus() {
   const [queryTrends, setQueryTrends] = useState<any[] | null>(null);
 
   // 🛠️ FIX: Use dedicated states for animation and direction tracking
-  const [prevLatency, setPrevLatency] = useState<number | null>(null);
+  const [prevLatency, setPrevLatency] = useState<number>(0);
   const [latencyDirection, setLatencyDirection] = useState<'up' | 'down' | 'none'>('none');
 
   const [latencyHistory, setLatencyHistory] = useState<number[]>([]);
-  // const prevLatencyRef = useRef<number | null>(null);
-
-  // 🛠️ REMOVED unused useEffect for latency history, logic moved to runHealthCheck
+  const prevLatencyRef = useRef<number>(0);
 
   // Ensure slow query history is refreshed before trends are fetched
   useEffect(() => {
@@ -413,8 +412,8 @@ export default function DbStatus() {
   // 🛠️ Health check action with animation logic fix
   const runHealthCheck = useCallback(async () => {
     // 1. Store old latency before we update the loading state
-    const oldLatency = healthResult.latencyMs;
-
+    const oldLatency = healthResult.latencyMs || 0;
+    prevLatencyRef.current = oldLatency;
     // 2. Set to loading state (ok:null) and reset animation
     setHealthResult((s) => ({ ...s, ok: null, latencyMs: undefined }));
     setLatencyDirection('none');
@@ -429,7 +428,7 @@ export default function DbStatus() {
 
       if (!res.ok) {
         setHealthResult({ ok: false, error: data.error });
-        setPrevLatency(oldLatency ?? null);
+        setPrevLatency(oldLatency || 0);
         setHealthCheckTimestamp(Date.now());
         toast.error('Health check failed');
         await log.current.error('Health check failed', { neonRequestId, error: data.error });
@@ -447,7 +446,7 @@ export default function DbStatus() {
           setLatencyDirection('none');
         }
       } else {
-        setPrevLatency(null);
+        setPrevLatency(0);
         setLatencyDirection('none');
       }
 
