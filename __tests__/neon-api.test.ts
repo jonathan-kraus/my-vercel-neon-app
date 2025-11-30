@@ -82,12 +82,16 @@ describe('Neon API routes', () => {
   it('slow-queries returns pg_stat_statements results when available', async () => {
     const stmtRows = [{ query: 'SELECT 1', calls: 10, total_time: 100, mean_time: 10 }];
     const { db } = await import('@/app/lib/db');
+    // First call: current queries (empty)
+    (db.$queryRaw as any).mockImplementationOnce(async () => []);
+    // Second call: pg_stat_statements
     (db.$queryRaw as any).mockImplementationOnce(async () => stmtRows);
     const req = new Request('http://localhost/api/neon/slow-queries');
     const res = await slowGET(req as any);
     const data = await res.json();
     expect(data).toHaveProperty('source', 'pg_stat_statements');
     expect(data.queries.length).toBeGreaterThan(0);
+    expect(data.queries[0]).toHaveProperty('explainQuery');
   });
 
   it('explain rejects non-SELECT queries', async () => {

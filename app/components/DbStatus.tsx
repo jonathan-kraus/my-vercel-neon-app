@@ -571,19 +571,6 @@ export default function DbStatus() {
   const runExplain = useCallback(
     async (query: string, idx: number) => {
       try {
-        // Check if query contains Prisma parameter placeholders ($1, $2, etc.)
-        if (/\$\d+/g.test(query)) {
-          const msg =
-            'Cannot explain queries with parameters (contains $1, $2, etc.). These are logged by Prisma and need actual values to execute.';
-          setExplainErrors((s) => ({ ...s, [idx]: msg }));
-          await log.current.warn('Query has parameters, cannot explain', {
-            neonRequestId,
-            idx,
-            preview: query.slice(0, 100),
-          });
-          return;
-        }
-
         setExplainLoading((s) => ({ ...s, [idx]: true }));
         setExplainErrors((s) => ({ ...s, [idx]: '' }));
         const headers: Record<string, string> = { 'Content-Type': 'application/json' };
@@ -938,7 +925,7 @@ export default function DbStatus() {
                       <strong>Calls:</strong> {q.calls ?? 'N/A'}
                     </div>
                     <button
-                      onClick={() => runExplain(q.query, idx)}
+                      onClick={() => runExplain(q.explainQuery || q.query, idx)}
                       disabled={explainLoading[idx]}
                       className="mt-2 px-2 py-1 text-xs bg-indigo-500 text-white rounded hover:bg-indigo-600 disabled:bg-gray-400 transition-colors"
                     >

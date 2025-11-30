@@ -34,25 +34,32 @@ beforeEach(() => {
 
 describe('neon slow-queries route', () => {
   it('returns pg_stat_statements results when available', async () => {
+    const currentQueries = []; // Empty current queries
     const rows = [{ query: 'select 1', calls: 10, total_time: 1000, mean_time: 100 }];
     // @ts-ignore
-    db.$queryRaw.mockResolvedValueOnce(rows);
+    db.$queryRaw.mockResolvedValueOnce(currentQueries); // First call: current queries
+    // @ts-ignore
+    db.$queryRaw.mockResolvedValueOnce(rows); // Second call: pg_stat_statements
 
     const req: any = { headers: new Headers() };
     const res: any = await GET(req);
 
-    // Now also logs history, so we don't check exact call count for $queryRaw
     expect(res.status).toBe(200);
     expect(res.body.source).toBe('pg_stat_statements');
     expect(res.body.queries).toHaveLength(1);
+    expect(res.body.queries[0]).toHaveProperty('explainQuery');
   });
 
   it('falls back to pg_stat_activity when pg_stat_statements fails', async () => {
+    const currentQueries = []; // Empty current queries
     const fallbackRows = [{ pid: 123, duration_ms: 5000, state: 'active', query: 'long query' }];
-    // first call throws
+    // First call: current queries (succeeds)
+    // @ts-ignore
+    db.$queryRaw.mockResolvedValueOnce(currentQueries);
+    // Second call: pg_stat_statements (throws)
     // @ts-ignore
     db.$queryRaw.mockRejectedValueOnce(new Error('no extension'));
-    // second call resolves
+    // Third call: pg_stat_activity (resolves)
     // @ts-ignore
     db.$queryRaw.mockResolvedValueOnce(fallbackRows);
 
@@ -65,9 +72,15 @@ describe('neon slow-queries route', () => {
   });
 
   it('returns 500 when both queries fail', async () => {
-    // both calls throw
+    // First call: current queries (throws)
     // @ts-ignore
-    db.$queryRaw.mockRejectedValue(new Error('db down'));
+    db.$queryRaw.mockRejectedValueOnce(new Error('db down'));
+    // Second call: pg_stat_statements (throws)
+    // @ts-ignore
+    db.$queryRaw.mockRejectedValueOnce(new Error('db down'));
+    // Third call: pg_stat_activity (throws)
+    // @ts-ignore
+    db.$queryRaw.mockRejectedValueOnce(new Error('db down'));
 
     const req: any = { headers: new Headers() };
     const res: any = await GET(req);

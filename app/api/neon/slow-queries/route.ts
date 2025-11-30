@@ -17,6 +17,19 @@ export async function GET(request: Request) {
   const log = createLogger('app/api/neon/slow-queries/route.ts', requestId);
 
   try {
+    // First, fetch currently executing queries with their parameter values from pg_stat_activity
+    let currentQueries: Array<{ query: string; pid: number }> = [];
+    try {
+      currentQueries = await db.$queryRaw`
+        SELECT query, pid
+        FROM pg_stat_activity
+        WHERE state = 'active' AND query <> '<insufficient privilege>'
+        LIMIT 20;
+      `;
+    } catch (err) {
+      console.warn('Failed to fetch current queries from pg_stat_activity', err);
+    }
+
     // Try to use pg_stat_statements if available
     try {
       const rows: Array<{
@@ -36,8 +49,21 @@ export async function GET(request: Request) {
         mean: rows.reduce((acc, row) => acc + row.mean_exec_time, 0) / rows.length,
       });
 
+      // For each slow query, try to find a matching query with actual values in pg_stat_activity
+      const enrichedRows = rows.map((row) => {
+        const template = row.query.toLowerCase().replace(/\$\d+/g, '?');
+        const matchingCurrent = currentQueries.find(
+          (cq) => cq.query.toLowerCase().replace(/\$\d+/g, '?') === template
+        );
+        return {
+          ...row,
+          // If we found a matching query with actual values, use that for explain
+          explainQuery: matchingCurrent?.query || row.query,
+        };
+      });
+
       // Store each query in history
-      const historyPromises = rows.map((row) =>
+      const historyPromises = enrichedRows.map((row) =>
         db.slowQueryHistory.create({
           data: {
             queryHash: hashQuery(row.query),
@@ -62,7 +88,7 @@ export async function GET(request: Request) {
         await log.info('All slow query history records written', { count: historySuccesses });
       }
 
-      const safeRows = rows.map((row) => ({
+      const safeRows = enrichedRows.map((row) => ({
         ...row,
         calls: typeof row.calls === 'bigint' ? Number(row.calls) : row.calls,
         total_exec_time:
