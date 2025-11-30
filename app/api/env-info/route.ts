@@ -31,13 +31,19 @@ export async function GET() {
     // Parse database URL to get host (safely)
     let dbHost = 'N/A';
     let dbName = 'N/A';
+    let weatherLogCount = null;
     if (process.env.DATABASE_URL) {
       try {
         const url = new URL(process.env.DATABASE_URL);
         dbHost = url.hostname;
         dbName = url.pathname.slice(1); // Remove leading slash
+        // Query WeatherLog count
+        const sql = neon(process.env.DATABASE_URL);
+        const result = await sql`SELECT COUNT(*)::int as count FROM "WeatherLog"`;
+        weatherLogCount = result[0]?.count ?? null;
       } catch {
         dbHost = 'Unable to parse';
+        weatherLogCount = null;
       }
     }
 
@@ -58,6 +64,7 @@ export async function GET() {
       VERCEL_GIT_REPO_OWNER: process.env.VERCEL_GIT_REPO_OWNER || 'N/A',
       databaseHost: dbHost,
       databaseName: dbName,
+      weatherLogCount,
     };
 
     await log.info('Environment info fetched', {
@@ -65,6 +72,7 @@ export async function GET() {
       region: envInfo.vercelRegion,
       dbHost,
       gitSha: envInfo.gitCommitSha,
+      CWL: weatherLogCount,
     });
 
     return NextResponse.json(envInfo);
