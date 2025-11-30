@@ -49,7 +49,18 @@ export async function GET(request: Request) {
           },
         })
       );
-      await Promise.allSettled(historyPromises);
+      const historyResults = await Promise.allSettled(historyPromises);
+      const historySuccesses = historyResults.filter((r) => r.status === 'fulfilled').length;
+      const historyFailures = historyResults.filter((r) => r.status === 'rejected');
+
+      if (historyFailures.length > 0) {
+        await log.warn('Some slow query history writes failed', {
+          failures: historyFailures.length,
+          errors: historyFailures.map((f) => (f.status === 'rejected' ? String(f.reason) : '')),
+        });
+      } else {
+        await log.info('All slow query history records written', { count: historySuccesses });
+      }
 
       const safeRows = rows.map((row) => ({
         ...row,
@@ -94,7 +105,20 @@ export async function GET(request: Request) {
           },
         })
       );
-      await Promise.allSettled(historyPromises);
+      const historyResults = await Promise.allSettled(historyPromises);
+      const historySuccesses = historyResults.filter((r) => r.status === 'fulfilled').length;
+      const historyFailures = historyResults.filter((r) => r.status === 'rejected');
+
+      if (historyFailures.length > 0) {
+        await log.warn('Some fallback slow query history writes failed', {
+          failures: historyFailures.length,
+          errors: historyFailures.map((f) => (f.status === 'rejected' ? String(f.reason) : '')),
+        });
+      } else {
+        await log.info('All fallback slow query history records written', {
+          count: historySuccesses,
+        });
+      }
 
       return NextResponse.json({ source: 'pg_stat_activity', queries: rows });
     }

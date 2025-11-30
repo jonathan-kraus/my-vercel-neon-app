@@ -112,6 +112,10 @@ export default function DbStatus() {
   const [neonRequestId, setNeonRequestId] = useState<string | null>(null);
   const [slowQueries, setSlowQueries] = useState<any[] | null>(null);
   const [queryTrends, setQueryTrends] = useState<any[] | null>(null);
+  const [slowQueryHistory, setSlowQueryHistory] = useState<any[] | null>(null);
+  const [explainLoading, setExplainLoading] = useState<Record<number, boolean>>({});
+  const [explainPlans, setExplainPlans] = useState<Record<number, string[]>>({});
+  const [explainErrors, setExplainErrors] = useState<Record<number, string>>({});
 
   // 🛠️ FIX: Use dedicated states for animation and direction tracking
   const [prevLatency, setPrevLatency] = useState<number>(0);
@@ -270,10 +274,12 @@ export default function DbStatus() {
         const res = await fetch('/api/neon/slow-queries', { headers: { 'x-request-id': id } });
         if (res.ok) {
           const data = await res.json();
+          console.log('Slow queries API response:', data);
           setSlowQueries(data.queries || []);
           await log.current.info('Slow queries received', {
             neonRequestId: id,
             source: data.source,
+            count: (data.queries || []).length,
           });
         }
       } catch (err) {
@@ -307,6 +313,29 @@ export default function DbStatus() {
     };
 
     fetchTrends();
+  }, []);
+
+  // Fetch slow query history
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch('/api/neon/slow-query-history');
+        if (res.ok) {
+          const data = await res.json();
+          setSlowQueryHistory(data.history || []);
+          console.log('Slow query history received:', data);
+          await log.current.info('Slow query history received', {
+            count: data.count,
+            uniqueQueries: data.uniqueQueries,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch slow query history:', err);
+        await log.current.error('Failed to fetch slow query history', { error: String(err) });
+      }
+    };
+
+    fetchHistory();
   }, []);
 
   // Email sender
@@ -538,7 +567,53 @@ export default function DbStatus() {
     slowQueries,
   ]);
 
-  // 🛠️ REMOVED commented-out runExplain logic
+  // Explain query
+  const runExplain = useCallback(
+    async (query: string, idx: number) => {
+      try {
+        setExplainLoading((s) => ({ ...s, [idx]: true }));
+        setExplainErrors((s) => ({ ...s, [idx]: '' }));
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (neonRequestId) headers['x-request-id'] = neonRequestId;
+
+        await log.current.info('Requesting explain plan', {
+          neonRequestId,
+          idx,
+          preview: query.slice(0, 200),
+        });
+
+        const res = await fetch('/api/neon/explain', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ query }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: 'Unknown' }));
+          setExplainErrors((s) => ({ ...s, [idx]: err.error || 'Explain failed' }));
+          await log.current.error('Explain failed', {
+            neonRequestId,
+            idx,
+          });
+          return;
+        }
+
+        const data = await res.json();
+        setExplainPlans((s) => ({ ...s, [idx]: data.plan || [] }));
+        await log.current.info('Explain plan received', {
+          neonRequestId,
+          idx,
+          planCount: data.plan?.length || 0,
+        });
+      } catch (err) {
+        setExplainErrors((s) => ({ ...s, [idx]: String(err) }));
+        await log.current.error('Explain exception', { neonRequestId, idx, error: String(err) });
+      } finally {
+        setExplainLoading((s) => ({ ...s, [idx]: false }));
+      }
+    },
+    [neonRequestId]
+  );
 
   // Determine an overall status for a cloud-style header
   const overallStatus = (() => {
@@ -831,13 +906,13 @@ export default function DbStatus() {
           <div className="mt-3 space-y-2">
             {slowQueries.map((q: any, idx: number) => (
               <MDiv key={idx} className="p-3 border rounded bg-white shadow-sm">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-start gap-4">
                   <div className="flex-1">
                     <pre className="whitespace-pre-wrap text-sm overflow-hidden max-h-28">
                       {q.query?.length > 800 ? q.query.slice(0, 800) + '…' : q.query}
                     </pre>
                   </div>
-                  <div className="text-right text-xs text-gray-600 ml-4">
+                  <div className="text-right text-xs text-gray-600 ml-4 shrink-0">
                     <div>
                       <strong>Mean:</strong>{' '}
                       {q.mean_time
@@ -849,8 +924,25 @@ export default function DbStatus() {
                     <div>
                       <strong>Calls:</strong> {q.calls ?? 'N/A'}
                     </div>
+                    <button
+                      onClick={() => runExplain(q.query, idx)}
+                      disabled={explainLoading[idx]}
+                      className="mt-2 px-2 py-1 text-xs bg-indigo-500 text-white rounded hover:bg-indigo-600 disabled:bg-gray-400 transition-colors"
+                    >
+                      {explainLoading[idx] ? 'Explaining...' : 'Explain'}
+                    </button>
+                    {explainErrors[idx] && (
+                      <p className="text-red-600 text-xs mt-1">{explainErrors[idx]}</p>
+                    )}
                   </div>
                 </div>
+                {explainPlans[idx] && explainPlans[idx].length > 0 && (
+                  <div className="mt-3 p-2 bg-gray-100 rounded text-xs font-mono overflow-x-auto">
+                    {explainPlans[idx].map((line: string, lineIdx: number) => (
+                      <div key={lineIdx}>{line}</div>
+                    ))}
+                  </div>
+                )}
               </MDiv>
             ))}
           </div>
@@ -900,6 +992,55 @@ export default function DbStatus() {
                 No historical data yet. Trends will appear after slow queries are logged.
               </p>
             )}
+          </div>
+        </section>
+      )}
+
+      {/* Slow Query History */}
+      {slowQueryHistory && slowQueryHistory.length > 0 && (
+        <section className="mt-6">
+          <h3 className="text-lg font-semibold">Slow Query History (Recorded)</h3>
+          <p className="text-sm text-gray-600 mt-1">
+            Tracks which queries have been slow over time. Use this to identify recurring issues.
+          </p>
+          <div className="mt-3 space-y-2">
+            {slowQueryHistory.slice(0, 10).map((record: any, idx: number) => (
+              <MDiv key={idx} className="p-3 border rounded bg-white shadow-sm">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-gray-500 mb-1">
+                      <strong>Source:</strong> {record.source}
+                    </p>
+                    <p className="text-xs text-gray-500 mb-1">
+                      <strong>Hash:</strong> {record.queryHash}
+                    </p>
+                    <pre className="whitespace-pre-wrap text-xs overflow-hidden max-h-20 bg-gray-50 p-2 rounded">
+                      {record.query?.length > 400 ? record.query.slice(0, 400) + '…' : record.query}
+                    </pre>
+                  </div>
+                  <div className="text-right text-xs text-gray-600 shrink-0">
+                    {record.meanTime && (
+                      <div>
+                        <strong>Mean:</strong> {Number(record.meanTime).toFixed(2)} ms
+                      </div>
+                    )}
+                    {record.durationMs && (
+                      <div>
+                        <strong>Duration:</strong> {Number(record.durationMs).toFixed(2)} ms
+                      </div>
+                    )}
+                    {record.calls && (
+                      <div>
+                        <strong>Calls:</strong> {record.calls}
+                      </div>
+                    )}
+                    <div className="mt-1">
+                      <strong>Recorded:</strong> {new Date(record.timestamp).toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              </MDiv>
+            ))}
           </div>
         </section>
       )}
