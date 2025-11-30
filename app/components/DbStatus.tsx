@@ -714,8 +714,8 @@ export default function DbStatus() {
               </div>
               {/* ... rest of the card */}
             </MDiv>
-            {/* Display previous latency only after first check and if not initial value */}
-            {latencyDirection !== 'none' && prevLatency !== 0 && (
+            {/* Display previous latency whenever direction is not 'none' */}
+            {latencyDirection !== 'none' && (
               <span className="text-xs text-gray-500 ml-2">(was {prevLatency} ms)</span>
             )}
           </div>
