@@ -621,6 +621,63 @@ export default function DbStatus() {
           </div>
         </MDiv>
       </div>
+      {/* Unified Animated Summary Cards - Blue Theme */}
+      <div className="bg-blue-50 rounded-xl p-4 shadow grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <MDiv
+          key={status?.version}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center justify-center p-6 bg-blue-100 rounded-lg shadow"
+        >
+          <div className="text-sm font-semibold text-blue-700">PostgreSQL</div>
+          <div className="mt-2 text-2xl font-bold text-blue-900">{status?.version}</div>
+          <div className="text-xs text-blue-600 mt-2">
+            WeatherLog:{' '}
+            {envInfo && typeof envInfo.weatherLogCount === 'number'
+              ? envInfo.weatherLogCount.toLocaleString()
+              : 'N/A'}
+          </div>
+        </MDiv>
+
+        <MDiv
+          key={status?.postCount}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center justify-center p-6 bg-blue-100 rounded-lg shadow"
+        >
+          <div className="text-sm font-semibold text-blue-700">Traffic</div>
+          <div className="mt-2 text-2xl font-bold text-blue-900">
+            {status?.postCount?.toLocaleString()}
+          </div>
+          <div className="text-xs text-blue-600 mt-2">
+            Logs: {status?.logCount?.toLocaleString()}
+          </div>
+          <div className="text-xs text-blue-600 mt-1">
+            SlowQueryHistory: {Array.isArray(slowQueries) ? slowQueries.length : 'N/A'}
+          </div>
+          <div className="text-xs text-blue-600 mt-1">
+            WeatherLog:{' '}
+            {envInfo && typeof envInfo.weatherLogCount === 'number'
+              ? envInfo.weatherLogCount.toLocaleString()
+              : 'N/A'}
+          </div>
+        </MDiv>
+
+        <MDiv
+          key={status?.latencyMs}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center justify-center p-6 bg-blue-100 rounded-lg shadow"
+        >
+          <div className="text-sm font-semibold text-blue-700">Active Connections</div>
+          <div className="mt-2 text-2xl font-bold text-blue-900">
+            {neonLimits?.activeConnections ?? status?.lastActivity?.activeConnections ?? 0}
+          </div>
+        </MDiv>
+      </div>
 
       {/* 🛠️ New: Always Display Health Check Section, with dedicated animation inside */}
       <section className="p-4 bg-white border rounded shadow-md">
