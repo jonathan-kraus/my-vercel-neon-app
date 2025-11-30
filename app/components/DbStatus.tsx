@@ -411,8 +411,7 @@ export default function DbStatus() {
   // 🛠️ Health check action with animation logic fix
   const runHealthCheck = useCallback(async () => {
     // 1. Store old latency before we update the loading state
-    const oldLatency = healthResult.latencyMs || 0;
-    prevLatencyRef.current = oldLatency;
+    const oldLatency = typeof healthResult.latencyMs === 'number' ? healthResult.latencyMs : 0;
     // 2. Set to loading state (ok:null) and reset animation
     setHealthResult((s) => ({ ...s, ok: null, latencyMs: undefined }));
     setLatencyDirection('none');
@@ -423,11 +422,14 @@ export default function DbStatus() {
       const res = await fetch('/api/neon/health', { headers });
 
       const data = await res.json();
-      const newLatency = data.latencyMs;
+      const newLatency = typeof data.latencyMs === 'number' ? data.latencyMs : 0;
+
+      // Always update prevLatencyRef and state
+      prevLatencyRef.current = oldLatency;
+      setPrevLatency(oldLatency);
 
       if (!res.ok) {
         setHealthResult({ ok: false, error: data.error });
-        setPrevLatency(oldLatency || 0);
         setHealthCheckTimestamp(Date.now());
         toast.error('Health check failed');
         await log.current.error('Health check failed', { neonRequestId, error: data.error });
@@ -436,7 +438,6 @@ export default function DbStatus() {
 
       // 3. Logic to determine latency delta and animation direction
       if (typeof newLatency === 'number' && typeof oldLatency === 'number') {
-        setPrevLatency(oldLatency);
         if (newLatency > oldLatency) {
           setLatencyDirection('up');
         } else if (newLatency < oldLatency) {
@@ -445,7 +446,6 @@ export default function DbStatus() {
           setLatencyDirection('none');
         }
       } else {
-        setPrevLatency(0);
         setLatencyDirection('none');
       }
 
