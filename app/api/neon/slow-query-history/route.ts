@@ -9,24 +9,23 @@ export async function GET(request: Request) {
   const log = createLogger('app/api/neon/slow-query-history/route.ts', requestId);
 
   try {
-    // Calculate the cutoff time: 24 hours ago
-    const cutoffTime = new Date(Date.now() - 24 * 60 * 60 * 1000);
-
-    // Get slow query history from the last 24 hours
+    // Get ALL slow query history records (cleanup handles retention)
     const history = await db.slowQueryHistory.findMany({
-      where: {
-        timestamp: {
-          gte: cutoffTime,
-        },
-      },
       orderBy: { timestamp: 'desc' },
-      take: 50,
+      take: 100, // Increased from 50 to show more historical context
     });
 
-    await log.info('Fetched slow query history (24h)', {
+    await log.info('Fetched slow query history (all available)', {
       count: history.length,
-      cutoffTime: cutoffTime.toISOString(),
     });
+
+    // Get the oldest and newest records for analysis
+    const oldestRecord = history.length > 0 ? history[history.length - 1] : null;
+    const newestRecord = history.length > 0 ? history[0] : null;
+    const dateRange = {
+      oldest: oldestRecord?.timestamp.toISOString() || null,
+      newest: newestRecord?.timestamp.toISOString() || null,
+    };
 
     // Clean up records older than 7 days (optional, but helps manage database size)
     const cleanupCutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -52,6 +51,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       count: history.length,
+      dateRange,
       history,
       uniqueQueries: history.map((h) => h.queryHash).filter((v, i, a) => a.indexOf(v) === i).length,
     });
