@@ -10,12 +10,12 @@ export async function checkDbConnection() {
     return 'No DATABASE_URL environment variable';
   }
   try {
-    const log = createLogger('db.ts', requestId);
+    const log = createLogger('env-info', requestId);
 
     const sql = neon(process.env.DATABASE_URL);
 
     const countWeatherLog = await sql`SELECT COUNT(*)::int as count FROM "WeatherLog"`;
-    await log.info('env-info route', { CWL: countWeatherLog[0].count });
+    await log.info('Count WeatherLog', { CWL: countWeatherLog[0].count });
   } catch (error) {
     console.error('Error connecting to the database:', error);
     return 'Database not connected';
