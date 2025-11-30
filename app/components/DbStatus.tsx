@@ -573,54 +573,7 @@ export default function DbStatus() {
         </div>
       </header>
 
-      {/* Animated Summary cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <MDiv
-          key={status?.version}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="p-4 bg-white border rounded shadow-sm"
-        >
-          <div className="text-sm text-gray-500">PostgreSQL</div>
-          <div className="mt-1 text-lg font-medium">{status?.version}</div>
-          <div className="text-xs text-gray-500 mt-1">
-            WeatherLog:{' '}
-            {envInfo && typeof envInfo.weatherLogCount === 'number'
-              ? envInfo.weatherLogCount.toLocaleString()
-              : 'N/A'}
-          </div>
-        </MDiv>
-
-        <MDiv
-          key={status?.postCount}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="p-4 bg-white border rounded shadow-sm"
-        >
-          <div className="text-lg text-blue-500">Traffic</div>
-          {status?.postCount?.toLocaleString()} posts Logs: {status?.logCount?.toLocaleString()}
-          SlowQueryHistory: {Array.isArray(slowQueries) ? slowQueries.length : 'N/A'}
-          WeatherLog:{' '}
-          {envInfo && typeof envInfo.weatherLogCount === 'number'
-            ? envInfo.weatherLogCount.toLocaleString()
-            : 'N/A'}
-        </MDiv>
-
-        <MDiv
-          key={status?.latencyMs}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="p-4 bg-white border rounded shadow-sm"
-        >
-          <div className="text-lg text-blue-500 mt-2">
-            Active Connections:{' '}
-            {neonLimits?.activeConnections ?? status?.lastActivity?.activeConnections ?? 0}
-          </div>
-        </MDiv>
-      </div>
+      {/* Removed old summary cards grid; only blue-themed cards remain */}
       {/* Unified Animated Summary Cards - Blue Theme */}
       <div className="bg-blue-50 rounded-xl p-4 shadow grid grid-cols-1 sm:grid-cols-3 gap-4">
         <MDiv
