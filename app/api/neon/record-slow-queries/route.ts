@@ -31,7 +31,9 @@ export async function POST(request: Request) {
   const log = createLogger('app/api/neon/record-slow-queries/route.ts', requestId);
 
   try {
-    await log.info('Starting periodic slow query recording', { requestId });
+    await log.info('Starting periodic slow query recording', {
+      source: 'cron-job app/api/neon/record-slow-queries/route.ts',
+    });
 
     // Fetch slow queries from pg_stat_statements
     const rows: Array<{
@@ -51,7 +53,7 @@ export async function POST(request: Request) {
     });
 
     if (rows.length === 0) {
-      await log.info('No queries found', { requestId });
+      await log.error('No queries found', { requestId });
       return NextResponse.json({
         success: true,
         recorded: 0,
@@ -97,6 +99,7 @@ export async function POST(request: Request) {
       });
     } else {
       await log.info('All slow query history records recorded', {
+        source: 'cron-job app/api/neon/record-slow-queries/route.ts',
         count: successes,
       });
     }
