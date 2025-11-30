@@ -13,7 +13,7 @@ export async function checkDbConnection() {
     const log = createLogger('db.ts', requestId);
 
     const sql = neon(process.env.DATABASE_URL);
-    const result = await sql`SELECT version()`;
+
     const countWeatherLog = await sql`SELECT COUNT(*)::int as count FROM "WeatherLog"`;
     await log.info('env-info route', { CWL: countWeatherLog[0].count });
   } catch (error) {
