@@ -410,9 +410,9 @@ export default function DbStatus() {
 
   // 🛠️ Health check action with animation logic fix
   const runHealthCheck = useCallback(async () => {
-    // 1. Store old latency before we update the loading state
-    const oldLatency = typeof healthResult.latencyMs === 'number' ? healthResult.latencyMs : 0;
-    // 2. Set to loading state (ok:null) and reset animation
+    // Always use the latest value from the ref, not from closure
+    const oldLatency = typeof prevLatencyRef.current === 'number' ? prevLatencyRef.current : 0;
+    // Set to loading state (ok:null) and reset animation
     setHealthResult((s) => ({ ...s, ok: null, latencyMs: undefined }));
     setLatencyDirection('none');
 
@@ -424,9 +424,9 @@ export default function DbStatus() {
       const data = await res.json();
       const newLatency = typeof data.latencyMs === 'number' ? data.latencyMs : 0;
 
-      // Always update prevLatencyRef and state
-      prevLatencyRef.current = oldLatency;
+      // Update prevLatencyRef and state to the previous value before updating
       setPrevLatency(oldLatency);
+      prevLatencyRef.current = newLatency;
 
       if (!res.ok) {
         setHealthResult({ ok: false, error: data.error });
@@ -436,7 +436,7 @@ export default function DbStatus() {
         return;
       }
 
-      // 3. Logic to determine latency delta and animation direction
+      // Logic to determine latency delta and animation direction
       if (typeof newLatency === 'number' && typeof oldLatency === 'number') {
         if (newLatency > oldLatency) {
           setLatencyDirection('up');
@@ -449,7 +449,7 @@ export default function DbStatus() {
         setLatencyDirection('none');
       }
 
-      // ⬅️ ADD: Update latency history for the line sparkline
+      // Update latency history for the line sparkline
       if (typeof newLatency === 'number') {
         setLatencyHistory((h) => {
           const nextHistory = [...h, newLatency];
@@ -473,7 +473,7 @@ export default function DbStatus() {
       toast.error('Health check error');
       await log.current.error('Health check exception', { neonRequestId, error: String(err) });
     }
-  }, [neonRequestId, healthResult.latencyMs]); // Dependency array updated
+  }, [neonRequestId]); // Remove healthResult.latencyMs from dependencies
 
   // Auto-refresh effect
   useEffect(() => {
