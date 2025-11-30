@@ -14,7 +14,11 @@ export async function checkDbConnection() {
 
     const sql = neon(process.env.DATABASE_URL);
     const result = await sql`SELECT version()`;
-
+    const countUser = await sql`SELECT COUNT(*)::int as count FROM "User"`;
+    await log.info('Database connection successful', {
+      pgVersion: result[0].version,
+      userCount: countUser[0].count,
+    });
     console.log('Pg version result:', JSON.stringify(result, null, 2));
 
     return 'Database connected';
