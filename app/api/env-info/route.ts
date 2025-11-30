@@ -1,7 +1,26 @@
 import { NextResponse } from 'next/server';
 import { generateUUID } from '@/uuidj';
 import { createLogger } from '@/app/utils/logger';
+import { neon } from '@neondatabase/serverless';
 
+console.log('DB module loaded');
+export async function checkDbConnection() {
+  const requestId = generateUUID();
+  if (!process.env.DATABASE_URL) {
+    return 'No DATABASE_URL environment variable';
+  }
+  try {
+    const log = createLogger('db.ts', requestId);
+
+    const sql = neon(process.env.DATABASE_URL);
+    const result = await sql`SELECT version()`;
+    const countWeatherLog = await sql`SELECT COUNT(*)::int as count FROM "WeatherLog"`;
+    await log.info('env-info route', { CWL: countWeatherLog[0].count });
+  } catch (error) {
+    console.error('Error connecting to the database:', error);
+    return 'Database not connected';
+  }
+}
 export async function GET() {
   const requestId = generateUUID();
   const log = createLogger('app/api/env-info/route.ts', requestId);

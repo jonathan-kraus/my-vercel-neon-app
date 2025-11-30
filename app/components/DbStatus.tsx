@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { neon } from '@neondatabase/serverless';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 import { useRequestId } from '@/app/contexts/RequestIdContext';
@@ -601,6 +600,12 @@ export default function DbStatus() {
           <div className="mt-1 text-lg font-medium">{status?.postCount.toLocaleString()} posts</div>
           <div className="text-xs text-gray-500 mt-2">
             Logs: {status?.logCount.toLocaleString()}
+          </div>
+          <div className="text-xs text-gray-500 mt-1">
+            SlowQueryHistory: {Array.isArray(slowQueries) ? slowQueries.length : 'N/A'}
+          </div>
+          <div className="text-xs text-gray-500 mt-1">
+            WeatherLog: {/* You need to fetch and provide this count, fallback to N/A for now */}N/A
           </div>
         </MDiv>
 
