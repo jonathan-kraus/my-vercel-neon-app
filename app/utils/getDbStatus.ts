@@ -99,7 +99,7 @@ export async function getDbStatus(requestId?: string) {
   const start = Date.now();
   const [version, postCount, latestPost, logCount, lastActivity] = await Promise.all([
     prisma.$queryRaw`SELECT version()`,
-    prisma.post.count({ where: { authorId: { not: 1101 } } }),
+    prisma.post.count({ where: { authorId: { not: 11501 } } }),
     prisma.post.findFirst({ orderBy: { createdAt: 'desc' } }),
     prisma.log.count(),
     getLastDatabaseActivity(),

@@ -585,12 +585,7 @@ export default function DbStatus() {
         >
           <div className="text-sm font-semibold text-blue-700">PostgreSQL</div>
           <div className="mt-2 text-2xl font-bold text-blue-900">{status?.version}</div>
-          <div className="text-xs text-blue-600 mt-2">
-            WeatherLog:{' '}
-            {envInfo && typeof envInfo.weatherLogCount === 'number'
-              ? envInfo.weatherLogCount.toLocaleString()
-              : 'N/A'}
-          </div>
+          <div className="text-xs text-blue-600 mt-2"></div>
         </MDiv>
 
         <MDiv
