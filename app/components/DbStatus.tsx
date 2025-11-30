@@ -139,7 +139,7 @@ export default function DbStatus() {
 
   const region = status?.region || 'Unknown';
 
-  log.current.info(`🔍 DbStatus', {requestId}`);
+  log.current.info('Dbstatus region', { region: region });
 
   // Log event once on mount
   useEffect(() => {
