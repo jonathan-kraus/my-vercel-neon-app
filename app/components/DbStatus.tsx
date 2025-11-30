@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { neon } from '@neondatabase/serverless';
 import toast from 'react-hot-toast';
 import { getDbStatus } from '@/app/utils/getDbStatus';
 import { useRequestId } from '@/app/contexts/RequestIdContext';
@@ -448,8 +449,14 @@ export default function DbStatus() {
       } else {
         setLatencyDirection('none');
       }
-      let countUser = 'SELECT COUNT(*)::int as count FROM "User"';
-      log.current.info('[DbStatus] Executed raw SQL user count', { count: countUser });
+
+      const sql = neon(process.env.DATABASE_URL?.toString() || '');
+      const countUser = await sql`SELECT COUNT(*)::int as count FROM "User"`;
+      const countWeather = await sql`SELECT COUNT(*)::int as count FROM "WeatherLog"`;
+      await log.current.info('[DbStatus] Executed raw SQL ', {
+        countUser: countUser,
+        countWeather: countWeather,
+      });
       // Update latency history for the line sparkline
       if (typeof newLatency === 'number') {
         setLatencyHistory((h) => {
