@@ -32,7 +32,8 @@ export async function GET(request: Request) {
 
     // Try to use pg_stat_statements if available
     try {
-      const rows: Array<{
+      // Get all queries sorted by multiple criteria (slow + frequent)
+      const allRows: Array<{
         query: string;
         calls: number;
         total_exec_time: number;
@@ -40,13 +41,21 @@ export async function GET(request: Request) {
       }> = await db.$queryRaw`
         SELECT query, calls, total_exec_time, mean_exec_time
         FROM pg_stat_statements
-        ORDER BY mean_exec_time DESC
-        LIMIT 5;
+        ORDER BY 
+          CASE 
+            WHEN mean_exec_time > 100 THEN 1  -- Prioritize slow queries (>100ms)
+            WHEN calls > 20 THEN 2              -- Then frequent queries (>20 calls)
+            ELSE 3
+          END,
+          mean_exec_time DESC,
+          calls DESC
+        LIMIT 10;
       `;
 
-      await log.info('Fetched slow queries from pg_stat_statements', {
+      const rows = allRows;
+
+      await log.info('Fetched queries from pg_stat_statements', {
         count: rows.length,
-        mean: rows.reduce((acc, row) => acc + row.mean_exec_time, 0) / rows.length,
       });
 
       // For each slow query, try to find a matching query with actual values in pg_stat_activity
