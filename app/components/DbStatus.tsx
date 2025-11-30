@@ -600,17 +600,17 @@ export default function DbStatus() {
           transition={{ duration: 0.5 }}
           className="flex flex-col items-center justify-center p-6 bg-blue-100 rounded-lg shadow"
         >
-          <div className="text-sm font-semibold text-blue-700">Traffic</div>
+          <div className="text-md font-semibold text-blue-700">Traffic</div>
           <div className="mt-2 text-2xl font-bold text-blue-900">
             {status?.postCount?.toLocaleString()}
           </div>
-          <div className="text-xs text-blue-600 mt-2">
+          <div className="text-lg text-blue-600 mt-2">
             Logs: {status?.logCount?.toLocaleString()}
           </div>
-          <div className="text-xs text-blue-600 mt-1">
+          <div className="text-lg text-blue-600 mt-1">
             SlowQueryHistory: {Array.isArray(slowQueries) ? slowQueries.length : 'N/A'}
           </div>
-          <div className="text-xs text-blue-600 mt-1">
+          <div className="text-lg text-blue-600 mt-1">
             WeatherLog:{' '}
             {envInfo && typeof envInfo.weatherLogCount === 'number'
               ? envInfo.weatherLogCount.toLocaleString()
@@ -625,7 +625,7 @@ export default function DbStatus() {
           transition={{ duration: 0.5 }}
           className="flex flex-col items-center justify-center p-6 bg-blue-100 rounded-lg shadow"
         >
-          <div className="text-sm font-semibold text-blue-700">Active Connections</div>
+          <div className="text-md font-semibold text-blue-700">Active Connections</div>
           <div className="mt-2 text-2xl font-bold text-blue-900">
             {neonLimits?.activeConnections ?? status?.lastActivity?.activeConnections ?? 0}
           </div>
