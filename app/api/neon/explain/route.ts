@@ -21,6 +21,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing query' }, { status: 400 });
     }
 
+    // Reject queries with Prisma parameter placeholders ($1, $2, etc.) as they cannot be executed without parameters
+    if (/\$\d+/g.test(query)) {
+      await log.warn('Explain rejected query with parameters', { preview: query.slice(0, 200) });
+      return NextResponse.json(
+        {
+          error:
+            'Cannot explain parameterized queries. Please use actual values or SELECT from pg_stat_statements.',
+        },
+        { status: 400 }
+      );
+    }
+
     // Basic safety: only allow SELECT queries to avoid data modification.
     const firstWord = query.split(/\s+/)[0]?.toLowerCase() || '';
     if (firstWord !== 'select' && !query.toLowerCase().startsWith('with')) {
