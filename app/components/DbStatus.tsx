@@ -40,6 +40,7 @@ type EnvInfoType = {
   VERCEL_GIT_REPO_OWNER: string;
   databaseHost: string;
   databaseName: string;
+  weatherLogCount?: number;
 };
 
 type ConsumptionPeriod = {
@@ -583,9 +584,11 @@ export default function DbStatus() {
         >
           <div className="text-sm text-gray-500">PostgreSQL</div>
           <div className="mt-1 text-lg font-medium">{status?.version}</div>
-          <div className="text-xs text-gray-500 mt-2">
-            Latest:{' '}
-            {status?.latestPostDate ? new Date(status?.latestPostDate).toLocaleString() : 'N/A'}
+          <div className="text-xs text-gray-500 mt-1">
+            WeatherLog:{' '}
+            {envInfo && typeof envInfo.weatherLogCount === 'number'
+              ? envInfo.weatherLogCount.toLocaleString()
+              : 'N/A'}
           </div>
         </MDiv>
 
@@ -597,15 +600,20 @@ export default function DbStatus() {
           className="p-4 bg-white border rounded shadow-sm"
         >
           <div className="text-sm text-gray-500">Traffic</div>
-          <div className="mt-1 text-lg font-medium">{status?.postCount.toLocaleString()} posts</div>
+          <div className="mt-1 text-lg font-medium">
+            {status?.postCount?.toLocaleString()} posts
+          </div>
           <div className="text-xs text-gray-500 mt-2">
-            Logs: {status?.logCount.toLocaleString()}
+            Logs: {status?.logCount?.toLocaleString()}
           </div>
           <div className="text-xs text-gray-500 mt-1">
             SlowQueryHistory: {Array.isArray(slowQueries) ? slowQueries.length : 'N/A'}
           </div>
           <div className="text-xs text-gray-500 mt-1">
-            WeatherLog: {/* You need to fetch and provide this count, fallback to N/A for now */}N/A
+            WeatherLog:{' '}
+            {envInfo && typeof envInfo.weatherLogCount === 'number'
+              ? envInfo.weatherLogCount.toLocaleString()
+              : 'N/A'}
           </div>
         </MDiv>
 
