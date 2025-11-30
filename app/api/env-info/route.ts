@@ -21,6 +21,8 @@ export async function checkDbConnection() {
     return 'Database not connected';
   }
 }
+console.log('Env-info route checking DB connection');
+checkDbConnection();
 export async function GET() {
   const requestId = generateUUID();
   const log = createLogger('app/api/env-info/route.ts', requestId);
