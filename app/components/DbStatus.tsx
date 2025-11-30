@@ -450,13 +450,13 @@ export default function DbStatus() {
         setLatencyDirection('none');
       }
 
-      const sql = neon(process.env.DATABASE_URL?.toString() || '');
-      const countUser = await sql`SELECT COUNT(*)::int as count FROM "User"`;
-      const countWeather = await sql`SELECT COUNT(*)::int as count FROM "WeatherLog"`;
-      await log.current.info('[DbStatus] Executed raw SQL ', {
-        countUser: countUser,
-        countWeather: countWeather,
-      });
+      // const sql = neon(process.env.DATABASE_URL?.toString() || '');
+      // const countUser = await sql`SELECT COUNT(*)::int as count FROM "User"`;
+      // const countWeather = await sql`SELECT COUNT(*)::int as count FROM "WeatherLog"`;
+      // await log.current.info('[DbStatus] Executed raw SQL ', {
+      //   countUser: countUser,
+      //   countWeather: countWeather,
+      // });
       // Update latency history for the line sparkline
       if (typeof newLatency === 'number') {
         setLatencyHistory((h) => {
