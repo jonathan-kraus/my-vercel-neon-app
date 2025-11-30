@@ -599,22 +599,13 @@ export default function DbStatus() {
           transition={{ duration: 0.5 }}
           className="p-4 bg-white border rounded shadow-sm"
         >
-          <div className="text-sm text-gray-500">Traffic</div>
-          <div className="mt-1 text-lg font-medium">
-            {status?.postCount?.toLocaleString()} posts
-          </div>
-          <div className="text-xs text-gray-500 mt-2">
-            Logs: {status?.logCount?.toLocaleString()}
-          </div>
-          <div className="text-xs text-gray-500 mt-1">
-            SlowQueryHistory: {Array.isArray(slowQueries) ? slowQueries.length : 'N/A'}
-          </div>
-          <div className="text-xs text-gray-500 mt-1">
-            WeatherLog:{' '}
-            {envInfo && typeof envInfo.weatherLogCount === 'number'
-              ? envInfo.weatherLogCount.toLocaleString()
-              : 'N/A'}
-          </div>
+          <div className="text-lg text-blue-500">Traffic</div>
+          {status?.postCount?.toLocaleString()} posts Logs: {status?.logCount?.toLocaleString()}
+          SlowQueryHistory: {Array.isArray(slowQueries) ? slowQueries.length : 'N/A'}
+          WeatherLog:{' '}
+          {envInfo && typeof envInfo.weatherLogCount === 'number'
+            ? envInfo.weatherLogCount.toLocaleString()
+            : 'N/A'}
         </MDiv>
 
         <MDiv
@@ -624,7 +615,7 @@ export default function DbStatus() {
           transition={{ duration: 0.5 }}
           className="p-4 bg-white border rounded shadow-sm"
         >
-          <div className="text-xs text-gray-500 mt-2">
+          <div className="text-lg text-blue-500 mt-2">
             Active Connections:{' '}
             {neonLimits?.activeConnections ?? status?.lastActivity?.activeConnections ?? 0}
           </div>
