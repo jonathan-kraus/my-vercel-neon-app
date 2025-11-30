@@ -106,6 +106,8 @@ export async function GET(request: Request) {
             : row.total_exec_time,
         mean_exec_time:
           typeof row.mean_exec_time === 'bigint' ? Number(row.mean_exec_time) : row.mean_exec_time,
+        // Ensure explainQuery is preserved
+        explainQuery: row.explainQuery,
       }));
       return NextResponse.json({ source: 'pg_stat_statements', queries: safeRows });
     } catch (err) {
@@ -155,7 +157,13 @@ export async function GET(request: Request) {
         });
       }
 
-      return NextResponse.json({ source: 'pg_stat_activity', queries: rows });
+      // Add explainQuery field to fallback queries (they're already from active queries, so no params)
+      const fallbackWithExplain = rows.map((row) => ({
+        ...row,
+        explainQuery: row.query,
+      }));
+
+      return NextResponse.json({ source: 'pg_stat_activity', queries: fallbackWithExplain });
     }
   } catch (error) {
     try {
