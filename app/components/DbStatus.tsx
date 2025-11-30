@@ -139,7 +139,7 @@ export default function DbStatus() {
 
   const region = status?.region || 'Unknown';
 
-  console.log(`🔍 DbStatus using requestId: ${requestId}`);
+  log.current.info(`🔍 DbStatus', {requestId}`);
 
   // Log event once on mount
   useEffect(() => {
@@ -448,7 +448,8 @@ export default function DbStatus() {
       } else {
         setLatencyDirection('none');
       }
-
+      let countUser = 'SELECT COUNT(*)::int as count FROM "User"';
+      log.current.info('[DbStatus] Executed raw SQL user count', { count: countUser });
       // Update latency history for the line sparkline
       if (typeof newLatency === 'number') {
         setLatencyHistory((h) => {
