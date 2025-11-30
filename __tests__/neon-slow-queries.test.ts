@@ -34,7 +34,7 @@ beforeEach(() => {
 
 describe('neon slow-queries route', () => {
   it('returns pg_stat_statements results when available', async () => {
-    const currentQueries = []; // Empty current queries
+    const currentQueries: any[] = []; // Empty current queries
     const rows = [{ query: 'select 1', calls: 10, total_time: 1000, mean_time: 100 }];
     // @ts-ignore
     db.$queryRaw.mockResolvedValueOnce(currentQueries); // First call: current queries
@@ -51,7 +51,7 @@ describe('neon slow-queries route', () => {
   });
 
   it('falls back to pg_stat_activity when pg_stat_statements fails', async () => {
-    const currentQueries = []; // Empty current queries
+    const currentQueries: any[] = []; // Empty current queries
     const fallbackRows = [{ pid: 123, duration_ms: 5000, state: 'active', query: 'long query' }];
     // First call: current queries (succeeds)
     // @ts-ignore
