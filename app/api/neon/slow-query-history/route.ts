@@ -9,16 +9,46 @@ export async function GET(request: Request) {
   const log = createLogger('app/api/neon/slow-query-history/route.ts', requestId);
 
   try {
-    // Get the most recent slow query history records
+    // Calculate the cutoff time: 24 hours ago
+    const cutoffTime = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    // Get slow query history from the last 24 hours
     const history = await db.slowQueryHistory.findMany({
+      where: {
+        timestamp: {
+          gte: cutoffTime,
+        },
+      },
       orderBy: { timestamp: 'desc' },
       take: 50,
     });
 
-    await log.info('Fetched slow query history', {
+    await log.info('Fetched slow query history (24h)', {
       count: history.length,
-      sources: history.map((h) => h.source),
+      cutoffTime: cutoffTime.toISOString(),
     });
+
+    // Clean up records older than 7 days (optional, but helps manage database size)
+    const cleanupCutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    try {
+      const deleted = await db.slowQueryHistory.deleteMany({
+        where: {
+          timestamp: {
+            lt: cleanupCutoff,
+          },
+        },
+      });
+      if (deleted.count > 0) {
+        await log.info('Cleaned up old slow query history records', {
+          deletedCount: deleted.count,
+          olderThan: cleanupCutoff.toISOString(),
+        });
+      }
+    } catch (cleanupErr) {
+      await log.warn('Failed to clean up old history records', {
+        error: String(cleanupErr),
+      });
+    }
 
     return NextResponse.json({
       count: history.length,
