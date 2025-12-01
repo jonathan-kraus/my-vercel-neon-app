@@ -26,7 +26,14 @@ export async function POST(request: Request) {
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+  const isCronJob = authHeader === `Bearer ${cronSecret}`;
+  const isInternalAppCall = !authHeader; // If no Authorization header is present
 
+  if (!isCronJob && !isInternalAppCall) {
+    // If it's neither a cron job nor an internal app call, reject it
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+  }
+  console.log('Authorized slow query recording request');
   const requestId = generateUUID();
   const log = createLogger('app/api/neon/record-slow-queries/route.ts', requestId);
 
