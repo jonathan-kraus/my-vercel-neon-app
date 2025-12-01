@@ -60,13 +60,6 @@ jobs:
       - name: Check for outdated dependencies
         run: pnpm outdated | grep -v -E '(prisma|@prisma)' || true
 
-      - name: Show generated files for diagnostics
-        run: |
-          echo "generated dir listing:"
-          ls -la generated || echo "no generated dir"
-          echo "generated/prisma listing:"
-          ls -la generated/prisma || echo "no generated/prisma dir"
-
       - name: Show .prettierignore contents
         run: |
           echo ".prettierignore exists?"; test -f .prettierignore && echo "yes" || echo "no"
