@@ -21,16 +21,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing query' }, { status: 400 });
     }
 
-    // Reject queries with Prisma parameter placeholders ($1, $2, etc.) as they cannot be executed without parameters
-    if (/\$\d+/g.test(query)) {
-      await log.warn('Explain rejected query with parameters', { preview: query.slice(0, 200) });
-      return NextResponse.json(
-        {
-          error:
-            'Cannot explain parameterized queries. Please use actual values or SELECT from pg_stat_statements.',
-        },
-        { status: 400 }
-      );
+    // Replace parameter placeholders with safe default values for EXPLAIN
+    let explainQuery = query;
+    const paramMatches = query.match(/\$\d+/g) || [];
+    const uniqueParams = [...new Set(paramMatches)];
+
+    if (uniqueParams.length > 0) {
+      await log.info('Query contains parameters, replacing with defaults', {
+        params: uniqueParams,
+        preview: query.slice(0, 200),
+      });
+
+      // Replace $1, $2, etc. with safe defaults (empty string, 0, or NULL)
+      uniqueParams.forEach((param, idx) => {
+        if (idx % 3 === 0) {
+          explainQuery = explainQuery.replace(new RegExp(`\\${param}`, 'g'), "''"); // Empty string
+        } else if (idx % 3 === 1) {
+          explainQuery = explainQuery.replace(new RegExp(`\\${param}`, 'g'), '0'); // Zero
+        } else {
+          explainQuery = explainQuery.replace(new RegExp(`\\${param}`, 'g'), 'NULL'); // NULL
+        }
+      });
     }
 
     // Basic safety: only allow SELECT queries to avoid data modification.
@@ -43,12 +54,14 @@ export async function POST(request: Request) {
       );
     }
 
-    await log.info('Running EXPLAIN ANALYZE for query preview', { preview: query.slice(0, 200) });
+    await log.info('Running EXPLAIN ANALYZE for query preview', {
+      preview: explainQuery.slice(0, 200),
+    });
 
     // Run EXPLAIN (ANALYZE, BUFFERS) but be mindful this actually executes the query.
     // We protect by restricting to SELECT/WITH and rely on DB role permissions.
     // Use $queryRawUnsafe because the query is dynamic after validation.
-    const sql = `EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT) ${query}`;
+    const sql = `EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT) ${explainQuery}`;
 
     const rows = await (db as any).$queryRawUnsafe(sql);
 
