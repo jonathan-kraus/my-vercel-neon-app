@@ -58,7 +58,7 @@ jobs:
         run: npx prisma generate  
 
       - name: Check for outdated dependencies
-        run: pnpm outdated --exclude prisma --exclude @prisma/client || true
+        run: pnpm outdated | grep -v -E '(prisma|@prisma)' || true
 
       - name: Show generated files for diagnostics
         run: |
