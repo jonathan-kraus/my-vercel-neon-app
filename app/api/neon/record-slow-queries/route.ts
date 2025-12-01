@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     }> = await db.$queryRaw`
       SELECT 
         query, 
-        calls::int as calls, 
+        calls, 
         total_exec_time::numeric as total_exec_time, 
         mean_exec_time::numeric as mean_exec_time
       FROM pg_stat_statements
