@@ -8,6 +8,7 @@ import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 import { generateUUID } from '@/uuidj';
 import LineSparkline from './LineSparkline'; // ⬅️ IMPORT THE LINE CHART
+import { set } from 'zod';
 
 type DbStatusType = {
   version: string;
@@ -18,6 +19,7 @@ type DbStatusType = {
   logCount: number;
   region?: string;
   latencyMs?: number;
+  mySlowCount?: number;
   lastActivity?: {
     activeConnections: number;
     lastActivity: Date | null;
@@ -126,6 +128,7 @@ export default function DbStatus() {
   // 🛠️ ADD: Initialize to a non-null object for persistent display (ok: null is 'Pending')
   // New state for tracking the last time the slow query job ran
   const [lastSlowQueryJob, setLastSlowQueryJob] = useState<number | null>(null);
+  const [mySlowQueryCount, setMySlowQueryCount] = useState<number | null>(null);
   // 🆔 Get the SHARED requestId from context!
   const requestId = useRequestId();
 
@@ -154,14 +157,15 @@ export default function DbStatus() {
 
       if (res.ok) {
         const data = await res.json();
-        const mySlowCount = data.mySlowCount;
+        const mySlowQueryCount = data.mySlowCount;
+        setMySlowQueryCount(mySlowQueryCount);
         setLastSlowQueryJob(Date.now());
         toast.success(`Slow query job ran successfully: ${data.message}`);
         await log.current.info('Slow query recording job succeeded', {
           neonRequestId,
           message: data.message,
           recorded: data.recorded,
-          mySlowCount: mySlowCount,
+          mySlowCount: mySlowQueryCount,
         });
 
         // OPTIONAL: Re-fetch slow queries immediately after recording a new batch
@@ -757,7 +761,9 @@ export default function DbStatus() {
           <div className="text-lg text-blue-600 mt-2">
             Logs: {status?.logCount?.toLocaleString()}
           </div>
-          <div className="text-lg text-blue-600 mt-1">SlowQueryHistory: {'N/A'}</div>
+          <div className="text-lg text-blue-600 mt-1">
+            SlowQueryHistory: {mySlowQueryCount || 'N/A'}
+          </div>
           <div className="text-lg text-blue-600 mt-1">
             WeatherLog:{' '}
             {envInfo && typeof envInfo.weatherLogCount === 'number'
