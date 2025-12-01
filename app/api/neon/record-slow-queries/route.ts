@@ -36,23 +36,27 @@ export async function POST(request: Request) {
     });
 
     // Fetch slow queries from pg_stat_statements
-    const rawRows: Array<{
+    const rows: Array<{
       query: string;
-      calls: bigint | number;
-      total_exec_time: number | bigint;
-      mean_exec_time: number | bigint;
+      calls: number;
+      total_exec_time: number;
+      mean_exec_time: number;
     }> = await db.$queryRaw`
-      SELECT query, calls, total_exec_time, mean_exec_time
+      SELECT 
+        query, 
+        calls::int as calls, 
+        total_exec_time::numeric as total_exec_time, 
+        mean_exec_time::numeric as mean_exec_time
       FROM pg_stat_statements
       ORDER BY mean_exec_time DESC
       LIMIT 50;
     `;
 
     await log.info('Fetched queries from pg_stat_statements', {
-      count: rawRows.length,
+      count: rows.length,
     });
 
-    if (rawRows.length === 0) {
+    if (rows.length === 0) {
       await log.error('No queries found', { requestId });
       return NextResponse.json({
         success: true,
@@ -60,20 +64,6 @@ export async function POST(request: Request) {
         message: 'No queries to record',
       });
     }
-
-    // Convert BigInt values to Numbers
-    const rows = rawRows.map((row) => ({
-      query: row.query,
-      calls: typeof row.calls === 'bigint' ? Number(row.calls) : Number(row.calls) || 0,
-      total_exec_time:
-        typeof row.total_exec_time === 'bigint'
-          ? Number(row.total_exec_time)
-          : Number(row.total_exec_time) || 0,
-      mean_exec_time:
-        typeof row.mean_exec_time === 'bigint'
-          ? Number(row.mean_exec_time)
-          : Number(row.mean_exec_time) || 0,
-    }));
 
     // Store each query in history - use upsert to avoid duplicates
     const historyPromises = rows.map((row) =>
