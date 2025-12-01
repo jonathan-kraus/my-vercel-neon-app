@@ -236,7 +236,7 @@ export default function DbStatus() {
         recordSlowQueriesJob();
       }
     }, intervalDuration);
-
+    log.current.info('Set up slow query recording interval', { action: 'setup', intervalDuration });
     // 3. Cleanup function to stop the timer when the component unmounts
     return () => {
       if (slowQueryInterval.current) {
