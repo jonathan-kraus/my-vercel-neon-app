@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     });
 
     // Fetch slow queries from pg_stat_statements
-    const rows: Array<{
+    const rawRows: Array<{
       query: string;
       calls: bigint | number;
       total_exec_time: number | bigint;
@@ -49,10 +49,10 @@ export async function POST(request: Request) {
     `;
 
     await log.info('Fetched queries from pg_stat_statements', {
-      count: rows.length,
+      count: rawRows.length,
     });
 
-    if (rows.length === 0) {
+    if (rawRows.length === 0) {
       await log.error('No queries found', { requestId });
       return NextResponse.json({
         success: true,
@@ -61,6 +61,20 @@ export async function POST(request: Request) {
       });
     }
 
+    // Convert BigInt values to Numbers
+    const rows = rawRows.map((row) => ({
+      query: row.query,
+      calls: typeof row.calls === 'bigint' ? Number(row.calls) : Number(row.calls) || 0,
+      total_exec_time:
+        typeof row.total_exec_time === 'bigint'
+          ? Number(row.total_exec_time)
+          : Number(row.total_exec_time) || 0,
+      mean_exec_time:
+        typeof row.mean_exec_time === 'bigint'
+          ? Number(row.mean_exec_time)
+          : Number(row.mean_exec_time) || 0,
+    }));
+
     // Store each query in history - use upsert to avoid duplicates
     const historyPromises = rows.map((row) =>
       db.slowQueryHistory
@@ -68,11 +82,8 @@ export async function POST(request: Request) {
           data: {
             queryHash: hashQuery(row.query),
             query: row.query.substring(0, 4000), // Ensure query isn't too long
-            meanTime:
-              typeof row.mean_exec_time === 'bigint'
-                ? Number(row.mean_exec_time)
-                : Number(row.mean_exec_time) || 0,
-            calls: typeof row.calls === 'bigint' ? Number(row.calls) : Number(row.calls) || 0,
+            meanTime: row.mean_exec_time,
+            calls: row.calls,
             source: 'pg_stat_statements',
             requestId,
           },
