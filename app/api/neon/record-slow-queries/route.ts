@@ -38,9 +38,9 @@ export async function POST(request: Request) {
     // Fetch slow queries from pg_stat_statements
     const rows: Array<{
       query: string;
-      calls: number;
-      total_exec_time: number;
-      mean_exec_time: number;
+      calls: bigint | number;
+      total_exec_time: number | bigint;
+      mean_exec_time: number | bigint;
     }> = await db.$queryRaw`
       SELECT query, calls, total_exec_time, mean_exec_time
       FROM pg_stat_statements
@@ -68,8 +68,11 @@ export async function POST(request: Request) {
           data: {
             queryHash: hashQuery(row.query),
             query: row.query.substring(0, 4000), // Ensure query isn't too long
-            meanTime: Number(row.mean_exec_time) || 0,
-            calls: typeof row.calls === 'bigint' ? Number(row.calls) : row.calls || 0,
+            meanTime:
+              typeof row.mean_exec_time === 'bigint'
+                ? Number(row.mean_exec_time)
+                : Number(row.mean_exec_time) || 0,
+            calls: typeof row.calls === 'bigint' ? Number(row.calls) : Number(row.calls) || 0,
             source: 'pg_stat_statements',
             requestId,
           },
