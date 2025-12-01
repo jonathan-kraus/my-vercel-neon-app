@@ -8,7 +8,6 @@ import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 import { generateUUID } from '@/uuidj';
 import LineSparkline from './LineSparkline'; // ⬅️ IMPORT THE LINE CHART
-import { set } from 'zod';
 
 type DbStatusType = {
   version: string;
