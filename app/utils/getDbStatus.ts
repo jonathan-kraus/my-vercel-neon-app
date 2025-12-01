@@ -97,11 +97,12 @@ export async function getDbStatus(requestId?: string) {
   const log = createLogger('app/utils/getDbStatus.ts', requestId);
 
   const start = Date.now();
-  const [version, postCount, latestPost, logCount, lastActivity] = await Promise.all([
+  const [version, postCount, latestPost, logCount, slowCount, lastActivity] = await Promise.all([
     prisma.$queryRaw`SELECT version()`,
     prisma.post.count({ where: { authorId: { not: 11501 } } }),
     prisma.post.findFirst({ orderBy: { createdAt: 'desc' } }),
     prisma.log.count(),
+    prisma.slowQueryHistory.count(),
     getLastDatabaseActivity(),
   ]);
   const latencyMs = Date.now() - start;
@@ -112,6 +113,7 @@ export async function getDbStatus(requestId?: string) {
     latencyMs,
     postCount,
     logCount,
+    slowCount,
     activeConnections: lastActivity.activeConnections,
     region,
   });
