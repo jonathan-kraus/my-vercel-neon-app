@@ -69,7 +69,7 @@ export async function GET(request: Request) {
           const metric = row.meanTime ?? row.durationMs ?? 0;
           acc[row.queryHash].dataPoints.push({ timestamp: row.timestamp, value: metric });
           acc[row.queryHash].maxMeanTime = Math.max(acc[row.queryHash].maxMeanTime, metric);
-          acc[row.queryHash].totalCalls += row.calls ?? 0;
+          acc[row.queryHash].totalCalls += Number(String(row.calls ?? 0));
           return acc;
         },
         {} as Record<
