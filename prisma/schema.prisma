@@ -69,7 +69,7 @@ model FeatureFlag {
 
 model SlowQueryHistory {
   id          Int      @id @default(autoincrement())
-  queryHash   String   // hash of normalized query text for grouping
+  queryHash   String @db.Char(16) @unique
   query       String   // full query text
   meanTime    Float?   // mean execution time in ms
   calls       BigInt?  // number of calls

@@ -83,31 +83,42 @@ export async function POST(request: Request) {
       });
     }
 
-    // Store each query in history - use upsert to avoid duplicates
-    const historyPromises = rows.map((row) =>
-      db.slowQueryHistory
-        .create({
-          data: {
-            queryHash: hashQuery(row.query),
-            query: row.query.substring(0, 4000), // Ensure query isn't too long
-            meanTime: row.mean_exec_time,
-            // 🛠️ FIX: Convert the BigInt (1n, 94n) received from the DB
-            // to a standard JavaScript Number, which Prisma expects for the Int field.
-            calls: Number(String(row.calls)),
-            source: 'pg_stat_statements',
-            requestId,
-          },
-        })
-        .catch((err) => {
-          console.error('Failed to create record:', {
-            hash: hashQuery(row.query),
-            error: String(err),
-          });
-          throw err;
-        })
-    );
+    // Inside route.ts, where you define historyPromises
 
+    // Store each query in history - use upsert to avoid duplicates
+    const historyPromises = rows.map((row) => {
+      // 1. Calculate variables based on 'row'
+      const queryHash = hashQuery(row.query);
+      const callsAsNumber = Number(String(row.calls));
+
+      // 2. Use UPSERT, but DO NOT chain .catch() here.
+      return db.slowQueryHistory.upsert({
+        where: {
+          queryHash: queryHash,
+        },
+        update: {
+          // Update existing record's metrics
+          query: row.query.substring(0, 4000),
+          meanTime: row.mean_exec_time,
+          calls: callsAsNumber,
+        },
+        create: {
+          // Create new record
+          queryHash: queryHash,
+          query: row.query.substring(0, 4000),
+          meanTime: row.mean_exec_time,
+          calls: callsAsNumber,
+          source: 'pg_stat_statements',
+          requestId: requestId,
+        },
+      });
+      // 🛑 The .catch block is removed entirely.
+    });
+
+    // The errors are correctly handled here:
     const historyResults = await Promise.allSettled(historyPromises);
+    // ... your subsequent logic checking historyResults for failures
+
     const successes = historyResults.filter((r) => r.status === 'fulfilled').length;
     const failures = historyResults.filter((r) => r.status === 'rejected');
 
