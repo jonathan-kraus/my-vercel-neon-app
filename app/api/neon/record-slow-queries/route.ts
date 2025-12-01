@@ -14,7 +14,7 @@ function hashQuery(query: string): string {
  * This endpoint is designed to be called by Vercel Cron (or similar)
  * to periodically record slow and frequent queries to SlowQueryHistory.
  *
- * Can be triggered manually or via cron:
+ * Can be triggered manually or  via cron:
  * POST /api/neon/record-slow-queries
  * Header: Authorization: Bearer <CRON_SECRET>
  */
