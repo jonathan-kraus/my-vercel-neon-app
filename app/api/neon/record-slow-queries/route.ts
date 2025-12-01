@@ -133,6 +133,7 @@ export async function POST(request: Request) {
       recorded: successes,
       failed: failures.length,
       total: rows.length,
+      mySlowCount: await db.slowQueryHistory.count(),
     });
   } catch (error) {
     try {

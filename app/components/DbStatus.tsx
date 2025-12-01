@@ -159,6 +159,7 @@ export default function DbStatus() {
         await log.current.info('Slow query recording job succeeded', {
           neonRequestId,
           message: data.message,
+          recorded: data.recorded,
         });
 
         // OPTIONAL: Re-fetch slow queries immediately after recording a new batch
