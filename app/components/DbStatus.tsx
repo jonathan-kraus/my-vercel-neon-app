@@ -754,8 +754,8 @@ export default function DbStatus() {
           className="flex flex-col items-center justify-center p-6 bg-blue-100 rounded-lg shadow"
         >
           <div className="text-md font-semibold text-blue-700">Traffic</div>
-          <div className="mt-2 text-2xl font-bold text-blue-900">
-            {status?.postCount?.toLocaleString()}
+          <div className="text-lg text-blue-600 mt-2">
+            Posts: {status?.postCount?.toLocaleString()}
           </div>
           <div className="text-lg text-blue-600 mt-2">
             Logs: {status?.logCount?.toLocaleString()}
