@@ -19,21 +19,32 @@ function hashQuery(query: string): string {
  * Header: Authorization: Bearer <CRON_SECRET>
  */
 export async function POST(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  const cronSecret = process.env.CRON_SECRET;
+  // Replace your entire authorization block with this:
 
-  // Verify authorization
-  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+  // 1. Get header and secret
+  const cronSecret = process.env.CRON_SECRET;
+  const authHeader = request.headers.get('authorization');
+
+  // Check 1: Is the secret missing from the environment? (Severe error)
+  if (!cronSecret) {
+    console.error('CRON_SECRET is missing from environment variables!');
+    return NextResponse.json({ error: 'Server Misconfiguration' }, { status: 500 });
+  }
+
+  // Check 2: Define what constitutes a valid request
+  const isCronJob = authHeader === `Bearer ${cronSecret}`;
+  // 💡 FIX: This allows the internal app call where the header is missing/null
+  const isInternalAppCall = !authHeader;
+
+  // 3. Final authorization check
+  if (!isCronJob && !isInternalAppCall) {
+    // If the request is neither an authorized cron job NOR an internal app call, reject it.
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const isCronJob = authHeader === `Bearer ${cronSecret}`;
-  const isInternalAppCall = !authHeader; // If no Authorization header is present
 
-  if (!isCronJob && !isInternalAppCall) {
-    // If it's neither a cron job nor an internal app call, reject it
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-  }
   console.log('Authorized slow query recording request');
+
+  // ... rest of your slow query API logic proceeds here ...
   const requestId = generateUUID();
   const log = createLogger('app/api/neon/record-slow-queries/route.ts', requestId);
 
