@@ -72,7 +72,7 @@ model SlowQueryHistory {
   queryHash   String   // hash of normalized query text for grouping
   query       String   // full query text
   meanTime    Float?   // mean execution time in ms
-  calls       Int?     // number of calls
+  calls       BigInt?  // number of calls
   durationMs  Float?   // duration (alternative metric)
   source      String?  // 'pg_stat_statements' or 'explain_analyze'
   timestamp   DateTime @default(now())

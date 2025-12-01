@@ -93,7 +93,7 @@ export async function POST(request: Request) {
             meanTime: row.mean_exec_time,
             // 🛠️ FIX: Convert the BigInt (1n, 94n) received from the DB
             // to a standard JavaScript Number, which Prisma expects for the Int field.
-            calls: Number(row.calls),
+            calls: Number(String(row.calls)),
             source: 'pg_stat_statements',
             requestId,
           },
