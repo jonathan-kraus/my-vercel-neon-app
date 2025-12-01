@@ -154,12 +154,14 @@ export default function DbStatus() {
 
       if (res.ok) {
         const data = await res.json();
+        const mySlowCount = data.mySlowCount;
         setLastSlowQueryJob(Date.now());
         toast.success(`Slow query job ran successfully: ${data.message}`);
         await log.current.info('Slow query recording job succeeded', {
           neonRequestId,
           message: data.message,
           recorded: data.recorded,
+          mySlowCount: mySlowCount,
         });
 
         // OPTIONAL: Re-fetch slow queries immediately after recording a new batch
@@ -755,9 +757,7 @@ export default function DbStatus() {
           <div className="text-lg text-blue-600 mt-2">
             Logs: {status?.logCount?.toLocaleString()}
           </div>
-          <div className="text-lg text-blue-600 mt-1">
-            SlowQueryHistory: {Array.isArray(slowQueries) ? slowQueries.length : 'N/A'}
-          </div>
+          <div className="text-lg text-blue-600 mt-1">SlowQueryHistory: {'N/A'}</div>
           <div className="text-lg text-blue-600 mt-1">
             WeatherLog:{' '}
             {envInfo && typeof envInfo.weatherLogCount === 'number'
