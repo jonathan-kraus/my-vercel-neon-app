@@ -123,18 +123,67 @@ export default function DbStatus() {
 
   const [latencyHistory, setLatencyHistory] = useState<number[]>([]);
   const prevLatencyRef = useRef<number>(0);
+  // 🛠️ ADD: Initialize to a non-null object for persistent display (ok: null is 'Pending')
+  // New state for tracking the last time the slow query job ran
+  const [lastSlowQueryJob, setLastSlowQueryJob] = useState<number | null>(null);
+  // 🆔 Get the SHARED requestId from context!
+  const requestId = useRequestId();
 
+  // 🛠️ Use local logger instance from ref (as was in previous versions)
+  const log = useRef(createLogger('app/components/DbStatus.tsx', requestId));
+  // Function to call the slow query recording endpoint
+  const recordSlowQueriesJob = useCallback(async () => {
+    // Only run if neonRequestId is available for logging
+    if (!neonRequestId) return;
+
+    try {
+      await log.current.info('Initiating background slow query recording job', {
+        neonRequestId,
+        lastSlowQueryJob,
+        recordSlowQueriesJob,
+        status: 'started',
+      });
+
+      const headers: Record<string, string> = {};
+      if (neonRequestId) headers['x-request-id'] = neonRequestId;
+
+      const res = await fetch('/api/neon/record-slow-queries', {
+        method: 'POST',
+        headers,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setLastSlowQueryJob(Date.now());
+        toast.success(`Slow query job ran successfully: ${data.message}`);
+        await log.current.info('Slow query recording job succeeded', {
+          neonRequestId,
+          message: data.message,
+        });
+
+        // OPTIONAL: Re-fetch slow queries immediately after recording a new batch
+        // You might have a fetchSlow function or can call the fetch logic here.
+        // fetchSlow();
+      } else {
+        const errorData = await res.json();
+        toast.error(`Slow query job failed: ${errorData.error || 'Unknown error'}`);
+        await log.current.error('Slow query recording job failed', {
+          neonRequestId,
+          error: errorData.error,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to run slow query job:', err);
+      toast.error('Slow query job failed due to network error.');
+    }
+  }, [neonRequestId, log]);
+  // 🛠️ ADD: Initialize to a non-null object for persistent display (ok: null is 'Pending')
   // Ensure slow query history is refreshed before trends are fetched
   useEffect(() => {
     // Call slow-queries endpoint to update history
     fetch('/api/neon/slow-queries').catch(() => {});
   }, []);
 
-  // 🆔 Get the SHARED requestId from context!
-  const requestId = useRequestId();
-
-  // 🛠️ Use local logger instance from ref (as was in previous versions)
-  const log = useRef(createLogger('app/components/DbStatus.tsx', requestId));
   const emailSentRef = useRef(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [emailStatus, setEmailStatus] = useState<{
