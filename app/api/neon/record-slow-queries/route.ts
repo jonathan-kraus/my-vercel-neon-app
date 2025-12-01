@@ -73,7 +73,9 @@ export async function POST(request: Request) {
             queryHash: hashQuery(row.query),
             query: row.query.substring(0, 4000), // Ensure query isn't too long
             meanTime: row.mean_exec_time,
-            calls: row.calls,
+            // 🛠️ FIX: Convert the BigInt (1n, 94n) received from the DB
+            // to a standard JavaScript Number, which Prisma expects for the Int field.
+            calls: Number(row.calls),
             source: 'pg_stat_statements',
             requestId,
           },

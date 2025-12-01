@@ -216,7 +216,35 @@ export default function DbStatus() {
 
     jck();
   }, []);
+  // Inside DbStatus.tsx, within the DbStatus function component:
 
+  // Ref to hold the interval timer
+  const slowQueryInterval = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    // 1. Run immediately on mount (or when neonRequestId becomes available)
+    recordSlowQueriesJob();
+
+    // 2. Set up the interval for repeated calls
+    // You mentioned the cron was too slow (once per day).
+    // Let's run this job every 5 minutes (300,000 ms) for a better trend view.
+    const intervalDuration = 300000; // 5 minutes
+
+    slowQueryInterval.current = setInterval(() => {
+      // Only run if the tab is visible to save resources (optional)
+      if (document.visibilityState === 'visible') {
+        recordSlowQueriesJob();
+      }
+    }, intervalDuration);
+
+    // 3. Cleanup function to stop the timer when the component unmounts
+    return () => {
+      if (slowQueryInterval.current) {
+        clearInterval(slowQueryInterval.current);
+        slowQueryInterval.current = null;
+      }
+    };
+  }, [recordSlowQueriesJob]); // Dependency array ensures it only restarts if the function changes
   // Fetch DB status
   useEffect(() => {
     const fetchStatus = async () => {
