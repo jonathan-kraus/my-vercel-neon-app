@@ -105,3 +105,29 @@ model WeatherCache {
   @@unique([location])
   @@index([location, updatedAt])
 }
+
+model WeatherHourly {
+  id                       Int      @id @default(autoincrement())
+  location                 String
+  forecastTime             DateTime
+  temperature              Float
+  feelsLike                Float
+  humidity                 Float
+  windSpeed                Float
+  windGust                 Float
+  precipitationProbability Float
+  pressure                 Float?
+  visibility               Float?
+  weatherCode              Int
+  rainAccumulationAvg      Float
+  rainAccumulationMax      Float
+  rainAccumulationMin      Float
+  rainAccumulationSum      Float
+  locationDetails          Json
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@unique([location, forecastTime])
+  @@index([location, forecastTime])
+  @@index([location, updatedAt])
+}
