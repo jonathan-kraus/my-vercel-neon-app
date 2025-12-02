@@ -1,6 +1,6 @@
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
-import flag from 'flags/next';
+import { flag } from 'flags/next';
 export const bunnyFlag = flag({
   key: 'bunny-flag',
   decide() {
