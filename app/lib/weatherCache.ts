@@ -86,7 +86,7 @@ async function fetchHourlyTimelines(location: Location, hours = 24, timeoutMs = 
     ].join(',')
   );
   url.searchParams.set('units', 'metric');
-  url.searchParams.set('apikey', TOMORROW_API_KEY);
+  url.searchParams.set('apikey', TOMORROW_API_KEY as string);
 
   // Log the final URL for debugging invalid-parameter errors
   console.log('Tomorrow API URL:', url.toString());
