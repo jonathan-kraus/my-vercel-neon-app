@@ -5,11 +5,11 @@ import { createLogger } from '@/app/utils/logger';
 import crypto from 'crypto';
 
 // Helper to normalize and hash queries for grouping
-function hashQuery(query: string): string {
-  // Normalize: remove extra whitespace, lowercase
-  const normalized = query.replace(/\s+/g, ' ').trim().toLowerCase();
-  return crypto.createHash('sha256').update(normalized).digest('hex').slice(0, 16);
-}
+// function hashQuery(query: string): string {
+//   // Normalize: remove extra whitespace, lowercase
+//   const normalized = query.replace(/\s+/g, ' ').trim().toLowerCase();
+//   return crypto.createHash('sha256').update(normalized).digest('hex').slice(0, 16);
+// }
 export function generateId(): string {
   const prefix = 'JK';
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
