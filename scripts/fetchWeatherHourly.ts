@@ -101,7 +101,7 @@ async function fetchHourlyTimelines(location: Location, hours = 24) {
     ].join(',')
   );
   url.searchParams.set('units', 'metric');
-  url.searchParams.set('apikey', TOMORROW_API_KEY);
+  url.searchParams.set('apikey', TOMORROW_API_KEY as string);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000); // 15s
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
