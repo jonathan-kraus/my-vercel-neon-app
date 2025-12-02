@@ -159,7 +159,7 @@ export default function DbStatus() {
         const mySlowQueryCount = data.mySlowCount;
         setMySlowQueryCount(mySlowQueryCount);
         setLastSlowQueryJob(Date.now());
-        toast.success(`Slow query job ran successfully: ${data.message}`);
+        toast.success(`Slow query job ran successfully, recorded ${data.recorded} queries.`);
         await log.current.info('Slow query recording job succeeded', {
           neonRequestId,
           message: data.message,
