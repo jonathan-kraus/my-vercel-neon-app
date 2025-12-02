@@ -95,7 +95,7 @@ async function fetchHourlyTimelines(location: Location, hours = 24, timeoutMs = 
   const TOMORROW_API_KEY = getTomorrowApiKey();
   url.searchParams.set('location', `${location.lat},${location.lon}`);
   url.searchParams.set('timesteps', '1h');
-
+  url.searchParams.set('units', 'imperial');
   // startTime can be 'now'; endTime must be an ISO 8601 timestamp
   url.searchParams.set('startTime', 'now');
   const endIso = new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
