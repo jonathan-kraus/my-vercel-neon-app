@@ -81,6 +81,7 @@ async function fetchHourlyTimelines(location: Location, hours = 24) {
   url.searchParams.set('timesteps', '1h');
   url.searchParams.set('startTime', 'now');
   url.searchParams.set('endTime', `+${hours}h`);
+  // inside fetchHourlyTimelines: use this fields list (no 'precipitation')
   url.searchParams.set(
     'fields',
     [
@@ -89,8 +90,9 @@ async function fetchHourlyTimelines(location: Location, hours = 24) {
       'humidity',
       'windSpeed',
       'windGust',
-      'precipitation',
+      'precipitationIntensity', // instantaneous intensity (if available)
       'precipitationProbability',
+      'precipitationType',
       'pressureSeaLevel',
       'visibility',
       'weatherCode',
@@ -100,6 +102,7 @@ async function fetchHourlyTimelines(location: Location, hours = 24) {
       'rainAccumulationSum',
     ].join(',')
   );
+
   url.searchParams.set('units', 'metric');
   url.searchParams.set('apikey', TOMORROW_API_KEY as string);
   const controller = new AbortController();

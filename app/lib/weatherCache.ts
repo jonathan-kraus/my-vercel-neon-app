@@ -20,7 +20,20 @@ function sanitizeNumber(v: unknown, fallback = 0): number {
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
 }
-
+/**
+ * Try multiple keys on a values object and return the first finite number found.
+ * If none found, return fallback.
+ */
+function getNumber(values: any, keys: string[], fallback = 0): number {
+  if (!values) return fallback;
+  for (const k of keys) {
+    if (values[k] !== undefined && values[k] !== null) {
+      const n = Number(values[k]);
+      if (Number.isFinite(n)) return n;
+    }
+  }
+  return fallback;
+}
 function mapIntervalToWeatherHourly(
   location: Location,
   interval: any
@@ -32,21 +45,38 @@ function mapIntervalToWeatherHourly(
   return {
     location: location.name,
     forecastTime,
-    temperature: sanitizeNumber(values.temperature ?? values.temp ?? 0),
-    feelsLike: sanitizeNumber(values.temperatureApparent ?? values.feelsLike ?? 0),
-    humidity: sanitizeNumber(values.humidity ?? 0),
-    windSpeed: sanitizeNumber(values.windSpeed ?? values.wind_speed ?? 0),
-    windGust: sanitizeNumber(values.windGust ?? 0),
-    precipitationProbability: sanitizeNumber(values.precipitationProbability ?? 0),
-    pressure: values.pressureSeaLevel != null ? sanitizeNumber(values.pressureSeaLevel, 0) : null,
-    visibility: values.visibility != null ? sanitizeNumber(values.visibility, 0) : null,
-    weatherCode: Math.floor(sanitizeNumber(values.weatherCode ?? 0)),
-    rainAccumulationAvg: sanitizeNumber(
-      values.rainAccumulationAvg ?? values.rainAccumulationAverage ?? 0
+    temperature: getNumber(values, ['temperature', 'temp'], 0),
+    feelsLike: getNumber(values, ['temperatureApparent', 'feelsLike', 'apparentTemperature'], 0),
+    humidity: getNumber(values, ['humidity'], 0),
+    windSpeed: getNumber(values, ['windSpeed', 'wind_speed'], 0),
+    windGust: getNumber(values, ['windGust', 'wind_gust'], 0),
+    precipitationProbability: getNumber(
+      values,
+      ['precipitationProbability', 'precipitation_probability'],
+      0
     ),
-    rainAccumulationMax: sanitizeNumber(values.rainAccumulationMax ?? 0),
-    rainAccumulationMin: sanitizeNumber(values.rainAccumulationMin ?? 0),
-    rainAccumulationSum: sanitizeNumber(values.rainAccumulationSum ?? values.precipitation ?? 0),
+    pressure: (() => {
+      const p = getNumber(values, ['pressureSeaLevel', 'pressure'], NaN);
+      return Number.isFinite(p) ? p : null;
+    })(),
+    visibility: (() => {
+      const v = getNumber(values, ['visibility'], NaN);
+      return Number.isFinite(v) ? v : null;
+    })(),
+    weatherCode: Math.floor(getNumber(values, ['weatherCode', 'weather_code'], 0)),
+    rainAccumulationAvg: getNumber(values, ['rainAccumulationAvg', 'rainAccumulationAverage'], 0),
+    rainAccumulationMax: getNumber(values, ['rainAccumulationMax'], 0),
+    rainAccumulationMin: getNumber(values, ['rainAccumulationMin'], 0),
+    rainAccumulationSum: getNumber(
+      values,
+      [
+        'rainAccumulationSum',
+        'rainAccumulation',
+        'precipitationAccumulation',
+        'precipitationIntensity',
+      ],
+      0
+    ),
     locationDetails: location.locationDetails ?? {},
   };
 }
@@ -76,7 +106,7 @@ async function fetchHourlyTimelines(location: Location, hours = 24, timeoutMs = 
       'humidity',
       'windSpeed',
       'windGust',
-      'precipitation',
+      'precipitationIntensity',
       'precipitationProbability',
       'pressureSeaLevel',
       'visibility',
