@@ -10,7 +10,15 @@ function hashQuery(query: string): string {
   const normalized = query.replace(/\s+/g, ' ').trim().toLowerCase();
   return crypto.createHash('sha256').update(normalized).digest('hex').slice(0, 16);
 }
-
+export function generateId(): string {
+  const prefix = 'JK';
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let out = '';
+  for (let i = 0; i < 14; i++) {
+    out += charset[crypto.randomInt(0, charset.length)];
+  }
+  return prefix + out;
+}
 export async function GET(request: Request) {
   const headerId = request.headers.get('x-request-id');
   const requestId = headerId || generateUUID();
@@ -75,7 +83,8 @@ export async function GET(request: Request) {
       const historyPromises = enrichedRows.map((row) =>
         db.slowQueryHistory.create({
           data: {
-            queryHash: hashQuery(row.query),
+            //queryHash: hashQuery(row.query),
+            queryHash: generateId(),
             query: row.query,
             meanTime: row.mean_exec_time,
             calls: row.calls,
@@ -134,7 +143,8 @@ export async function GET(request: Request) {
       const historyPromises = rows.map((row) =>
         db.slowQueryHistory.create({
           data: {
-            queryHash: hashQuery(row.query),
+            //queryHash: hashQuery(row.query),
+            queryHash: generateId(),
             query: row.query,
             durationMs: row.duration_ms,
             source: 'pg_stat_activity',
