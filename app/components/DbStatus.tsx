@@ -74,6 +74,11 @@ type HealthResult = {
   latencyMs?: number;
   error?: string;
 };
+import { bunnyFlag } from '@/flags';
+
+const example = await bunnyFlag();
+
+console.log('bunnyFlag in DbStatus:', example);
 
 // 🛠️ REMOVED redundant global log initialization
 // const log = createLogger('app/components/DbStatus.tsx');
