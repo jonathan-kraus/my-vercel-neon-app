@@ -3,7 +3,6 @@ import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
 import { createLogger } from '@/app/utils/logger';
 import crypto from 'crypto';
-import { bunnyFlag } from '@/flags';
 
 // Helper to normalize and hash queries for grouping
 function hashQuery(query: string): string {
@@ -48,12 +47,10 @@ export async function POST(request: Request) {
   // ... rest of your slow query API logic proceeds here ...
   const requestId = generateUUID();
   const log = createLogger('app/api/neon/record-slow-queries/route.ts', requestId);
-  const example = await bunnyFlag();
-  console.log('bunnyFlag in DbStatus:', example);
+
   try {
     await log.info('Starting periodic slow query recording', {
       source: 'cron-job app/api/neon/record-slow-queries/route.ts',
-      exampleFlag: example,
     });
 
     // Fetch slow queries from pg_stat_statements
