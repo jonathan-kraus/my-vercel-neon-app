@@ -50,12 +50,22 @@ function mapIntervalToWeatherHourly(
   };
 }
 
+/**
+ * Fetch hourly timelines from Tomorrow.io
+ * - Uses ISO 8601 endTime (UTC)
+ * - Logs the final URL for debugging
+ * - Uses AbortController for timeout
+ */
 async function fetchHourlyTimelines(location: Location, hours = 24, timeoutMs = 15000) {
   const url = new URL('https://api.tomorrow.io/v4/timelines');
   url.searchParams.set('location', `${location.lat},${location.lon}`);
   url.searchParams.set('timesteps', '1h');
+
+  // startTime can be 'now'; endTime must be an ISO 8601 timestamp
   url.searchParams.set('startTime', 'now');
-  url.searchParams.set('endTime', `+${hours}h`);
+  const endIso = new Date(Date.now() + hours * 60 * 60 * 1000).toISOString();
+  url.searchParams.set('endTime', endIso);
+
   url.searchParams.set(
     'fields',
     [
@@ -76,7 +86,10 @@ async function fetchHourlyTimelines(location: Location, hours = 24, timeoutMs = 
     ].join(',')
   );
   url.searchParams.set('units', 'metric');
-  url.searchParams.set('apikey', TOMORROW_API_KEY as string);
+  url.searchParams.set('apikey', TOMORROW_API_KEY);
+
+  // Log the final URL for debugging invalid-parameter errors
+  console.log('Tomorrow API URL:', url.toString());
 
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
