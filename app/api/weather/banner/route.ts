@@ -2,7 +2,7 @@
 // app/lib/weatherBanner.ts  (lib)
 // This file contains the logic to fetch weather data and determine if a rain banner should be shown.
 import { NextResponse } from 'next/server';
-import { getRainBannerForNextHours } from '@/api/lib/weatherBanner';
+import { getRainBannerForNextHours } from '@/app/lib/weatherBanner';
 
 export async function GET(request: Request) {
   try {
