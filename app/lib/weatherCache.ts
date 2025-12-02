@@ -9,9 +9,10 @@ type Location = {
   locationDetails?: any;
 };
 
-const TOMORROW_API_KEY = process.env.TOMORROW_API_KEY;
-if (!TOMORROW_API_KEY) {
-  throw new Error('TOMORROW_API_KEY is not set');
+function getTomorrowApiKey(): string {
+  const key = process.env.TOMORROW_API_KEY;
+  if (!key) throw new Error('TOMORROW_API_KEY is not set');
+  return key;
 }
 
 function sanitizeNumber(v: unknown, fallback = 0): number {
@@ -58,6 +59,7 @@ function mapIntervalToWeatherHourly(
  */
 async function fetchHourlyTimelines(location: Location, hours = 24, timeoutMs = 15000) {
   const url = new URL('https://api.tomorrow.io/v4/timelines');
+  const TOMORROW_API_KEY = getTomorrowApiKey();
   url.searchParams.set('location', `${location.lat},${location.lon}`);
   url.searchParams.set('timesteps', '1h');
 
