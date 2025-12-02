@@ -9,9 +9,7 @@ export const bunnyFlag = flag({
 });
 const requestId = generateUUID();
 const log = createLogger('flags.ts', requestId);
-export async function logSend(requestId: string) {
-  const log = createLogger('flags.ts', requestId);
-}
-logSend(requestId).then(async () => {
+export async function logSend() {}
+logSend().then(async () => {
   await log.info('bunnyFlag evaluated', { value: bunnyFlag });
 });
