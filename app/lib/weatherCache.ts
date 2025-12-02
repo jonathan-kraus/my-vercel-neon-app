@@ -15,25 +15,28 @@ function getTomorrowApiKey(): string {
   return key;
 }
 
+// helpers
 function sanitizeNumber(v: unknown, fallback = 0): number {
   if (v === null || v === undefined) return fallback;
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
 }
+
 /**
  * Try multiple keys on a values object and return the first finite number found.
- * If none found, return fallback.
+ * Falls back to `fallback` if none found.
  */
-function getNumber(values: any, keys: string[], fallback = 0): number {
+function getNumber(values: any, keys: string[] | string, fallback = 0): number {
   if (!values) return fallback;
-  for (const k of keys) {
+  const keyList = Array.isArray(keys) ? keys : [keys];
+  for (const k of keyList) {
     if (values[k] !== undefined && values[k] !== null) {
-      const n = Number(values[k]);
-      if (Number.isFinite(n)) return n;
+      return sanitizeNumber(values[k], fallback);
     }
   }
   return fallback;
 }
+
 function mapIntervalToWeatherHourly(
   location: Location,
   interval: any
