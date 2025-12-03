@@ -33,5 +33,5 @@ export default function NumberCounter({
     // Intentionally using only `value` and `duration` as deps to animate on change
   }, [value, duration]);
 
-  return <span className={className ?? 'text-gray-900 font-bold'}>{display}</span>;
+  return <span className={className ?? 'text-blue-600 mt-2'}>{display}</span>;
 }
