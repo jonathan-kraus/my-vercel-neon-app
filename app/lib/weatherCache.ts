@@ -1,8 +1,10 @@
 // lib/weatherCache.ts
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 import { db } from './db';
+
+const log = createLogger('app/lib/weatherCache.ts', generateUUID());
 
 type Location = {
   name: string;
@@ -126,8 +128,8 @@ async function fetchHourlyTimelines(location: Location, hours = 24, timeoutMs = 
   url.searchParams.set('apikey', TOMORROW_API_KEY as string);
 
   // Log the final URL for debugging invalid-parameter errors
-  console.log('Tomorrow API URL:', url.toString());
 
+  log.info('Fetching Tomorrow API data', { url: url.toString() });
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -169,8 +171,18 @@ async function upsertIntervals(location: Location, intervals: any[], batchSize =
             update: { ...data, updatedAt: new Date() },
           });
           succeeded += 1;
+          log.info('Upsert succeeded for', {
+            location: data.location,
+            forecastTime: data.forecastTime,
+            succeeded: succeeded,
+          });
         } catch (err) {
-          console.error('Upsert failed for', data.location, data.forecastTime, err);
+          log.error('Upsert failed for', {
+            location: data.location,
+            failed: failed,
+            forecastTime: data.forecastTime,
+            err,
+          });
           failed += 1;
         }
       })
