@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function NumberCounter({
   value,
-  duration = 600,
+  duration = 1600,
   className,
 }: {
   value: number;
