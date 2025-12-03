@@ -8,6 +8,7 @@ import { createLogger } from '@/app/utils/logger';
 import { isFeatureEnabled } from '@/app/utils/featureFlags';
 import { generateUUID } from '@/uuidj';
 import LineSparkline from './LineSparkline'; // ⬅️ IMPORT THE LINE CHART
+import NumberCounter from './NumberCounter'; // ⬅️ IMPORT THE NUMBER COUNTER
 
 type DbStatusType = {
   version: string;
@@ -765,7 +766,8 @@ export default function DbStatus() {
             SlowQueryHistory: {mySlowQueryCount || 'N/A'}
           </div>
           <div className="text-lg text-blue-600 mt-1">
-            WeatherHourlyCount: {status?.weatherHourlyCount?.toLocaleString() || 'N/A'}
+            WeatherHourly:npm install next@16.0.7 react@19.2.1 react-dom@19.2.1{' '}
+            <NumberCounter value={status?.weatherHourlyCount || 0} />
           </div>
           <div className="text-lg text-blue-600 mt-1">
             WeatherLog:{' '}
