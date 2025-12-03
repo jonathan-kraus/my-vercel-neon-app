@@ -1,6 +1,8 @@
 // lib/weatherCache.ts
 import { PrismaClient, Prisma } from '@prisma/client';
-const prisma = new PrismaClient();
+import { createLogger } from '@/app/utils/logger';
+import { generateUUID } from '@/uuidj';
+import { db } from './db';
 
 type Location = {
   name: string;
@@ -144,7 +146,7 @@ async function fetchHourlyTimelines(location: Location, hours = 24, timeoutMs = 
   }
 }
 
-async function upsertIntervals(location: Location, intervals: any[], batchSize = 10) {
+async function upsertIntervals(location: Location, intervals: any[], batchSize = 24) {
   if (!intervals.length) return { processed: 0, succeeded: 0, failed: 0 };
 
   const chunks: any[][] = [];
@@ -159,7 +161,7 @@ async function upsertIntervals(location: Location, intervals: any[], batchSize =
       chunk.map(async (interval) => {
         const data = mapIntervalToWeatherHourly(location, interval);
         try {
-          await prisma.weatherHourly.upsert({
+          await db.weatherHourly.upsert({
             where: {
               location_forecastTime: { location: data.location, forecastTime: data.forecastTime },
             },
@@ -180,7 +182,7 @@ async function upsertIntervals(location: Location, intervals: any[], batchSize =
 
 async function cleanupOldRows(locationName: string, retentionDays = 30) {
   const cutoff = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000);
-  const res = await prisma.weatherHourly.deleteMany({
+  const res = await db.weatherHourly.deleteMany({
     where: { location: locationName, forecastTime: { lt: cutoff } },
   });
   return res.count;
@@ -190,7 +192,7 @@ export async function refreshHourlyWeatherCache(
   location: Location,
   hours = 24,
   retentionDays = 30,
-  batchSize = 10
+  batchSize = 24
 ) {
   console.log(`refreshHourlyWeatherCache: fetching ${hours}h for ${location.name}`);
   const intervals = await fetchHourlyTimelines(location, hours);
