@@ -3,7 +3,6 @@
 import { db } from '@/app/lib/db';
 import { createLogger } from './logger';
 import { generateUUID } from '@/uuidj';
-const prisma = db; // For clarity in this file
 
 /**
  * Extract AWS region from Neon database host
@@ -29,7 +28,7 @@ function extractRegionFromDbHost(): string {
 async function getLastDatabaseActivity() {
   try {
     // Check current active connections
-    const activeConnections = (await prisma.$queryRaw`
+    const activeConnections = (await db.$queryRaw`
       SELECT count(*) as active_connections,
              max(state_change) as last_state_change,
              max(backend_start) as last_backend_start
@@ -44,7 +43,7 @@ async function getLastDatabaseActivity() {
     }[];
 
     // Check last modification times from user tables
-    const tableActivity = (await prisma.$queryRaw`
+    const tableActivity = (await db.$queryRaw`
       SELECT max(last_vacuum) as last_vacuum,
              max(last_autovacuum) as last_autovacuum,
              max(last_analyze) as last_analyze,
@@ -97,14 +96,16 @@ export async function getDbStatus(requestId?: string) {
   const log = createLogger('app/utils/getDbStatus.ts', requestId);
 
   const start = Date.now();
-  const [version, postCount, latestPost, logCount, slowCount, lastActivity] = await Promise.all([
-    prisma.$queryRaw`SELECT version()`,
-    prisma.post.count({ where: { authorId: { not: 11501 } } }),
-    prisma.post.findFirst({ orderBy: { createdAt: 'desc' } }),
-    prisma.log.count(),
-    prisma.slowQueryHistory.count(),
-    getLastDatabaseActivity(),
-  ]);
+  const [version, postCount, latestPost, logCount, weatherHourlyCount, slowCount, lastActivity] =
+    await Promise.all([
+      db.$queryRaw`SELECT version()`,
+      db.post.count({ where: { authorId: { not: 11501 } } }),
+      db.post.findFirst({ orderBy: { createdAt: 'desc' } }),
+      db.log.count(),
+      db.weatherHourly.count(),
+      db.slowQueryHistory.count(),
+      getLastDatabaseActivity(),
+    ]);
   const latencyMs = Date.now() - start;
 
   const region = extractRegionFromDbHost();
@@ -114,6 +115,7 @@ export async function getDbStatus(requestId?: string) {
     postCount,
     logCount,
     slowCount,
+    weatherHourlyCount,
     activeConnections: lastActivity.activeConnections,
     region,
   });
@@ -124,6 +126,7 @@ export async function getDbStatus(requestId?: string) {
     latestPostTitle: latestPost?.title || 'No Title',
     latestPostContent: latestPost?.content || 'No Content',
     logCount,
+    weatherHourlyCount,
     latencyMs,
     lastActivity,
     region,

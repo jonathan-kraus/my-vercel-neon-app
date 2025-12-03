@@ -16,6 +16,7 @@ type DbStatusType = {
   latestPostTitle?: string;
   latestPostContent?: string;
   logCount: number;
+  weatherHourlyCount?: number;
   region?: string;
   latencyMs?: number;
   mySlowCount?: number;
@@ -762,6 +763,7 @@ export default function DbStatus() {
           </div>
           <div className="text-lg text-blue-600 mt-1">
             SlowQueryHistory: {mySlowQueryCount || 'N/A'}
+            WeatherHourlyCount: {status?.weatherHourlyCount?.toLocaleString() || 'N/A'}
           </div>
           <div className="text-lg text-blue-600 mt-1">
             WeatherLog:{' '}
