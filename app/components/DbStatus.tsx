@@ -757,23 +757,24 @@ export default function DbStatus() {
         >
           <div className="text-md font-semibold text-blue-700">Traffic</div>
           <div className="text-lg text-blue-600 mt-2">
-            Posts: {status?.postCount?.toLocaleString()}
+            Posts: <NumberCounter value={status?.postCount || 0} />
           </div>
           <div className="text-lg text-blue-600 mt-2">
-            Logs: {status?.logCount?.toLocaleString()}
+            Logs: <NumberCounter value={status?.logCount || 0} />
           </div>
           <div className="text-lg text-blue-600 mt-1">
-            SlowQueryHistory: {mySlowQueryCount || 'N/A'}
+            SlowQueryHistory: <NumberCounter value={mySlowQueryCount || 0} />
           </div>
           <div className="text-lg text-blue-600 mt-1">
-            WeatherHourly:npm install next@16.0.7 react@19.2.1 react-dom@19.2.1{' '}
-            <NumberCounter value={status?.weatherHourlyCount || 0} />
+            WeatherHourly: <NumberCounter value={status?.weatherHourlyCount || 0} />
           </div>
           <div className="text-lg text-blue-600 mt-1">
             WeatherLog:{' '}
-            {envInfo && typeof envInfo.weatherLogCount === 'number'
-              ? envInfo.weatherLogCount.toLocaleString()
-              : 'N/A'}
+            {envInfo && typeof envInfo.weatherLogCount === 'number' ? (
+              <NumberCounter value={envInfo.weatherLogCount} />
+            ) : (
+              'N/A'
+            )}
           </div>
         </MDiv>
 
