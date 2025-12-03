@@ -763,6 +763,8 @@ export default function DbStatus() {
           </div>
           <div className="text-lg text-blue-600 mt-1">
             SlowQueryHistory: {mySlowQueryCount || 'N/A'}
+          </div>
+          <div className="text-lg text-blue-600 mt-1">
             WeatherHourlyCount: {status?.weatherHourlyCount?.toLocaleString() || 'N/A'}
           </div>
           <div className="text-lg text-blue-600 mt-1">
