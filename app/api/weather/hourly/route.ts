@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Define the type based on your select
   type WeatherHourlySelected = Prisma.WeatherHourlyGetPayload<{
     select: {
-      timestamp: true;
+      forecastTime: true;
       rainAccumulationAvg: true;
       rainAccumulationMax: true;
       rainAccumulationMin: true;
@@ -20,24 +20,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Now data is strongly typed
   const data: WeatherHourlySelected[] = await db.weatherHourly.findMany({
     where: {
-      timestamp: {
+      forecastTime: {
         gte: now,
         lt: new Date(now.getTime() + 5 * 60 * 60 * 1000),
       },
     },
     select: {
-      timestamp: true,
+      forecastTime: true,
       rainAccumulationAvg: true,
       rainAccumulationMax: true,
       rainAccumulationMin: true,
       rainAccumulationSum: true,
     },
-    orderBy: { timestamp: 'asc' },
+    orderBy: { forecastTime: 'asc' },
   });
 
   // Convert Date → string for JSON safety
   const payload: WeatherHourlyPayload[] = data.map((row) => ({
-    timestamp: row.timestamp.toISOString(),
+    timestamp: row.forecastTime.toISOString(),
     rainAccumulationAvg: row.rainAccumulationAvg,
     rainAccumulationMax: row.rainAccumulationMax,
     rainAccumulationMin: row.rainAccumulationMin,
