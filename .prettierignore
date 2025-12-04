@@ -3,7 +3,7 @@ pnpm-lock.yaml
 .npmrc
 .github/
 .next/
-app/generated/
+prisma/generated/
 next-env.d.ts
 eslint*
 coverage
