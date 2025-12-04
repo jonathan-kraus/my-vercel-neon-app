@@ -17,7 +17,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@neondatabase/api-client": "^2.2.0",
+    "@neondatabase/api-client": "2.5.0",
     "@neondatabase/serverless": "^1.0.2",
     "@vercel/analytics": "^1.5.0",
     "@vercel/blob": "^2.0.0",
