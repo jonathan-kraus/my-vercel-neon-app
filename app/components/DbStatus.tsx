@@ -120,7 +120,7 @@ type HealthResult = {
   latencyMs?: number;
   error?: string;
 };
-
+WeatherToast();
 // 🛠️ REMOVED redundant global log initialization
 // const log = createLogger('app/components/DbStatus.tsx');
 // log.info('[DbStatus] DbStatus component loaded', {
@@ -167,7 +167,7 @@ export default function DbStatus() {
   // 🛠️ FIX: Use dedicated states for animation and direction tracking
   const [prevLatency, setPrevLatency] = useState<number>(0);
   const [latencyDirection, setLatencyDirection] = useState<'up' | 'down' | 'none'>('none');
-
+  WeatherToast();
   const [latencyHistory, setLatencyHistory] = useState<number[]>([]);
   const prevLatencyRef = useRef<number>(0);
   // 🛠️ ADD: Initialize to a non-null object for persistent display (ok: null is 'Pending')
