@@ -254,6 +254,7 @@ export default function DbStatus() {
       }
     };
   }, [recordSlowQueriesJob]); // Dependency array ensures it only restarts if the function changes
+  log.current.info('almost to rain code', { emailStatus });
   // Fetch DB status
   useEffect(() => {
     const fetchStatus = async () => {
@@ -273,6 +274,7 @@ export default function DbStatus() {
     fetchStatus();
   }, [requestId]);
   // ⬅️ ADD YOUR WEATHER TOAST EFFECT RIGHT AFTER THIS
+  log.current.info(' rain code next', { emailStatus });
   useEffect(() => {
     const fetchWeather = async () => {
       try {
@@ -281,7 +283,7 @@ export default function DbStatus() {
         const data: WeatherHourlyPayload[] = await res.json();
 
         console.log('Weather data:', data);
-
+        log.current.info('Weather data rain code', { data });
         const nonZero = data.some((row) =>
           [
             row.rainAccumulationAvg,
