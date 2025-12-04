@@ -128,9 +128,12 @@ export default function WeatherPage() {
       {/* Location Selector */}
       <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
         <LocationSelector onLocationChange={handleLocationChange} />
-        precip: {precip}
       </div>
-
+      {(precip as number) > 0.1 && (
+        <div className="text-center text-gray-700">
+          <span className="font-medium">Current Rain Accumulation:</span> {precip as number} inches
+        </div>
+      )}
       {/* Email Button */}
       {forecast && forecast.forecast.length > 0 && (
         <div className="flex justify-center">
