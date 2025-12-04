@@ -11,7 +11,7 @@
 !.yarn/versions
 
 # Prisma v7 Generated Client Output
-prisma.generated/
+prisma/generated/
 
 # testing
 /coverage
@@ -36,17 +36,13 @@ yarn-error.log*
 # env file
 .env
 .env.local
-# vercel
-.vercel
+
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
-#Prisma
-/app/generated/prisma
-generated/prisma
-
+# vercel
 .vercel
 .env*.local
 
