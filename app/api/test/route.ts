@@ -15,8 +15,8 @@ export async function GET() {
   const fetchData = async () => {
     const res = await fetch('/api/weather/hourly');
     const data: WeatherHourlyPayload[] = await res.json();
-    const log = createLogger('app/components/DbStatus.tsx', requestId);
-    log.info('Weather data fetched for toast:', data);
+
+    await log.info('Weather data fetched for toast:', data);
     const nonZero = data.some((row) =>
       [
         row.rainAccumulationAvg,
