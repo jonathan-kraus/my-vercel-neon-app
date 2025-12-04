@@ -281,9 +281,11 @@ export default function DbStatus() {
         const res = await fetch('/api/weather/hourly');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data: WeatherHourlyPayload[] = await res.json();
-
+        if (!data || data.length === 0) {
+          log.current.warn('[DbStatus] No forecast data received');
+        }
         console.log('Weather data:', data);
-        log.current.info('Weather data rain code', { data });
+        log.current.info('[DbStatus] Weather data rain code', { data });
 
         const nonZero = data.some((row) =>
           [
