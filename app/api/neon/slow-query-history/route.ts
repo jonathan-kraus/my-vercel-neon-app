@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
 import { generateUUID } from '@/uuidj';
 import { createLogger } from '@/app/utils/logger';
+import { safeJsonResponse } from '@/app/lib/safeJsonResponse';
 
 export async function GET(request: Request) {
   const headerId = request.headers.get('x-request-id');
@@ -49,7 +50,7 @@ export async function GET(request: Request) {
       });
     }
 
-    return NextResponse.json({
+    return safeJsonResponse({
       count: history.length,
       dateRange,
       history,
