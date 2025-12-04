@@ -284,6 +284,7 @@ export default function DbStatus() {
 
         console.log('Weather data:', data);
         log.current.info('Weather data rain code', { data });
+
         const nonZero = data.some((row) =>
           [
             row.rainAccumulationAvg,
@@ -309,6 +310,7 @@ export default function DbStatus() {
         }
       } catch (err) {
         console.error('Failed to fetch weather data:', err);
+        log.current.info('Failed to fetch weather data:', err as Error);
       }
     };
 
