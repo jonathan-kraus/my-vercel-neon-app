@@ -1,9 +1,10 @@
 // pages/api/weather/hourly.ts
 import { db } from '@/app/lib/db';
+import { PrismaClient } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import type { WeatherHourlyPayload } from '@/app/types/weather';
-import { Prisma } from '@/prisma/generated/browser';
 import type { NextApiRequest, NextApiResponse } from 'next';
-
+const prisma = new PrismaClient();
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const now = new Date();
   // Define the type based on your select
