@@ -19,7 +19,8 @@ export function WeatherToast() {
     const fetchData = async () => {
       const res = await fetch('/api/weather/hourly');
       const data: WeatherHourlyPayload[] = await res.json();
-
+      const log2 = createLogger('app/components/DbStatus.tsx');
+      log2.info('Weather data fetched for toast:', data);
       const nonZero = data.some((row) =>
         [
           row.rainAccumulationAvg,
