@@ -1,5 +1,4 @@
 // lib/safeJsonResponse.ts
-
 /**
  * Safely serialize data containing BigInt values into JSON.
  * Converts BigInt → string before sending.
