@@ -10,8 +10,6 @@ import { generateUUID } from '@/uuidj';
 import LineSparkline from './LineSparkline'; // ⬅️ IMPORT THE LINE CHART
 import NumberCounter from './NumberCounter'; // ⬅️ IMPORT THE NUMBER COUNTER
 
-import type { WeatherHourlyPayload } from '@/app/types/weather';
-
 type DbStatusType = {
   version: string;
   postCount: number;
