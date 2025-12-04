@@ -1,27 +1,37 @@
-// pages/api/weather/hourly.ts
+// app/api/weather/hourly/route.ts
+import { NextResponse } from 'next/server';
 import { db } from '@/app/lib/db';
 import type { Prisma } from '@prisma/client';
-import type { WeatherHourlyPayload } from '@/app/types/weather';
-import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+// Derive the exact type of the rows we’re selecting
+type WeatherHourlySelected = Prisma.WeatherHourlyGetPayload<{
+  select: {
+    forecastTime: true;
+    rainAccumulationAvg: true;
+    rainAccumulationMax: true;
+    rainAccumulationMin: true;
+    rainAccumulationSum: true;
+  };
+}>;
+
+// Define the payload type we’ll send to the client (Date → string)
+export type WeatherHourlyPayload = {
+  forecastTime: string;
+  rainAccumulationAvg: number;
+  rainAccumulationMax: number;
+  rainAccumulationMin: number;
+  rainAccumulationSum: number;
+};
+
+export async function GET() {
   const now = new Date();
-  // Define the type based on your select
-  type WeatherHourlySelected = Prisma.WeatherHourlyGetPayload<{
-    select: {
-      forecastTime: true;
-      rainAccumulationAvg: true;
-      rainAccumulationMax: true;
-      rainAccumulationMin: true;
-      rainAccumulationSum: true;
-    };
-  }>;
-  // Now data is strongly typed
+
+  // Strongly typed query result
   const data: WeatherHourlySelected[] = await db.weatherHourly.findMany({
     where: {
       forecastTime: {
         gte: now,
-        lt: new Date(now.getTime() + 5 * 60 * 60 * 1000),
+        lt: new Date(now.getTime() + 5 * 60 * 60 * 1000), // next 5 hours
       },
     },
     select: {
@@ -36,12 +46,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Convert Date → string for JSON safety
   const payload: WeatherHourlyPayload[] = data.map((row) => ({
-    timestamp: row.forecastTime.toISOString(),
+    forecastTime: row.forecastTime.toISOString(),
     rainAccumulationAvg: row.rainAccumulationAvg,
     rainAccumulationMax: row.rainAccumulationMax,
     rainAccumulationMin: row.rainAccumulationMin,
     rainAccumulationSum: row.rainAccumulationSum,
   }));
 
-  res.status(200).json(payload);
+  return NextResponse.json(payload);
 }
