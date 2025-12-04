@@ -14,7 +14,7 @@ const config = [
       'out/**',
       'build/**',
       'next-env.d.ts',
-      'app/generated/prisma/**',
+      'prisma/generated/**',
       'coverage/**',
       'junit.xml',
       'generated/prisma/**',
