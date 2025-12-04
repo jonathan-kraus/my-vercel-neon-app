@@ -12,49 +12,6 @@ import NumberCounter from './NumberCounter'; // ⬅️ IMPORT THE NUMBER COUNTER
 
 import type { WeatherHourlyPayload } from '@/app/types/weather';
 
-export function WeatherToast() {
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-
-    const fetchData = async () => {
-      const res = await fetch('/api/weather/hourly');
-      const data: WeatherHourlyPayload[] = await res.json();
-      const log2 = createLogger('app/components/DbStatus.tsx');
-      log2.info('Weather data fetched for toast:', data);
-      const nonZero = data.some((row) =>
-        [
-          row.rainAccumulationAvg,
-          row.rainAccumulationMax,
-          row.rainAccumulationMin,
-          row.rainAccumulationSum,
-        ].some((val) => val > 0)
-      );
-
-      if (nonZero) {
-        const message = data
-          .map((row) => {
-            const time = new Date(row.timestamp).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-            });
-            return `${time} → Avg: ${row.rainAccumulationAvg}, Max: ${row.rainAccumulationMax}, Min: ${row.rainAccumulationMin}, Sum: ${row.rainAccumulationSum}`;
-          })
-          .join('\n');
-
-        toast.dismiss();
-        toast(`🌧 Rain Accumulation (Next 5 Hours)\n${message}`);
-      }
-    };
-
-    fetchData();
-    interval = setInterval(fetchData, 5 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return null;
-}
-
 type DbStatusType = {
   version: string;
   postCount: number;
@@ -121,7 +78,7 @@ type HealthResult = {
   latencyMs?: number;
   error?: string;
 };
-WeatherToast();
+
 // 🛠️ REMOVED redundant global log initialization
 // const log = createLogger('app/components/DbStatus.tsx');
 // log.info('[DbStatus] DbStatus component loaded', {
@@ -168,7 +125,7 @@ export default function DbStatus() {
   // 🛠️ FIX: Use dedicated states for animation and direction tracking
   const [prevLatency, setPrevLatency] = useState<number>(0);
   const [latencyDirection, setLatencyDirection] = useState<'up' | 'down' | 'none'>('none');
-  WeatherToast();
+
   const [latencyHistory, setLatencyHistory] = useState<number[]>([]);
   const prevLatencyRef = useRef<number>(0);
   // 🛠️ ADD: Initialize to a non-null object for persistent display (ok: null is 'Pending')
