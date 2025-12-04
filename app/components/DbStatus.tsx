@@ -9,6 +9,7 @@ import { isFeatureEnabled } from '@/app/utils/featureFlags';
 import { generateUUID } from '@/uuidj';
 import LineSparkline from './LineSparkline'; // ⬅️ IMPORT THE LINE CHART
 import NumberCounter from './NumberCounter'; // ⬅️ IMPORT THE NUMBER COUNTER
+import type { WeatherHourlyPayload } from '@/app/api/weather/hourly/route';
 
 type DbStatusType = {
   version: string;
@@ -271,7 +272,46 @@ export default function DbStatus() {
 
     fetchStatus();
   }, [requestId]);
+  // ⬅️ ADD YOUR WEATHER TOAST EFFECT RIGHT AFTER THIS
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch('/api/weather/hourly');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: WeatherHourlyPayload[] = await res.json();
 
+        console.log('Weather data:', data);
+
+        const nonZero = data.some((row) =>
+          [
+            row.rainAccumulationAvg,
+            row.rainAccumulationMax,
+            row.rainAccumulationMin,
+            row.rainAccumulationSum,
+          ].some((val) => val > 0)
+        );
+
+        if (nonZero) {
+          const message = data
+            .map((row) => {
+              const time = new Date(row.forecastTime).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              });
+              return `${time} → Avg: ${row.rainAccumulationAvg}, Max: ${row.rainAccumulationMax}, Min: ${row.rainAccumulationMin}, Sum: ${row.rainAccumulationSum}`;
+            })
+            .join('\n');
+
+          toast.dismiss();
+          toast(`🌧 Rain Accumulation (Next 5 Hours)\n${message}`);
+        }
+      } catch (err) {
+        console.error('Failed to fetch weather data:', err);
+      }
+    };
+
+    fetchWeather();
+  }, []);
   // Fetch environment info
   useEffect(() => {
     const fetchEnvInfo = async () => {
