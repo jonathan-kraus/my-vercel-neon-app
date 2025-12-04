@@ -10,6 +10,9 @@
 !.yarn/releases
 !.yarn/versions
 
+# Prisma v7 Generated Client Output
+prisma.generated/
+
 # testing
 /coverage
 
