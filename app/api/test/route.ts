@@ -1,7 +1,7 @@
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 import toast from 'react-hot-toast';
-import { useEffect } from 'react';
+
 import type { WeatherHourlyPayload } from '../weather/hourly/route';
 
 export async function GET() {
