@@ -128,6 +128,7 @@ export default function WeatherPage() {
       {/* Location Selector */}
       <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
         <LocationSelector onLocationChange={handleLocationChange} />
+        precip: {precip}
       </div>
 
       {/* Email Button */}
