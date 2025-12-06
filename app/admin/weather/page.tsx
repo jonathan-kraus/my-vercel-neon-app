@@ -15,8 +15,6 @@ import { Location, getActiveLocation } from '@/app/utils/locations';
 import { createLogger } from '@/app/utils/logger';
 import { generateUUID } from '@/uuidj';
 
-// unused: feature flags are no longer checked here
-
 type ForecastResult = {
   forecast: DailyForecastPoint[];
   maxRainAccumulation: number;
@@ -26,7 +24,7 @@ export default function WeatherPage() {
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
   const [precip, setPrecip] = useState<number | null>(null);
   const [requestId] = useState(() => generateUUID());
-  const log = createLogger('JKapp/admin/weather/page.tsx', requestId);
+  const log = createLogger('app/admin/weather/page.tsx', requestId);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
 
   // Fetch active location
@@ -42,7 +40,9 @@ export default function WeatherPage() {
     fetch('/api/getPrecip')
       .then((res) => res.json())
       .then((data) => {
-        console.log('Rain accumulation from API:', data.precip?.rainAccumulationSum);
+        log.info('Rain accumulation from API:', {
+          rainAccumulationSum: data.precip?.rainAccumulationSum,
+        });
         setPrecip(data.precip?.rainAccumulationSum ?? 0);
       });
   }, []);
