@@ -11,7 +11,7 @@
     "type-check": "tsc --noEmit",
     "start": "next start",
     "lint": "eslint .",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && node scripts/write-marker.js",
     "test": "vitest run",
     "test:ci": "vitest run --coverage",
     "prepare": "husky"
