@@ -16,6 +16,7 @@ export async function GET(req: Request) {
     await log.info('Forecast fetched successfully', {
       forecastLength: result.forecast.length,
       maxRainAccumulation: result.maxRainAccumulation,
+      night: 'night',
     });
 
     return NextResponse.json({ ...result, requestId });
