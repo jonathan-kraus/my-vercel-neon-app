@@ -13,10 +13,19 @@ try {
   console.warn('⚠️ Could not read git commit hash:', err.message);
 }
 
+// Get Prisma CLI version
+let prismaVersion = 'unknown';
+try {
+  prismaVersion = execSync('pnpm prisma --version').toString().trim();
+} catch (err) {
+  console.warn('⚠️ Could not read Prisma version:', err.message);
+}
+
 // Build marker content
 const content = [
   `Prisma client generated at: ${new Date().toISOString()}`,
   `Git commit: ${commitHash}`,
+  `Prisma CLI version: ${prismaVersion}`,
   '',
 ].join('\n');
 
