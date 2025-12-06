@@ -12,6 +12,7 @@
 
 # Prisma v7 Generated Client Output
 prisma/generated/
+prisma-marker.txt
 
 # testing
 /coverage
