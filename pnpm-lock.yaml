@@ -103,7 +103,7 @@ importers:
         specifier: 10.4.22
         version: 10.4.22(postcss@8.5.6)
       baseline-browser-mapping:
-        specifier: ^2.9.2
+        specifier: 2.9.2
         version: 2.9.2
       eslint:
         specifier: 9.39.1
@@ -118,7 +118,7 @@ importers:
         specifier: 7.37.5
         version: 7.37.5(eslint@9.39.1(jiti@2.6.1))
       framer-motion:
-        specifier: ^12.23.24
+        specifier: 12.23.24
         version: 12.23.24(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       husky:
         specifier: 9.1.7
@@ -130,7 +130,7 @@ importers:
         specifier: 2.18.1
         version: 2.18.1(encoding@0.1.13)
       p-limit:
-        specifier: ^7.2.0
+        specifier: 7.2.0
         version: 7.2.0
       postcss:
         specifier: 8.5.6
